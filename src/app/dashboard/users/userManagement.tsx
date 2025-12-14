@@ -470,7 +470,7 @@ export default function UsersManagement({ adminUser }: Props) {
               <Edit className="w-4 h-4" />
             </Button>
 
-            {user.id !== adminUser.id && (
+            {/* {user.id !== adminUser.id && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
@@ -496,7 +496,7 @@ export default function UsersManagement({ adminUser }: Props) {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            )}
+            )} */}
           </div>
         );
       },

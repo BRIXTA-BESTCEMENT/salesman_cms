@@ -1,7 +1,7 @@
 services:
   slmcmsdashboard:
     # Use your Docker image name here
-    image: goswamirohit/slmcmsdashboard:v25
+    image: goswamirohit/slmcmsdashboard:v27
     container_name: slmcmsdashboard
     restart: unless-stopped
     ports:

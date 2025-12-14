@@ -180,24 +180,24 @@ export default function PJPListPage() {
       cell: ({ row }) => <span className="max-w-[300px] truncate block">{(row.original.taskIds || []).join(', ')}</span>,
     },
     { accessorKey: "verificationStatus", header: "Verification Status" },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const pjp = row.original;
-        const isDeleting = deletingId === pjp.id;
-        return (
-          <Button
-            className="bg-red-800 hover:bg-red-900 text-white"
-            size="sm"
-            onClick={() => handleDeletePjp(pjp.id)}
-            disabled={isDeleting || loading} // Disable if this row is deleting or table is refreshing
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        );
-      },
-    },
+    // {
+    //   id: 'actions',
+    //   header: 'Actions',
+    //   cell: ({ row }) => {
+    //     const pjp = row.original;
+    //     const isDeleting = deletingId === pjp.id;
+    //     return (
+    //       <Button
+    //         className="bg-red-800 hover:bg-red-900 text-white"
+    //         size="sm"
+    //         onClick={() => handleDeletePjp(pjp.id)}
+    //         disabled={isDeleting || loading} // Disable if this row is deleting or table is refreshing
+    //       >
+    //         {isDeleting ? 'Deleting...' : 'Delete'}
+    //       </Button>
+    //     );
+    //   },
+    // },
   ];
 
   const handlePermanentJourneyPlanOrderChange = (newOrder: PermanentJourneyPlan[]) => {

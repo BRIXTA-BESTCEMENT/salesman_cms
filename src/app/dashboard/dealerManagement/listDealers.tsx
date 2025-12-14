@@ -221,22 +221,22 @@ export default function ListDealersPage() {
 
     { accessorKey: 'createdAt', header: 'Added On', cell: info => new Date(info.getValue() as string).toLocaleDateString() },
     
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => (
-        <Button
-          className="bg-red-800 hover:bg-red-900 text-white h-7 px-3 text-xs"
-          size="sm"
-          onClick={() => {
-            setDealerToDeleteId(row.original.id);
-            setIsDeleteDialogOpen(true);
-          }}
-        >
-          Delete
-        </Button>
-      ),
-    },
+    // {
+    //   id: 'actions',
+    //   header: 'Actions',
+    //   cell: ({ row }) => (
+    //     <Button
+    //       className="bg-red-800 hover:bg-red-900 text-white h-7 px-3 text-xs"
+    //       size="sm"
+    //       onClick={() => {
+    //         setDealerToDeleteId(row.original.id);
+    //         setIsDeleteDialogOpen(true);
+    //       }}
+    //     >
+    //       Delete
+    //     </Button>
+    //   ),
+    // },
   ];
 
   // --- Loading / Error gates ---
