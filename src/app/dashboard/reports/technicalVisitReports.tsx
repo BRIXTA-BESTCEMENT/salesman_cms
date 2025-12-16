@@ -12,7 +12,13 @@ import {
   Eye,
   ExternalLink,
   MapPin,
-  ImageIcon
+  User,
+  Calendar,
+  Clock,
+  Briefcase,
+  Store,
+  HardHat,
+  Camera
 } from 'lucide-react';
 
 // Import the reusable DataTable
@@ -33,6 +39,8 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 // --- CONSTANTS AND TYPES ---
 const LOCATION_API_ENDPOINT = `/api/users/user-locations`;
@@ -46,16 +54,17 @@ interface RolesResponse {
   roles: string[];
 }
 
-// Extend the inferred type
 type TechnicalVisitReport = z.infer<typeof technicalVisitReportSchema> & {
   salesmanName: string;
   role: string;
   area: string;
   region: string;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 const CUSTOMER_TYPE_OPTIONS = [
-  'IHB',
+  'IHB/Site',
   'Engineer/Architect',
   'Contractor/Head Mason',
   'Channel Partner(Dealer/Sub-Dealer)',
@@ -78,6 +87,19 @@ const formatTimeIST = (dateString: string | null) => {
   }
 };
 
+const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
+  if (!lat || !lng) return null;
+  return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+};
+
+// Helper to determine color based on customer type
+const getCustomerTypeBadgeColor = (type: string | null) => {
+  if (!type) return 'secondary';
+  if (type === 'IHB/Site') return 'default'; // Black/Primary
+  if (type.includes('Dealer')) return 'destructive'; // Red-ish
+  return 'outline'; // Influencers (Masons/Archs)
+};
+
 const renderSelectFilter = (
   label: string,
   value: string,
@@ -86,7 +108,7 @@ const renderSelectFilter = (
   isLoading: boolean = false
 ) => (
   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
       <SelectTrigger className="h-9 w-full bg-background border-input">
         {isLoading ? (
@@ -99,7 +121,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -107,6 +129,19 @@ const renderSelectFilter = (
         ))}
       </SelectContent>
     </Select>
+  </div>
+);
+
+// --- REUSABLE READ-ONLY FIELD ---
+const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: string, value: React.ReactNode, icon?: any, fullWidth?: boolean }) => (
+  <div className={`flex flex-col space-y-1.5 ${fullWidth ? 'col-span-2' : ''}`}>
+    <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+      {Icon && <Icon className="w-3 h-3" />}
+      {label}
+    </Label>
+    <div className="text-sm font-medium p-2 bg-secondary/20 rounded-md border border-border/50 min-h-9 flex items-center">
+      {value || <span className="text-muted-foreground italic text-xs">N/A</span>}
+    </div>
   </div>
 );
 
@@ -125,13 +160,12 @@ export default function TechnicalVisitReportsPage() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
+  const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
 
   // --- Filter Options States ---
-  const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
-
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
   const [isLoadingRoles, setIsLoadingRoles] = useState(true);
 
@@ -142,27 +176,17 @@ export default function TechnicalVisitReportsPage() {
     try {
       const response = await fetch(`/api/dashboardPagesAPI/reports/technical-visit-reports`);
       if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/login');
-          return;
-        }
-        if (response.status === 403) {
-          router.push('/dashboard');
-          return;
-        }
+        if (response.status === 401) { router.push('/login'); return; }
+        if (response.status === 403) { router.push('/dashboard'); return; }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const rawData: TechnicalVisitReport[] = await response.json();
-
       const validatedData = rawData.map((item) => {
         try {
           const validated = technicalVisitReportSchema.parse(item);
-          return {
-            ...validated,
-            id: (validated as any).id?.toString() || `${validated.salesmanName}-${validated.date}-${Math.random()}`
-          } as TechnicalVisitReport;
+          return { ...validated, id: (validated as any).id?.toString() || `${Math.random()}` } as TechnicalVisitReport;
         } catch (e) {
-          console.error("Validation error for item:", item, e);
+          console.error("Validation error:", item, e);
           return null;
         }
       }).filter(Boolean) as TechnicalVisitReport[];
@@ -170,8 +194,7 @@ export default function TechnicalVisitReportsPage() {
       setTechnicalReports(validatedData);
       toast.success("Reports loaded successfully!");
     } catch (error: any) {
-      console.error("Failed to fetch reports:", error);
-      toast.error(`Failed to load reports: ${error.message}`);
+      toast.error(`Failed to load: ${error.message}`);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -184,14 +207,10 @@ export default function TechnicalVisitReportsPage() {
       const response = await fetch(LOCATION_API_ENDPOINT);
       if (response.ok) {
         const data: LocationsResponse = await response.json();
-        setAvailableAreas(Array.isArray(data.areas) ? data.areas.filter(Boolean) : []);
-        setAvailableRegions(Array.isArray(data.regions) ? data.regions.filter(Boolean) : []);
+        setAvailableAreas(data.areas || []);
+        setAvailableRegions(data.regions || []);
       }
-    } catch (err: any) {
-      console.error('Failed to load locations', err);
-    } finally {
-      setIsLoadingLocations(false);
-    }
+    } finally { setIsLoadingLocations(false); }
   }, []);
 
   const fetchRoles = useCallback(async () => {
@@ -200,13 +219,9 @@ export default function TechnicalVisitReportsPage() {
       const response = await fetch(ROLES_API_ENDPOINT);
       if (response.ok) {
         const data: RolesResponse = await response.json();
-        setAvailableRoles(Array.isArray(data.roles) ? data.roles.filter(Boolean) : []);
+        setAvailableRoles(data.roles || []);
       }
-    } catch (err: any) {
-      console.error('Failed to load roles', err);
-    } finally {
-      setIsLoadingRoles(false);
-    }
+    } finally { setIsLoadingRoles(false); }
   }, []);
 
   React.useEffect(() => {
@@ -219,7 +234,7 @@ export default function TechnicalVisitReportsPage() {
   const filteredReports = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return technicalReports.filter((report) => {
-      const usernameMatch = !searchQuery || report.salesmanName.toLowerCase().includes(q);
+      const usernameMatch = !searchQuery || report.salesmanName.toLowerCase().includes(q) || report.siteNameConcernedPerson?.toLowerCase().includes(q);
       const customerTypeMatch = customerTypeFilter === 'all' || report.customerType === customerTypeFilter;
       const roleMatch = roleFilter === 'all' || report.role?.toLowerCase() === roleFilter.toLowerCase();
       const areaMatch = areaFilter === 'all' || report.area?.toLowerCase() === areaFilter.toLowerCase();
@@ -228,50 +243,86 @@ export default function TechnicalVisitReportsPage() {
     });
   }, [technicalReports, customerTypeFilter, searchQuery, roleFilter, areaFilter, regionFilter]);
 
-  const isDealerVisit = (r: TechnicalVisitReport) =>
-    r.customerType?.includes('Dealer');
+  // --- Logic Helpers ---
+  const isDealerVisit = (r: TechnicalVisitReport) => r.customerType?.includes('Dealer');
+  const isIHBVisit = (r: TechnicalVisitReport) => r.customerType === 'IHB' || r.customerType === 'IHB/Site';
+  const isInfluencerVisit = (r: TechnicalVisitReport) => !isIHBVisit(r) && !isDealerVisit(r);
 
-  const isIHBVisit = (r: TechnicalVisitReport) =>
-    r.customerType === 'IHB';
-
-  const isInfluencerVisit = (r: TechnicalVisitReport) =>
-    !isIHBVisit(r) && !isDealerVisit(r);
-
-  // --- Columns Definition ---
+  // --- Columns ---
   const columns = useMemo<ColumnDef<TechnicalVisitReport>[]>(() => [
-    { accessorKey: "salesmanName", header: "Salesman" },
-    { accessorKey: "role", header: "Role" },
     {
-      accessorKey: "date",
-      header: "Visit Date",
-      cell: ({ row }) => <div className="whitespace-nowrap font-medium">{row.getValue("date")}</div>
+      accessorKey: "customerType",
+      header: "Customer Type",
+      cell: ({ row }) => {
+        const type = row.original.customerType;
+        return <Badge variant={getCustomerTypeBadgeColor(type)} className="whitespace-nowrap">{type || 'Unknown'}</Badge>;
+      }
+    },
+    {
+      accessorKey: "salesmanName",
+      header: "Salesman",
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-sm">{row.original.salesmanName}</span>
+          <span className="text-xs text-muted-foreground">{row.original.role}</span>
+        </div>
+      )
     },
     {
       accessorKey: "siteNameConcernedPerson",
-      header: "Site Name",
+      header: "Site / Party Name",
       cell: ({ row }) => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-sm">{row.original.siteNameConcernedPerson}</span>
+        <div className="flex flex-col max-w-[180px]">
+          <span className="font-semibold text-sm truncate" title={row.original.siteNameConcernedPerson}>
+            {row.original.siteNameConcernedPerson}
+          </span>
           <span className="text-xs text-muted-foreground">{row.original.phoneNo}</span>
         </div>
       )
     },
-    { accessorKey: "region", header: "Region" },
-    { accessorKey: "area", header: "Area" },
+    {
+      accessorKey: "region",
+      header: "Location",
+      cell: ({ row }) => {
+        const { region, area, latitude, longitude } = row.original;
+        const mapLink = getGoogleMapsLink(latitude, longitude);
+
+        return (
+          <div className="flex flex-col min-w-[140px]">
+            <span className="text-sm">{region} / {area}</span>
+            {mapLink ? (
+              <a
+                href={mapLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline mt-1"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MapPin className="h-3 w-3" /> View Map
+              </a>
+            ) : (
+              <span className="text-xs text-muted-foreground">No GPS</span>
+            )}
+          </div>
+        )
+      }
+    },
     {
       accessorKey: "visitType",
-      header: "Type",
-      cell: ({ row }) => <Badge variant="outline">{row.getValue("visitType")}</Badge>
+      header: "Purpose",
+      cell: ({ row }) => <span className="text-sm font-medium">{row.getValue("visitType")}</span>
     },
     {
-      accessorKey: "checkInTime",
-      header: "Check-In",
-      cell: ({ row }) => formatTimeIST(row.getValue("checkInTime"))
-    },
-    {
-      accessorKey: "checkOutTime",
-      header: "Check-Out",
-      cell: ({ row }) => formatTimeIST(row.getValue("checkOutTime"))
+      accessorKey: "date",
+      header: "Date & Time",
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="text-sm">{row.original.date}</span>
+          <span className="text-xs text-muted-foreground">
+            In: {formatTimeIST(row.original.checkInTime)}
+          </span>
+        </div>
+      )
     },
     {
       id: "actions",
@@ -280,7 +331,7 @@ export default function TechnicalVisitReportsPage() {
         <Button
           variant="outline"
           size="sm"
-          className="text-blue-500 border-blue-500 hover:bg-blue-50 h-8 px-2"
+          className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 h-8 px-2 shadow-sm"
           onClick={() => {
             setSelectedReport(row.original);
             setIsViewModalOpen(true);
@@ -292,23 +343,92 @@ export default function TechnicalVisitReportsPage() {
     },
   ], []);
 
-  // --- Render ---
-  if (isLoading) return <div className="flex justify-center items-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin text-primary" /> <span className="ml-2">Loading reports...</span></div>;
-  if (error) return <div className="text-center text-red-500 pt-10">Error: {error}<Button onClick={fetchTechnicalReports} className="ml-4">Retry</Button></div>;
+  // --- LAYOUT RENDERERS FOR MODAL ---
+  const renderIHBDetails = (r: TechnicalVisitReport) => (
+    <Card className="border-l-4 border-l-primary">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-bold flex items-center gap-2">
+          <HardHat className="w-4 h-4" />
+          Construction Site Analysis
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-2 gap-4 pt-2">
+        <InfoField label="Stage" value={r.siteVisitStage} />
+        <InfoField label="Area (SqFt)" value={r.constAreaSqFt?.toString()} />
+        <InfoField label="Site Stock" value={r.siteStock ? `${r.siteStock} Bags` : '0'} />
+        <InfoField label="Est. Requirement" value={r.estRequirement ? `${r.estRequirement} Bags` : '0'} />
+        <InfoField label="Brands In Use" value={r.siteVisitBrandInUse?.join(', ')} fullWidth />
+        <InfoField label="Current Price" value={r.currentBrandPrice?.toString()} />
+      </CardContent>
+    </Card>
+  );
 
+  const renderDealerDetails = (r: TechnicalVisitReport) => (
+    <Card className="border-l-4 border-l-red-500">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-bold flex items-center gap-2">
+          <Store className="w-4 h-4" />
+          Dealer & Sales Logic
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-2 gap-4 pt-2">
+        <InfoField label="Associated Party" value={r.associatedPartyName || r.siteNameConcernedPerson} fullWidth />
+        <InfoField label="Dealer Type" value={r.influencerType?.join(', ')} />
+        <InfoField label="Productivity" value={r.influencerProductivity} />
+        <InfoField label="Brands Selling" value={r.siteVisitBrandInUse?.join(', ')} fullWidth />
+
+        <Separator className="col-span-2 my-2" />
+
+        <div className="col-span-2 grid grid-cols-2 gap-4 p-2 rounded-lg">
+          <InfoField label="Bag Picked (Converted)" value={r.isConverted ? "YES" : "NO"} />
+          {r.isConverted && (
+            <>
+              <InfoField label="Quantity" value={`${r.conversionQuantityValue} ${r.conversionQuantityUnit}`} />
+              <InfoField label="Converted From" value={r.conversionFromBrand} />
+            </>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderInfluencerDetails = (r: TechnicalVisitReport) => (
+    <Card className="border-l-4 border-l-blue-500">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-bold flex items-center gap-2">
+          <Briefcase className="w-4 h-4" />
+          Influencer / Professional Info
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-2 gap-4 pt-2">
+        <InfoField label="Influencer Name" value={r.influencerName} />
+        <InfoField label="Type" value={r.influencerType?.join(', ')} />
+        <InfoField label="Phone" value={r.influencerPhone} />
+        <InfoField label="Productivity Score" value={r.influencerProductivity} />
+        <InfoField label="Scheme Enrolled?" value={r.isSchemeEnrolled ? "YES" : "NO"} />
+      </CardContent>
+    </Card>
+  );
+
+  // --- MAIN RENDER ---
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
-        <h2 className="text-3xl font-bold tracking-tight">Technical Visit Reports</h2>
+      <div className="flex-1 space-y-6 p-8 pt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold tracking-tight">Technical Visit Reports</h2>
+          <Badge variant="outline" className="text-base px-4 py-1">
+            Total Reports: {filteredReports.length}
+          </Badge>
+        </div>
 
         {/* Filter Bar */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
+        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
           <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Salesman / Username</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name..."
+                placeholder="Name, Site, or Party..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-8 h-9 bg-background border-input"
@@ -319,328 +439,176 @@ export default function TechnicalVisitReportsPage() {
           {renderSelectFilter('Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
           {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
           {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchQuery('');
+              setCustomerTypeFilter('all');
+              setRoleFilter('all');
+              setAreaFilter('all');
+              setRegionFilter('all');
+            }}
+            className="mb-0.5 text-muted-foreground hover:text-destructive"
+          >
+            Clear Filters
+          </Button>
         </div>
 
         {/* Data Table */}
-        <div className="bg-card p-6 rounded-lg border border-border">
-          <DataTableReusable
-            columns={columns}
-            data={filteredReports}
-            enableRowDragging={false}
-          />
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <DataTableReusable
+              columns={columns}
+              data={filteredReports}
+              enableRowDragging={false}
+            />
+          )}
         </div>
       </div>
 
-      {/* --- DETAILS MODAL (Applied BagsLift Style) --- */}
+      {/* --- SMART DETAILS MODAL --- */}
       {selectedReport && (
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Technical Visit Details</DialogTitle>
-              <DialogDescription>
-                Review the full technical report submitted by {selectedReport.salesmanName}.
+          <DialogContent className="sm:max-w-[850px] max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
+            {/* Header with Color Coding */}
+            <div className={`px-6 py-4 border-b bg-muted/20 ${isDealerVisit(selectedReport) ? 'border-l-[6px] border-l-red-500' : isIHBVisit(selectedReport) ? 'border-l-[6px] border-l-primary' : 'border-l-[6px] border-l-blue-500'}`}>
+              <DialogTitle className="text-xl flex items-center justify-between">
+                <span>Visit Details</span>
+                <Badge variant={getCustomerTypeBadgeColor(selectedReport.customerType)} className="text-sm px-3">
+                  {selectedReport.customerType}
+                </Badge>
+              </DialogTitle>
+              <DialogDescription className="mt-1 flex items-center gap-4 text-xs sm:text-sm">
+                <span className="flex items-center gap-1"><User className="w-3 h-3" /> {selectedReport.salesmanName} ({selectedReport.role})</span>
+                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {selectedReport.date}</span>
+                {/* Removed In-Time from here as requested */}
               </DialogDescription>
-            </DialogHeader>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-
-              <div>
-                <Label>Customer Type</Label>
-                <Badge variant="secondary">{selectedReport.customerType}</Badge>
-              </div>
-
-              {/* 1. SALESMAN & LOCATION INFO */}
-              <div className="md:col-span-2 text-lg font-semibold border-b pb-2">
-                Salesman & Location Info
-              </div>
-
-              <div>
-                <Label>Salesman Name</Label>
-                <Input value={selectedReport.salesmanName} readOnly />
-              </div>
-              <div>
-                <Label>Role</Label>
-                <Input value={selectedReport.role ?? ''} readOnly />
-              </div>
-              <div>
-                <Label>Area / Market</Label>
-                <Input value={`${selectedReport.area || ''} / ${selectedReport.marketName || ''}`} readOnly />
-              </div>
-              <div>
-                <Label>Region</Label>
-                <Input value={selectedReport.region} readOnly />
-              </div>
-
-              {/* 2. VISIT & SITE INFO */}
-              <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                Visit & Site Details
-              </div>
-
-              <div>
-                <Label>Visit Date</Label>
-                <Input value={selectedReport.date} readOnly />
-              </div>
-              <div>
-                <Label>Visit Type</Label>
-                <Input value={selectedReport.visitType} readOnly />
-              </div>
-              <div>
-                <Label>Site / Concerned Person</Label>
-                <Input value={selectedReport.siteNameConcernedPerson} readOnly />
-              </div>
-              <div>
-                <Label>Phone No</Label>
-                <Input value={selectedReport.phoneNo} readOnly />
-              </div>
-              <div className="md:col-span-2">
-                <Label>Site Address</Label>
-                <div className="relative mt-1">
-                  <MapPin className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input className="pl-8" value={selectedReport.siteAddress || 'N/A'} readOnly />
-                </div>
-              </div>
-              <div>
-                <Label>Purpose of Visit</Label>
-                <Input value={selectedReport.purposeOfVisit as any} readOnly />
-              </div>
-              <div>
-                <Label>Email</Label>
-                <Input value={selectedReport.emailId || 'N/A'} readOnly />
-              </div>
-
-              {/* 3. CONSTRUCTION DETAILS */}
-              <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                Construction & Market Data
-              </div>
-
-              <div>
-                <Label>Construction Stage</Label>
-                <Input value={selectedReport.siteVisitStage as any} readOnly />
-              </div>
-              <div>
-                <Label>Construction Area (SqFt)</Label>
-                <Input value={selectedReport.constAreaSqFt?.toString() ?? ''} readOnly />
-              </div>
-              <div>
-                <Label>Site Stock (Bags)</Label>
-                <Input value={selectedReport.siteStock as any} readOnly />
-              </div>
-              <div>
-                <Label>Est. Requirement</Label>
-                <Input value={selectedReport.estRequirement as any} readOnly />
-              </div>
-              <div className="md:col-span-2">
-                <Label>Brands In Use</Label>
-                <Input value={selectedReport.siteVisitBrandInUse?.join(', ') || 'None'} readOnly />
-              </div>
-              <div>
-                <Label>Current Brand Price</Label>
-                <Input value={selectedReport.currentBrandPrice as any} readOnly />
-              </div>
-
-              {/* 4. DEALER INFO */}
-              <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                Dealer & Conversion
-              </div>
-
-              <div>
-                <Label>Supplying Dealer</Label>
-                <Input value={selectedReport.supplyingDealerName || 'N/A'} readOnly />
-              </div>
-              <div>
-                <Label>Nearby Dealer</Label>
-                <Input value={selectedReport.nearbyDealerName || 'N/A'} readOnly />
-              </div>
-              <div>
-                <Label>Is Converted?</Label>
-                <Input value={selectedReport.isConverted ? 'YES' : 'NO'} readOnly />
-              </div>
-              {selectedReport.isConverted && (
-                <>
-                  <div>
-                    <Label>Conversion From</Label>
-                    <Input value={selectedReport.conversionFromBrand || 'N/A'} readOnly />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label>Conversion Quantity</Label>
-                    <Input value={`${selectedReport.conversionQuantityValue} ${selectedReport.conversionQuantityUnit}`} readOnly />
-                  </div>
-                </>
-              )}
-
-              {/* 5. REMARKS */}
-              <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                Remarks
-              </div>
-              <div className="md:col-span-2">
-                <Label>Client's Remarks</Label>
-                <Input value={selectedReport.clientsRemarks || 'N/A'} readOnly />
-              </div>
-              <div className="md:col-span-2">
-                <Label>Salesperson's Remarks</Label>
-                <Input value={selectedReport.salespersonRemarks || 'N/A'} readOnly />
-              </div>
-
-              {/* 6. TIMINGS & IMAGES */}
-              <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                Timings & Evidence
-              </div>
-
-              <div>
-                <Label>Check In Time</Label>
-                <Input value={formatTimeIST(selectedReport.checkInTime)} readOnly />
-              </div>
-              <div>
-                <Label>Check Out Time</Label>
-                <Input value={formatTimeIST(selectedReport.checkOutTime)} readOnly />
-              </div>
-
-              {/* Site Photo */}
-              {selectedReport.sitePhotoUrl && (
-                <div className="md:col-span-2 mt-2">
-                  <Label>Site Progress Photo</Label>
-                  <div className="mt-2 border p-2 rounded-md bg-muted/50">
-                    <a
-                      href={selectedReport.sitePhotoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline flex items-center text-sm font-medium mb-2"
-                    >
-                      View Original <ExternalLink className="h-4 w-4 ml-1" />
-                    </a>
-                    <img
-                      src={selectedReport.sitePhotoUrl}
-                      alt="Site"
-                      className="w-full h-auto max-h-[400px] object-contain rounded-md border"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Check In/Out Proofs */}
-              <div className="md:col-span-2 grid grid-cols-2 gap-4 mt-2">
-                {selectedReport.inTimeImageUrl && (
-                  <div>
-                    <Label>Check-In Proof</Label>
-                    <div className="mt-1 border p-1 rounded-md bg-muted/50">
-                      <a href={selectedReport.inTimeImageUrl} target="_blank" rel="noreferrer">
-                        <img src={selectedReport.inTimeImageUrl} alt="In" className="w-full h-40 object-cover rounded-md" />
-                      </a>
-                    </div>
-                  </div>
-                )}
-                {selectedReport.outTimeImageUrl && (
-                  <div>
-                    <Label>Check-Out Proof</Label>
-                    <div className="mt-1 border p-1 rounded-md bg-muted/50">
-                      <a href={selectedReport.outTimeImageUrl} target="_blank" rel="noreferrer">
-                        <img src={selectedReport.outTimeImageUrl} alt="Out" className="w-full h-40 object-cover rounded-md" />
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {isIHBVisit(selectedReport) && (
-                  <>
-                    <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                      Construction & Market Data
-                    </div>
-
-                    <div>
-                      <Label>Construction Stage</Label>
-                      <Input value={selectedReport.siteVisitStage || 'N/A'} readOnly />
-                    </div>
-
-                    <div>
-                      <Label>Construction Area (SqFt)</Label>
-                      <Input value={selectedReport.constAreaSqFt || 'N/A'} readOnly />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <Label>Brands In Use</Label>
-                      <Input
-                        value={selectedReport.siteVisitBrandInUse?.join(', ') || 'None'}
-                        readOnly
-                      />
-                    </div>
-                  </>
-                )}
-
-                {isDealerVisit(selectedReport) && (
-                  <>
-                    <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                      Dealer & Business Info
-                    </div>
-
-                    <div>
-                      <Label>Influencer Type</Label>
-                      <Input
-                        value={selectedReport.influencerType?.join(', ') || 'N/A'}
-                        readOnly
-                      />
-                    </div>
-
-                    <div>
-                      <Label>Productivity</Label>
-                      <Input
-                        value={selectedReport.influencerProductivity || 'N/A'}
-                        readOnly
-                      />
-                    </div>
-
-                    <div>
-                      <Label>Bag Picked</Label>
-                      <Input value={selectedReport.isConverted ? 'YES' : 'NO'} readOnly />
-                    </div>
-
-                    {selectedReport.isConverted && (
-                      <div className="md:col-span-2">
-                        <Label>Quantity</Label>
-                        <Input
-                          value={`${selectedReport.conversionQuantityValue} ${selectedReport.conversionQuantityUnit}`}
-                          readOnly
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {isInfluencerVisit(selectedReport) && (
-                  <>
-                    <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
-                      Influencer Details
-                    </div>
-
-                    <div>
-                      <Label>Influencer Type</Label>
-                      <Input
-                        value={selectedReport.influencerType?.join(', ') || 'N/A'}
-                        readOnly
-                      />
-                    </div>
-
-                    <div>
-                      <Label>Name</Label>
-                      <Input value={selectedReport.influencerName || 'N/A'} readOnly />
-                    </div>
-
-                    <div>
-                      <Label>Phone</Label>
-                      <Input value={selectedReport.influencerPhone || 'N/A'} readOnly />
-                    </div>
-
-                    <div>
-                      <Label>Scheme Enrolled</Label>
-                      <Input value={selectedReport.isSchemeEnrolled ? 'YES' : 'NO'} readOnly />
-                    </div>
-                  </>
-                )}
-
-              </div>
             </div>
 
-            <DialogFooter>
-              <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+            <div className="p-6 space-y-6">
+
+              {/* 1. GENERAL INFO (Applicable to all) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="h-full">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+                      <MapPin className="w-4 h-4" /> Location & Contact
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-2 gap-3 pt-2">
+                    <InfoField label="Region" value={selectedReport.region} />
+                    <InfoField label="Area" value={selectedReport.area} />
+                    <InfoField label="Site Address" value={selectedReport.siteAddress} fullWidth />
+                    <InfoField label="Contact Person" value={selectedReport.siteNameConcernedPerson} />
+                    <InfoField label="Phone" value={selectedReport.phoneNo} />
+                  </CardContent>
+                </Card>
+
+                <Card className="h-full">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+                      <Briefcase className="w-4 h-4" /> Visit Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-2 gap-3 pt-2">
+                    <InfoField label="Visit Type" value={selectedReport.visitType} />
+                    <InfoField label="Visit Category" value={selectedReport.visitCategory} />
+                    <InfoField label="Purpose" value={selectedReport.purposeOfVisit} fullWidth />
+                    {/* MOVED CHECK IN TIME HERE */}
+                    <InfoField label="Check In" value={formatTimeIST(selectedReport.checkInTime)} />
+                    <InfoField label="Check Out" value={formatTimeIST(selectedReport.checkOutTime)} />
+                    <InfoField label="Time Spent" value={selectedReport.timeSpentinLoc} fullWidth />
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* 2. DYNAMIC SECTION (Switches based on Customer Type) */}
+              {isIHBVisit(selectedReport) && renderIHBDetails(selectedReport)}
+              {isDealerVisit(selectedReport) && renderDealerDetails(selectedReport)}
+              {isInfluencerVisit(selectedReport) && renderInfluencerDetails(selectedReport)}
+
+              {/* 3. REMARKS */}
+              <Card>
+                <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InfoField label="Client's Remarks" value={selectedReport.clientsRemarks} />
+                  <InfoField label="Salesperson's Remarks" value={selectedReport.salespersonRemarks} />
+                </CardContent>
+              </Card>
+
+              {/* 4. IMAGES EVIDENCE */}
+              <div>
+                <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
+                  <Camera className="w-4 h-4" /> Photo Evidence
+                </h4>
+
+                <div className="flex flex-col gap-4">
+                  {/* PRIMARY FOCUS: Site/Shop Photo (Large) */}
+                  {selectedReport.sitePhotoUrl && (
+                    <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
+                      <div className="bg-muted px-4 py-2 text-sm font-semibold border-b flex justify-between items-center">
+                        <span>Site / Shop Overview</span>
+                      </div>
+                      <a href={selectedReport.sitePhotoUrl} target="_blank" rel="noreferrer" className="block relative group">
+                        {/* Increased height to h-64 (mobile) and h-80 (desktop) for emphasis */}
+                        <img
+                          src={selectedReport.sitePhotoUrl}
+                          className="w-full h-64 sm:h-[500px] object-contain"
+                          alt="Evidence Image"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <ExternalLink className="text-white w-5 h-5" />
+                          <span className="text-white font-medium text-sm">View Full Image</span>
+                        </div>
+                      </a>
+                    </div>
+                  )}
+
+                  {/* SECONDARY: Selfies (Grid below) */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedReport.inTimeImageUrl ? (
+                      <div className="border rounded-lg overflow-hidden bg-background">
+                        <div className="bg-muted px-3 py-1 text-xs font-medium border-b truncate">Check-In Selfie</div>
+                        <a href={selectedReport.inTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
+                          <img src={selectedReport.inTimeImageUrl} className="w-full h-40 object-cover bg-muted/20" alt="Check In" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ExternalLink className="text-white w-6 h-6" />
+                          </div>
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="border rounded-lg h-40 flex items-center justify-center bg-muted/10 text-muted-foreground text-xs italic">
+                        No Check-In Photo
+                      </div>
+                    )}
+
+                    {selectedReport.outTimeImageUrl ? (
+                      <div className="border rounded-lg overflow-hidden bg-background">
+                        <div className="bg-muted px-3 py-1 text-xs font-medium border-b truncate">Check-Out Selfie</div>
+                        <a href={selectedReport.outTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
+                          <img src={selectedReport.outTimeImageUrl} className="w-full h-40 object-cover bg-muted/20" alt="Check Out" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ExternalLink className="text-white w-6 h-6" />
+                          </div>
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="border rounded-lg h-40 flex items-center justify-center bg-muted/10 text-muted-foreground text-xs italic">
+                        No Check-Out Photo
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <DialogFooter className="p-4 bg-background border-t">
+              <Button onClick={() => setIsViewModalOpen(false)}>Close Report</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
