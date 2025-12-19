@@ -58,8 +58,7 @@ export async function GET() {
         user: {
           companyId: currentUser.companyId,
         },
-        // We'll assume the 'status' field exists and can be 'active'
-        status: "active",
+        status: "IN_PROGRESS",
       },
       include: {
         user: {
@@ -84,7 +83,7 @@ export async function GET() {
       return NextResponse.json([], { status: 200 });
     }
 
-    const slmWebAppURL = process.env.NEXT_PUBLIC_SALESMAN_APP_URL; // actual salesman mobile webapp
+    //const slmWebAppURL = process.env.NEXT_PUBLIC_SALESMAN_APP_URL; // actual salesman mobile webapp
     const slmServerURL = process.env.NEXT_PUBLIC_SALESMAN_APP_SERVER_URL; // backend server for the mobile webapp
 
     // --- NEW: fetch latest points from the salesman app backend ---

@@ -29,7 +29,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: goswamirohit/slmcmsdashboard:v29
+          tags: goswamirohit/slmcmsdashboard:v30
           secrets: |
             "WORKOS_API_KEY=${{ secrets.WORKOS_API_KEY }}"
             "WORKOS_CLIENT_ID=${{ secrets.WORKOS_CLIENT_ID }}"

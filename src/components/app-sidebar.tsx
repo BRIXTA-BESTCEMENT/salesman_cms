@@ -130,11 +130,11 @@ const menuItems: MenuItem[] = [
         url: "/dashboard/slmAttendance",
         permission: ITEM_PERMISSIONS["Salesman Attendance"]
       },
-      // {
-      //   title: "Salesman Geotracking",
-      //   url: "/dashboard/slmGeotracking",
-      //   permission: ITEM_PERMISSIONS["Salesman Geotracking"]
-      // },
+      {
+        title: "Salesman Geotracking",
+        url: "/dashboard/slmGeotracking",
+        permission: ITEM_PERMISSIONS["Salesman Geotracking"]
+      },
       // {
       //   title: "Scores & Ratings",
       //   url: "/dashboard/scoresAndRatings",
