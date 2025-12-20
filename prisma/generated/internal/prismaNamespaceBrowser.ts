@@ -150,6 +150,7 @@ export const UserScalarFieldEnum = {
   techLoginId: 'techLoginId',
   techHashedPassword: 'techHashedPassword',
   reportsToId: 'reportsToId',
+  deviceId: 'deviceId',
   noOfPJP: 'noOfPJP'
 } as const
 
@@ -781,6 +782,7 @@ export const RewardRedemptionScalarFieldEnum = {
   rewardId: 'rewardId',
   quantity: 'quantity',
   status: 'status',
+  fulfillmentNotes: 'fulfillmentNotes',
   pointsDebited: 'pointsDebited',
   deliveryName: 'deliveryName',
   deliveryPhone: 'deliveryPhone',

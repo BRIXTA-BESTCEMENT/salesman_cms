@@ -832,6 +832,7 @@ export const rewardRedemptionSchema = z.object({
   rewardId: z.number().int(),
   quantity: z.number().int(),
   status: z.string(), // "placed", "approved", "shipped", etc.
+  fulfillmentNotes: z.string().nullable().optional(),
   pointsDebited: z.number().int(),
   deliveryName: z.string().nullable(),
   deliveryPhone: z.string().nullable(),

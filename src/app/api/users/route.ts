@@ -362,7 +362,6 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// ... (GET function for /api/users remains unchanged below this)
 export async function GET(request: NextRequest) {
     try {
         const claims = await getTokenClaims();
@@ -390,7 +389,8 @@ export async function GET(request: NextRequest) {
                     companyName: currentUser.company?.companyName,
                     region: currentUser.region,
                     area: currentUser.area,
-                    isTechnical: currentUser.isTechnicalRole, // <-- ADDED
+                    isTechnical: currentUser.isTechnicalRole,
+                    deviceId: currentUser.deviceId,
                 }
             });
         }
@@ -411,7 +411,8 @@ export async function GET(request: NextRequest) {
                 companyName: currentUser.company?.companyName,
                 region: currentUser.region,
                 area: currentUser.area,
-                isTechnical: currentUser.isTechnicalRole, // <-- ADDED
+                isTechnical: currentUser.isTechnicalRole,
+                deviceId: currentUser.deviceId,
             }
         });
     } catch (error: any) {

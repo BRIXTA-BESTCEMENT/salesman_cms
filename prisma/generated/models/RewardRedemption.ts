@@ -44,6 +44,7 @@ export type RewardRedemptionMinAggregateOutputType = {
   rewardId: number | null
   quantity: number | null
   status: string | null
+  fulfillmentNotes: string | null
   pointsDebited: number | null
   deliveryName: string | null
   deliveryPhone: string | null
@@ -58,6 +59,7 @@ export type RewardRedemptionMaxAggregateOutputType = {
   rewardId: number | null
   quantity: number | null
   status: string | null
+  fulfillmentNotes: string | null
   pointsDebited: number | null
   deliveryName: string | null
   deliveryPhone: string | null
@@ -72,6 +74,7 @@ export type RewardRedemptionCountAggregateOutputType = {
   rewardId: number
   quantity: number
   status: number
+  fulfillmentNotes: number
   pointsDebited: number
   deliveryName: number
   deliveryPhone: number
@@ -100,6 +103,7 @@ export type RewardRedemptionMinAggregateInputType = {
   rewardId?: true
   quantity?: true
   status?: true
+  fulfillmentNotes?: true
   pointsDebited?: true
   deliveryName?: true
   deliveryPhone?: true
@@ -114,6 +118,7 @@ export type RewardRedemptionMaxAggregateInputType = {
   rewardId?: true
   quantity?: true
   status?: true
+  fulfillmentNotes?: true
   pointsDebited?: true
   deliveryName?: true
   deliveryPhone?: true
@@ -128,6 +133,7 @@ export type RewardRedemptionCountAggregateInputType = {
   rewardId?: true
   quantity?: true
   status?: true
+  fulfillmentNotes?: true
   pointsDebited?: true
   deliveryName?: true
   deliveryPhone?: true
@@ -229,6 +235,7 @@ export type RewardRedemptionGroupByOutputType = {
   rewardId: number
   quantity: number
   status: string
+  fulfillmentNotes: string | null
   pointsDebited: number
   deliveryName: string | null
   deliveryPhone: string | null
@@ -266,6 +273,7 @@ export type RewardRedemptionWhereInput = {
   rewardId?: Prisma.IntFilter<"RewardRedemption"> | number
   quantity?: Prisma.IntFilter<"RewardRedemption"> | number
   status?: Prisma.StringFilter<"RewardRedemption"> | string
+  fulfillmentNotes?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
   pointsDebited?: Prisma.IntFilter<"RewardRedemption"> | number
   deliveryName?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
   deliveryPhone?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
@@ -283,6 +291,7 @@ export type RewardRedemptionOrderByWithRelationInput = {
   rewardId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  fulfillmentNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   pointsDebited?: Prisma.SortOrder
   deliveryName?: Prisma.SortOrderInput | Prisma.SortOrder
   deliveryPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -303,6 +312,7 @@ export type RewardRedemptionWhereUniqueInput = Prisma.AtLeast<{
   rewardId?: Prisma.IntFilter<"RewardRedemption"> | number
   quantity?: Prisma.IntFilter<"RewardRedemption"> | number
   status?: Prisma.StringFilter<"RewardRedemption"> | string
+  fulfillmentNotes?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
   pointsDebited?: Prisma.IntFilter<"RewardRedemption"> | number
   deliveryName?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
   deliveryPhone?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
@@ -320,6 +330,7 @@ export type RewardRedemptionOrderByWithAggregationInput = {
   rewardId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  fulfillmentNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   pointsDebited?: Prisma.SortOrder
   deliveryName?: Prisma.SortOrderInput | Prisma.SortOrder
   deliveryPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -342,6 +353,7 @@ export type RewardRedemptionScalarWhereWithAggregatesInput = {
   rewardId?: Prisma.IntWithAggregatesFilter<"RewardRedemption"> | number
   quantity?: Prisma.IntWithAggregatesFilter<"RewardRedemption"> | number
   status?: Prisma.StringWithAggregatesFilter<"RewardRedemption"> | string
+  fulfillmentNotes?: Prisma.StringNullableWithAggregatesFilter<"RewardRedemption"> | string | null
   pointsDebited?: Prisma.IntWithAggregatesFilter<"RewardRedemption"> | number
   deliveryName?: Prisma.StringNullableWithAggregatesFilter<"RewardRedemption"> | string | null
   deliveryPhone?: Prisma.StringNullableWithAggregatesFilter<"RewardRedemption"> | string | null
@@ -354,6 +366,7 @@ export type RewardRedemptionCreateInput = {
   id?: string
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -371,6 +384,7 @@ export type RewardRedemptionUncheckedCreateInput = {
   rewardId: number
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -384,6 +398,7 @@ export type RewardRedemptionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -401,6 +416,7 @@ export type RewardRedemptionUncheckedUpdateInput = {
   rewardId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -416,6 +432,7 @@ export type RewardRedemptionCreateManyInput = {
   rewardId: number
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -428,6 +445,7 @@ export type RewardRedemptionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -442,6 +460,7 @@ export type RewardRedemptionUncheckedUpdateManyInput = {
   rewardId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -466,6 +485,7 @@ export type RewardRedemptionCountOrderByAggregateInput = {
   rewardId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  fulfillmentNotes?: Prisma.SortOrder
   pointsDebited?: Prisma.SortOrder
   deliveryName?: Prisma.SortOrder
   deliveryPhone?: Prisma.SortOrder
@@ -486,6 +506,7 @@ export type RewardRedemptionMaxOrderByAggregateInput = {
   rewardId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  fulfillmentNotes?: Prisma.SortOrder
   pointsDebited?: Prisma.SortOrder
   deliveryName?: Prisma.SortOrder
   deliveryPhone?: Prisma.SortOrder
@@ -500,6 +521,7 @@ export type RewardRedemptionMinOrderByAggregateInput = {
   rewardId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  fulfillmentNotes?: Prisma.SortOrder
   pointsDebited?: Prisma.SortOrder
   deliveryName?: Prisma.SortOrder
   deliveryPhone?: Prisma.SortOrder
@@ -623,6 +645,7 @@ export type RewardRedemptionCreateWithoutMasonInput = {
   id?: string
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -638,6 +661,7 @@ export type RewardRedemptionUncheckedCreateWithoutMasonInput = {
   rewardId: number
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -682,6 +706,7 @@ export type RewardRedemptionScalarWhereInput = {
   rewardId?: Prisma.IntFilter<"RewardRedemption"> | number
   quantity?: Prisma.IntFilter<"RewardRedemption"> | number
   status?: Prisma.StringFilter<"RewardRedemption"> | string
+  fulfillmentNotes?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
   pointsDebited?: Prisma.IntFilter<"RewardRedemption"> | number
   deliveryName?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
   deliveryPhone?: Prisma.StringNullableFilter<"RewardRedemption"> | string | null
@@ -694,6 +719,7 @@ export type RewardRedemptionCreateWithoutRewardInput = {
   id?: string
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -709,6 +735,7 @@ export type RewardRedemptionUncheckedCreateWithoutRewardInput = {
   masonId: string
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -748,6 +775,7 @@ export type RewardRedemptionCreateWithoutPointsLedgerRecordInput = {
   id?: string
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -764,6 +792,7 @@ export type RewardRedemptionUncheckedCreateWithoutPointsLedgerRecordInput = {
   rewardId: number
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -792,6 +821,7 @@ export type RewardRedemptionUpdateWithoutPointsLedgerRecordInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -808,6 +838,7 @@ export type RewardRedemptionUncheckedUpdateWithoutPointsLedgerRecordInput = {
   rewardId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -821,6 +852,7 @@ export type RewardRedemptionCreateManyMasonInput = {
   rewardId: number
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -833,6 +865,7 @@ export type RewardRedemptionUpdateWithoutMasonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -848,6 +881,7 @@ export type RewardRedemptionUncheckedUpdateWithoutMasonInput = {
   rewardId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -862,6 +896,7 @@ export type RewardRedemptionUncheckedUpdateManyWithoutMasonInput = {
   rewardId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -875,6 +910,7 @@ export type RewardRedemptionCreateManyRewardInput = {
   masonId: string
   quantity?: number
   status?: string
+  fulfillmentNotes?: string | null
   pointsDebited: number
   deliveryName?: string | null
   deliveryPhone?: string | null
@@ -887,6 +923,7 @@ export type RewardRedemptionUpdateWithoutRewardInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -902,6 +939,7 @@ export type RewardRedemptionUncheckedUpdateWithoutRewardInput = {
   masonId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -916,6 +954,7 @@ export type RewardRedemptionUncheckedUpdateManyWithoutRewardInput = {
   masonId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  fulfillmentNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pointsDebited?: Prisma.IntFieldUpdateOperationsInput | number
   deliveryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -932,6 +971,7 @@ export type RewardRedemptionSelect<ExtArgs extends runtime.Types.Extensions.Inte
   rewardId?: boolean
   quantity?: boolean
   status?: boolean
+  fulfillmentNotes?: boolean
   pointsDebited?: boolean
   deliveryName?: boolean
   deliveryPhone?: boolean
@@ -949,6 +989,7 @@ export type RewardRedemptionSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   rewardId?: boolean
   quantity?: boolean
   status?: boolean
+  fulfillmentNotes?: boolean
   pointsDebited?: boolean
   deliveryName?: boolean
   deliveryPhone?: boolean
@@ -965,6 +1006,7 @@ export type RewardRedemptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   rewardId?: boolean
   quantity?: boolean
   status?: boolean
+  fulfillmentNotes?: boolean
   pointsDebited?: boolean
   deliveryName?: boolean
   deliveryPhone?: boolean
@@ -981,6 +1023,7 @@ export type RewardRedemptionSelectScalar = {
   rewardId?: boolean
   quantity?: boolean
   status?: boolean
+  fulfillmentNotes?: boolean
   pointsDebited?: boolean
   deliveryName?: boolean
   deliveryPhone?: boolean
@@ -989,7 +1032,7 @@ export type RewardRedemptionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RewardRedemptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "masonId" | "rewardId" | "quantity" | "status" | "pointsDebited" | "deliveryName" | "deliveryPhone" | "deliveryAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["rewardRedemption"]>
+export type RewardRedemptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "masonId" | "rewardId" | "quantity" | "status" | "fulfillmentNotes" | "pointsDebited" | "deliveryName" | "deliveryPhone" | "deliveryAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["rewardRedemption"]>
 export type RewardRedemptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   mason?: boolean | Prisma.Mason_PC_SideDefaultArgs<ExtArgs>
   reward?: boolean | Prisma.RewardsDefaultArgs<ExtArgs>
@@ -1017,6 +1060,7 @@ export type $RewardRedemptionPayload<ExtArgs extends runtime.Types.Extensions.In
     rewardId: number
     quantity: number
     status: string
+    fulfillmentNotes: string | null
     pointsDebited: number
     deliveryName: string | null
     deliveryPhone: string | null
@@ -1454,6 +1498,7 @@ export interface RewardRedemptionFieldRefs {
   readonly rewardId: Prisma.FieldRef<"RewardRedemption", 'Int'>
   readonly quantity: Prisma.FieldRef<"RewardRedemption", 'Int'>
   readonly status: Prisma.FieldRef<"RewardRedemption", 'String'>
+  readonly fulfillmentNotes: Prisma.FieldRef<"RewardRedemption", 'String'>
   readonly pointsDebited: Prisma.FieldRef<"RewardRedemption", 'Int'>
   readonly deliveryName: Prisma.FieldRef<"RewardRedemption", 'String'>
   readonly deliveryPhone: Prisma.FieldRef<"RewardRedemption", 'String'>

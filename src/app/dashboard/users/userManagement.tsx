@@ -30,17 +30,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { useUserLocations } from '@/components/reusable-user-locations';
 
 import { DataTableReusable } from '@/components/data-table-reusable';
@@ -63,6 +52,7 @@ interface User {
   updatedAt: string;
   salesmanLoginId?: string | null;
   isTechnicalRole?: boolean | null;
+  deviceId?: string | null;
 }
 
 interface Company {
@@ -296,8 +286,8 @@ export default function UsersManagement({ adminUser }: Props) {
             setError(`User deleted locally, but failed to delete from Auth Provider: ${errorData.error}`);
           }
         } else {
-            // No ID and no Email? Just local delete is fine.
-            setSuccess('User deleted successfully (Local only).');
+          // No ID and no Email? Just local delete is fine.
+          setSuccess('User deleted successfully (Local only).');
         }
         await fetchUsers();
       } else {
@@ -306,6 +296,42 @@ export default function UsersManagement({ adminUser }: Props) {
       }
     } catch (err) {
       setError('Error deleting user');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearDeviceId = async (userId: number) => {
+    if (!confirm("Are you sure you want to clear this user's device lock?")) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${apiURI}/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clearDevice: true })
+      });
+
+      if (response.ok) {
+        // 1. Refresh the main users list in the background
+        await fetchUsers();
+
+        // 2. REFRESH MODAL STATE: Update the local editingUser object
+        setEditingUser((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            deviceId: null // This force-refreshes the UI inside the Dialog
+          };
+        });
+
+        setSuccess('Device ID cleared successfully');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to clear device ID');
+      }
+    } catch (err) {
+      setError('Error clearing device ID');
     } finally {
       setLoading(false);
     }
@@ -679,7 +705,7 @@ export default function UsersManagement({ adminUser }: Props) {
             </Dialog>
 
             <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
-              <DialogContent key={editingUser?.id}>
+              <DialogContent key={`${editingUser?.id}-${editingUser?.deviceId}`}>
                 <DialogHeader>
                   <DialogTitle>Edit User</DialogTitle>
                 </DialogHeader>
@@ -768,6 +794,32 @@ export default function UsersManagement({ adminUser }: Props) {
                         placeholder="Central"
                       />
                     </div>
+                  </div>
+                  {/* --- Device ID Section --- */}
+                  <div className="space-y-2 pt-4 border-t">
+                    <Label className="text-sm font-semibold">Device ID Management</Label>
+                    <div className="flex items-center justify-between p-3 rounded-md bg-muted/50 border">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Registered Device ID</span>
+                        <span className="text-sm font-mono">
+                          {editingUser?.deviceId || "No device registered"}
+                        </span>
+                      </div>
+                      {editingUser?.deviceId && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleClearDeviceId(editingUser.id)}
+                          disabled={loading}
+                        >
+                          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Clear Device ID"}
+                        </Button>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground italic">
+                      * Clearing the device ID allows the user to bind a new device on their next login attempt.
+                    </p>
                   </div>
                   <div className="flex space-x-2 pt-4">
                     <Button type="submit" disabled={loading} className="flex-1">

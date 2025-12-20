@@ -12,7 +12,7 @@ import { DateRange } from "react-day-picker";
 // Import your Shadcn UI components
 import { Button } from '@/components/ui/button';
 import { IconCheck, IconX, IconCalendar } from '@tabler/icons-react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Users, CheckCircle2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -28,6 +28,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Loader2 } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
@@ -57,13 +63,13 @@ const renderSelectFilter = (
   options: string[],
   isLoading: boolean = false
 ) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
+  <div className="flex flex-col space-y-1.5 w-full">
     <label className="text-sm font-medium text-muted-foreground">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
+      <SelectTrigger className="h-10 w-full bg-background border-border shadow-sm">
         {isLoading ? (
           <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
             <span className="text-muted-foreground">Loading...</span>
           </div>
         ) : (
@@ -96,7 +102,8 @@ export default function SlmAttendancePage() {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
 
   // --- Filter Options States (KEPT) ---
-  const [availableRoles, setAvailableRoles] = React.useState<string[]>([]);
+  const [userRoleFilter, setUserRoleFilter] = React.useState('all'); // user role
+  const [availableRoles, setAvailableRoles] = React.useState<string[]>([]); // user's company role
   const [availableAreas, setAvailableAreas] = React.useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = React.useState<string[]>([]);
 
@@ -208,6 +215,24 @@ export default function SlmAttendancePage() {
     fetchRoles();
   }, [fetchLocations, fetchRoles]);
 
+  // --- Summary Card Calculations ---
+  const todayStats = React.useMemo(() => {
+    const todayStr = format(new Date(), 'yyyy-MM-dd'); // Matches standard DB date format
+
+    const reportsForToday = attendanceReports.filter(report => {
+      // If report.date is ISO or YYYY-MM-DD, we ensure it matches today
+      const reportDate = format(new Date(report.date), 'yyyy-MM-dd');
+      return reportDate === todayStr;
+    });
+
+    return {
+      // Checked in today
+      present: reportsForToday.filter(r => r.inTime).length,
+      // Checked in AND Checked out today
+      completed: reportsForToday.filter(r => r.inTime && r.outTime).length
+    };
+  }, [attendanceReports]);
+
   // --- Filtering Logic (PAGINATION REMOVED) ---
   const filteredReports = React.useMemo(() => {
     // REMOVED: setCurrentPage(1); // Not needed when relying on DataTableReusable
@@ -226,6 +251,7 @@ export default function SlmAttendancePage() {
       // 2. Role Filter (handle both 'salesmanRole' and 'role' keys)
       const reportRole = (report as any).salesmanRole || (report as any).role || '';
       const roleMatch = roleFilter === 'all' || reportRole.toLowerCase() === roleFilter.toLowerCase();
+      const userRoleMatch = userRoleFilter === 'all' || reportRole.toUpperCase() === userRoleFilter.toUpperCase();
 
       // 3. Area Filter (try 'area' key; fallback to location parsing if necessary)
       const reportArea = (report as any).area || '';
@@ -235,9 +261,9 @@ export default function SlmAttendancePage() {
       const reportRegion = (report as any).region || '';
       const regionMatch = regionFilter === 'all' || (reportRegion && reportRegion.toLowerCase() === regionFilter.toLowerCase());
 
-      return matchesSearch && roleMatch && areaMatch && regionMatch;
+      return matchesSearch && roleMatch && userRoleMatch && areaMatch && regionMatch;
     });
-  }, [attendanceReports, searchQuery, roleFilter, areaFilter, regionFilter]);
+  }, [attendanceReports, searchQuery, roleFilter, userRoleFilter, areaFilter, regionFilter]);
 
   const handleViewReport = (report: SalesmanAttendanceReport) => {
     setSelectedReport(report);
@@ -248,7 +274,7 @@ export default function SlmAttendancePage() {
   const formatTimeIST = (isoString: string | null | undefined) => {
     if (!isoString) return 'N/A';
     try {
-      return new Intl.DateTimeFormat('en-US', {
+      return new Intl.DateTimeFormat('en-IN', {
         hour: 'numeric',
         minute: 'numeric',
         hour12: true,
@@ -262,13 +288,14 @@ export default function SlmAttendancePage() {
   // --- Columns Definition (FIXED CELL RETURNS) ---
   const salesmanAttendanceColumns: ColumnDef<SalesmanAttendanceReport>[] = [
     { accessorKey: "salesmanName", header: "Salesman" },
-    { accessorKey: "role", header: "Salesman Role" },
+    { accessorKey: "role", header: "User Company Role" },
+    { accessorKey: "salesmanRole", header: "User Role" },
     {
       accessorKey: 'date',
       header: 'Report Date',
       cell: ({ row }) => {
         const date = new Date(row.original.date);
-        const formattedDate = new Intl.DateTimeFormat('en-US', {
+        const formattedDate = new Intl.DateTimeFormat('en-IN', {
           year: 'numeric',
           month: 'numeric',
           day: 'numeric',
@@ -387,96 +414,76 @@ export default function SlmAttendancePage() {
           <h2 className="text-3xl font-bold tracking-tight">Salesman Attendance Reports</h2>
         </div>
 
+        {/* --- Summary Cards Section --- */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="shadow-sm border-border bg-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Today Present</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">{todayStats.present}</div>
+              <p className="text-xs text-muted-foreground">
+                Total check-ins for {format(new Date(), 'dd MMM, yyyy')}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm border-border bg-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Today Total (In & Out)</CardTitle>
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-emerald-600">{todayStats.completed}</div>
+              <p className="text-xs text-muted-foreground">
+                Employees who completed their shift
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* --- Filters Section --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
-          {/* 1. Date Range Picker */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant={"outline"}
-                className={cn(
-                  "w-[300px] justify-start text-left font-normal",
-                  !dateRange && "text-muted-foreground"
-                )}
-              >
-                <IconCalendar className="mr-2 h-4 w-4" />
-                {dateRange?.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, "LLL dd, y")} -{" "}
-                      {format(dateRange.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(dateRange.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>Filter by Date Range</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                defaultMonth={dateRange?.from || addDays(new Date(), -7)}
-                selected={dateRange}
-                onSelect={setDateRange}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-          {dateRange && (
-            <Button variant="ghost" onClick={() => setDateRange(undefined)} className='min-w-[100px]'>
-              Clear Date
-            </Button>
-          )}
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
 
-          {/* 2. Search Input */}
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Search All Fields</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search reports..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9"
-              />
+            {/* Row 1: Primary Controls */}
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-sm font-medium text-muted-foreground">Report Duration</label>
+              <div className="flex gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-full justify-start h-10 border-border", !dateRange && "text-muted-foreground")}>
+                      <IconCalendar className="mr-2 h-4 w-4" />
+                      {dateRange?.from ? (dateRange.to ? `${format(dateRange.from, "dd MMM")} - ${format(dateRange.to, "dd MMM, y")}` : format(dateRange.from, "dd MMM, y")) : "Select Range"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0"><Calendar mode="range" selected={dateRange} onSelect={setDateRange} numberOfMonths={2} /></PopoverContent>
+                </Popover>
+                {dateRange && <Button variant="ghost" size="sm" onClick={() => setDateRange(undefined)} className="h-10 text-xs">Clear</Button>}
+              </div>
             </div>
+
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-sm font-medium text-muted-foreground">Search Records</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Salesman name or location..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-10 border-border bg-background" />
+              </div>
+            </div>
+
+            {/* Row 2: Roles */}
+            {renderSelectFilter('User Role', userRoleFilter, setUserRoleFilter, ['SALES', 'TECHNICAL'])}
+            {renderSelectFilter('Company Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
+
+            {/* Row 3: Geography */}
+            {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
+            {renderSelectFilter('Region (Zone)', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+
           </div>
-
-          {/* 3. Role Filter */}
-          {renderSelectFilter(
-            'Role',
-            roleFilter,
-            (v) => { setRoleFilter(v); },
-            availableRoles,
-            isLoadingRoles
-          )}
-
-          {/* 4. Area Filter */}
-          {renderSelectFilter(
-            'Area',
-            areaFilter,
-            (v) => { setAreaFilter(v); },
-            availableAreas,
-            isLoadingLocations
-          )}
-
-          {/* 5. Region Filter */}
-          {renderSelectFilter(
-            'Region(Zone)',
-            regionFilter,
-            (v) => { setRegionFilter(v); },
-            availableRegions,
-            isLoadingLocations
-          )}
-
-          {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>}
-          {roleError && <p className="text-xs text-red-500 w-full">Role Filter Error: {roleError}</p>}
+          {(locationError || roleError) && <p className="text-xs text-red-500 mt-4 italic">⚠️ Failed to load some filter options.</p>}
         </div>
         {/* --- End Filters Section --- */}
-
 
         {/* Data Table Section */}
         <div className="bg-card p-6 rounded-lg border border-border">

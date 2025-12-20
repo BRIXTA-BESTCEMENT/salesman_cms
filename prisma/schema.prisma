@@ -58,6 +58,8 @@ model User {
   reportsTo                 User?     @relation("ReportsToManager", fields: [reportsToId], references: [id], onDelete: SetNull)
   reports                   User[]    @relation("ReportsToManager")
 
+  deviceId                  String?   @unique @map("device_id") @db.VarChar(255)
+
   // Relationships to new tables
   dealers                   Dealer[] 
   dailyVisitReports         DailyVisitReport[]
@@ -87,6 +89,7 @@ model User {
   @@unique([companyId, email])
   @@index([companyId], map: "idx_user_company_id")
   @@index([workosUserId], map: "idx_workos_user_id")
+  @@index([deviceId], map: "idx_user_device_id")
   @@map("users")
 }
 
@@ -1051,8 +1054,8 @@ model RewardRedemption {
   masonId String @map("mason_id") @db.Uuid
   rewardId Int @map("reward_id")
   quantity Int @default(1)
-  // Status as String
   status String @default("placed") @db.VarChar(20) // "placed", "approved", "shipped", "delivered", "rejected"
+  fulfillmentNotes  String?  @map("fulfillment_notes")
   pointsDebited Int @map("points_debited")
   deliveryName String? @map("delivery_name") @db.VarChar(160)
   deliveryPhone String? @map("delivery_phone") @db.VarChar(20)

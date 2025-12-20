@@ -27,49 +27,49 @@ const allowedAdminRoles = [
 const EMAIL_TIMEOUT_MS = 12000;
 
 const transportOptions: SMTPTransport.Options = {
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: { user: process.env.GMAIL_USER!, pass: process.env.GMAIL_APP_PASSWORD! },
-    connectionTimeout: 10000,
-    greetingTimeout: 7000,
-    socketTimeout: 15000,
-    // @ts-ignore 
-    family: 4,
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: { user: process.env.GMAIL_USER!, pass: process.env.GMAIL_APP_PASSWORD! },
+  connectionTimeout: 10000,
+  greetingTimeout: 7000,
+  socketTimeout: 15000,
+  // @ts-ignore 
+  family: 4,
 };
 
 const transporter = nodemailer.createTransport(transportOptions);
 
 async function withTimeout<T>(p: Promise<T>, ms = EMAIL_TIMEOUT_MS): Promise<T> {
-    return await Promise.race([
-        p,
-        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('EMAIL_TIMEOUT')), ms)),
-    ]);
+  return await Promise.race([
+    p,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('EMAIL_TIMEOUT')), ms)),
+  ]);
 }
 
 /**
  * NEW, simplified email function just for sending new tech credentials.
  */
 export async function sendTechCredentialsEmail({
-    to,
-    firstName,
-    lastName,
-    companyName,
-    adminName,
-    techLoginId,
-    techTempPassword,
+  to,
+  firstName,
+  lastName,
+  companyName,
+  adminName,
+  techLoginId,
+  techTempPassword,
 }: {
-    to: string;
-    firstName: string;
-    lastName: string;
-    companyName: string;
-    adminName: string;
-    techLoginId: string;
-    techTempPassword: string;
+  to: string;
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  adminName: string;
+  techLoginId: string;
+  techTempPassword: string;
 }) {
-    const mailbox = process.env.GMAIL_USER!;
+  const mailbox = process.env.GMAIL_USER!;
 
-    const technicalDetailsHtml = `
+  const technicalDetailsHtml = `
         <p>Your administrator (${adminName}) has created new credentials for the <strong>Technical Team Mobile App</strong>.</p>
         <ul>
           <li><strong>Technical ID (Login ID):</strong>
@@ -82,7 +82,7 @@ export async function sendTechCredentialsEmail({
         <p style="color: #d9534f; font-weight: bold;">Please change this password after your first login to the technical mobile app.</p>
       `;
 
-    const htmlContent = `
+  const htmlContent = `
   <!DOCTYPE html>
   <html>
   <head>
@@ -108,17 +108,17 @@ export async function sendTechCredentialsEmail({
   </html>
   `;
 
-    const mailOptions: nodemailer.SendMailOptions = {
-        from: `"${companyName}" <${mailbox}>`,
-        to,
-        subject: `Your Technical App Credentials for ${companyName}`,
-        html: htmlContent,
-        envelope: { from: mailbox, to },
-    };
+  const mailOptions: nodemailer.SendMailOptions = {
+    from: `"${companyName}" <${mailbox}>`,
+    to,
+    subject: `Your Technical App Credentials for ${companyName}`,
+    html: htmlContent,
+    envelope: { from: mailbox, to },
+  };
 
-    await withTimeout(transporter.verify(), 6000);
-    const info = await withTimeout(transporter.sendMail(mailOptions), EMAIL_TIMEOUT_MS);
-    return info;
+  await withTimeout(transporter.verify(), 6000);
+  const info = await withTimeout(transporter.sendMail(mailOptions), EMAIL_TIMEOUT_MS);
+  return info;
 }
 
 // --- END: COPIED HELPERS ---
@@ -131,7 +131,8 @@ const updateUserSchema = z.object({
   area: z.string().optional().nullable(),
   region: z.string().optional().nullable(),
   phoneNumber: z.string().optional().nullable(),
-  isTechnical: z.boolean().optional()
+  isTechnical: z.boolean().optional(),
+  clearDevice: z.boolean().optional()
 }).strict();
 
 // GET - Get single user
@@ -160,8 +161,24 @@ export async function GET(
       where: {
         id: parseInt(userId),
         companyId: adminUser.companyId,
-        isTechnicalRole: adminUser.isTechnicalRole
-      }
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        region: true,
+        area: true,
+        phoneNumber: true,
+        isTechnicalRole: true,
+        deviceId: true,
+        workosUserId: true,
+        createdAt: true,
+        updatedAt: true,
+        salesmanLoginId: true,
+        techLoginId: true,
+      },
     });
 
     if (!targetUser) {
@@ -223,20 +240,22 @@ export async function PUT(
     }
 
     // Destructure data for WorkOS and Prisma updates
-    const { role, area, region, phoneNumber, isTechnical, ...workosStandardData } = parsedBody.data;
+    const { role, area, region, phoneNumber, isTechnical, clearDevice, ...workosStandardData } = parsedBody.data;
 
     // 2. Check if the target user exists and belongs to the same company
     const targetUser = await prisma.user.findUnique({
       where: { id: targetUserLocalId },
-      select: { 
-        id: true, 
-        companyId: true, 
-        workosUserId: true, 
+      select: {
+        id: true,
+        companyId: true,
+        workosUserId: true,
         firstName: true,
         lastName: true,
-        email: true, 
-        techLoginId: true, 
-        isTechnicalRole: true }
+        email: true,
+        techLoginId: true,
+        isTechnicalRole: true,
+        deviceId: true,
+      }
     });
 
     if (!targetUser || targetUser.companyId !== adminUser.companyId) {
@@ -267,19 +286,20 @@ export async function PUT(
       ...(area !== undefined && { area }),
       ...(region !== undefined && { region }),
       ...(phoneNumber !== undefined && { phoneNumber }),
+      ...(clearDevice === true && { deviceId: null }),
       updatedAt: new Date()
     };
 
     // --- START: New Technical Credential Generation Logic ---
     let emailNotificationPromise: Promise<unknown> = Promise.resolve(); // To hold the email task
-    
+
     // CHECK: Is admin flipping the switch to TRUE?
     // AND Does the user NOT ALREADY have a tech ID?
     if (isTechnical === true && !targetUser.techLoginId) {
       console.log(`Generating new technical credentials for user ${targetUser.id}`);
       let isUnique = false;
       let newTechLoginId = '';
-      
+
       while (!isUnique) {
         newTechLoginId = `TSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
         // We removed the unique constraint, but checking is still good practice
@@ -290,7 +310,7 @@ export async function PUT(
       }
 
       const newTechPassword = generateRandomPassword();
-      
+
       // Add new credentials to the Prisma update
       prismaUpdateData.isTechnicalRole = true;
       prismaUpdateData.techLoginId = newTechLoginId;
@@ -298,16 +318,16 @@ export async function PUT(
 
       // Prepare the email notification
       emailNotificationPromise = sendTechCredentialsEmail({
-          to: targetUser.email,
-          firstName: (workosStandardData.firstName || targetUser.firstName || ''),
-          lastName: (workosStandardData.lastName || targetUser.lastName || ''),
-          companyName: adminUser.company.companyName,
-          adminName: `${adminUser.firstName} ${adminUser.lastName}`,
-          techLoginId: newTechLoginId,
-          techTempPassword: newTechPassword
+        to: targetUser.email,
+        firstName: (workosStandardData.firstName || targetUser.firstName || ''),
+        lastName: (workosStandardData.lastName || targetUser.lastName || ''),
+        companyName: adminUser.company.companyName,
+        adminName: `${adminUser.firstName} ${adminUser.lastName}`,
+        techLoginId: newTechLoginId,
+        techTempPassword: newTechPassword
       }).catch(emailError => {
-          // Log the error but don't block the API response
-          console.error(`Failed to send technical credential email to ${targetUser.email}:`, emailError);
+        // Log the error but don't block the API response
+        console.error(`Failed to send technical credential email to ${targetUser.email}:`, emailError);
       });
 
     } else if (isTechnical !== undefined) {
@@ -354,7 +374,7 @@ export async function PUT(
     }
     if (isTechnical !== undefined) {
       // Convert boolean to string for WorkOS custom attributes
-      customAttributes.isTechnical = isTechnical.toString(); 
+      customAttributes.isTechnical = isTechnical.toString();
       workosUpdateRequired = true;
     }
 

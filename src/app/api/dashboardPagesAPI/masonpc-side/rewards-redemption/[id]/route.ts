@@ -49,7 +49,9 @@ export async function PATCH(
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.issues }, { status: 400 });
     }
-    const { status: newStatus, fulfillmentNotes } = parsed.data;
+    // NORMALIZE: Ensure we work with lowercase for logic but store uppercase
+    const newStatus = parsed.data.status.toLowerCase();
+    const fulfillmentNotes = parsed.data.fulfillmentNotes || "";
 
     // --- 3. Fetch Existing Record ---
     // We need the mason's ID, the cost, and the reward ID for stock checks
@@ -61,150 +63,78 @@ export async function PATCH(
       }
     });
 
-    if (!existingRecord) {
-      return NextResponse.json({ error: 'Redemption record not found' }, { status: 404 });
-    }
+   if (!existingRecord) return NextResponse.json({ error: 'Record not found' }, { status: 404 });
 
-    // Company Security Guard
-    const masonCompanyId = existingRecord.mason.user?.companyId;
-    if (!masonCompanyId || masonCompanyId !== currentUser.companyId) {
-        return NextResponse.json({ error: 'Forbidden: Record belongs to another company.' }, { status: 403 });
-    }
-
-    const currentStatus = existingRecord.status;
+    const currentStatus = existingRecord.status.toLowerCase(); 
     const { masonId, pointsDebited, quantity, rewardId } = existingRecord;
 
-    // --- 4. Flow Logic Gates ---
-    if (currentStatus === 'delivered' && newStatus !== 'delivered') {
-       return NextResponse.json({ error: 'Cannot change status of an already delivered item.' }, { status: 400 });
-    }
-    if (currentStatus === 'rejected') {
-       return NextResponse.json({ error: 'Cannot update a rejected order.' }, { status: 400 });
+    // Logic Gates: Match the App's restrictions
+    if (currentStatus === 'delivered') {
+        return NextResponse.json({ error: 'Cannot update a delivered order.' }, { status: 400 });
     }
 
-    // --- 5. THE TRANSACTION ---
     const result = await prisma.$transaction(async (tx) => {
 
-        // ==================================================================
-        // CASE A: APPROVING (Placed -> Approved)
-        // Action: DEDUCT STOCK. (Points were already deducted on creation)
-        // ==================================================================
+        // SCENARIO A: APPROVING (Placed -> Approved)
         if (currentStatus === 'placed' && newStatus === 'approved') {
+            const rewardItem = await tx.rewards.findUnique({ where: { id: rewardId } });
             
-            // 1. Check Stock again (Concurrency safety)
-            const rewardItem = await tx.rewards.findUniqueOrThrow({
-                where: { id: rewardId }
-            });
-
-            if (rewardItem.stock < quantity) {
-                throw new Error(`Insufficient stock. Available: ${rewardItem.stock}, Required: ${quantity}`);
+            if (!rewardItem || rewardItem.stock < quantity) {
+                throw new Error(`Insufficient stock. Available: ${rewardItem?.stock ?? 0}`);
             }
 
-            // 2. Deduct Stock
+            // Deduct Stock
             await tx.rewards.update({
                 where: { id: rewardId },
                 data: { stock: { decrement: quantity } }
             });
-
-            // 3. Update Status
-            return await tx.rewardRedemption.update({
-                where: { id: redemptionId },
-                data: { 
-                    status: 'approved', 
-                    updatedAt: new Date()
-                    // You might want to add an 'approvedBy' field to your schema later
-                }
-            });
         }
 
-        // ==================================================================
-        // CASE B: REJECTING (Placed -> Rejected)
-        // Action: REFUND POINTS (Stock was never taken)
-        // ==================================================================
-        else if (currentStatus === 'placed' && newStatus === 'rejected') {
+        // SCENARIO B & C: REJECTING (Placed or Approved -> Rejected)
+        else if (newStatus === 'rejected') {
             
-            // 1. Refund Points (Ledger)
+            // 1. Refund Points Ledger
             await tx.pointsLedger.create({
                 data: {
                     id: randomUUID(),
                     masonId: masonId,
                     sourceType: 'adjustment',
-                    sourceId: redemptionId, // Link back to the order
-                    points: pointsDebited, // Positive value adds back to balance
-                    memo: `Refund: Order ${redemptionId.substring(0,8)} rejected by Admin. ${fulfillmentNotes || ''}`
+                    // FIX: Use randomUUID here to avoid P2002 unique constraint error
+                    sourceId: randomUUID(), 
+                    points: pointsDebited,
+                    memo: `Refund for Order ${redemptionId.substring(0,8)}. Reason: ${fulfillmentNotes}`
                 }
             });
 
-            // 2. Update Balance
+            // 2. Add back to Mason Balance
             await tx.mason_PC_Side.update({
                 where: { id: masonId },
                 data: { pointsBalance: { increment: pointsDebited } }
             });
 
-            // 3. Update Status
-            return await tx.rewardRedemption.update({
-                where: { id: redemptionId },
-                data: { status: 'rejected', updatedAt: new Date() }
-            });
+            // 3. Return Stock ONLY if it was previously deducted (Approved/Shipped)
+            if (currentStatus === 'approved' || currentStatus === 'shipped') {
+                await tx.rewards.update({
+                    where: { id: rewardId },
+                    data: { stock: { increment: quantity } }
+                });
+            }
         }
 
-        // ==================================================================
-        // CASE C: REJECTING (Approved -> Rejected)
-        // Action: REFUND POINTS + RETURN STOCK
-        // ==================================================================
-        else if (currentStatus === 'approved' && newStatus === 'rejected') {
-            
-            // 1. Refund Points
-            await tx.pointsLedger.create({
-                data: {
-                    id: randomUUID(),
-                    masonId: masonId,
-                    sourceType: 'adjustment',
-                    sourceId: redemptionId,
-                    points: pointsDebited, 
-                    memo: `Refund: Approved Order ${redemptionId.substring(0,8)} cancelled.`
-                }
-            });
-
-            // 2. Update Balance
-            await tx.mason_PC_Side.update({
-                where: { id: masonId },
-                data: { pointsBalance: { increment: pointsDebited } }
-            });
-
-            // 3. Return Stock
-            await tx.rewards.update({
-                where: { id: rewardId },
-                data: { stock: { increment: quantity } }
-            });
-
-            // 4. Update Status
-            return await tx.rewardRedemption.update({
-                where: { id: redemptionId },
-                data: { status: 'rejected', updatedAt: new Date() }
-            });
-        }
-
-        // ==================================================================
-        // CASE D: FULFILLMENT (Approved -> Shipped -> Delivered)
-        // Action: Just update status.
-        // ==================================================================
-        else {
-            return await tx.rewardRedemption.update({
-                where: { id: redemptionId },
-                data: { status: newStatus, updatedAt: new Date() }
-            });
-        }
+        // SCENARIO D: FINAL STATUS UPDATE
+        return await tx.rewardRedemption.update({
+            where: { id: redemptionId },
+            data: { 
+                status: newStatus.toUpperCase(), 
+                fulfillmentNotes: fulfillmentNotes,
+                updatedAt: new Date() 
+            }
+        });
     });
 
-    return NextResponse.json({ success: true, data: result }, { status: 200 });
-
+    return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
-    console.error('Error updating Reward Redemption:', error);
-    // Handle custom stock error
-    if (error.message && error.message.includes('Insufficient stock')) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-    return NextResponse.json({ error: 'Failed to update redemption status' }, { status: 500 });
+    console.error('Update Error:', error);
+    return NextResponse.json({ error: error.message || 'Failed' }, { status: 500 });
   }
 }

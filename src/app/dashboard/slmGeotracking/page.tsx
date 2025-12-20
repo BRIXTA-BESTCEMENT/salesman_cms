@@ -100,22 +100,23 @@ export default function SalesmanGeoTrackingPage() {
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'numeric',
       day: 'numeric',
+      timeZone: 'UTC',
     });
   };
 
   const formatTime = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString('en-IN', {
       hour: 'numeric',
       minute: '2-digit',
       second: '2-digit',
       hour12: true,
-      timeZone: 'Asia/Kolkata'
+      timeZone: 'UTC'
     });
   };
 

@@ -49,6 +49,7 @@ export async function GET() {
         rewardId: true,
         quantity: true,
         status: true,
+        fulfillmentNotes: true,
         pointsDebited: true,
         deliveryName: true,
         deliveryPhone: true,
@@ -73,6 +74,7 @@ export async function GET() {
       rewardName: record.reward.name, // Flattened field
       quantity: record.quantity,
       status: record.status,
+      fulfillmentNotes: record.fulfillmentNotes,
       pointsDebited: record.pointsDebited,
       deliveryName: record.deliveryName ?? null,
       deliveryPhone: record.deliveryPhone ?? null,
