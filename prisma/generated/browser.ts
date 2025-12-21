@@ -33,6 +33,11 @@ export type User = Prisma.UserModel
  */
 export type Dealer = Prisma.DealerModel
 /**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model DailyVisitReport
  * 
  */

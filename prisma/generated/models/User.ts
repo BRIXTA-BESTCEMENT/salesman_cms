@@ -62,6 +62,7 @@ export type UserMinAggregateOutputType = {
   techHashedPassword: string | null
   reportsToId: number | null
   deviceId: string | null
+  fcmToken: string | null
   noOfPJP: number | null
 }
 
@@ -87,6 +88,7 @@ export type UserMaxAggregateOutputType = {
   techHashedPassword: string | null
   reportsToId: number | null
   deviceId: string | null
+  fcmToken: string | null
   noOfPJP: number | null
 }
 
@@ -112,6 +114,7 @@ export type UserCountAggregateOutputType = {
   techHashedPassword: number
   reportsToId: number
   deviceId: number
+  fcmToken: number
   noOfPJP: number
   _all: number
 }
@@ -153,6 +156,7 @@ export type UserMinAggregateInputType = {
   techHashedPassword?: true
   reportsToId?: true
   deviceId?: true
+  fcmToken?: true
   noOfPJP?: true
 }
 
@@ -178,6 +182,7 @@ export type UserMaxAggregateInputType = {
   techHashedPassword?: true
   reportsToId?: true
   deviceId?: true
+  fcmToken?: true
   noOfPJP?: true
 }
 
@@ -203,6 +208,7 @@ export type UserCountAggregateInputType = {
   techHashedPassword?: true
   reportsToId?: true
   deviceId?: true
+  fcmToken?: true
   noOfPJP?: true
   _all?: true
 }
@@ -315,6 +321,7 @@ export type UserGroupByOutputType = {
   techHashedPassword: string | null
   reportsToId: number | null
   deviceId: string | null
+  fcmToken: string | null
   noOfPJP: number | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
@@ -363,6 +370,7 @@ export type UserWhereInput = {
   techHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableFilter<"User"> | number | null
   deviceId?: Prisma.StringNullableFilter<"User"> | string | null
+  fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
   noOfPJP?: Prisma.IntNullableFilter<"User"> | number | null
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   reportsTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -389,6 +397,7 @@ export type UserWhereInput = {
   tsoAssignments?: Prisma.TSOAssignmentListRelationFilter
   bagLiftApprovals?: Prisma.BagLiftListRelationFilter
   additionalSites?: Prisma.TechnicalSiteListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -413,6 +422,7 @@ export type UserOrderByWithRelationInput = {
   techHashedPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   reportsToId?: Prisma.SortOrderInput | Prisma.SortOrder
   deviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   noOfPJP?: Prisma.SortOrderInput | Prisma.SortOrder
   company?: Prisma.CompanyOrderByWithRelationInput
   reportsTo?: Prisma.UserOrderByWithRelationInput
@@ -439,6 +449,7 @@ export type UserOrderByWithRelationInput = {
   tsoAssignments?: Prisma.TSOAssignmentOrderByRelationAggregateInput
   bagLiftApprovals?: Prisma.BagLiftOrderByRelationAggregateInput
   additionalSites?: Prisma.TechnicalSiteOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -467,6 +478,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   isTechnicalRole?: Prisma.BoolFilter<"User"> | boolean
   techHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableFilter<"User"> | number | null
+  fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
   noOfPJP?: Prisma.IntNullableFilter<"User"> | number | null
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   reportsTo?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -493,6 +505,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   tsoAssignments?: Prisma.TSOAssignmentListRelationFilter
   bagLiftApprovals?: Prisma.BagLiftListRelationFilter
   additionalSites?: Prisma.TechnicalSiteListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
 }, "id" | "workosUserId" | "inviteToken" | "salesmanLoginId" | "techLoginId" | "deviceId" | "companyId_email">
 
 export type UserOrderByWithAggregationInput = {
@@ -517,6 +530,7 @@ export type UserOrderByWithAggregationInput = {
   techHashedPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   reportsToId?: Prisma.SortOrderInput | Prisma.SortOrder
   deviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   noOfPJP?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
@@ -550,6 +564,7 @@ export type UserScalarWhereWithAggregatesInput = {
   techHashedPassword?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
   deviceId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  fcmToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   noOfPJP?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
 }
 
@@ -572,6 +587,7 @@ export type UserCreateInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -598,6 +614,7 @@ export type UserCreateInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -622,6 +639,7 @@ export type UserUncheckedCreateInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -646,6 +664,7 @@ export type UserUncheckedCreateInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUpdateInput = {
@@ -667,6 +686,7 @@ export type UserUpdateInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -693,6 +713,7 @@ export type UserUpdateInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -717,6 +738,7 @@ export type UserUncheckedUpdateInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -741,6 +763,7 @@ export type UserUncheckedUpdateInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -765,6 +788,7 @@ export type UserCreateManyInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
 }
 
@@ -787,6 +811,7 @@ export type UserUpdateManyMutationInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -812,6 +837,7 @@ export type UserUncheckedUpdateManyInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -857,6 +883,7 @@ export type UserCountOrderByAggregateInput = {
   techHashedPassword?: Prisma.SortOrder
   reportsToId?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
   noOfPJP?: Prisma.SortOrder
 }
 
@@ -889,6 +916,7 @@ export type UserMaxOrderByAggregateInput = {
   techHashedPassword?: Prisma.SortOrder
   reportsToId?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
   noOfPJP?: Prisma.SortOrder
 }
 
@@ -914,6 +942,7 @@ export type UserMinOrderByAggregateInput = {
   techHashedPassword?: Prisma.SortOrder
   reportsToId?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
   noOfPJP?: Prisma.SortOrder
 }
 
@@ -1051,6 +1080,20 @@ export type UserUpdateOneWithoutDealersNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDealersInput, Prisma.UserUpdateWithoutDealersInput>, Prisma.UserUncheckedUpdateWithoutDealersInput>
+}
+
+export type UserCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.UserUpsertWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
 }
 
 export type UserCreateNestedOneWithoutDailyVisitReportsInput = {
@@ -1402,6 +1445,7 @@ export type UserCreateWithoutCompanyInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutReportsToInput
@@ -1427,6 +1471,7 @@ export type UserCreateWithoutCompanyInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutCompanyInput = {
@@ -1450,6 +1495,7 @@ export type UserUncheckedCreateWithoutCompanyInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -1474,6 +1520,7 @@ export type UserUncheckedCreateWithoutCompanyInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutCompanyInput = {
@@ -1527,6 +1574,7 @@ export type UserScalarWhereInput = {
   techHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableFilter<"User"> | number | null
   deviceId?: Prisma.StringNullableFilter<"User"> | string | null
+  fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
   noOfPJP?: Prisma.IntNullableFilter<"User"> | number | null
 }
 
@@ -1549,6 +1597,7 @@ export type UserCreateWithoutReportsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -1574,6 +1623,7 @@ export type UserCreateWithoutReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutReportsInput = {
@@ -1598,6 +1648,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
   dailyVisitReports?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutUserInput
@@ -1621,6 +1672,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutReportsInput = {
@@ -1647,6 +1699,7 @@ export type UserCreateWithoutReportsToInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reports?: Prisma.UserCreateNestedManyWithoutReportsToInput
@@ -1672,6 +1725,7 @@ export type UserCreateWithoutReportsToInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutReportsToInput = {
@@ -1695,6 +1749,7 @@ export type UserUncheckedCreateWithoutReportsToInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -1719,6 +1774,7 @@ export type UserUncheckedCreateWithoutReportsToInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutReportsToInput = {
@@ -1761,6 +1817,7 @@ export type UserUpdateWithoutReportsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -1786,6 +1843,7 @@ export type UserUpdateWithoutReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportsInput = {
@@ -1810,6 +1868,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
@@ -1833,6 +1892,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutReportsToInput = {
@@ -1870,6 +1930,7 @@ export type UserCreateWithoutDealersInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -1895,6 +1956,7 @@ export type UserCreateWithoutDealersInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutDealersInput = {
@@ -1919,6 +1981,7 @@ export type UserUncheckedCreateWithoutDealersInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dailyVisitReports?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutUserInput
@@ -1942,6 +2005,7 @@ export type UserUncheckedCreateWithoutDealersInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutDealersInput = {
@@ -1979,6 +2043,7 @@ export type UserUpdateWithoutDealersInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -2004,6 +2069,7 @@ export type UserUpdateWithoutDealersInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDealersInput = {
@@ -2028,8 +2094,220 @@ export type UserUncheckedUpdateWithoutDealersInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+}
+
+export type UserCreateWithoutNotificationsInput = {
+  workosUserId?: string | null
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
+  reports?: Prisma.UserCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
+  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
+  bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+}
+
+export type UserUncheckedCreateWithoutNotificationsInput = {
+  id?: number
+  workosUserId?: string | null
+  companyId: number
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  reportsToId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+}
+
+export type UserCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+}
+
+export type UserUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type UserUpdateWithoutNotificationsInput = {
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
+  reports?: Prisma.UserUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUpdateManyWithoutUserNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
+  additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutUserNestedInput
   salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
@@ -2072,6 +2350,7 @@ export type UserCreateWithoutDailyVisitReportsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -2097,6 +2376,7 @@ export type UserCreateWithoutDailyVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutDailyVisitReportsInput = {
@@ -2121,6 +2401,7 @@ export type UserUncheckedCreateWithoutDailyVisitReportsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -2144,6 +2425,7 @@ export type UserUncheckedCreateWithoutDailyVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutDailyVisitReportsInput = {
@@ -2181,6 +2463,7 @@ export type UserUpdateWithoutDailyVisitReportsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -2206,6 +2489,7 @@ export type UserUpdateWithoutDailyVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDailyVisitReportsInput = {
@@ -2230,6 +2514,7 @@ export type UserUncheckedUpdateWithoutDailyVisitReportsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -2253,6 +2538,7 @@ export type UserUncheckedUpdateWithoutDailyVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutPermanentJourneyPlansAssignedInput = {
@@ -2274,6 +2560,7 @@ export type UserCreateWithoutPermanentJourneyPlansAssignedInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -2299,6 +2586,7 @@ export type UserCreateWithoutPermanentJourneyPlansAssignedInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutPermanentJourneyPlansAssignedInput = {
@@ -2323,6 +2611,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansAssignedInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -2346,6 +2635,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansAssignedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutPermanentJourneyPlansAssignedInput = {
@@ -2372,6 +2662,7 @@ export type UserCreateWithoutPermanentJourneyPlansCreatedInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -2397,6 +2688,7 @@ export type UserCreateWithoutPermanentJourneyPlansCreatedInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutPermanentJourneyPlansCreatedInput = {
@@ -2421,6 +2713,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansCreatedInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -2444,6 +2737,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansCreatedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutPermanentJourneyPlansCreatedInput = {
@@ -2481,6 +2775,7 @@ export type UserUpdateWithoutPermanentJourneyPlansAssignedInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -2506,6 +2801,7 @@ export type UserUpdateWithoutPermanentJourneyPlansAssignedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPermanentJourneyPlansAssignedInput = {
@@ -2530,6 +2826,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansAssignedInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -2553,6 +2850,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansAssignedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUpsertWithoutPermanentJourneyPlansCreatedInput = {
@@ -2585,6 +2883,7 @@ export type UserUpdateWithoutPermanentJourneyPlansCreatedInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -2610,6 +2909,7 @@ export type UserUpdateWithoutPermanentJourneyPlansCreatedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPermanentJourneyPlansCreatedInput = {
@@ -2634,6 +2934,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansCreatedInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -2657,6 +2958,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansCreatedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutSalesmanAttendanceInput = {
@@ -2678,6 +2980,7 @@ export type UserCreateWithoutSalesmanAttendanceInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -2703,6 +3006,7 @@ export type UserCreateWithoutSalesmanAttendanceInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutSalesmanAttendanceInput = {
@@ -2727,6 +3031,7 @@ export type UserUncheckedCreateWithoutSalesmanAttendanceInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -2750,6 +3055,7 @@ export type UserUncheckedCreateWithoutSalesmanAttendanceInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutSalesmanAttendanceInput = {
@@ -2787,6 +3093,7 @@ export type UserUpdateWithoutSalesmanAttendanceInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -2812,6 +3119,7 @@ export type UserUpdateWithoutSalesmanAttendanceInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesmanAttendanceInput = {
@@ -2836,6 +3144,7 @@ export type UserUncheckedUpdateWithoutSalesmanAttendanceInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -2859,6 +3168,7 @@ export type UserUncheckedUpdateWithoutSalesmanAttendanceInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutSalesmanLeaveApplicationsInput = {
@@ -2880,6 +3190,7 @@ export type UserCreateWithoutSalesmanLeaveApplicationsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -2905,6 +3216,7 @@ export type UserCreateWithoutSalesmanLeaveApplicationsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutSalesmanLeaveApplicationsInput = {
@@ -2929,6 +3241,7 @@ export type UserUncheckedCreateWithoutSalesmanLeaveApplicationsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -2952,6 +3265,7 @@ export type UserUncheckedCreateWithoutSalesmanLeaveApplicationsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutSalesmanLeaveApplicationsInput = {
@@ -2989,6 +3303,7 @@ export type UserUpdateWithoutSalesmanLeaveApplicationsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -3014,6 +3329,7 @@ export type UserUpdateWithoutSalesmanLeaveApplicationsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesmanLeaveApplicationsInput = {
@@ -3038,6 +3354,7 @@ export type UserUncheckedUpdateWithoutSalesmanLeaveApplicationsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -3061,6 +3378,7 @@ export type UserUncheckedUpdateWithoutSalesmanLeaveApplicationsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutCompetitionReportsInput = {
@@ -3082,6 +3400,7 @@ export type UserCreateWithoutCompetitionReportsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -3107,6 +3426,7 @@ export type UserCreateWithoutCompetitionReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutCompetitionReportsInput = {
@@ -3131,6 +3451,7 @@ export type UserUncheckedCreateWithoutCompetitionReportsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -3154,6 +3475,7 @@ export type UserUncheckedCreateWithoutCompetitionReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutCompetitionReportsInput = {
@@ -3191,6 +3513,7 @@ export type UserUpdateWithoutCompetitionReportsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -3216,6 +3539,7 @@ export type UserUpdateWithoutCompetitionReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCompetitionReportsInput = {
@@ -3240,6 +3564,7 @@ export type UserUncheckedUpdateWithoutCompetitionReportsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -3263,6 +3588,7 @@ export type UserUncheckedUpdateWithoutCompetitionReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutGeoTrackingRecordsInput = {
@@ -3284,6 +3610,7 @@ export type UserCreateWithoutGeoTrackingRecordsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -3309,6 +3636,7 @@ export type UserCreateWithoutGeoTrackingRecordsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutGeoTrackingRecordsInput = {
@@ -3333,6 +3661,7 @@ export type UserUncheckedCreateWithoutGeoTrackingRecordsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -3356,6 +3685,7 @@ export type UserUncheckedCreateWithoutGeoTrackingRecordsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutGeoTrackingRecordsInput = {
@@ -3393,6 +3723,7 @@ export type UserUpdateWithoutGeoTrackingRecordsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -3418,6 +3749,7 @@ export type UserUpdateWithoutGeoTrackingRecordsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGeoTrackingRecordsInput = {
@@ -3442,6 +3774,7 @@ export type UserUncheckedUpdateWithoutGeoTrackingRecordsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -3465,6 +3798,7 @@ export type UserUncheckedUpdateWithoutGeoTrackingRecordsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutAssignedTasksInput = {
@@ -3486,6 +3820,7 @@ export type UserCreateWithoutAssignedTasksInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -3511,6 +3846,7 @@ export type UserCreateWithoutAssignedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutAssignedTasksInput = {
@@ -3535,6 +3871,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -3558,6 +3895,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutAssignedTasksInput = {
@@ -3584,6 +3922,7 @@ export type UserCreateWithoutCreatedTasksInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -3609,6 +3948,7 @@ export type UserCreateWithoutCreatedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutCreatedTasksInput = {
@@ -3633,6 +3973,7 @@ export type UserUncheckedCreateWithoutCreatedTasksInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -3656,6 +3997,7 @@ export type UserUncheckedCreateWithoutCreatedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutCreatedTasksInput = {
@@ -3693,6 +4035,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -3718,6 +4061,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedTasksInput = {
@@ -3742,6 +4086,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -3765,6 +4110,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUpsertWithoutCreatedTasksInput = {
@@ -3797,6 +4143,7 @@ export type UserUpdateWithoutCreatedTasksInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -3822,6 +4169,7 @@ export type UserUpdateWithoutCreatedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedTasksInput = {
@@ -3846,6 +4194,7 @@ export type UserUncheckedUpdateWithoutCreatedTasksInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -3869,6 +4218,7 @@ export type UserUncheckedUpdateWithoutCreatedTasksInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutSalesOrdersInput = {
@@ -3890,6 +4240,7 @@ export type UserCreateWithoutSalesOrdersInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -3915,6 +4266,7 @@ export type UserCreateWithoutSalesOrdersInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutSalesOrdersInput = {
@@ -3939,6 +4291,7 @@ export type UserUncheckedCreateWithoutSalesOrdersInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -3962,6 +4315,7 @@ export type UserUncheckedCreateWithoutSalesOrdersInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutSalesOrdersInput = {
@@ -3999,6 +4353,7 @@ export type UserUpdateWithoutSalesOrdersInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -4024,6 +4379,7 @@ export type UserUpdateWithoutSalesOrdersInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesOrdersInput = {
@@ -4048,6 +4404,7 @@ export type UserUncheckedUpdateWithoutSalesOrdersInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -4071,6 +4428,7 @@ export type UserUncheckedUpdateWithoutSalesOrdersInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutRatingsInput = {
@@ -4092,6 +4450,7 @@ export type UserCreateWithoutRatingsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -4117,6 +4476,7 @@ export type UserCreateWithoutRatingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutRatingsInput = {
@@ -4141,6 +4501,7 @@ export type UserUncheckedCreateWithoutRatingsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -4164,6 +4525,7 @@ export type UserUncheckedCreateWithoutRatingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutRatingsInput = {
@@ -4201,6 +4563,7 @@ export type UserUpdateWithoutRatingsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -4226,6 +4589,7 @@ export type UserUpdateWithoutRatingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRatingsInput = {
@@ -4250,6 +4614,7 @@ export type UserUncheckedUpdateWithoutRatingsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -4273,6 +4638,7 @@ export type UserUncheckedUpdateWithoutRatingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutDealerBrandMappingsInput = {
@@ -4294,6 +4660,7 @@ export type UserCreateWithoutDealerBrandMappingsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -4319,6 +4686,7 @@ export type UserCreateWithoutDealerBrandMappingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutDealerBrandMappingsInput = {
@@ -4343,6 +4711,7 @@ export type UserUncheckedCreateWithoutDealerBrandMappingsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -4366,6 +4735,7 @@ export type UserUncheckedCreateWithoutDealerBrandMappingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutDealerBrandMappingsInput = {
@@ -4403,6 +4773,7 @@ export type UserUpdateWithoutDealerBrandMappingsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -4428,6 +4799,7 @@ export type UserUpdateWithoutDealerBrandMappingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDealerBrandMappingsInput = {
@@ -4452,6 +4824,7 @@ export type UserUncheckedUpdateWithoutDealerBrandMappingsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -4475,6 +4848,7 @@ export type UserUncheckedUpdateWithoutDealerBrandMappingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutTechnicalVisitReportsInput = {
@@ -4496,6 +4870,7 @@ export type UserCreateWithoutTechnicalVisitReportsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -4521,6 +4896,7 @@ export type UserCreateWithoutTechnicalVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutTechnicalVisitReportsInput = {
@@ -4545,6 +4921,7 @@ export type UserUncheckedCreateWithoutTechnicalVisitReportsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -4568,6 +4945,7 @@ export type UserUncheckedCreateWithoutTechnicalVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutTechnicalVisitReportsInput = {
@@ -4605,6 +4983,7 @@ export type UserUpdateWithoutTechnicalVisitReportsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -4630,6 +5009,7 @@ export type UserUpdateWithoutTechnicalVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTechnicalVisitReportsInput = {
@@ -4654,6 +5034,7 @@ export type UserUncheckedUpdateWithoutTechnicalVisitReportsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -4677,6 +5058,7 @@ export type UserUncheckedUpdateWithoutTechnicalVisitReportsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutCreatedMeetingsInput = {
@@ -4698,6 +5080,7 @@ export type UserCreateWithoutCreatedMeetingsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -4723,6 +5106,7 @@ export type UserCreateWithoutCreatedMeetingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
@@ -4747,6 +5131,7 @@ export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -4770,6 +5155,7 @@ export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutCreatedMeetingsInput = {
@@ -4807,6 +5193,7 @@ export type UserUpdateWithoutCreatedMeetingsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -4832,6 +5219,7 @@ export type UserUpdateWithoutCreatedMeetingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
@@ -4856,6 +5244,7 @@ export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -4879,6 +5268,7 @@ export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutAdditionalSitesInput = {
@@ -4900,6 +5290,7 @@ export type UserCreateWithoutAdditionalSitesInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -4925,6 +5316,7 @@ export type UserCreateWithoutAdditionalSitesInput = {
   assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutAdditionalSitesInput = {
@@ -4949,6 +5341,7 @@ export type UserUncheckedCreateWithoutAdditionalSitesInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -4972,6 +5365,7 @@ export type UserUncheckedCreateWithoutAdditionalSitesInput = {
   assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutAdditionalSitesInput = {
@@ -5014,6 +5408,7 @@ export type UserCreateWithoutAssignedMasonsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -5039,6 +5434,7 @@ export type UserCreateWithoutAssignedMasonsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutAssignedMasonsInput = {
@@ -5063,6 +5459,7 @@ export type UserUncheckedCreateWithoutAssignedMasonsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -5086,6 +5483,7 @@ export type UserUncheckedCreateWithoutAssignedMasonsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutAssignedMasonsInput = {
@@ -5123,6 +5521,7 @@ export type UserUpdateWithoutAssignedMasonsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -5148,6 +5547,7 @@ export type UserUpdateWithoutAssignedMasonsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedMasonsInput = {
@@ -5172,6 +5572,7 @@ export type UserUncheckedUpdateWithoutAssignedMasonsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -5195,6 +5596,7 @@ export type UserUncheckedUpdateWithoutAssignedMasonsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutGiftLogsInput = {
@@ -5216,6 +5618,7 @@ export type UserCreateWithoutGiftLogsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -5241,6 +5644,7 @@ export type UserCreateWithoutGiftLogsInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutGiftLogsInput = {
@@ -5265,6 +5669,7 @@ export type UserUncheckedCreateWithoutGiftLogsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -5288,6 +5693,7 @@ export type UserUncheckedCreateWithoutGiftLogsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutGiftLogsInput = {
@@ -5314,6 +5720,7 @@ export type UserCreateWithoutGiftTransfersSentInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -5339,6 +5746,7 @@ export type UserCreateWithoutGiftTransfersSentInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutGiftTransfersSentInput = {
@@ -5363,6 +5771,7 @@ export type UserUncheckedCreateWithoutGiftTransfersSentInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -5386,6 +5795,7 @@ export type UserUncheckedCreateWithoutGiftTransfersSentInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutGiftTransfersSentInput = {
@@ -5412,6 +5822,7 @@ export type UserCreateWithoutGiftTransfersReceivedInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -5437,6 +5848,7 @@ export type UserCreateWithoutGiftTransfersReceivedInput = {
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutGiftTransfersReceivedInput = {
@@ -5461,6 +5873,7 @@ export type UserUncheckedCreateWithoutGiftTransfersReceivedInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -5484,6 +5897,7 @@ export type UserUncheckedCreateWithoutGiftTransfersReceivedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutGiftTransfersReceivedInput = {
@@ -5521,6 +5935,7 @@ export type UserUpdateWithoutGiftLogsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -5546,6 +5961,7 @@ export type UserUpdateWithoutGiftLogsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGiftLogsInput = {
@@ -5570,6 +5986,7 @@ export type UserUncheckedUpdateWithoutGiftLogsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -5593,6 +6010,7 @@ export type UserUncheckedUpdateWithoutGiftLogsInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUpsertWithoutGiftTransfersSentInput = {
@@ -5625,6 +6043,7 @@ export type UserUpdateWithoutGiftTransfersSentInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -5650,6 +6069,7 @@ export type UserUpdateWithoutGiftTransfersSentInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGiftTransfersSentInput = {
@@ -5674,6 +6094,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersSentInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -5697,6 +6118,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersSentInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUpsertWithoutGiftTransfersReceivedInput = {
@@ -5729,6 +6151,7 @@ export type UserUpdateWithoutGiftTransfersReceivedInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -5754,6 +6177,7 @@ export type UserUpdateWithoutGiftTransfersReceivedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
@@ -5778,6 +6202,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -5801,6 +6226,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutTsoAssignmentsInput = {
@@ -5822,6 +6248,7 @@ export type UserCreateWithoutTsoAssignmentsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -5847,6 +6274,7 @@ export type UserCreateWithoutTsoAssignmentsInput = {
   assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
   bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
@@ -5871,6 +6299,7 @@ export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -5894,6 +6323,7 @@ export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
   assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutTsoAssignmentsInput = {
@@ -5931,6 +6361,7 @@ export type UserUpdateWithoutTsoAssignmentsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -5956,6 +6387,7 @@ export type UserUpdateWithoutTsoAssignmentsInput = {
   assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
@@ -5980,6 +6412,7 @@ export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -6003,6 +6436,7 @@ export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
   assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateWithoutBagLiftApprovalsInput = {
@@ -6024,6 +6458,7 @@ export type UserCreateWithoutBagLiftApprovalsInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
@@ -6049,6 +6484,7 @@ export type UserCreateWithoutBagLiftApprovalsInput = {
   assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
   tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
 }
 
 export type UserUncheckedCreateWithoutBagLiftApprovalsInput = {
@@ -6073,6 +6509,7 @@ export type UserUncheckedCreateWithoutBagLiftApprovalsInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
   dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
@@ -6096,6 +6533,7 @@ export type UserUncheckedCreateWithoutBagLiftApprovalsInput = {
   assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
   tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
 }
 
 export type UserCreateOrConnectWithoutBagLiftApprovalsInput = {
@@ -6133,6 +6571,7 @@ export type UserUpdateWithoutBagLiftApprovalsInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -6158,6 +6597,7 @@ export type UserUpdateWithoutBagLiftApprovalsInput = {
   assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
@@ -6182,6 +6622,7 @@ export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -6205,6 +6646,7 @@ export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
   assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserCreateManyCompanyInput = {
@@ -6228,6 +6670,7 @@ export type UserCreateManyCompanyInput = {
   techHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
 }
 
@@ -6250,6 +6693,7 @@ export type UserUpdateWithoutCompanyInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutReportsToNestedInput
@@ -6275,6 +6719,7 @@ export type UserUpdateWithoutCompanyInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -6298,6 +6743,7 @@ export type UserUncheckedUpdateWithoutCompanyInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -6322,6 +6768,7 @@ export type UserUncheckedUpdateWithoutCompanyInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -6345,6 +6792,7 @@ export type UserUncheckedUpdateManyWithoutCompanyInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -6369,6 +6817,7 @@ export type UserCreateManyReportsToInput = {
   techLoginId?: string | null
   techHashedPassword?: string | null
   deviceId?: string | null
+  fcmToken?: string | null
   noOfPJP?: number | null
 }
 
@@ -6391,6 +6840,7 @@ export type UserUpdateWithoutReportsToInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reports?: Prisma.UserUpdateManyWithoutReportsToNestedInput
@@ -6416,6 +6866,7 @@ export type UserUpdateWithoutReportsToInput = {
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportsToInput = {
@@ -6439,6 +6890,7 @@ export type UserUncheckedUpdateWithoutReportsToInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -6463,6 +6915,7 @@ export type UserUncheckedUpdateWithoutReportsToInput = {
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutReportsToInput = {
@@ -6486,6 +6939,7 @@ export type UserUncheckedUpdateManyWithoutReportsToInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -6508,6 +6962,7 @@ export type UserUpdateWithoutAdditionalSitesInput = {
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
@@ -6533,6 +6988,7 @@ export type UserUpdateWithoutAdditionalSitesInput = {
   assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
   tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdditionalSitesInput = {
@@ -6557,6 +7013,7 @@ export type UserUncheckedUpdateWithoutAdditionalSitesInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
   dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
@@ -6580,6 +7037,7 @@ export type UserUncheckedUpdateWithoutAdditionalSitesInput = {
   assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutAdditionalSitesInput = {
@@ -6604,6 +7062,7 @@ export type UserUncheckedUpdateManyWithoutAdditionalSitesInput = {
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -6636,6 +7095,7 @@ export type UserCountOutputType = {
   tsoAssignments: number
   bagLiftApprovals: number
   additionalSites: number
+  notifications: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6662,6 +7122,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   tsoAssignments?: boolean | UserCountOutputTypeCountTsoAssignmentsArgs
   bagLiftApprovals?: boolean | UserCountOutputTypeCountBagLiftApprovalsArgs
   additionalSites?: boolean | UserCountOutputTypeCountAdditionalSitesArgs
+  notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
 }
 
 /**
@@ -6835,6 +7296,13 @@ export type UserCountOutputTypeCountAdditionalSitesArgs<ExtArgs extends runtime.
   where?: Prisma.TechnicalSiteWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -6858,6 +7326,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   techHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
+  fcmToken?: boolean
   noOfPJP?: boolean
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   reportsTo?: boolean | Prisma.User$reportsToArgs<ExtArgs>
@@ -6884,6 +7353,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   tsoAssignments?: boolean | Prisma.User$tsoAssignmentsArgs<ExtArgs>
   bagLiftApprovals?: boolean | Prisma.User$bagLiftApprovalsArgs<ExtArgs>
   additionalSites?: boolean | Prisma.User$additionalSitesArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -6909,6 +7379,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   techHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
+  fcmToken?: boolean
   noOfPJP?: boolean
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   reportsTo?: boolean | Prisma.User$reportsToArgs<ExtArgs>
@@ -6936,6 +7407,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   techHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
+  fcmToken?: boolean
   noOfPJP?: boolean
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   reportsTo?: boolean | Prisma.User$reportsToArgs<ExtArgs>
@@ -6963,10 +7435,11 @@ export type UserSelectScalar = {
   techHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
+  fcmToken?: boolean
   noOfPJP?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workosUserId" | "companyId" | "email" | "firstName" | "lastName" | "role" | "createdAt" | "updatedAt" | "phoneNumber" | "inviteToken" | "status" | "region" | "area" | "salesmanLoginId" | "hashedPassword" | "isTechnicalRole" | "techLoginId" | "techHashedPassword" | "reportsToId" | "deviceId" | "noOfPJP", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workosUserId" | "companyId" | "email" | "firstName" | "lastName" | "role" | "createdAt" | "updatedAt" | "phoneNumber" | "inviteToken" | "status" | "region" | "area" | "salesmanLoginId" | "hashedPassword" | "isTechnicalRole" | "techLoginId" | "techHashedPassword" | "reportsToId" | "deviceId" | "fcmToken" | "noOfPJP", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   reportsTo?: boolean | Prisma.User$reportsToArgs<ExtArgs>
@@ -6993,6 +7466,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   tsoAssignments?: boolean | Prisma.User$tsoAssignmentsArgs<ExtArgs>
   bagLiftApprovals?: boolean | Prisma.User$bagLiftApprovalsArgs<ExtArgs>
   additionalSites?: boolean | Prisma.User$additionalSitesArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -7032,6 +7506,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     tsoAssignments: Prisma.$TSOAssignmentPayload<ExtArgs>[]
     bagLiftApprovals: Prisma.$BagLiftPayload<ExtArgs>[]
     additionalSites: Prisma.$TechnicalSitePayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -7055,6 +7530,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     techHashedPassword: string | null
     reportsToId: number | null
     deviceId: string | null
+    fcmToken: string | null
     noOfPJP: number | null
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -7475,6 +7951,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   tsoAssignments<T extends Prisma.User$tsoAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tsoAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TSOAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bagLiftApprovals<T extends Prisma.User$bagLiftApprovalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bagLiftApprovalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BagLiftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   additionalSites<T extends Prisma.User$additionalSitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$additionalSitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechnicalSitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7525,6 +8002,7 @@ export interface UserFieldRefs {
   readonly techHashedPassword: Prisma.FieldRef<"User", 'String'>
   readonly reportsToId: Prisma.FieldRef<"User", 'Int'>
   readonly deviceId: Prisma.FieldRef<"User", 'String'>
+  readonly fcmToken: Prisma.FieldRef<"User", 'String'>
   readonly noOfPJP: Prisma.FieldRef<"User", 'Int'>
 }
     
@@ -8490,6 +8968,30 @@ export type User$additionalSitesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.TechnicalSiteScalarFieldEnum | Prisma.TechnicalSiteScalarFieldEnum[]
+}
+
+/**
+ * User.notifications
+ */
+export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**

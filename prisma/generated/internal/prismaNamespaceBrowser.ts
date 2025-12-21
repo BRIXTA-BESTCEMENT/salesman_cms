@@ -54,6 +54,7 @@ export const ModelName = {
   Company: 'Company',
   User: 'User',
   Dealer: 'Dealer',
+  Notification: 'Notification',
   DailyVisitReport: 'DailyVisitReport',
   PermanentJourneyPlan: 'PermanentJourneyPlan',
   SalesmanAttendance: 'SalesmanAttendance',
@@ -151,6 +152,7 @@ export const UserScalarFieldEnum = {
   techHashedPassword: 'techHashedPassword',
   reportsToId: 'reportsToId',
   deviceId: 'deviceId',
+  fcmToken: 'fcmToken',
   noOfPJP: 'noOfPJP'
 } as const
 
@@ -229,6 +231,20 @@ export const DealerScalarFieldEnum = {
 } as const
 
 export type DealerScalarFieldEnum = (typeof DealerScalarFieldEnum)[keyof typeof DealerScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  recipientUserId: 'recipientUserId',
+  title: 'title',
+  body: 'body',
+  type: 'type',
+  referenceId: 'referenceId',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
 export const DailyVisitReportScalarFieldEnum = {

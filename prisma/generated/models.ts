@@ -11,6 +11,7 @@
 export type * from './models/Company'
 export type * from './models/User'
 export type * from './models/Dealer'
+export type * from './models/Notification'
 export type * from './models/DailyVisitReport'
 export type * from './models/PermanentJourneyPlan'
 export type * from './models/SalesmanAttendance'
