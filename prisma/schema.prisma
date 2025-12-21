@@ -820,6 +820,9 @@ model Mason_PC_Side {
   dealer             Dealer? @relation(fields: [dealerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId             Int? @map("user_id")
   user               User? @relation("MasonAssignments", fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  deviceId           String?   @unique @map("device_id") @db.VarChar(255)
+  fcmToken           String?  @map("fcm_token") @db.VarChar(500)
+
   schemes            MasonOnScheme[]
   technicalVisitReports TechnicalVisitReport[]
   meetings           MasonsOnMeetings[]

@@ -53,6 +53,8 @@ export type Mason_PC_SideMinAggregateOutputType = {
   referredToUser: string | null
   dealerId: string | null
   userId: number | null
+  deviceId: string | null
+  fcmToken: string | null
 }
 
 export type Mason_PC_SideMaxAggregateOutputType = {
@@ -70,6 +72,8 @@ export type Mason_PC_SideMaxAggregateOutputType = {
   referredToUser: string | null
   dealerId: string | null
   userId: number | null
+  deviceId: string | null
+  fcmToken: string | null
 }
 
 export type Mason_PC_SideCountAggregateOutputType = {
@@ -87,6 +91,8 @@ export type Mason_PC_SideCountAggregateOutputType = {
   referredToUser: number
   dealerId: number
   userId: number
+  deviceId: number
+  fcmToken: number
   _all: number
 }
 
@@ -118,6 +124,8 @@ export type Mason_PC_SideMinAggregateInputType = {
   referredToUser?: true
   dealerId?: true
   userId?: true
+  deviceId?: true
+  fcmToken?: true
 }
 
 export type Mason_PC_SideMaxAggregateInputType = {
@@ -135,6 +143,8 @@ export type Mason_PC_SideMaxAggregateInputType = {
   referredToUser?: true
   dealerId?: true
   userId?: true
+  deviceId?: true
+  fcmToken?: true
 }
 
 export type Mason_PC_SideCountAggregateInputType = {
@@ -152,6 +162,8 @@ export type Mason_PC_SideCountAggregateInputType = {
   referredToUser?: true
   dealerId?: true
   userId?: true
+  deviceId?: true
+  fcmToken?: true
   _all?: true
 }
 
@@ -256,6 +268,8 @@ export type Mason_PC_SideGroupByOutputType = {
   referredToUser: string | null
   dealerId: string | null
   userId: number | null
+  deviceId: string | null
+  fcmToken: string | null
   _count: Mason_PC_SideCountAggregateOutputType | null
   _avg: Mason_PC_SideAvgAggregateOutputType | null
   _sum: Mason_PC_SideSumAggregateOutputType | null
@@ -296,6 +310,8 @@ export type Mason_PC_SideWhereInput = {
   referredToUser?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   dealerId?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   userId?: Prisma.IntNullableFilter<"Mason_PC_Side"> | number | null
+  deviceId?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
+  fcmToken?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   schemes?: Prisma.MasonOnSchemeListRelationFilter
@@ -328,6 +344,8 @@ export type Mason_PC_SideOrderByWithRelationInput = {
   referredToUser?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   dealer?: Prisma.DealerOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   schemes?: Prisma.MasonOnSchemeOrderByRelationAggregateInput
@@ -348,6 +366,7 @@ export type Mason_PC_SideOrderByWithRelationInput = {
 export type Mason_PC_SideWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   firebaseUid?: string
+  deviceId?: string
   AND?: Prisma.Mason_PC_SideWhereInput | Prisma.Mason_PC_SideWhereInput[]
   OR?: Prisma.Mason_PC_SideWhereInput[]
   NOT?: Prisma.Mason_PC_SideWhereInput | Prisma.Mason_PC_SideWhereInput[]
@@ -363,6 +382,7 @@ export type Mason_PC_SideWhereUniqueInput = Prisma.AtLeast<{
   referredToUser?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   dealerId?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   userId?: Prisma.IntNullableFilter<"Mason_PC_Side"> | number | null
+  fcmToken?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   schemes?: Prisma.MasonOnSchemeListRelationFilter
@@ -378,7 +398,7 @@ export type Mason_PC_SideWhereUniqueInput = Prisma.AtLeast<{
   slabAchievements?: Prisma.MasonSlabAchievementsListRelationFilter
   associatedDealers?: Prisma.DealerListRelationFilter
   associatedSites?: Prisma.TechnicalSiteListRelationFilter
-}, "id" | "firebaseUid">
+}, "id" | "firebaseUid" | "deviceId">
 
 export type Mason_PC_SideOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -395,6 +415,8 @@ export type Mason_PC_SideOrderByWithAggregationInput = {
   referredToUser?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.Mason_PC_SideCountOrderByAggregateInput
   _avg?: Prisma.Mason_PC_SideAvgOrderByAggregateInput
   _max?: Prisma.Mason_PC_SideMaxOrderByAggregateInput
@@ -420,6 +442,8 @@ export type Mason_PC_SideScalarWhereWithAggregatesInput = {
   referredToUser?: Prisma.StringNullableWithAggregatesFilter<"Mason_PC_Side"> | string | null
   dealerId?: Prisma.StringNullableWithAggregatesFilter<"Mason_PC_Side"> | string | null
   userId?: Prisma.IntNullableWithAggregatesFilter<"Mason_PC_Side"> | number | null
+  deviceId?: Prisma.StringNullableWithAggregatesFilter<"Mason_PC_Side"> | string | null
+  fcmToken?: Prisma.StringNullableWithAggregatesFilter<"Mason_PC_Side"> | string | null
 }
 
 export type Mason_PC_SideCreateInput = {
@@ -435,6 +459,8 @@ export type Mason_PC_SideCreateInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -467,6 +493,8 @@ export type Mason_PC_SideUncheckedCreateInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -495,6 +523,8 @@ export type Mason_PC_SideUpdateInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -527,6 +557,8 @@ export type Mason_PC_SideUncheckedUpdateInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -557,6 +589,8 @@ export type Mason_PC_SideCreateManyInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
 }
 
 export type Mason_PC_SideUpdateManyMutationInput = {
@@ -572,6 +606,8 @@ export type Mason_PC_SideUpdateManyMutationInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type Mason_PC_SideUncheckedUpdateManyInput = {
@@ -589,6 +625,8 @@ export type Mason_PC_SideUncheckedUpdateManyInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type Mason_PC_SideListRelationFilter = {
@@ -621,6 +659,8 @@ export type Mason_PC_SideCountOrderByAggregateInput = {
   referredToUser?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  deviceId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
 }
 
 export type Mason_PC_SideAvgOrderByAggregateInput = {
@@ -644,6 +684,8 @@ export type Mason_PC_SideMaxOrderByAggregateInput = {
   referredToUser?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  deviceId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
 }
 
 export type Mason_PC_SideMinOrderByAggregateInput = {
@@ -661,6 +703,8 @@ export type Mason_PC_SideMinOrderByAggregateInput = {
   referredToUser?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  deviceId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
 }
 
 export type Mason_PC_SideSumOrderByAggregateInput = {
@@ -1003,6 +1047,8 @@ export type Mason_PC_SideCreateWithoutUserInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
@@ -1033,6 +1079,8 @@ export type Mason_PC_SideUncheckedCreateWithoutUserInput = {
   referredByUser?: string | null
   referredToUser?: string | null
   dealerId?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -1092,6 +1140,8 @@ export type Mason_PC_SideScalarWhereInput = {
   referredToUser?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   dealerId?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
   userId?: Prisma.IntNullableFilter<"Mason_PC_Side"> | number | null
+  deviceId?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
+  fcmToken?: Prisma.StringNullableFilter<"Mason_PC_Side"> | string | null
 }
 
 export type Mason_PC_SideCreateWithoutDealerInput = {
@@ -1107,6 +1157,8 @@ export type Mason_PC_SideCreateWithoutDealerInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
@@ -1137,6 +1189,8 @@ export type Mason_PC_SideUncheckedCreateWithoutDealerInput = {
   referredByUser?: string | null
   referredToUser?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -1175,6 +1229,8 @@ export type Mason_PC_SideCreateWithoutAssociatedDealersInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -1206,6 +1262,8 @@ export type Mason_PC_SideUncheckedCreateWithoutAssociatedDealersInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -1270,6 +1328,8 @@ export type Mason_PC_SideCreateWithoutTechnicalVisitReportsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -1301,6 +1361,8 @@ export type Mason_PC_SideUncheckedCreateWithoutTechnicalVisitReportsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
   otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
@@ -1344,6 +1406,8 @@ export type Mason_PC_SideUpdateWithoutTechnicalVisitReportsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -1375,6 +1439,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutTechnicalVisitReportsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
   otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
@@ -1402,6 +1468,8 @@ export type Mason_PC_SideCreateWithoutAssociatedSitesInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -1433,6 +1501,8 @@ export type Mason_PC_SideUncheckedCreateWithoutAssociatedSitesInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -1481,6 +1551,8 @@ export type Mason_PC_SideCreateWithoutOtpsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -1512,6 +1584,8 @@ export type Mason_PC_SideUncheckedCreateWithoutOtpsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -1555,6 +1629,8 @@ export type Mason_PC_SideUpdateWithoutOtpsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -1586,6 +1662,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutOtpsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -1613,6 +1691,8 @@ export type Mason_PC_SideCreateWithoutAuthSessionsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -1644,6 +1724,8 @@ export type Mason_PC_SideUncheckedCreateWithoutAuthSessionsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -1687,6 +1769,8 @@ export type Mason_PC_SideUpdateWithoutAuthSessionsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -1718,6 +1802,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutAuthSessionsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -1745,6 +1831,8 @@ export type Mason_PC_SideCreateWithoutSchemesInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
@@ -1776,6 +1864,8 @@ export type Mason_PC_SideUncheckedCreateWithoutSchemesInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
   otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
@@ -1819,6 +1909,8 @@ export type Mason_PC_SideUpdateWithoutSchemesInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
@@ -1850,6 +1942,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutSchemesInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
   otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
@@ -1877,6 +1971,8 @@ export type Mason_PC_SideCreateWithoutMeetingsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -1908,6 +2004,8 @@ export type Mason_PC_SideUncheckedCreateWithoutMeetingsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
@@ -1951,6 +2049,8 @@ export type Mason_PC_SideUpdateWithoutMeetingsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -1982,6 +2082,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutMeetingsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
@@ -2009,6 +2111,8 @@ export type Mason_PC_SideCreateWithoutKycSubmissionsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -2040,6 +2144,8 @@ export type Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -2083,6 +2189,8 @@ export type Mason_PC_SideUpdateWithoutKycSubmissionsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -2114,6 +2222,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2141,6 +2251,8 @@ export type Mason_PC_SideCreateWithoutTsoAssignmentsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -2172,6 +2284,8 @@ export type Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -2215,6 +2329,8 @@ export type Mason_PC_SideUpdateWithoutTsoAssignmentsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -2246,6 +2362,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2273,6 +2391,8 @@ export type Mason_PC_SideCreateWithoutBagLiftsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -2304,6 +2424,8 @@ export type Mason_PC_SideUncheckedCreateWithoutBagLiftsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -2347,6 +2469,8 @@ export type Mason_PC_SideUpdateWithoutBagLiftsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -2378,6 +2502,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutBagLiftsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2405,6 +2531,8 @@ export type Mason_PC_SideCreateWithoutRewardRedemptionsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -2436,6 +2564,8 @@ export type Mason_PC_SideUncheckedCreateWithoutRewardRedemptionsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -2479,6 +2609,8 @@ export type Mason_PC_SideUpdateWithoutRewardRedemptionsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -2510,6 +2642,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutRewardRedemptionsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2537,6 +2671,8 @@ export type Mason_PC_SideCreateWithoutPointsLedgerInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -2568,6 +2704,8 @@ export type Mason_PC_SideUncheckedCreateWithoutPointsLedgerInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -2611,6 +2749,8 @@ export type Mason_PC_SideUpdateWithoutPointsLedgerInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -2642,6 +2782,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutPointsLedgerInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2669,6 +2811,8 @@ export type Mason_PC_SideCreateWithoutSlabAchievementsInput = {
   isReferred?: boolean | null
   referredByUser?: string | null
   referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
   user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
   schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
@@ -2700,6 +2844,8 @@ export type Mason_PC_SideUncheckedCreateWithoutSlabAchievementsInput = {
   referredToUser?: string | null
   dealerId?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
   schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
@@ -2743,6 +2889,8 @@ export type Mason_PC_SideUpdateWithoutSlabAchievementsInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -2774,6 +2922,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutSlabAchievementsInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2802,6 +2952,8 @@ export type Mason_PC_SideCreateManyUserInput = {
   referredByUser?: string | null
   referredToUser?: string | null
   dealerId?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
 }
 
 export type Mason_PC_SideUpdateWithoutUserInput = {
@@ -2817,6 +2969,8 @@ export type Mason_PC_SideUpdateWithoutUserInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
@@ -2847,6 +3001,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutUserInput = {
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2876,6 +3032,8 @@ export type Mason_PC_SideUncheckedUpdateManyWithoutUserInput = {
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type Mason_PC_SideCreateManyDealerInput = {
@@ -2892,6 +3050,8 @@ export type Mason_PC_SideCreateManyDealerInput = {
   referredByUser?: string | null
   referredToUser?: string | null
   userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
 }
 
 export type Mason_PC_SideUpdateWithoutDealerInput = {
@@ -2907,6 +3067,8 @@ export type Mason_PC_SideUpdateWithoutDealerInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
@@ -2937,6 +3099,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutDealerInput = {
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -2966,6 +3130,8 @@ export type Mason_PC_SideUncheckedUpdateManyWithoutDealerInput = {
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type Mason_PC_SideUpdateWithoutAssociatedDealersInput = {
@@ -2981,6 +3147,8 @@ export type Mason_PC_SideUpdateWithoutAssociatedDealersInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -3012,6 +3180,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutAssociatedDealersInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -3041,6 +3211,8 @@ export type Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type Mason_PC_SideUpdateWithoutAssociatedSitesInput = {
@@ -3056,6 +3228,8 @@ export type Mason_PC_SideUpdateWithoutAssociatedSitesInput = {
   isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
   user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
   schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
@@ -3087,6 +3261,8 @@ export type Mason_PC_SideUncheckedUpdateWithoutAssociatedSitesInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
   meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
@@ -3116,6 +3292,8 @@ export type Mason_PC_SideUncheckedUpdateManyWithoutAssociatedSitesInput = {
   referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -3272,6 +3450,8 @@ export type Mason_PC_SideSelect<ExtArgs extends runtime.Types.Extensions.Interna
   referredToUser?: boolean
   dealerId?: boolean
   userId?: boolean
+  deviceId?: boolean
+  fcmToken?: boolean
   dealer?: boolean | Prisma.Mason_PC_Side$dealerArgs<ExtArgs>
   user?: boolean | Prisma.Mason_PC_Side$userArgs<ExtArgs>
   schemes?: boolean | Prisma.Mason_PC_Side$schemesArgs<ExtArgs>
@@ -3305,6 +3485,8 @@ export type Mason_PC_SideSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   referredToUser?: boolean
   dealerId?: boolean
   userId?: boolean
+  deviceId?: boolean
+  fcmToken?: boolean
   dealer?: boolean | Prisma.Mason_PC_Side$dealerArgs<ExtArgs>
   user?: boolean | Prisma.Mason_PC_Side$userArgs<ExtArgs>
 }, ExtArgs["result"]["mason_PC_Side"]>
@@ -3324,6 +3506,8 @@ export type Mason_PC_SideSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   referredToUser?: boolean
   dealerId?: boolean
   userId?: boolean
+  deviceId?: boolean
+  fcmToken?: boolean
   dealer?: boolean | Prisma.Mason_PC_Side$dealerArgs<ExtArgs>
   user?: boolean | Prisma.Mason_PC_Side$userArgs<ExtArgs>
 }, ExtArgs["result"]["mason_PC_Side"]>
@@ -3343,9 +3527,11 @@ export type Mason_PC_SideSelectScalar = {
   referredToUser?: boolean
   dealerId?: boolean
   userId?: boolean
+  deviceId?: boolean
+  fcmToken?: boolean
 }
 
-export type Mason_PC_SideOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phoneNumber" | "kycDocumentName" | "kycDocumentIdNum" | "kycStatus" | "bagsLifted" | "pointsBalance" | "firebaseUid" | "isReferred" | "referredByUser" | "referredToUser" | "dealerId" | "userId", ExtArgs["result"]["mason_PC_Side"]>
+export type Mason_PC_SideOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phoneNumber" | "kycDocumentName" | "kycDocumentIdNum" | "kycStatus" | "bagsLifted" | "pointsBalance" | "firebaseUid" | "isReferred" | "referredByUser" | "referredToUser" | "dealerId" | "userId" | "deviceId" | "fcmToken", ExtArgs["result"]["mason_PC_Side"]>
 export type Mason_PC_SideInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dealer?: boolean | Prisma.Mason_PC_Side$dealerArgs<ExtArgs>
   user?: boolean | Prisma.Mason_PC_Side$userArgs<ExtArgs>
@@ -3407,6 +3593,8 @@ export type $Mason_PC_SidePayload<ExtArgs extends runtime.Types.Extensions.Inter
     referredToUser: string | null
     dealerId: string | null
     userId: number | null
+    deviceId: string | null
+    fcmToken: string | null
   }, ExtArgs["result"]["mason_PC_Side"]>
   composites: {}
 }
@@ -3859,6 +4047,8 @@ export interface Mason_PC_SideFieldRefs {
   readonly referredToUser: Prisma.FieldRef<"Mason_PC_Side", 'String'>
   readonly dealerId: Prisma.FieldRef<"Mason_PC_Side", 'String'>
   readonly userId: Prisma.FieldRef<"Mason_PC_Side", 'Int'>
+  readonly deviceId: Prisma.FieldRef<"Mason_PC_Side", 'String'>
+  readonly fcmToken: Prisma.FieldRef<"Mason_PC_Side", 'String'>
 }
     
 

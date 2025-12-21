@@ -647,7 +647,9 @@ export const Mason_PC_SideScalarFieldEnum = {
   referredByUser: 'referredByUser',
   referredToUser: 'referredToUser',
   dealerId: 'dealerId',
-  userId: 'userId'
+  userId: 'userId',
+  deviceId: 'deviceId',
+  fcmToken: 'fcmToken'
 } as const
 
 export type Mason_PC_SideScalarFieldEnum = (typeof Mason_PC_SideScalarFieldEnum)[keyof typeof Mason_PC_SideScalarFieldEnum]
