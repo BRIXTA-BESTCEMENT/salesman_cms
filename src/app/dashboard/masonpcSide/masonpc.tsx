@@ -5,14 +5,14 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { 
-  Loader2, 
-  Search, 
-  Check, 
-  X, 
-  Eye, 
-  ExternalLink, 
-  Save, 
+import {
+  Loader2,
+  Search,
+  Check,
+  X,
+  Eye,
+  ExternalLink,
+  Save,
   ChevronsUpDown // Added for Combobox
 } from 'lucide-react';
 
@@ -54,7 +54,7 @@ const MASON_PC_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/mason-pc`;
 const MASON_PC_ACTION_API_BASE = `/api/dashboardPagesAPI/masonpc-side/mason-pc`;
 const MASON_PC_FORM_OPTIONS = `/api/dashboardPagesAPI/masonpc-side/mason-pc/form-options`;
 const ROLES_API_ENDPOINT = `/api/users/user-roles`;
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`; 
+const LOCATION_API_ENDPOINT = `/api/users/user-locations`;
 
 export type KycStatus = 'none' | 'pending' | 'verified' | 'rejected';
 export type KycVerificationStatus = 'PENDING' | 'VERIFIED' | 'REJECTED' | 'NONE';
@@ -83,6 +83,7 @@ export interface MasonPcFullDetails {
   siteId?: string | null;
   dealerName?: string | null;
   siteName?: string | null;
+  deviceId?: string | null;
 
   // KYC details
   kycVerificationStatus: KycVerificationStatus;
@@ -176,8 +177,8 @@ const SearchableSelect = ({
           className="w-full justify-between font-normal"
           disabled={isLoading}
         >
-          {value === 'null' 
-            ? placeholder 
+          {value === 'null'
+            ? placeholder
             : (selectedItem?.name || placeholder)}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -204,13 +205,13 @@ const SearchableSelect = ({
                 />
                 -- Unassigned --
               </CommandItem>
-              
+
               {/* Mapped Options */}
               {options.map((option) => (
                 <CommandItem
                   key={option.id}
                   // Use name for searching, but we'll select by ID
-                  value={option.name} 
+                  value={option.name}
                   onSelect={() => {
                     onChange(String(option.id));
                     setOpen(false);
@@ -355,7 +356,7 @@ export default function MasonPcPage() {
   React.useEffect(() => {
     fetchMasonPcRecords();
     fetchRoles();
-    fetchLocations(); 
+    fetchLocations();
   }, [fetchMasonPcRecords, fetchRoles, fetchLocations]);
 
   // --- Action Handlers ---
@@ -422,9 +423,9 @@ export default function MasonPcPage() {
     setSelectedRecord(record);
     // Initialize edit state (convert nulls to string 'null' for Select component)
     setEditData({
-        userId: record.userId ? String(record.userId) : 'null',
-        dealerId: record.dealerId || 'null',
-        siteId: record.siteId || 'null'
+      userId: record.userId ? String(record.userId) : 'null',
+      dealerId: record.dealerId || 'null',
+      siteId: record.siteId || 'null'
     });
     setIsViewModalOpen(true);
   };
@@ -434,33 +435,65 @@ export default function MasonPcPage() {
     if (!selectedRecord) return;
     setIsSaving(true);
     try {
-        const payload = {
-            userId: editData.userId === 'null' ? null : Number(editData.userId),
-            dealerId: editData.dealerId === 'null' ? null : editData.dealerId,
-            siteId: editData.siteId === 'null' ? null : editData.siteId,
-        };
+      const payload = {
+        userId: editData.userId === 'null' ? null : Number(editData.userId),
+        dealerId: editData.dealerId === 'null' ? null : editData.dealerId,
+        siteId: editData.siteId === 'null' ? null : editData.siteId,
+      };
 
-        const res = await fetch(`${MASON_PC_ACTION_API_BASE}/${selectedRecord.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+      const res = await fetch(`${MASON_PC_ACTION_API_BASE}/${selectedRecord.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-        if (!res.ok) throw new Error("Failed to save");
+      if (!res.ok) throw new Error("Failed to save");
 
-        toast.success("Assignments updated");
-        fetchMasonPcRecords(); // Refresh list
-        
-        // Update local view immediately
-        setSelectedRecord(prev => prev ? ({ ...prev, ...payload }) : null);
+      toast.success("Assignments updated");
+      fetchMasonPcRecords(); // Refresh list
 
-    } catch(e) {
-        toast.error("Could not save assignments");
+      // Update local view immediately
+      setSelectedRecord(prev => prev ? ({ ...prev, ...payload }) : null);
+
+    } catch (e) {
+      toast.error("Could not save assignments");
     } finally {
-        setIsSaving(false);
+      setIsSaving(false);
     }
   };
 
+  const handleClearMasonDeviceId = async (masonId: string) => {
+    if (!confirm("Are you sure you want to clear this Mason's device lock?")) return;
+
+    setIsSaving(true);
+    try {
+      const response = await fetch(`${MASON_PC_ACTION_API_BASE}/${masonId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clearDevice: true })
+      });
+
+      if (response.ok) {
+        toast.success('Device ID cleared successfully');
+
+        // 1. Refresh background data
+        fetchMasonPcRecords();
+
+        // 2. Update local modal state immediately
+        setSelectedRecord((prev) => {
+          if (!prev) return null;
+          return { ...prev, deviceId: null };
+        });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to clear device');
+      }
+    } catch (err) {
+      toast.error('Error connecting to server');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // --- Filtering Logic ---
   const filteredRecords = useMemo<MasonPcFullDetails[]>(() => {
@@ -490,7 +523,7 @@ export default function MasonPcPage() {
   const masonPcColumns: ColumnDef<MasonPcFullDetails, unknown>[] = [
     { accessorKey: "name", header: "Mason Name" },
     { accessorKey: "phoneNumber", header: "Phone No." },
-{
+    {
       accessorKey: "kycVerificationStatus",
       header: "KYC Status",
       cell: ({ row }) => {
@@ -509,7 +542,7 @@ export default function MasonPcPage() {
           displayLabel = 'REJECTED';
           color = 'text-red-500';
         } else {
-            displayLabel = status || 'NONE';
+          displayLabel = status || 'NONE';
         }
         return <span className={`font-medium ${color}`}>{displayLabel}</span>;
       }
@@ -704,46 +737,74 @@ export default function MasonPcPage() {
 
               {/* --- ASSIGNMENT SECTION (Updated with SearchableSelect) --- */}
               <div className="md:col-span-2 flex items-center justify-between border-b pt-4 pb-2 mt-2">
-                 <span className="text-lg font-semibold">Assignments</span>
-                 <Button size="sm" onClick={handleSaveAssignments} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white">
-                    {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
-                    Save Changes
-                 </Button>
+                <span className="text-lg font-semibold">Assignments</span>
+                <Button size="sm" onClick={handleSaveAssignments} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white">
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                  Save Changes
+                </Button>
               </div>
 
               {/* Technical User Select */}
               <div className="flex flex-col space-y-2">
-                 <Label>Technical User (Salesman)</Label>
-                 <SearchableSelect
-                    options={techUsers}
-                    value={editData.userId}
-                    onChange={(v) => setEditData(p => ({...p, userId: v}))}
-                    placeholder="Select User"
-                 />
+                <Label>Technical User (Salesman)</Label>
+                <SearchableSelect
+                  options={techUsers}
+                  value={editData.userId}
+                  onChange={(v) => setEditData(p => ({ ...p, userId: v }))}
+                  placeholder="Select User"
+                />
               </div>
 
               {/* Dealer Select */}
               <div className="flex flex-col space-y-2">
-                 <Label>Dealer</Label>
-                 <SearchableSelect
-                    options={dealers}
-                    value={editData.dealerId}
-                    onChange={(v) => setEditData(p => ({...p, dealerId: v}))}
-                    placeholder="Select Dealer"
-                 />
+                <Label>Dealer</Label>
+                <SearchableSelect
+                  options={dealers}
+                  value={editData.dealerId}
+                  onChange={(v) => setEditData(p => ({ ...p, dealerId: v }))}
+                  placeholder="Select Dealer"
+                />
               </div>
 
               {/* Site Select */}
               <div className="md:col-span-2 flex flex-col space-y-2">
-                 <Label>Technical Site</Label>
-                 <SearchableSelect
-                    options={sites}
-                    value={editData.siteId}
-                    onChange={(v) => setEditData(p => ({...p, siteId: v}))}
-                    placeholder="Select Site"
-                 />
+                <Label>Technical Site</Label>
+                <SearchableSelect
+                  options={sites}
+                  value={editData.siteId}
+                  onChange={(v) => setEditData(p => ({ ...p, siteId: v }))}
+                  placeholder="Select Site"
+                />
               </div>
 
+              {/* --- Device ID Management Section --- */}
+              <div className="md:col-span-2 space-y-2 pt-4 border-t mt-4">
+                <Label className="text-sm font-semibold">Device ID Management</Label>
+                <div className="flex items-center justify-between p-3 rounded-md bg-muted/50 border">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                      Registered Device ID
+                    </span>
+                    <span className="text-sm font-mono truncate max-w-[200px] md:max-w-none">
+                      {selectedRecord?.deviceId || "No device registered"}
+                    </span>
+                  </div>
+                  {selectedRecord?.deviceId && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleClearMasonDeviceId(selectedRecord.id)}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Clear Device"}
+                    </Button>
+                  )}
+                </div>
+                <p className="text-[10px] text-muted-foreground italic">
+                  * Clearing the device ID allows the Mason to log in from a new mobile device.
+                </p>
+              </div>
 
               <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">KYC Document Details</div>
               <div>

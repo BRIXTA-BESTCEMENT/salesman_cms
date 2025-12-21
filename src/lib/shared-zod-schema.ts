@@ -750,6 +750,7 @@ export const masonPCSideSchema = z.object({
   referredToUser: z.string().nullable(),
   dealerId: z.string().nullable(),
   userId: z.number().int().nullable(),
+  deviceId: z.string().nullable().optional(),
 });
 
 export const otpVerificationSchema = z.object({

@@ -16,6 +16,7 @@ const kycUpdateSchema = z.object({
     userId: z.number().nullable().optional(),
     dealerId: z.string().nullable().optional(),
     siteId: z.string().nullable().optional(),
+    clearDevice: z.boolean().optional(),
 });
 
 // FE → Mason_PC_Side.kycStatus
@@ -69,7 +70,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
             return NextResponse.json({ error: 'Invalid input', details: parsed.error.issues }, { status: 400 });
         }
 
-        const { verificationStatus, adminRemarks, userId, dealerId } = parsed.data;
+        const { verificationStatus, adminRemarks, userId, dealerId, clearDevice } = parsed.data;
 
         // --- 3. Prepare Update Data Object ---
         // FIX 2: Create a dynamic object so we only update what was sent
@@ -77,6 +78,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         
         if (userId !== undefined) updateData.userId = userId;
         if (dealerId !== undefined) updateData.dealerId = dealerId;
+        if (clearDevice === true) {updateData.deviceId = null;}
 
         // FIX 3: Only map status if it was actually provided
         if (verificationStatus) {
