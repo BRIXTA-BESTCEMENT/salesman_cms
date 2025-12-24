@@ -29,11 +29,23 @@ export type AggregatePermanentJourneyPlan = {
 export type PermanentJourneyPlanAvgAggregateOutputType = {
   userId: number | null
   createdById: number | null
+  plannedNewSiteVisits: number | null
+  plannedFollowUpSiteVisits: number | null
+  plannedNewDealerVisits: number | null
+  plannedInfluencerVisits: number | null
+  noOfConvertedBags: number | null
+  noOfMasonPcSchemes: number | null
 }
 
 export type PermanentJourneyPlanSumAggregateOutputType = {
   userId: number | null
   createdById: number | null
+  plannedNewSiteVisits: number | null
+  plannedFollowUpSiteVisits: number | null
+  plannedNewDealerVisits: number | null
+  plannedInfluencerVisits: number | null
+  noOfConvertedBags: number | null
+  noOfMasonPcSchemes: number | null
 }
 
 export type PermanentJourneyPlanMinAggregateOutputType = {
@@ -42,8 +54,19 @@ export type PermanentJourneyPlanMinAggregateOutputType = {
   createdById: number | null
   planDate: Date | null
   areaToBeVisited: string | null
+  route: string | null
   description: string | null
   status: string | null
+  plannedNewSiteVisits: number | null
+  plannedFollowUpSiteVisits: number | null
+  plannedNewDealerVisits: number | null
+  plannedInfluencerVisits: number | null
+  influencerName: string | null
+  influencerPhone: string | null
+  activityType: string | null
+  noOfConvertedBags: number | null
+  noOfMasonPcSchemes: number | null
+  diversionReason: string | null
   siteId: string | null
   dealerId: string | null
   verificationStatus: string | null
@@ -60,8 +83,19 @@ export type PermanentJourneyPlanMaxAggregateOutputType = {
   createdById: number | null
   planDate: Date | null
   areaToBeVisited: string | null
+  route: string | null
   description: string | null
   status: string | null
+  plannedNewSiteVisits: number | null
+  plannedFollowUpSiteVisits: number | null
+  plannedNewDealerVisits: number | null
+  plannedInfluencerVisits: number | null
+  influencerName: string | null
+  influencerPhone: string | null
+  activityType: string | null
+  noOfConvertedBags: number | null
+  noOfMasonPcSchemes: number | null
+  diversionReason: string | null
   siteId: string | null
   dealerId: string | null
   verificationStatus: string | null
@@ -78,8 +112,19 @@ export type PermanentJourneyPlanCountAggregateOutputType = {
   createdById: number
   planDate: number
   areaToBeVisited: number
+  route: number
   description: number
   status: number
+  plannedNewSiteVisits: number
+  plannedFollowUpSiteVisits: number
+  plannedNewDealerVisits: number
+  plannedInfluencerVisits: number
+  influencerName: number
+  influencerPhone: number
+  activityType: number
+  noOfConvertedBags: number
+  noOfMasonPcSchemes: number
+  diversionReason: number
   siteId: number
   dealerId: number
   verificationStatus: number
@@ -95,11 +140,23 @@ export type PermanentJourneyPlanCountAggregateOutputType = {
 export type PermanentJourneyPlanAvgAggregateInputType = {
   userId?: true
   createdById?: true
+  plannedNewSiteVisits?: true
+  plannedFollowUpSiteVisits?: true
+  plannedNewDealerVisits?: true
+  plannedInfluencerVisits?: true
+  noOfConvertedBags?: true
+  noOfMasonPcSchemes?: true
 }
 
 export type PermanentJourneyPlanSumAggregateInputType = {
   userId?: true
   createdById?: true
+  plannedNewSiteVisits?: true
+  plannedFollowUpSiteVisits?: true
+  plannedNewDealerVisits?: true
+  plannedInfluencerVisits?: true
+  noOfConvertedBags?: true
+  noOfMasonPcSchemes?: true
 }
 
 export type PermanentJourneyPlanMinAggregateInputType = {
@@ -108,8 +165,19 @@ export type PermanentJourneyPlanMinAggregateInputType = {
   createdById?: true
   planDate?: true
   areaToBeVisited?: true
+  route?: true
   description?: true
   status?: true
+  plannedNewSiteVisits?: true
+  plannedFollowUpSiteVisits?: true
+  plannedNewDealerVisits?: true
+  plannedInfluencerVisits?: true
+  influencerName?: true
+  influencerPhone?: true
+  activityType?: true
+  noOfConvertedBags?: true
+  noOfMasonPcSchemes?: true
+  diversionReason?: true
   siteId?: true
   dealerId?: true
   verificationStatus?: true
@@ -126,8 +194,19 @@ export type PermanentJourneyPlanMaxAggregateInputType = {
   createdById?: true
   planDate?: true
   areaToBeVisited?: true
+  route?: true
   description?: true
   status?: true
+  plannedNewSiteVisits?: true
+  plannedFollowUpSiteVisits?: true
+  plannedNewDealerVisits?: true
+  plannedInfluencerVisits?: true
+  influencerName?: true
+  influencerPhone?: true
+  activityType?: true
+  noOfConvertedBags?: true
+  noOfMasonPcSchemes?: true
+  diversionReason?: true
   siteId?: true
   dealerId?: true
   verificationStatus?: true
@@ -144,8 +223,19 @@ export type PermanentJourneyPlanCountAggregateInputType = {
   createdById?: true
   planDate?: true
   areaToBeVisited?: true
+  route?: true
   description?: true
   status?: true
+  plannedNewSiteVisits?: true
+  plannedFollowUpSiteVisits?: true
+  plannedNewDealerVisits?: true
+  plannedInfluencerVisits?: true
+  influencerName?: true
+  influencerPhone?: true
+  activityType?: true
+  noOfConvertedBags?: true
+  noOfMasonPcSchemes?: true
+  diversionReason?: true
   siteId?: true
   dealerId?: true
   verificationStatus?: true
@@ -249,8 +339,19 @@ export type PermanentJourneyPlanGroupByOutputType = {
   createdById: number
   planDate: Date
   areaToBeVisited: string
+  route: string | null
   description: string | null
   status: string
+  plannedNewSiteVisits: number
+  plannedFollowUpSiteVisits: number
+  plannedNewDealerVisits: number
+  plannedInfluencerVisits: number
+  influencerName: string | null
+  influencerPhone: string | null
+  activityType: string | null
+  noOfConvertedBags: number
+  noOfMasonPcSchemes: number
+  diversionReason: string | null
   siteId: string | null
   dealerId: string | null
   verificationStatus: string | null
@@ -290,8 +391,19 @@ export type PermanentJourneyPlanWhereInput = {
   createdById?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
   planDate?: Prisma.DateTimeFilter<"PermanentJourneyPlan"> | Date | string
   areaToBeVisited?: Prisma.StringFilter<"PermanentJourneyPlan"> | string
+  route?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   description?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   status?: Prisma.StringFilter<"PermanentJourneyPlan"> | string
+  plannedNewSiteVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedFollowUpSiteVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedNewDealerVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedInfluencerVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  influencerName?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  influencerPhone?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  activityType?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  noOfConvertedBags?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  noOfMasonPcSchemes?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  diversionReason?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   siteId?: Prisma.UuidNullableFilter<"PermanentJourneyPlan"> | string | null
   dealerId?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   verificationStatus?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
@@ -302,12 +414,12 @@ export type PermanentJourneyPlanWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"PermanentJourneyPlan"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
+  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
   dailyTasks?: Prisma.DailyTaskListRelationFilter
   dailyVisitReports?: Prisma.DailyVisitReportListRelationFilter
   technicalVisitReports?: Prisma.TechnicalVisitReportListRelationFilter
   salesOrders?: Prisma.SalesOrderListRelationFilter
-  site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
-  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
 }
 
 export type PermanentJourneyPlanOrderByWithRelationInput = {
@@ -316,8 +428,19 @@ export type PermanentJourneyPlanOrderByWithRelationInput = {
   createdById?: Prisma.SortOrder
   planDate?: Prisma.SortOrder
   areaToBeVisited?: Prisma.SortOrder
+  route?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  plannedNewSiteVisits?: Prisma.SortOrder
+  plannedFollowUpSiteVisits?: Prisma.SortOrder
+  plannedNewDealerVisits?: Prisma.SortOrder
+  plannedInfluencerVisits?: Prisma.SortOrder
+  influencerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  influencerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  activityType?: Prisma.SortOrderInput | Prisma.SortOrder
+  noOfConvertedBags?: Prisma.SortOrder
+  noOfMasonPcSchemes?: Prisma.SortOrder
+  diversionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   verificationStatus?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -328,12 +451,12 @@ export type PermanentJourneyPlanOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  site?: Prisma.TechnicalSiteOrderByWithRelationInput
+  dealer?: Prisma.DealerOrderByWithRelationInput
   dailyTasks?: Prisma.DailyTaskOrderByRelationAggregateInput
   dailyVisitReports?: Prisma.DailyVisitReportOrderByRelationAggregateInput
   technicalVisitReports?: Prisma.TechnicalVisitReportOrderByRelationAggregateInput
   salesOrders?: Prisma.SalesOrderOrderByRelationAggregateInput
-  site?: Prisma.TechnicalSiteOrderByWithRelationInput
-  dealer?: Prisma.DealerOrderByWithRelationInput
 }
 
 export type PermanentJourneyPlanWhereUniqueInput = Prisma.AtLeast<{
@@ -347,8 +470,19 @@ export type PermanentJourneyPlanWhereUniqueInput = Prisma.AtLeast<{
   createdById?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
   planDate?: Prisma.DateTimeFilter<"PermanentJourneyPlan"> | Date | string
   areaToBeVisited?: Prisma.StringFilter<"PermanentJourneyPlan"> | string
+  route?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   description?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   status?: Prisma.StringFilter<"PermanentJourneyPlan"> | string
+  plannedNewSiteVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedFollowUpSiteVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedNewDealerVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedInfluencerVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  influencerName?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  influencerPhone?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  activityType?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  noOfConvertedBags?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  noOfMasonPcSchemes?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  diversionReason?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   siteId?: Prisma.UuidNullableFilter<"PermanentJourneyPlan"> | string | null
   dealerId?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   verificationStatus?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
@@ -358,12 +492,12 @@ export type PermanentJourneyPlanWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"PermanentJourneyPlan"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
+  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
   dailyTasks?: Prisma.DailyTaskListRelationFilter
   dailyVisitReports?: Prisma.DailyVisitReportListRelationFilter
   technicalVisitReports?: Prisma.TechnicalVisitReportListRelationFilter
   salesOrders?: Prisma.SalesOrderListRelationFilter
-  site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
-  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
 }, "id" | "userId_dealerId_planDate" | "idempotencyKey">
 
 export type PermanentJourneyPlanOrderByWithAggregationInput = {
@@ -372,8 +506,19 @@ export type PermanentJourneyPlanOrderByWithAggregationInput = {
   createdById?: Prisma.SortOrder
   planDate?: Prisma.SortOrder
   areaToBeVisited?: Prisma.SortOrder
+  route?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  plannedNewSiteVisits?: Prisma.SortOrder
+  plannedFollowUpSiteVisits?: Prisma.SortOrder
+  plannedNewDealerVisits?: Prisma.SortOrder
+  plannedInfluencerVisits?: Prisma.SortOrder
+  influencerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  influencerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  activityType?: Prisma.SortOrderInput | Prisma.SortOrder
+  noOfConvertedBags?: Prisma.SortOrder
+  noOfMasonPcSchemes?: Prisma.SortOrder
+  diversionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   verificationStatus?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -398,8 +543,19 @@ export type PermanentJourneyPlanScalarWhereWithAggregatesInput = {
   createdById?: Prisma.IntWithAggregatesFilter<"PermanentJourneyPlan"> | number
   planDate?: Prisma.DateTimeWithAggregatesFilter<"PermanentJourneyPlan"> | Date | string
   areaToBeVisited?: Prisma.StringWithAggregatesFilter<"PermanentJourneyPlan"> | string
+  route?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"PermanentJourneyPlan"> | string
+  plannedNewSiteVisits?: Prisma.IntWithAggregatesFilter<"PermanentJourneyPlan"> | number
+  plannedFollowUpSiteVisits?: Prisma.IntWithAggregatesFilter<"PermanentJourneyPlan"> | number
+  plannedNewDealerVisits?: Prisma.IntWithAggregatesFilter<"PermanentJourneyPlan"> | number
+  plannedInfluencerVisits?: Prisma.IntWithAggregatesFilter<"PermanentJourneyPlan"> | number
+  influencerName?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
+  influencerPhone?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
+  activityType?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
+  noOfConvertedBags?: Prisma.IntWithAggregatesFilter<"PermanentJourneyPlan"> | number
+  noOfMasonPcSchemes?: Prisma.IntWithAggregatesFilter<"PermanentJourneyPlan"> | number
+  diversionReason?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
   siteId?: Prisma.UuidNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
   dealerId?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
   verificationStatus?: Prisma.StringNullableWithAggregatesFilter<"PermanentJourneyPlan"> | string | null
@@ -414,8 +570,19 @@ export type PermanentJourneyPlanCreateInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -424,12 +591,12 @@ export type PermanentJourneyPlanCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateInput = {
@@ -438,8 +605,19 @@ export type PermanentJourneyPlanUncheckedCreateInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -458,8 +636,19 @@ export type PermanentJourneyPlanUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -468,12 +657,12 @@ export type PermanentJourneyPlanUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateInput = {
@@ -482,8 +671,19 @@ export type PermanentJourneyPlanUncheckedUpdateInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -504,8 +704,19 @@ export type PermanentJourneyPlanCreateManyInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -520,8 +731,19 @@ export type PermanentJourneyPlanUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -536,8 +758,19 @@ export type PermanentJourneyPlanUncheckedUpdateManyInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -575,8 +808,19 @@ export type PermanentJourneyPlanCountOrderByAggregateInput = {
   createdById?: Prisma.SortOrder
   planDate?: Prisma.SortOrder
   areaToBeVisited?: Prisma.SortOrder
+  route?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  plannedNewSiteVisits?: Prisma.SortOrder
+  plannedFollowUpSiteVisits?: Prisma.SortOrder
+  plannedNewDealerVisits?: Prisma.SortOrder
+  plannedInfluencerVisits?: Prisma.SortOrder
+  influencerName?: Prisma.SortOrder
+  influencerPhone?: Prisma.SortOrder
+  activityType?: Prisma.SortOrder
+  noOfConvertedBags?: Prisma.SortOrder
+  noOfMasonPcSchemes?: Prisma.SortOrder
+  diversionReason?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -590,6 +834,12 @@ export type PermanentJourneyPlanCountOrderByAggregateInput = {
 export type PermanentJourneyPlanAvgOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  plannedNewSiteVisits?: Prisma.SortOrder
+  plannedFollowUpSiteVisits?: Prisma.SortOrder
+  plannedNewDealerVisits?: Prisma.SortOrder
+  plannedInfluencerVisits?: Prisma.SortOrder
+  noOfConvertedBags?: Prisma.SortOrder
+  noOfMasonPcSchemes?: Prisma.SortOrder
 }
 
 export type PermanentJourneyPlanMaxOrderByAggregateInput = {
@@ -598,8 +848,19 @@ export type PermanentJourneyPlanMaxOrderByAggregateInput = {
   createdById?: Prisma.SortOrder
   planDate?: Prisma.SortOrder
   areaToBeVisited?: Prisma.SortOrder
+  route?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  plannedNewSiteVisits?: Prisma.SortOrder
+  plannedFollowUpSiteVisits?: Prisma.SortOrder
+  plannedNewDealerVisits?: Prisma.SortOrder
+  plannedInfluencerVisits?: Prisma.SortOrder
+  influencerName?: Prisma.SortOrder
+  influencerPhone?: Prisma.SortOrder
+  activityType?: Prisma.SortOrder
+  noOfConvertedBags?: Prisma.SortOrder
+  noOfMasonPcSchemes?: Prisma.SortOrder
+  diversionReason?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -616,8 +877,19 @@ export type PermanentJourneyPlanMinOrderByAggregateInput = {
   createdById?: Prisma.SortOrder
   planDate?: Prisma.SortOrder
   areaToBeVisited?: Prisma.SortOrder
+  route?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  plannedNewSiteVisits?: Prisma.SortOrder
+  plannedFollowUpSiteVisits?: Prisma.SortOrder
+  plannedNewDealerVisits?: Prisma.SortOrder
+  plannedInfluencerVisits?: Prisma.SortOrder
+  influencerName?: Prisma.SortOrder
+  influencerPhone?: Prisma.SortOrder
+  activityType?: Prisma.SortOrder
+  noOfConvertedBags?: Prisma.SortOrder
+  noOfMasonPcSchemes?: Prisma.SortOrder
+  diversionReason?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -631,6 +903,12 @@ export type PermanentJourneyPlanMinOrderByAggregateInput = {
 export type PermanentJourneyPlanSumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  plannedNewSiteVisits?: Prisma.SortOrder
+  plannedFollowUpSiteVisits?: Prisma.SortOrder
+  plannedNewDealerVisits?: Prisma.SortOrder
+  plannedInfluencerVisits?: Prisma.SortOrder
+  noOfConvertedBags?: Prisma.SortOrder
+  noOfMasonPcSchemes?: Prisma.SortOrder
 }
 
 export type PermanentJourneyPlanCreateNestedManyWithoutUserInput = {
@@ -869,8 +1147,19 @@ export type PermanentJourneyPlanCreateWithoutUserInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -878,12 +1167,12 @@ export type PermanentJourneyPlanCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutUserInput = {
@@ -891,8 +1180,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutUserInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -921,8 +1221,19 @@ export type PermanentJourneyPlanCreateWithoutCreatedByInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -930,12 +1241,12 @@ export type PermanentJourneyPlanCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutCreatedByInput = {
@@ -943,8 +1254,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutCreatedByInput = {
   userId: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -994,8 +1316,19 @@ export type PermanentJourneyPlanScalarWhereInput = {
   createdById?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
   planDate?: Prisma.DateTimeFilter<"PermanentJourneyPlan"> | Date | string
   areaToBeVisited?: Prisma.StringFilter<"PermanentJourneyPlan"> | string
+  route?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   description?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   status?: Prisma.StringFilter<"PermanentJourneyPlan"> | string
+  plannedNewSiteVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedFollowUpSiteVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedNewDealerVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  plannedInfluencerVisits?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  influencerName?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  influencerPhone?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  activityType?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
+  noOfConvertedBags?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  noOfMasonPcSchemes?: Prisma.IntFilter<"PermanentJourneyPlan"> | number
+  diversionReason?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   siteId?: Prisma.UuidNullableFilter<"PermanentJourneyPlan"> | string | null
   dealerId?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
   verificationStatus?: Prisma.StringNullableFilter<"PermanentJourneyPlan"> | string | null
@@ -1026,8 +1359,19 @@ export type PermanentJourneyPlanCreateWithoutDealerInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -1036,11 +1380,11 @@ export type PermanentJourneyPlanCreateWithoutDealerInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutDealerInput = {
@@ -1049,8 +1393,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutDealerInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
@@ -1094,8 +1449,19 @@ export type PermanentJourneyPlanCreateWithoutDailyVisitReportsInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -1104,11 +1470,11 @@ export type PermanentJourneyPlanCreateWithoutDailyVisitReportsInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutDailyVisitReportsInput = {
@@ -1117,8 +1483,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutDailyVisitReportsInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -1152,8 +1529,19 @@ export type PermanentJourneyPlanUpdateWithoutDailyVisitReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1162,11 +1550,11 @@ export type PermanentJourneyPlanUpdateWithoutDailyVisitReportsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutDailyVisitReportsInput = {
@@ -1175,8 +1563,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutDailyVisitReportsInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1194,8 +1593,19 @@ export type PermanentJourneyPlanCreateWithoutDailyTasksInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -1204,11 +1614,11 @@ export type PermanentJourneyPlanCreateWithoutDailyTasksInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutDailyTasksInput = {
@@ -1217,8 +1627,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutDailyTasksInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -1252,8 +1673,19 @@ export type PermanentJourneyPlanUpdateWithoutDailyTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1262,11 +1694,11 @@ export type PermanentJourneyPlanUpdateWithoutDailyTasksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutDailyTasksInput = {
@@ -1275,8 +1707,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutDailyTasksInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1294,8 +1737,19 @@ export type PermanentJourneyPlanCreateWithoutSalesOrdersInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -1304,11 +1758,11 @@ export type PermanentJourneyPlanCreateWithoutSalesOrdersInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutSalesOrdersInput = {
@@ -1317,8 +1771,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutSalesOrdersInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -1352,8 +1817,19 @@ export type PermanentJourneyPlanUpdateWithoutSalesOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1362,11 +1838,11 @@ export type PermanentJourneyPlanUpdateWithoutSalesOrdersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutSalesOrdersInput = {
@@ -1375,8 +1851,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutSalesOrdersInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1394,8 +1881,19 @@ export type PermanentJourneyPlanCreateWithoutTechnicalVisitReportsInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -1404,11 +1902,11 @@ export type PermanentJourneyPlanCreateWithoutTechnicalVisitReportsInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  site?: Prisma.TechnicalSiteCreateNestedOneWithoutPermanentJourneyPlansInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutTechnicalVisitReportsInput = {
@@ -1417,8 +1915,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutTechnicalVisitReportsInput
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -1452,8 +1961,19 @@ export type PermanentJourneyPlanUpdateWithoutTechnicalVisitReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1462,11 +1982,11 @@ export type PermanentJourneyPlanUpdateWithoutTechnicalVisitReportsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutTechnicalVisitReportsInput = {
@@ -1475,8 +1995,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutTechnicalVisitReportsInput
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1494,8 +2025,19 @@ export type PermanentJourneyPlanCreateWithoutSiteInput = {
   id?: string
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
   bulkOpId?: string | null
@@ -1504,11 +2046,11 @@ export type PermanentJourneyPlanCreateWithoutSiteInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansAssignedInput
   createdBy: Prisma.UserCreateNestedOneWithoutPermanentJourneyPlansCreatedInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
   dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput
   dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutPermanentJourneyPlanInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutPermanentJourneyPlanInput
-  dealer?: Prisma.DealerCreateNestedOneWithoutPermanentJourneyPlansAsDealerInput
 }
 
 export type PermanentJourneyPlanUncheckedCreateWithoutSiteInput = {
@@ -1517,8 +2059,19 @@ export type PermanentJourneyPlanUncheckedCreateWithoutSiteInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
@@ -1563,8 +2116,19 @@ export type PermanentJourneyPlanCreateManyUserInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -1580,8 +2144,19 @@ export type PermanentJourneyPlanCreateManyCreatedByInput = {
   userId: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
@@ -1596,8 +2171,19 @@ export type PermanentJourneyPlanUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1605,12 +2191,12 @@ export type PermanentJourneyPlanUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutUserInput = {
@@ -1618,8 +2204,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutUserInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1639,8 +2236,19 @@ export type PermanentJourneyPlanUncheckedUpdateManyWithoutUserInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1655,8 +2263,19 @@ export type PermanentJourneyPlanUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1664,12 +2283,12 @@ export type PermanentJourneyPlanUpdateWithoutCreatedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutCreatedByInput = {
@@ -1677,8 +2296,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutCreatedByInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1698,8 +2328,19 @@ export type PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1716,8 +2357,19 @@ export type PermanentJourneyPlanCreateManyDealerInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   siteId?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
@@ -1731,8 +2383,19 @@ export type PermanentJourneyPlanUpdateWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1741,11 +2404,11 @@ export type PermanentJourneyPlanUpdateWithoutDealerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  site?: Prisma.TechnicalSiteUpdateOneWithoutPermanentJourneyPlansNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutDealerInput = {
@@ -1754,8 +2417,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutDealerInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1775,8 +2449,19 @@ export type PermanentJourneyPlanUncheckedUpdateManyWithoutDealerInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1792,8 +2477,19 @@ export type PermanentJourneyPlanCreateManySiteInput = {
   createdById: number
   planDate: Date | string
   areaToBeVisited: string
+  route?: string | null
   description?: string | null
   status: string
+  plannedNewSiteVisits?: number
+  plannedFollowUpSiteVisits?: number
+  plannedNewDealerVisits?: number
+  plannedInfluencerVisits?: number
+  influencerName?: string | null
+  influencerPhone?: string | null
+  activityType?: string | null
+  noOfConvertedBags?: number
+  noOfMasonPcSchemes?: number
+  diversionReason?: string | null
   dealerId?: string | null
   verificationStatus?: string | null
   additionalVisitRemarks?: string | null
@@ -1807,8 +2503,19 @@ export type PermanentJourneyPlanUpdateWithoutSiteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bulkOpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1817,11 +2524,11 @@ export type PermanentJourneyPlanUpdateWithoutSiteInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansAssignedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutPermanentJourneyPlansCreatedNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
   dailyTasks?: Prisma.DailyTaskUpdateManyWithoutPermanentJourneyPlanNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutPermanentJourneyPlanNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutPermanentJourneyPlanNestedInput
-  dealer?: Prisma.DealerUpdateOneWithoutPermanentJourneyPlansAsDealerNestedInput
 }
 
 export type PermanentJourneyPlanUncheckedUpdateWithoutSiteInput = {
@@ -1830,8 +2537,19 @@ export type PermanentJourneyPlanUncheckedUpdateWithoutSiteInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1851,8 +2569,19 @@ export type PermanentJourneyPlanUncheckedUpdateManyWithoutSiteInput = {
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   planDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areaToBeVisited?: Prisma.StringFieldUpdateOperationsInput | string
+  route?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedNewSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedFollowUpSiteVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedNewDealerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  plannedInfluencerVisits?: Prisma.IntFieldUpdateOperationsInput | number
+  influencerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  influencerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfConvertedBags?: Prisma.IntFieldUpdateOperationsInput | number
+  noOfMasonPcSchemes?: Prisma.IntFieldUpdateOperationsInput | number
+  diversionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verificationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalVisitRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1926,8 +2655,19 @@ export type PermanentJourneyPlanSelect<ExtArgs extends runtime.Types.Extensions.
   createdById?: boolean
   planDate?: boolean
   areaToBeVisited?: boolean
+  route?: boolean
   description?: boolean
   status?: boolean
+  plannedNewSiteVisits?: boolean
+  plannedFollowUpSiteVisits?: boolean
+  plannedNewDealerVisits?: boolean
+  plannedInfluencerVisits?: boolean
+  influencerName?: boolean
+  influencerPhone?: boolean
+  activityType?: boolean
+  noOfConvertedBags?: boolean
+  noOfMasonPcSchemes?: boolean
+  diversionReason?: boolean
   siteId?: boolean
   dealerId?: boolean
   verificationStatus?: boolean
@@ -1938,12 +2678,12 @@ export type PermanentJourneyPlanSelect<ExtArgs extends runtime.Types.Extensions.
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  site?: boolean | Prisma.PermanentJourneyPlan$siteArgs<ExtArgs>
+  dealer?: boolean | Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs>
   dailyTasks?: boolean | Prisma.PermanentJourneyPlan$dailyTasksArgs<ExtArgs>
   dailyVisitReports?: boolean | Prisma.PermanentJourneyPlan$dailyVisitReportsArgs<ExtArgs>
   technicalVisitReports?: boolean | Prisma.PermanentJourneyPlan$technicalVisitReportsArgs<ExtArgs>
   salesOrders?: boolean | Prisma.PermanentJourneyPlan$salesOrdersArgs<ExtArgs>
-  site?: boolean | Prisma.PermanentJourneyPlan$siteArgs<ExtArgs>
-  dealer?: boolean | Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs>
   _count?: boolean | Prisma.PermanentJourneyPlanCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["permanentJourneyPlan"]>
 
@@ -1953,8 +2693,19 @@ export type PermanentJourneyPlanSelectCreateManyAndReturn<ExtArgs extends runtim
   createdById?: boolean
   planDate?: boolean
   areaToBeVisited?: boolean
+  route?: boolean
   description?: boolean
   status?: boolean
+  plannedNewSiteVisits?: boolean
+  plannedFollowUpSiteVisits?: boolean
+  plannedNewDealerVisits?: boolean
+  plannedInfluencerVisits?: boolean
+  influencerName?: boolean
+  influencerPhone?: boolean
+  activityType?: boolean
+  noOfConvertedBags?: boolean
+  noOfMasonPcSchemes?: boolean
+  diversionReason?: boolean
   siteId?: boolean
   dealerId?: boolean
   verificationStatus?: boolean
@@ -1975,8 +2726,19 @@ export type PermanentJourneyPlanSelectUpdateManyAndReturn<ExtArgs extends runtim
   createdById?: boolean
   planDate?: boolean
   areaToBeVisited?: boolean
+  route?: boolean
   description?: boolean
   status?: boolean
+  plannedNewSiteVisits?: boolean
+  plannedFollowUpSiteVisits?: boolean
+  plannedNewDealerVisits?: boolean
+  plannedInfluencerVisits?: boolean
+  influencerName?: boolean
+  influencerPhone?: boolean
+  activityType?: boolean
+  noOfConvertedBags?: boolean
+  noOfMasonPcSchemes?: boolean
+  diversionReason?: boolean
   siteId?: boolean
   dealerId?: boolean
   verificationStatus?: boolean
@@ -1997,8 +2759,19 @@ export type PermanentJourneyPlanSelectScalar = {
   createdById?: boolean
   planDate?: boolean
   areaToBeVisited?: boolean
+  route?: boolean
   description?: boolean
   status?: boolean
+  plannedNewSiteVisits?: boolean
+  plannedFollowUpSiteVisits?: boolean
+  plannedNewDealerVisits?: boolean
+  plannedInfluencerVisits?: boolean
+  influencerName?: boolean
+  influencerPhone?: boolean
+  activityType?: boolean
+  noOfConvertedBags?: boolean
+  noOfMasonPcSchemes?: boolean
+  diversionReason?: boolean
   siteId?: boolean
   dealerId?: boolean
   verificationStatus?: boolean
@@ -2009,16 +2782,16 @@ export type PermanentJourneyPlanSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PermanentJourneyPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "createdById" | "planDate" | "areaToBeVisited" | "description" | "status" | "siteId" | "dealerId" | "verificationStatus" | "additionalVisitRemarks" | "bulkOpId" | "idempotencyKey" | "createdAt" | "updatedAt", ExtArgs["result"]["permanentJourneyPlan"]>
+export type PermanentJourneyPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "createdById" | "planDate" | "areaToBeVisited" | "route" | "description" | "status" | "plannedNewSiteVisits" | "plannedFollowUpSiteVisits" | "plannedNewDealerVisits" | "plannedInfluencerVisits" | "influencerName" | "influencerPhone" | "activityType" | "noOfConvertedBags" | "noOfMasonPcSchemes" | "diversionReason" | "siteId" | "dealerId" | "verificationStatus" | "additionalVisitRemarks" | "bulkOpId" | "idempotencyKey" | "createdAt" | "updatedAt", ExtArgs["result"]["permanentJourneyPlan"]>
 export type PermanentJourneyPlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  site?: boolean | Prisma.PermanentJourneyPlan$siteArgs<ExtArgs>
+  dealer?: boolean | Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs>
   dailyTasks?: boolean | Prisma.PermanentJourneyPlan$dailyTasksArgs<ExtArgs>
   dailyVisitReports?: boolean | Prisma.PermanentJourneyPlan$dailyVisitReportsArgs<ExtArgs>
   technicalVisitReports?: boolean | Prisma.PermanentJourneyPlan$technicalVisitReportsArgs<ExtArgs>
   salesOrders?: boolean | Prisma.PermanentJourneyPlan$salesOrdersArgs<ExtArgs>
-  site?: boolean | Prisma.PermanentJourneyPlan$siteArgs<ExtArgs>
-  dealer?: boolean | Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs>
   _count?: boolean | Prisma.PermanentJourneyPlanCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PermanentJourneyPlanIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2039,12 +2812,12 @@ export type $PermanentJourneyPlanPayload<ExtArgs extends runtime.Types.Extension
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs>
+    site: Prisma.$TechnicalSitePayload<ExtArgs> | null
+    dealer: Prisma.$DealerPayload<ExtArgs> | null
     dailyTasks: Prisma.$DailyTaskPayload<ExtArgs>[]
     dailyVisitReports: Prisma.$DailyVisitReportPayload<ExtArgs>[]
     technicalVisitReports: Prisma.$TechnicalVisitReportPayload<ExtArgs>[]
     salesOrders: Prisma.$SalesOrderPayload<ExtArgs>[]
-    site: Prisma.$TechnicalSitePayload<ExtArgs> | null
-    dealer: Prisma.$DealerPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2052,8 +2825,19 @@ export type $PermanentJourneyPlanPayload<ExtArgs extends runtime.Types.Extension
     createdById: number
     planDate: Date
     areaToBeVisited: string
+    route: string | null
     description: string | null
     status: string
+    plannedNewSiteVisits: number
+    plannedFollowUpSiteVisits: number
+    plannedNewDealerVisits: number
+    plannedInfluencerVisits: number
+    influencerName: string | null
+    influencerPhone: string | null
+    activityType: string | null
+    noOfConvertedBags: number
+    noOfMasonPcSchemes: number
+    diversionReason: string | null
     siteId: string | null
     dealerId: string | null
     verificationStatus: string | null
@@ -2458,12 +3242,12 @@ export interface Prisma__PermanentJourneyPlanClient<T, Null = never, ExtArgs ext
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  site<T extends Prisma.PermanentJourneyPlan$siteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$siteArgs<ExtArgs>>): Prisma.Prisma__TechnicalSiteClient<runtime.Types.Result.GetResult<Prisma.$TechnicalSitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  dealer<T extends Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   dailyTasks<T extends Prisma.PermanentJourneyPlan$dailyTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$dailyTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dailyVisitReports<T extends Prisma.PermanentJourneyPlan$dailyVisitReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$dailyVisitReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyVisitReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   technicalVisitReports<T extends Prisma.PermanentJourneyPlan$technicalVisitReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$technicalVisitReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechnicalVisitReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   salesOrders<T extends Prisma.PermanentJourneyPlan$salesOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$salesOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalesOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  site<T extends Prisma.PermanentJourneyPlan$siteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$siteArgs<ExtArgs>>): Prisma.Prisma__TechnicalSiteClient<runtime.Types.Result.GetResult<Prisma.$TechnicalSitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  dealer<T extends Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermanentJourneyPlan$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2498,8 +3282,19 @@ export interface PermanentJourneyPlanFieldRefs {
   readonly createdById: Prisma.FieldRef<"PermanentJourneyPlan", 'Int'>
   readonly planDate: Prisma.FieldRef<"PermanentJourneyPlan", 'DateTime'>
   readonly areaToBeVisited: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
+  readonly route: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
   readonly description: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
   readonly status: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
+  readonly plannedNewSiteVisits: Prisma.FieldRef<"PermanentJourneyPlan", 'Int'>
+  readonly plannedFollowUpSiteVisits: Prisma.FieldRef<"PermanentJourneyPlan", 'Int'>
+  readonly plannedNewDealerVisits: Prisma.FieldRef<"PermanentJourneyPlan", 'Int'>
+  readonly plannedInfluencerVisits: Prisma.FieldRef<"PermanentJourneyPlan", 'Int'>
+  readonly influencerName: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
+  readonly influencerPhone: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
+  readonly activityType: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
+  readonly noOfConvertedBags: Prisma.FieldRef<"PermanentJourneyPlan", 'Int'>
+  readonly noOfMasonPcSchemes: Prisma.FieldRef<"PermanentJourneyPlan", 'Int'>
+  readonly diversionReason: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
   readonly siteId: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
   readonly dealerId: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
   readonly verificationStatus: Prisma.FieldRef<"PermanentJourneyPlan", 'String'>
@@ -2904,6 +3699,44 @@ export type PermanentJourneyPlanDeleteManyArgs<ExtArgs extends runtime.Types.Ext
 }
 
 /**
+ * PermanentJourneyPlan.site
+ */
+export type PermanentJourneyPlan$siteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TechnicalSite
+   */
+  select?: Prisma.TechnicalSiteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TechnicalSite
+   */
+  omit?: Prisma.TechnicalSiteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TechnicalSiteInclude<ExtArgs> | null
+  where?: Prisma.TechnicalSiteWhereInput
+}
+
+/**
+ * PermanentJourneyPlan.dealer
+ */
+export type PermanentJourneyPlan$dealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Dealer
+   */
+  select?: Prisma.DealerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Dealer
+   */
+  omit?: Prisma.DealerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DealerInclude<ExtArgs> | null
+  where?: Prisma.DealerWhereInput
+}
+
+/**
  * PermanentJourneyPlan.dailyTasks
  */
 export type PermanentJourneyPlan$dailyTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2997,44 +3830,6 @@ export type PermanentJourneyPlan$salesOrdersArgs<ExtArgs extends runtime.Types.E
   take?: number
   skip?: number
   distinct?: Prisma.SalesOrderScalarFieldEnum | Prisma.SalesOrderScalarFieldEnum[]
-}
-
-/**
- * PermanentJourneyPlan.site
- */
-export type PermanentJourneyPlan$siteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TechnicalSite
-   */
-  select?: Prisma.TechnicalSiteSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TechnicalSite
-   */
-  omit?: Prisma.TechnicalSiteOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TechnicalSiteInclude<ExtArgs> | null
-  where?: Prisma.TechnicalSiteWhereInput
-}
-
-/**
- * PermanentJourneyPlan.dealer
- */
-export type PermanentJourneyPlan$dealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Dealer
-   */
-  select?: Prisma.DealerSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Dealer
-   */
-  omit?: Prisma.DealerOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DealerInclude<ExtArgs> | null
-  where?: Prisma.DealerWhereInput
 }
 
 /**

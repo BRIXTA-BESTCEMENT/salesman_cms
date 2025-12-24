@@ -83,7 +83,7 @@ export const tablesMetadata: TableMeta[] = [
     {
         id: 'technicalSites',
         title: 'Technical Sites',
-        icon: MapPin, 
+        icon: MapPin,
         columns: [
             'id', 'siteName', 'concernedPerson', 'phoneNo', 'address',
             'latitude', 'longitude', 'siteType', 'area', 'region',
@@ -98,7 +98,12 @@ export const tablesMetadata: TableMeta[] = [
         id: 'permanentJourneyPlans',
         title: 'Permanent Journey Plans (PJP)',
         icon: Car,
-        columns: ['id', 'planDate', 'areaToBeVisited', 'description', 'status', 'dealerName', 'assignedSalesmanName', 'creatorName', 'createdAt', 'updatedAt']
+        columns: [
+            'id', 'planDate', 'assignedSalesmanName', 'areaToBeVisited', 'route', 'status', 'plannedNewSiteVisits',
+            'plannedFollowUpSiteVisits', 'plannedNewDealerVisits', 'plannedInfluencerVisits', 'influencerName', 'influencerPhone',
+            'activityType', 'noOfConvertedBags', 'noOfMasonPcSchemes', 'diversionReason',
+            'dealerName', 'description', 'creatorName', 'createdAt', 'updatedAt'
+        ]
     },
     {
         id: 'salesOrders',
@@ -177,11 +182,11 @@ export const tablesMetadata: TableMeta[] = [
     //     ],
     // },
     {
-        id: 'rewards', 
-        title: 'Rewards Inventory', 
+        id: 'rewards',
+        title: 'Rewards Inventory',
         icon: Gift,
         columns: [
-            'id', 'itemName', 'pointCost',  'totalAvailableQuantity', 'stock',  'isActive',  'createdAt', 'updatedAt'
+            'id', 'itemName', 'pointCost', 'totalAvailableQuantity', 'stock', 'isActive', 'createdAt', 'updatedAt'
         ],
     },
     {

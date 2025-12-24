@@ -152,20 +152,13 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         }
 
         const {
-            planDate,
-            areaToBeVisited,
-            description,
-            dealerId,
-            siteId,
-            additionalVisitRemarks,
-        } = v.data as {
-            planDate?: string;
-            areaToBeVisited?: string;
-            description?: string | null;
-            dealerId?: string | null;
-            siteId?: string | null;
-            additionalVisitRemarks?: string | null;
-        };
+            planDate, areaToBeVisited, route, description,
+            plannedNewSiteVisits, plannedFollowUpSiteVisits,
+            plannedNewDealerVisits, plannedInfluencerVisits,
+            influencerName, influencerPhone, activityType,
+            noOfConvertedBags, noOfMasonPcSchemes,
+            dealerId, siteId, additionalVisitRemarks, diversionReason
+        } = v.data;
 
         // Optional guard: if dealerId provided, ensure it exists
         if (dealerId) {
@@ -192,19 +185,28 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
             data: {
                 planDate: planDate ? new Date(planDate) : undefined,
                 areaToBeVisited,
+                route,
                 description,
+                plannedNewSiteVisits,
+                plannedFollowUpSiteVisits,
+                plannedNewDealerVisits,
+                plannedInfluencerVisits,
+                influencerName,
+                influencerPhone,
+                activityType,
+                noOfConvertedBags,
+                noOfMasonPcSchemes,
                 dealerId: dealerId ?? null,
                 siteId: siteId ?? null,
-
-                // Verification and status set to approved on modification
+                diversionReason,
                 verificationStatus: 'VERIFIED',
-                additionalVisitRemarks,
                 status: 'VERIFIED',
+                additionalVisitRemarks,
             },
             include: {
                 dealer: { select: { name: true } },
                 site: { select: { siteName: true } }
-            },
+            }
         });
 
         return NextResponse.json({

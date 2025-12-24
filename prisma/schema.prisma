@@ -286,20 +286,32 @@ model PermanentJourneyPlan {
 
   planDate        DateTime @map("plan_date") @db.Date
   areaToBeVisited String   @map("area_to_be_visited") @db.VarChar(500)
+  route           String?   @db.VarChar(500)
   description     String?  @db.VarChar(500)
   status          String   @db.VarChar(50)
 
-  // Ensure the name here matches DailyTask (see below)
-  dailyTasks              DailyTask[] @relation("PJPTasks")
-  dailyVisitReports       DailyVisitReport[] @relation("PJPReports_DVR")
-  technicalVisitReports   TechnicalVisitReport[] @relation("PJPReports_TVR")
-  salesOrders             SalesOrder[] @relation("PJP_Sales_Orders")
+  plannedNewSiteVisits      Int @default(0) @map("planned_new_site_visits")
+  plannedFollowUpSiteVisits Int @default(0) @map("planned_follow_up_site_visits")
+  plannedNewDealerVisits    Int @default(0) @map("planned_new_dealer_visits")
+  plannedInfluencerVisits   Int @default(0) @map("planned_influencer_visits") 
 
-  siteId String? @map("site_id") @db.Uuid // FK to TechnicalSite
-  site TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  // PC/Mason/Engg specific details
+  influencerName            String? @map("influencer_name") @db.VarChar(255)
+  influencerPhone           String? @map("influencer_phone") @db.VarChar(20)
+  activityType              String? @map("activity_type") @db.VarChar(255) // Activity of mason/pc/engg
 
+  // Conversions & Schemes (Updated Field Names)
+  noOfConvertedBags         Int @default(0) @map("noof_converted_bags")
+  noOfMasonPcSchemes        Int @default(0) @map("noof_masonpc_in_schemes")
+  
+  // Diversion 
+  diversionReason           String? @map("diversion_reason") @db.VarChar(500)
+
+  siteId                  String? @map("site_id") @db.Uuid // FK to TechnicalSite
+  site                    TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
   dealerId                String?  @map("dealer_id") @db.VarChar(255)
   dealer                  Dealer?  @relation("PJP_Dealer", fields: [dealerId], references: [id], onDelete: SetNull)
+
   verificationStatus      String?  @map("verification_status") @db.VarChar(50)
   additionalVisitRemarks  String?  @map("additional_visit_remarks") @db.VarChar(500)
 
@@ -308,6 +320,11 @@ model PermanentJourneyPlan {
 
   createdAt               DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt               DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  dailyTasks              DailyTask[] @relation("PJPTasks")
+  dailyVisitReports       DailyVisitReport[] @relation("PJPReports_DVR")
+  technicalVisitReports   TechnicalVisitReport[] @relation("PJPReports_TVR")
+  salesOrders             SalesOrder[] @relation("PJP_Sales_Orders")
 
   @@index([userId], map: "idx_permanent_journey_plans_user_id")
   @@index([createdById], map: "idx_permanent_journey_plans_created_by_id")

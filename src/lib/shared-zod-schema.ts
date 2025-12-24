@@ -246,9 +246,22 @@ export const permanentJourneyPlanSchema = z.object({
   createdByName: z.string(),
   createdByRole: z.string(),
   areaToBeVisited: z.string(),
+  route: z.string().nullable().optional(),
+
   planDate: z.string(), // Mapped to YYYY-MM-DD
   description: z.string().nullable().optional(), // Mapped to String? in schema
   status: z.string(),
+  plannedNewSiteVisits: z.number().int(),
+  plannedFollowUpSiteVisits: z.number().int(),
+  plannedNewDealerVisits: z.number().int(),
+  plannedInfluencerVisits: z.number().int(),
+  noOfConvertedBags: z.number().int(),
+  noOfMasonPcSchemes: z.number().int(),
+  diversionReason: z.string().nullable().optional(),
+  influencerName: z.string().optional().nullable(),
+  influencerPhone: z.string().optional().nullable(),
+  activityType: z.string().optional().nullable(),
+
   taskIds: z.array(z.string()), // Array of DailyTask IDs
   dealerId: z.string().nullable().optional(),
   visitDealerName: z.string().nullable().optional(),
@@ -267,9 +280,21 @@ export const permanentJourneyPlanVerificationSchema = z.object({
   createdByName: z.string(),
   createdByRole: z.string(),
   areaToBeVisited: z.string(),
+  route: z.string().nullable().optional(),
+
   planDate: z.string(), // YYYY-MM-DD
   description: z.string().nullable(),
   status: z.string(),
+  plannedNewSiteVisits: z.number().int(),
+  plannedFollowUpSiteVisits: z.number().int(),
+  plannedNewDealerVisits: z.number().int(),
+  plannedInfluencerVisits: z.number().int(),
+  noOfConvertedBags: z.number().int(),
+  noOfMasonPcSchemes: z.number().int(),
+  influencerName: z.string().optional().nullable(),
+  influencerPhone: z.string().optional().nullable(),
+  activityType: z.string().optional().nullable(),
+
   dealerId: z.string().nullable().optional(),
   visitDealerName: z.string().nullable().optional(),
   verificationStatus: z.enum(['PENDING', 'VERIFIED', 'REJECTED']),
@@ -289,11 +314,27 @@ export const pjpVerificationUpdateSchema = z.object({
 export const pjpModificationSchema = z.object({
   planDate: z.string().optional(),
   areaToBeVisited: z.string().max(500).optional(),
+  route: z.string().max(500).optional().nullable(), // Added
   description: z.string().max(500).optional().nullable(),
+  
+  // Allow editing numerical counts
+  plannedNewSiteVisits: z.number().int().optional(),
+  plannedFollowUpSiteVisits: z.number().int().optional(),
+  plannedNewDealerVisits: z.number().int().optional(),
+  plannedInfluencerVisits: z.number().int().optional(),
+  
+  // Influencer details
+  influencerName: z.string().optional().nullable(),
+  influencerPhone: z.string().optional().nullable(),
+  activityType: z.string().optional().nullable(),
+  noOfConvertedBags: z.number().int().optional(),
+  noOfMasonPcSchemes: z.number().int().optional(),
+
   dealerId: z.string().nullable().optional(),
   visitDealerName: z.string().nullable().optional(),
   additionalVisitRemarks: z.string().max(500).optional().nullable(),
   siteId: z.string().optional().nullable(),
+  diversionReason: z.string().max(500).optional().nullable(), // Added
 });
 
 // competition report

@@ -100,17 +100,23 @@ export async function GET(request: NextRequest) {
                 createdByName: createdByName,
                 createdByRole: plan.createdBy.role,
                 areaToBeVisited: plan.areaToBeVisited,
+                route: plan.route,
+
                 planDate: plan.planDate.toISOString().split('T')[0],
                 description: plan.description,
                 status: plan.status,
+                plannedNewSiteVisits: plan.plannedNewSiteVisits ?? 0,
+                plannedFollowUpSiteVisits: plan.plannedFollowUpSiteVisits ?? 0,
+                plannedNewDealerVisits: plan.plannedNewDealerVisits ?? 0,
+                plannedInfluencerVisits: plan.plannedInfluencerVisits ?? 0,
+                noOfConvertedBags: plan.noOfConvertedBags ?? 0,
+                noOfMasonPcSchemes: plan.noOfMasonPcSchemes ?? 0,
 
                 dealerId: plan.dealerId,
                 siteId: plan.siteId,
                 visitDealerName: visitTargetName,
 
-                verificationStatus: plan.verificationStatus
-                    ? plan.verificationStatus.toUpperCase()
-                    : 'PENDING',
+                verificationStatus: plan.verificationStatus ? plan.verificationStatus.toUpperCase() : 'PENDING',
                 additionalVisitRemarks: plan.additionalVisitRemarks,
                 salesmanRegion: plan.user.region,
                 salesmanArea: plan.user.area,

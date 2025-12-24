@@ -8,7 +8,7 @@ import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import * as nodemailer from 'nodemailer'; // <-- ADDED
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { generateRandomPassword } from '@/app/api/users/route';
+import { generateRandomPassword, sendInvitationEmailResend } from '@/app/api/users/route';
 
 // Define the roles that have admin-level access
 const allowedAdminRoles = [
@@ -132,7 +132,8 @@ const updateUserSchema = z.object({
   region: z.string().optional().nullable(),
   phoneNumber: z.string().optional().nullable(),
   isTechnical: z.boolean().optional(),
-  clearDevice: z.boolean().optional()
+  clearDevice: z.boolean().optional(),
+  isDashboardUser: z.boolean().optional()
 }).strict();
 
 // GET - Get single user
@@ -174,6 +175,8 @@ export async function GET(
         isTechnicalRole: true,
         deviceId: true,
         workosUserId: true,
+        inviteToken: true, 
+        status: true,
         createdAt: true,
         updatedAt: true,
         salesmanLoginId: true,
@@ -216,6 +219,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const organizationId = claims.org_id as string;
+
     // 1. Fetch Current User for Authorization
     const adminUser = await prisma.user.findUnique({
       where: { workosUserId: claims.sub },
@@ -240,7 +245,7 @@ export async function PUT(
     }
 
     // Destructure data for WorkOS and Prisma updates
-    const { role, area, region, phoneNumber, isTechnical, clearDevice, ...workosStandardData } = parsedBody.data;
+    const { role, area, region, phoneNumber, isTechnical, clearDevice, isDashboardUser, ...workosStandardData } = parsedBody.data;
 
     // 2. Check if the target user exists and belongs to the same company
     const targetUser = await prisma.user.findUnique({
@@ -252,8 +257,12 @@ export async function PUT(
         firstName: true,
         lastName: true,
         email: true,
+        role: true, 
+        salesmanLoginId: true,
+        hashedPassword: true, 
         techLoginId: true,
         isTechnicalRole: true,
+        techHashedPassword: true,
         deviceId: true,
       }
     });
@@ -290,11 +299,46 @@ export async function PUT(
       updatedAt: new Date()
     };
 
-    // --- START: New Technical Credential Generation Logic ---
-    let emailNotificationPromise: Promise<unknown> = Promise.resolve(); // To hold the email task
+    // user workOS invite update + tech role update settings
+    let emailNotificationPromises: Promise<any>[] = [];
 
-    // CHECK: Is admin flipping the switch to TRUE?
-    // AND Does the user NOT ALREADY have a tech ID?
+    // --- LOGIC: WorkOS Upgrade for App-Only Users ---
+    if (isDashboardUser === true && !targetUser.workosUserId && organizationId) {
+        console.log(` Dashboard access upgrade triggered for user ${targetUser.id}`);
+        try {
+            const workosInvitation = await workos.userManagement.sendInvitation({
+                email: workosStandardData.email || targetUser.email,
+                organizationId: organizationId,
+                roleSlug: (role || targetUser.role).toLowerCase()
+            });
+
+            // Update Prisma to track the invitation
+            prismaUpdateData.inviteToken = workosInvitation.id;
+            prismaUpdateData.status = 'pending';
+
+            // Queue the invitation email (reusing the Resend helper)
+            emailNotificationPromises.push(
+                sendInvitationEmailResend({
+                    to: workosStandardData.email || targetUser.email,
+                    firstName: workosStandardData.firstName || targetUser.firstName || '',
+                    lastName: workosStandardData.lastName || targetUser.lastName || '',
+                    companyName: adminUser.company.companyName,
+                    adminName: `${adminUser.firstName} ${adminUser.lastName}`,
+                    inviteUrl: workosInvitation.acceptInvitationUrl,
+                    role: (role || targetUser.role).toLowerCase(),
+                    salesmanLoginId: targetUser.salesmanLoginId,
+                    tempPassword: targetUser.hashedPassword,
+                    techLoginId: targetUser.techLoginId,
+                    techTempPassword: targetUser.techHashedPassword
+                })
+            );
+        } catch (err: any) {
+            console.error('❌ WorkOS Upgrade failed:', err.message);
+            // We continue so the local data update still happens
+        }
+    }
+
+    // user Tech role update check
     if (isTechnical === true && !targetUser.techLoginId) {
       console.log(`Generating new technical credentials for user ${targetUser.id}`);
       let isUnique = false;
@@ -317,7 +361,7 @@ export async function PUT(
       prismaUpdateData.techHashedPassword = newTechPassword; // Storing plaintext as per existing pattern
 
       // Prepare the email notification
-      emailNotificationPromise = sendTechCredentialsEmail({
+      emailNotificationPromises.push( sendTechCredentialsEmail({
         to: targetUser.email,
         firstName: (workosStandardData.firstName || targetUser.firstName || ''),
         lastName: (workosStandardData.lastName || targetUser.lastName || ''),
@@ -328,7 +372,7 @@ export async function PUT(
       }).catch(emailError => {
         // Log the error but don't block the API response
         console.error(`Failed to send technical credential email to ${targetUser.email}:`, emailError);
-      });
+      }));
 
     } else if (isTechnical !== undefined) {
       // Handle simple toggles (e.g., true -> false or just re-affirming true)
@@ -401,7 +445,7 @@ export async function PUT(
     await Promise.all([
       prismaUpdatePromise,
       workosUpdatePromise,
-      emailNotificationPromise,
+      ...emailNotificationPromises,
     ].filter(Boolean));
 
     return NextResponse.json({

@@ -611,10 +611,22 @@ export type FlattenedPermanentJourneyPlan = {
   id: string;
   planDate: string;
   areaToBeVisited: string;
+  route: string | null; 
   description: string | null;
   status: string;
   createdAt: string;
   updatedAt: string;
+
+  plannedNewSiteVisits: number;
+  plannedFollowUpSiteVisits: number;
+  plannedNewDealerVisits: number;
+  plannedInfluencerVisits: number;
+  influencerName: string | null;
+  influencerPhone: string | null;
+  activityType: string | null;
+  noOfConvertedBags: number;
+  noOfMasonPcSchemes: number;
+  diversionReason: string | null;
 
   assignedSalesmanName: string;
   assignedSalesmanEmail: string;
@@ -629,11 +641,29 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
   const rawReports = await prisma.permanentJourneyPlan.findMany({
     where: { user: { companyId } },
     select: {
-      id: true, planDate: true, areaToBeVisited: true, description: true, status: true,
-      createdAt: true, updatedAt: true,
+      id: true, 
+      planDate: true, 
+      areaToBeVisited: true, 
+      route: true,
+      description: true, 
+      status: true,
+      
+      plannedNewSiteVisits: true,
+      plannedFollowUpSiteVisits: true,
+      plannedNewDealerVisits: true,
+      plannedInfluencerVisits: true,
+      influencerName: true,
+      influencerPhone: true,
+      activityType: true,
+      noOfConvertedBags: true,
+      noOfMasonPcSchemes: true,
+      diversionReason: true,
+
+      createdAt: true, 
+      updatedAt: true,
       user: { select: { firstName: true, lastName: true, email: true } },
       createdBy: { select: { firstName: true, lastName: true, email: true } },
-      dealer: { select: { name: true } }, //hydrate dealer name
+      dealer: { select: { name: true } },
     },
     orderBy: { planDate: 'desc' },
   });
@@ -641,10 +671,22 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
   return rawReports.map((r: any) => ({
     id: r.id,
     areaToBeVisited: r.areaToBeVisited,
+    route: r.route ?? null,
     description: r.description ?? null,
     status: r.status,
+    
+    plannedNewSiteVisits: r.plannedNewSiteVisits ?? 0,
+    plannedFollowUpSiteVisits: r.plannedFollowUpSiteVisits ?? 0,
+    plannedNewDealerVisits: r.plannedNewDealerVisits ?? 0,
+    plannedInfluencerVisits: r.plannedInfluencerVisits ?? 0,
+    influencerName: r.influencerName ?? null,
+    influencerPhone: r.influencerPhone ?? null,
+    activityType: r.activityType ?? null,
+    noOfConvertedBags: r.noOfConvertedBags ?? 0,
+    noOfMasonPcSchemes: r.noOfMasonPcSchemes ?? 0,
+    diversionReason: r.diversionReason ?? null,
 
-    planDate: r.planDate.toISOString().slice(0, 10),
+    planDate: r.planDate instanceof Date ? r.planDate.toISOString().slice(0, 10) : r.planDate,
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
 
@@ -654,10 +696,9 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
     creatorName: `${r.createdBy.firstName ?? ''} ${r.createdBy.lastName ?? ''}`.trim() || r.createdBy.email,
     creatorEmail: r.createdBy.email,
 
-    dealerName: r.dealer?.name ?? null,   //final output friendly
+    dealerName: r.dealer?.name ?? null,
   }));
 }
-
 
 // Competition Report
 export type FlattenedCompetitionReport = {

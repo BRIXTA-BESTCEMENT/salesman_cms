@@ -103,15 +103,25 @@ export async function GET(request: NextRequest) {
         createdByName: createdByName,
         createdByRole: plan.createdBy.role,
         areaToBeVisited: plan.areaToBeVisited,
-        planDate: plan.planDate.toISOString().split('T')[0], // Format date as YYYY-MM-DD string
+        route: plan.route,
+        planDate: plan.planDate.toISOString().split('T')[0],
         description: plan.description,
         status: plan.status,
+        plannedNewSiteVisits: plan.plannedNewSiteVisits ?? 0,
+        plannedFollowUpSiteVisits: plan.plannedFollowUpSiteVisits ?? 0,
+        plannedNewDealerVisits: plan.plannedNewDealerVisits ?? 0,
+        plannedInfluencerVisits: plan.plannedInfluencerVisits ?? 0,
+        influencerName: plan.influencerName,
+        influencerPhone: plan.influencerPhone,
+        activityType: plan.activityType,
+        noOfConvertedBags: plan.noOfConvertedBags ?? 0,
+        noOfMasonPcSchemes: plan.noOfMasonPcSchemes ?? 0,
+        diversionReason: plan.diversionReason,
+  
         taskIds: taskIds,
-
         dealerId: plan.dealerId,
         siteId: plan.siteId,
         visitDealerName: visitTargetName,
-        
         verificationStatus: plan.verificationStatus,
         additionalVisitRemarks: plan.additionalVisitRemarks,
         createdAt: plan.createdAt.toISOString(),

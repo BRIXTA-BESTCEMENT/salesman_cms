@@ -20,7 +20,7 @@ interface InvitationEmailProps {
   adminName: string;
   companyName: string;
   role: string;
-  inviteUrl: string;
+  inviteUrl: string | null;
   fromEmail?: string;
   salesmanLoginId?: string | null;
   tempPassword?: string | null;
@@ -55,12 +55,12 @@ export const InvitationEmail = ({
       <Tailwind>
         <Body className="bg-white my-auto mx-auto font-sans">
           <Container className="border border-solid border-[#eaeaea] rounded my-10 mx-auto p-5 w-[465px]">
-            
+
             {/* Header */}
             <Heading className="text-black text-2xl font-normal text-center p-0 my-8 mx-0">
               Join <strong>{companyName}</strong>
             </Heading>
-            
+
             {/* Greeting */}
             <Text className="text-black text-sm leading-6">
               Hello {firstName}{lastName ? ` ${lastName}` : ""},
@@ -71,14 +71,16 @@ export const InvitationEmail = ({
             </Text>
 
             {/* Call to Action */}
-            <Section className="text-center mt-8 mb-8">
-              <Button
-                className="bg-[#0070f3] rounded text-white text-xs font-semibold no-underline text-center px-5 py-3"
-                href={inviteUrl}
-              >
-                Accept Invitation
-              </Button>
-            </Section>
+            {inviteUrl && (
+              <Section className="text-center mt-8 mb-8">
+                <Button
+                  className="bg-[#0070f3] rounded text-white text-xs font-semibold no-underline text-center px-5 py-3"
+                  href={inviteUrl}
+                >
+                  Accept Invitation
+                </Button>
+              </Section>
+            )}
 
             {/* Salesman Credentials (Conditional) */}
             {salesmanLoginId && (
@@ -114,17 +116,21 @@ export const InvitationEmail = ({
               </Section>
             )}
 
-            <Text className="text-black text-sm leading-6">
-              or copy and paste this URL into your browser:
-            </Text>
-            <Link href={inviteUrl} className="text-blue-600 no-underline break-all text-sm leading-6">
-              {inviteUrl}
-            </Link>
+            {inviteUrl && (
+              <>
+                <Text className="text-black text-sm leading-6">
+                  or copy and paste this URL into your browser:
+                </Text>
+                <Link href={inviteUrl} className="text-blue-600 no-underline break-all text-sm leading-6">
+                  {inviteUrl}
+                </Link>
+              </>
+            )}
 
             <Hr className="border border-solid border-[#eaeaea] my-6 mx-0 w-full" />
-            
+
             <Text className="text-[#666666] text-xs leading-6">
-              This invitation was intended for <span className="text-black">{firstName} {lastName}</span>. 
+              This invitation was intended for <span className="text-black">{firstName} {lastName}</span>.
               If you were not expecting this invitation, you can ignore this email.
             </Text>
           </Container>
@@ -142,7 +148,7 @@ export const MagicAuthEmail = ({ code, companyName }: MagicAuthEmailProps) => {
       <Tailwind>
         <Body className="bg-white my-auto mx-auto font-sans">
           <Container className="border border-solid border-[#eaeaea] rounded my-10 mx-auto p-5 w-[465px]">
-            
+
             <Heading className="text-black text-2xl font-normal text-center p-0 my-8 mx-0">
               Sign in to <strong>{companyName}</strong>
             </Heading>

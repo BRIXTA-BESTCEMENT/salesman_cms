@@ -35,6 +35,7 @@ import { useUserLocations } from '@/components/reusable-user-locations';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { ColumnDef } from '@tanstack/react-table';
 import { BulkInviteDialog } from './bulkInvite';
+import { AppOnlyUserDialog } from './appOnlyInvite';
 import { Zone } from '@/lib/Reusable-constants';
 import { email } from 'zod';
 
@@ -48,11 +49,14 @@ interface User {
   region: string | null;
   area: string | null;
   workosUserId: string | null;
+  inviteToken: string | null;
+  status: string | null;
   createdAt: string;
   updatedAt: string;
   salesmanLoginId?: string | null;
   isTechnicalRole?: boolean | null;
   deviceId?: string | null;
+  isDashboardUser?: boolean | null;
 }
 
 interface Company {
@@ -230,18 +234,19 @@ export default function UsersManagement({ adminUser }: Props) {
     }
   };
 
-  const handleUpdateUser = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdateUser = async (e?: React.FormEvent, isUpgrade: boolean = false) => {
+    if (e) e.preventDefault();
     if (!editingUser) return;
 
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       const response = await fetch(`${apiURI}/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, isDashboardUser: isUpgrade })
       });
 
       if (response.ok) {
@@ -568,6 +573,12 @@ export default function UsersManagement({ adminUser }: Props) {
               onRefreshUsers={fetchUsers}
             /> */}
 
+            <AppOnlyUserDialog
+              onSuccess={(msg) => setSuccess(msg)}
+              onError={(msg) => setError(msg)}
+              onRefresh={fetchUsers}
+            />
+
             <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
               <DialogTrigger asChild>
                 <Button>
@@ -795,6 +806,31 @@ export default function UsersManagement({ adminUser }: Props) {
                       />
                     </div>
                   </div>
+                  {/* --- User Dashboard Access Section --- */}
+                  {!editingUser?.workosUserId && !editingUser?.inviteToken && (
+                    <div className="space-y-2 pt-4 border-t">
+                      <Label className="text-sm font-semibold">Dashboard Access Management</Label>
+                      <div className="flex items-center justify-between p-3 rounded-md bg-muted/50 border">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Status: App-Only</span>
+                          <span className="text-sm">No dashboard access</span>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="border-primary text-primary hover:bg-primary/5"
+                          onClick={() => handleUpdateUser(undefined, true)}
+                          disabled={loading}
+                        >
+                          {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : "Give Dashboard Access"}
+                        </Button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground italic">
+                        * This will trigger an invitation email and grant access to this dashboard.
+                      </p>
+                    </div>
+                  )}
                   {/* --- Device ID Section --- */}
                   <div className="space-y-2 pt-4 border-t">
                     <Label className="text-sm font-semibold">Device ID Management</Label>

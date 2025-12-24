@@ -1,28 +1,58 @@
 // src/app/dashboard/permanentJourneyPlan/pjpVerify.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
+import {
+  Loader2,
+  Search,
+  Check,
+  X,
+  Eye,
+  ChevronsUpDown,
+  MapPin,
+  ClipboardCheck,
+  User,
+  FilterX,
+  Store,
+  HardHat
+} from 'lucide-react';
 
-// Shadcn UI Components
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Zone } from '@/lib/Reusable-constants';
+// Combobox / Searchable Dropdown Imports
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 import {
   permanentJourneyPlanVerificationSchema,
@@ -31,571 +61,333 @@ import {
 } from '@/lib/shared-zod-schema';
 
 type PermanentJourneyPlanVerification = PermanentJourneyPlanVerificationSchema;
-type PJPModificationData = PjpModificationSchema;
+interface PJPModificationState extends PjpModificationSchema { id: string; }
 
-type Dealer = {
+// --- TYPES FOR DROPDOWNS ---
+interface OptionItem {
   id: string;
   name: string;
-  area: string;
-  region: string;
-};
-
-type Site = {
-  id: string;
-  name: string;
-  location?: string;
-};
-
-interface PJPModificationState extends PJPModificationData {
-  id: string; 
-  dealerId?: string | null;
-  siteId?: string | null; // Added siteId
+  address?: string; // Used to auto-fill route
+  area?: string;
+  region?: string;
 }
+
+// --- SEARCHABLE SELECT COMPONENT ---
+interface SearchableSelectProps {
+  options: OptionItem[];
+  value: string;
+  onChange: (id: string, address?: string) => void;
+  placeholder: string;
+  isLoading?: boolean;
+}
+
+const SearchableSelect = ({ options, value, onChange, placeholder, isLoading }: SearchableSelectProps) => {
+  const [open, setOpen] = useState(false);
+  const selectedItem = options.find((item) => String(item.id) === value);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" className="w-full justify-between font-normal h-10" disabled={isLoading}>
+          {value === 'null' || !value ? placeholder : (selectedItem?.name || placeholder)}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command>
+          <CommandInput placeholder={`Search...`} />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              <CommandItem value="none" onSelect={() => { onChange("null"); setOpen(false); }}>
+                <Check className={cn("mr-2 h-4 w-4", value === "null" ? "opacity-100" : "opacity-0")} />
+                -- Unassigned / Manual --
+              </CommandItem>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.id}
+                  value={option.name}
+                  onSelect={() => {
+                    onChange(option.id, option.address);
+                    setOpen(false);
+                  }}
+                >
+                  <Check className={cn("mr-2 h-4 w-4", option.id === value ? "opacity-100" : "opacity-0")} />
+                  {option.name} {option.area ? `(${option.area})` : ''}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export default function PJPVerifyPage() {
   const [pendingPJPs, setPendingPJPs] = useState<PermanentJourneyPlanVerification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const [allDealers, setAllDealers] = useState<Dealer[]>([]);
-  const [allSites, setAllSites] = useState<Site[]>([]); // Added Sites State
+  // Dependency Data
+  const [allDealers, setAllDealers] = useState<OptionItem[]>([]);
+  const [allSites, setAllSites] = useState<OptionItem[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
-  // Selection State (Mutually Exclusive)
-  const [selectedDealerId, setSelectedDealerId] = useState<string | null>(null);
-  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
+  // Selection States
+  const [selectedDealerId, setSelectedDealerId] = useState<string>('null');
+  const [selectedSiteId, setSelectedSiteId] = useState<string>('null');
 
-  // State for Modification Dialog
+  // Modal/UI States
   const [isModificationDialogOpen, setIsModificationDialogOpen] = useState(false);
   const [pjpToModify, setPjpToModify] = useState<PJPModificationState | null>(null);
   const [isPatching, setIsPatching] = useState(false);
-  
-  // Delete handler
-  const [deletingId, setDeletingId] = React.useState<string | null>(null);
-  
-  // filters
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedSalesmanFilter, setSelectedSalesmanFilter] = useState<string>('all');
   const [selectedRegionFilter, setSelectedRegionFilter] = useState<string>('all');
 
-  // API URIs
-  const pjpVerificationAPI = `/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification`;
-  const dealerAPI = `/api/dashboardPagesAPI/dealerManagement`;
-  const locationAPI = `${dealerAPI}/dealer-locations`;
-  const sitesAPI = `/api/dashboardPagesAPI/technical-sites`;
+  const API_BASE = `/api/dashboardPagesAPI/permanent-journey-plan`;
+  const OPTIONS_API = `/api/dashboardPagesAPI/masonpc-side/mason-pc/form-options`;
 
-  // --- Fetch Locations, Dealers, and Sites ---
   const fetchDependencies = useCallback(async () => {
     try {
-      // 1. Fetch Locations (Areas)
-      const locationResponse = await fetch(locationAPI);
-      if (locationResponse.ok) {
-        const data = await locationResponse.json();
-        setAvailableAreas((data.areas || []).filter(Boolean).sort());
+      const res = await fetch(OPTIONS_API);
+      if (res.ok) {
+        const data = await res.json();
+        setAllDealers(data.dealers || []);
+        setAllSites(data.sites || []);
       }
+    } catch (e) { toast.error("Error loading dependency data."); }
+  }, []);
 
-      // 2. Fetch Dealers
-      const dealerResponse = await fetch(dealerAPI);
-      if (dealerResponse.ok) {
-        const data = await dealerResponse.json();
-        const validatedDealers: Dealer[] = (data || []).map((d: any) => ({
-          id: d.id,
-          name: d.name,
-          area: d.area,
-          region: d.region,
-        }));
-        setAllDealers(validatedDealers);
-      }
-
-      // 3. Fetch Sites
-      const siteResponse = await fetch(sitesAPI);
-      if (siteResponse.ok) {
-        const data = await siteResponse.json();
-        // Adjust mapping based on your actual site API response structure
-        const validatedSites: Site[] = (data || []).map((s: any) => ({
-          id: s.id,
-          name: s.name || s.siteName, // Handle both siteName/name
-          location: s.location || s.area || '',
-        }));
-        setAllSites(validatedSites);
-      }
-
-    } catch (e) {
-      console.error('Error fetching dependencies:', e);
-      toast.error('Failed to load dealer or site data.');
-    }
-  }, [locationAPI, dealerAPI, sitesAPI]);
-
-  // --- 1. Fetch Pending PJPs (GET request) ---
   const fetchPendingPJPs = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const response = await fetch(pjpVerificationAPI);
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-      }
+      const response = await fetch(`${API_BASE}/pjp-verification`);
       const data = await response.json();
-      const plansArray = Array.isArray(data) ? data : data.plans;
+      setPendingPJPs(z.array(permanentJourneyPlanVerificationSchema).parse(data.plans || data));
+    } catch (e: any) { toast.error("Error loading verification queue."); } finally { setLoading(false); }
+  }, []);
 
-      const validatedPJPs = z.array(permanentJourneyPlanVerificationSchema).parse(plansArray);
-      setPendingPJPs(validatedPJPs);
-      toast.success(`Loaded ${validatedPJPs.length} pending PJPs.`, { duration: 2000 });
-    } catch (e: any) {
-      console.error('Failed to fetch pending PJPs:', e);
-      const message = e instanceof z.ZodError
-        ? 'Data validation failed. Schema mismatch with backend.'
-        : (e.message || 'An unknown error occurred.');
+  useEffect(() => { fetchPendingPJPs(); fetchDependencies(); }, [fetchPendingPJPs, fetchDependencies]);
 
-      toast.error(`Failed to load pending PJPs: ${message}`);
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, [pjpVerificationAPI]);
-
-  useEffect(() => {
-    fetchPendingPJPs();
-    fetchDependencies();
-  }, [fetchPendingPJPs, fetchDependencies]);
-
-  // --- Resolve dealer by name within an area (best-effort) ---
-  const resolveDealerFromName = (name?: string | null, area?: string | null) => {
-    if (!name || !area) return null;
-    const lower = name.trim().toLowerCase();
-    return allDealers.find(
-      (d) => d.area === area && d.name.trim().toLowerCase() === lower
-    ) || null;
-  };
-
-  // Helper to open the modification dialog
   const openModificationDialog = (pjp: PermanentJourneyPlanVerification) => {
-    // Attempt to seed Dealer ID if missing but name matches
-    const seededDealer =
-      (pjp.dealerId && allDealers.find((d) => d.id === pjp.dealerId)) ||
-      resolveDealerFromName(pjp.visitDealerName ?? null, pjp.areaToBeVisited);
-
-    // Attempt to seed Site ID if present in PJP (assuming backend sends it)
-    const seededSiteId = (pjp as any).siteId || null;
-
     setPjpToModify({
-      id: pjp.id,
-      planDate: pjp.planDate,
-      areaToBeVisited: pjp.areaToBeVisited,
-      description: pjp.description,
-      visitDealerName: pjp.visitDealerName ?? null, 
-      additionalVisitRemarks: pjp.additionalVisitRemarks,
-      dealerId: pjp.dealerId ?? seededDealer?.id ?? null,
-      siteId: seededSiteId,
+      ...pjp,
+      route: pjp.route ?? '',
+      description: pjp.description ?? '',
+      influencerName: pjp.influencerName ?? '',
+      influencerPhone: pjp.influencerPhone ?? '',
+      activityType: pjp.activityType ?? '',
+      additionalVisitRemarks: pjp.additionalVisitRemarks ?? '',
     });
-
-    // Reset UI selectors based on what is present
-    if (seededSiteId) {
-        setSelectedSiteId(seededSiteId);
-        setSelectedDealerId(null);
-    } else if (seededDealer) {
-        setSelectedDealerId(seededDealer.id);
-        setSelectedSiteId(null);
-    } else {
-        setSelectedDealerId(null);
-        setSelectedSiteId(null);
-    }
-
+    setSelectedDealerId(pjp.dealerId || 'null');
+    setSelectedSiteId(pjp.siteId || 'null');
     setIsModificationDialogOpen(true);
   };
 
-  // Options for the dealer select (area-scoped)
-  const dealerOptions = (pjpToModify?.areaToBeVisited
-    ? allDealers.filter((d) => d.area === pjpToModify.areaToBeVisited)
-    : []
-  ).map((d) => ({
-    value: d.id,
-    label: `${d.name} — ${d.area}`,
-  }));
-
-  // Options for sites (All sites or filtered if needed)
-  const siteOptions = allSites.map((s) => ({
-      value: s.id,
-      label: `${s.name} ${s.location ? `(${s.location})` : ''}`,
-  }));
-
-  // --- 2. Handle Verification/Rejection Action (PUT request) ---
-  const handleVerificationAction = async (pjpId: string, action: 'VERIFIED') => {
-    toast.loading(`Updating PJP status to ${action}...`, { id: 'verification-status' });
-
-    try {
-      const response = await fetch(`${pjpVerificationAPI}/${pjpId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ verificationStatus: action, status: action }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({} as any));
-        throw new Error(errorData.message || errorData.error || 'Verification failed.');
-      }
-
-      toast.success(`PJP successfully marked as ${action}!`, { id: 'verification-status' });
-      fetchPendingPJPs();
-    } catch (e: any) {
-      toast.error(e.message || 'An error occurred during verification.', { id: 'verification-status' });
-    }
-  };
-
-  // --- 3. Handle Modification and Approval (PATCH request) ---
   const handlePatchPJP = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pjpToModify) return;
-
     setIsPatching(true);
-    toast.loading(`Modifying and verifying PJP ID: ${pjpToModify.id}...`, { id: 'patch-status' });
-
     try {
       const payload = {
         ...pjpToModify,
-        dealerId: selectedDealerId ?? null, 
-        siteId: selectedSiteId ?? null,      // Send Site ID
-        visitDealerName: undefined,
+        dealerId: selectedDealerId === 'null' ? null : selectedDealerId,
+        siteId: selectedSiteId === 'null' ? null : selectedSiteId,
       };
-
-      const response = await fetch(`${pjpVerificationAPI}/${pjpToModify.id}`, {
+      const res = await fetch(`${API_BASE}/pjp-verification/${pjpToModify.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({} as any));
-        throw new Error(errorData.message || errorData.error || 'Modification failed.');
-      }
-
-      toast.success('PJP modified and VERIFIED successfully!', { id: 'patch-status' });
+      if (!res.ok) throw new Error("Modification failed");
+      toast.success("PJP Modified and Verified!");
       setIsModificationDialogOpen(false);
-      setPjpToModify(null);
-      setSelectedDealerId(null);
-      setSelectedSiteId(null);
       fetchPendingPJPs();
-    } catch (e: any) {
-      toast.error(e.message || 'An error occurred during modification.', { id: 'patch-status' });
-    } finally {
-      setIsPatching(false);
-    }
+    } catch (e: any) { toast.error(e.message); } finally { setIsPatching(false); }
   };
 
-  // ---  Handler to DELETE a PJP ---
-  const handleDeletePjp = async (id: string) => {
-    setDeletingId(id);
-    const toastId = `delete-${id}`;
-    toast.loading(`Rejecting and deleting PJP...`, { id: toastId });
-    try {
-      const response = await fetch(
-        `/api/dashboardPagesAPI/permanent-journey-plan?id=${id}`,
-        { method: 'DELETE' },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete PJP');
-      }
-
-      toast.success('PJP Rejected and Deleted', { id: toastId });
-      fetchPendingPJPs();
-    } catch (e: any) {
-      toast.error(e.message, { id: toastId });
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  // ---  Derived lists for filter dropdowns ---
-  const salesmanOptions = React.useMemo(() => {
-    const names = new Set<string>();
-    pendingPJPs.forEach((p) => { if (p.salesmanName) names.add(p.salesmanName); });
-    return ['all', ...Array.from(names).sort()];
-  }, [pendingPJPs]);
-
-  const regionOptions = React.useMemo(() => {
-    const regions = new Set<string>();
-    pendingPJPs.forEach((p) => { if (p.salesmanRegion) regions.add(p.salesmanRegion); });
-    return ['all', ...Array.from(regions).sort()];
-  }, [pendingPJPs]);
-
-  // --- Client-side Filtering ---
-  const filteredPJPs = React.useMemo(() => {
-    return pendingPJPs.filter((pjp) => {
-      const matchesSalesman = selectedSalesmanFilter === 'all' ? true : pjp.salesmanName === selectedSalesmanFilter;
-      const matchesRegion = selectedRegionFilter === 'all' ? true : pjp.salesmanRegion === selectedRegionFilter;
-      return matchesSalesman && matchesRegion;
+  // --- FILTER LOGIC ---
+  const filteredPJPs = useMemo(() => {
+    return pendingPJPs.filter(pjp => {
+      const matchesSearch = pjp.salesmanName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        pjp.areaToBeVisited.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSalesman = selectedSalesmanFilter === 'all' || pjp.salesmanName === selectedSalesmanFilter;
+      const matchesRegion = selectedRegionFilter === 'all' || selectedRegionFilter === 'All Zone' || pjp.salesmanRegion === selectedRegionFilter;
+      return matchesSearch && matchesSalesman && matchesRegion;
     });
-  }, [pendingPJPs, selectedSalesmanFilter, selectedRegionFilter]);
+  }, [pendingPJPs, searchQuery, selectedSalesmanFilter, selectedRegionFilter]);
 
-  // --- Columns for PENDING PJPs Table ---
   const pjpVerificationColumns: ColumnDef<PermanentJourneyPlanVerification>[] = [
-    { accessorKey: 'salesmanName', header: 'Salesman', minSize: 150 },
-    { accessorKey: 'planDate', header: 'Date', minSize: 100 },
-    { accessorKey: 'areaToBeVisited', header: 'Area', minSize: 120 },
+    { accessorKey: 'salesmanName', header: 'Salesman' },
+    { accessorKey: 'planDate', header: 'Date' },
+    { accessorKey: 'areaToBeVisited', header: 'Area' },
     {
       accessorKey: 'visitDealerName',
       header: 'Visiting',
-      minSize: 180,
-      cell: ({ row }) => {
-        const name = row.original.visitDealerName;
-        // Check local row data to see what type of entity this is
-        // We cast to any because the base schema might not explicitly strict type siteId yet in some versions
-        const r = row.original as any;
-        const isSite = !!r.siteId;
-        const isDealer = !!r.dealerId;
-        
-        if (!name) return <span className="text-gray-400">N/A</span>;
-        
-        return (
-            <div className="flex flex-col">
-                <span className="font-medium">{name}</span>
-                <span className="text-[10px] uppercase tracking-wider text-gray-500">
-                    {isSite ? 'Site' : isDealer ? 'Dealer' : ''}
-                </span>
-            </div>
-        );
-      },
-    },
-    { accessorKey: 'salesmanRegion', header: 'Region', minSize: 100 },
-    { accessorKey: 'salesmanArea', header: 'Area', minSize: 100 },
-    {
-      accessorKey: 'description',
-      header: 'Description',
-      minSize: 220,
       cell: ({ row }) => (
-        <span className="max-w-60 truncate block" title={row.original.description || ''}>
-          {row.original.description || 'No Description'}
-        </span>
-      ),
+        <div className="flex flex-col">
+          <span className="font-bold">{row.original.visitDealerName || 'N/A'}</span>
+          <span className="text-[10px] text-muted-foreground uppercase">{row.original.siteId ? 'Site' : 'Dealer'}</span>
+        </div>
+      )
     },
+    { accessorKey: 'salesmanRegion', header: 'Region' },
     {
-      id: 'verificationActions',
+      id: 'actions',
       header: 'Actions',
-      minSize: 300,
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Button
-            variant="default"
-            size="sm"
-            className="bg-green-500 hover:bg-green-700"
-            onClick={() => handleVerificationAction(row.original.id, 'VERIFIED')}
-            disabled={deletingId === row.original.id}
-          >
-            Verify
-          </Button>
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => openModificationDialog(row.original)}
-            className="text-white bg-blue-500 hover:bg-blue-600"
-            disabled={deletingId === row.original.id}
-          >
-            Edit & Apply
-          </Button>
-          <Button
-            className="bg-red-800 hover:bg-red-900 text-white"
-            size="sm"
-            onClick={() => handleDeletePjp(row.original.id)}
-            disabled={deletingId === row.original.id}
-          >
-            {deletingId === row.original.id ? 'Rejecting...' : 'Reject'}
-          </Button>
+          <Button variant="default" size="sm" className="bg-green-600" onClick={() => openModificationDialog(row.original)}>Review & Verify</Button>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   return (
-    <Card className="mt-4 shadow-xl">
-      <CardHeader className="rounded-t-lg">
-        <CardTitle className="text-2xl">PJP Verification Queue</CardTitle>
-        <CardDescription>
-          Review and verify (PJPs) submitted by sales executives.
-        </CardDescription>
-      </CardHeader>
+    <div className="flex flex-col min-h-screen bg-background text-foreground space-y-6 p-8 pt-6">
+      <div className="space-y-0.5">
+        <h2 className="text-3xl font-bold tracking-tight text-white">PJP Verification Queue</h2>
+        <p className="text-muted-foreground text-sm">Review and verify plans submitted by sales executives.</p>
+      </div>
 
-      <CardContent className="p-6">
+      <Card className="shadow-xl bg-slate-900/20 border-slate-800">
+        <CardContent className="p-6">
 
-        {/* --- Filter Controls --- */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <Select value={selectedSalesmanFilter} onValueChange={setSelectedSalesmanFilter}>
-            <SelectTrigger className="w-full md:w-[250px]">
-              <SelectValue placeholder="Filter by Salesman Name" />
-            </SelectTrigger>
-            <SelectContent>
-              {salesmanOptions.map((name) => (
-                <SelectItem key={name} value={name}>
-                  {name === 'all' ? 'All Salesmen' : name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* --- FIXED FILTER SECTION WITH BORDERS --- */}
+          <div className="flex flex-wrap gap-4 mb-8 p-4 rounded-xl border border-slate-800 items-end">
+            <div className="space-y-1.5 flex flex-col">
+              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Search Queue</Label>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+                <Input
+                  placeholder="Salesman or Area..."
+                  className="w-[250px] pl-9 border-slate-700 text-white focus:border-amber-500 transition-colors"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
 
-          <Select value={selectedRegionFilter} onValueChange={setSelectedRegionFilter}>
-            <SelectTrigger className="w-full md:w-[250px]">
-              <SelectValue placeholder="Filter by Region" />
-            </SelectTrigger>
-            <SelectContent>
-              {regionOptions.map((region) => (
-                <SelectItem key={region} value={region}>
-                  {region === 'all' ? 'All Regions' : region}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="space-y-1.5 flex flex-col">
+              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Salesman</Label>
+              <Select value={selectedSalesmanFilter} onValueChange={setSelectedSalesmanFilter}>
+                <SelectTrigger className="w-[200px] border-slate-700 text-white">
+                  <SelectValue placeholder="All Salesmen" />
+                </SelectTrigger>
+                <SelectContent className=" border-slate-800 text-white">
+                  <SelectItem value="all">All Salesmen</SelectItem>
+                  {Array.from(new Set(pendingPJPs.map(p => p.salesmanName))).sort().map(n => (
+                    <SelectItem key={n} value={n}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {loading ? (
-          <div className="text-center py-12 text-blue-500 flex items-center justify-center space-x-2">
-            <span>Loading pending PJPs...</span>
+            <div className="space-y-1.5 flex flex-col">
+              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Region</Label>
+              <Select value={selectedRegionFilter} onValueChange={setSelectedRegionFilter}>
+                <SelectTrigger className="w-[200px] border-slate-700 text-white">
+                  <SelectValue placeholder="All Regions" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                  {Zone.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              variant="ghost"
+              className="text-slate-500 hover:text-white hover:bg-slate-800 h-10 transition-all"
+              onClick={() => { setSearchQuery(""); setSelectedSalesmanFilter("all"); setSelectedRegionFilter("all"); }}
+            >
+              <FilterX className="w-4 h-4 mr-2" /> Reset Filters
+            </Button>
           </div>
-        ) : error ? (
-          <div className="text-center text-red-500 py-12 border border-red-200 bg-red-50 rounded-lg p-4">
-            <p className="font-semibold">Error loading PJPs.</p>
-            <p className="text-sm text-red-400">{error}</p>
-          </div>
-        ) : pendingPJPs.length === 0 ? (
-          <div className="text-center text-gray-500 py-12">
-            <span className="text-lg font-medium">No new PJPs pending verification.</span>
-            <p className="text-sm mt-1">You're all caught up!</p>
-          </div>
-        ) : (
-          <div className="w-full overflow-x-auto">
+
+          {/* Table Container */}
+          <div className="rounded-md border border-slate-800">
             <DataTableReusable
               columns={pjpVerificationColumns}
               data={filteredPJPs}
-              enableRowDragging={false}
-              onRowOrderChange={() => { }}
             />
           </div>
-        )}
-      </CardContent>
+        </CardContent>
+      </Card>
 
-      {/* --- PJP Modification/Approval Dialog --- */}
       <Dialog open={isModificationDialogOpen} onOpenChange={setIsModificationDialogOpen}>
-        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto text-slate-100">
           <DialogHeader>
-            <DialogTitle>Edit & Approve PJP: {pjpToModify?.id}</DialogTitle>
-            <DialogDescription>
-              Modify PJP details. <strong>Note:</strong> You can select either a Dealer OR a Site, not both.
-            </DialogDescription>
+            <DialogTitle className="flex items-center gap-2 text-primary"><ClipboardCheck /> Review & Link PJP</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handlePatchPJP} className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="planDate" className="text-right">Plan Date</Label>
-              <Input
-                id="planDate"
-                type="date"
-                value={pjpToModify?.planDate || ''}
-                onChange={(e) => setPjpToModify((p) => (p ? { ...p, planDate: e.target.value } : null))}
-                className="col-span-3"
-              />
+
+          <form onSubmit={handlePatchPJP} className="space-y-6 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Store className="w-3 h-3" /> Link Dealer</Label>
+                <SearchableSelect
+                  options={allDealers}
+                  value={selectedDealerId}
+                  placeholder="Search Dealers..."
+                  onChange={(id, address) => {
+                    setSelectedDealerId(id);
+                    setSelectedSiteId('null');
+                    if (address) setPjpToModify(p => p ? { ...p, route: address } : null);
+                  }}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><HardHat className="w-3 h-3" /> Link Site</Label>
+                <SearchableSelect
+                  options={allSites}
+                  value={selectedSiteId}
+                  placeholder="Search Sites..."
+                  onChange={(id, address) => {
+                    setSelectedSiteId(id);
+                    setSelectedDealerId('null');
+                    if (address) setPjpToModify(p => p ? { ...p, route: address } : null);
+                  }}
+                />
+              </div>
             </div>
 
-            {/* Area */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="areaToBeVisited" className="text-right">Area</Label>
-              <Select
-                value={pjpToModify?.areaToBeVisited || ''}
-                onValueChange={(value) => {
-                  setPjpToModify((p) => (p ? { ...p, areaToBeVisited: value } : null));
-                  // Only reset dealer if area changes, sites might not be strictly area bound in UI logic yet
-                  // but good practice to reset dealer since dealer list depends on area
-                  setSelectedDealerId(null); 
-                }}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select Area" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableAreas.map((area) => (
-                    <SelectItem key={area} value={area}>{area}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1"><Label className="text-xs">Plan Date</Label><Input type="date" value={pjpToModify?.planDate ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, planDate: e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
+              <div className="space-y-1"><Label className="text-xs">Route Address</Label><Input value={pjpToModify?.route ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, route: e.target.value } : null)} className="bg-slate-800 border-slate-700 text-xs font-mono" /></div>
             </div>
 
-            {/* Dealer Selection */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Dealer</Label>
-              <Select
-                value={selectedDealerId ?? ''}
-                onValueChange={(val) => {
-                  setSelectedDealerId(val);
-                  setSelectedSiteId(null); // Clear Site
-                }}
-                disabled={!pjpToModify?.areaToBeVisited || dealerOptions.length === 0}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder={pjpToModify?.areaToBeVisited ? 'Select Dealer' : 'Select Area first...'} />
-                </SelectTrigger>
-                <SelectContent>
-                  {dealerOptions.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <Separator className="bg-slate-800" />
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-1"><Label className="text-xs">New Sites</Label><Input type="number" value={pjpToModify?.plannedNewSiteVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedNewSiteVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
+              <div className="space-y-1"><Label className="text-xs">Follow-ups</Label><Input type="number" value={pjpToModify?.plannedFollowUpSiteVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedFollowUpSiteVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
+              <div className="space-y-1"><Label className="text-xs">Dealers</Label><Input type="number" value={pjpToModify?.plannedNewDealerVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedNewDealerVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
+              <div className="space-y-1"><Label className="text-xs">Influencers</Label><Input type="number" value={pjpToModify?.plannedInfluencerVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedInfluencerVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
+              <div className="space-y-1"><Label className="text-xs">Bags</Label><Input type="number" value={pjpToModify?.noOfConvertedBags ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, noOfConvertedBags: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
+              <div className="space-y-1"><Label className="text-xs">Schemes</Label><Input type="number" value={pjpToModify?.noOfMasonPcSchemes ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, noOfMasonPcSchemes: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
             </div>
 
-            <div className="relative py-1 flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-                <div className="relative bg-white px-2 text-xs text-muted-foreground uppercase">OR</div>
+            <div className="space-y-2">
+              <Label className="text-[10px] uppercase font-bold text-slate-500">Influencer Detail</Label>
+              <div className="grid grid-cols-3 gap-2">
+                <Input placeholder="Name" value={pjpToModify?.influencerName ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, influencerName: e.target.value } : null)} className="bg-slate-800 border-slate-700" />
+                <Input placeholder="Activity" value={pjpToModify?.activityType ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, activityType: e.target.value } : null)} className="bg-slate-800 border-slate-700" />
+                <Input placeholder="Phone" value={pjpToModify?.influencerPhone ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, influencerPhone: e.target.value } : null)} className="bg-slate-800 border-slate-700" />
+              </div>
             </div>
 
-            {/* Site Selection */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Site</Label>
-              <Select
-                value={selectedSiteId ?? ''}
-                onValueChange={(val) => {
-                  setSelectedSiteId(val);
-                  setSelectedDealerId(null); // Clear Dealer
-                }}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select Site (Optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {siteOptions.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Textarea placeholder="Verification Remarks..." value={pjpToModify?.additionalVisitRemarks ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, additionalVisitRemarks: e.target.value } : null)} className="bg-slate-800 border-slate-700 h-20" />
 
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="description" className="text-right pt-2">Description</Label>
-              <Textarea
-                id="description"
-                value={pjpToModify?.description || ''}
-                onChange={(e) => setPjpToModify((p) => (p ? { ...p, description: e.target.value } : null))}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="remarks" className="text-right pt-2">Admin Remarks</Label>
-              <Textarea
-                id="remarks"
-                placeholder="Add optional verification remarks..."
-                value={pjpToModify?.additionalVisitRemarks || ''}
-                onChange={(e) => setPjpToModify((p) => p ? { ...p, additionalVisitRemarks: e.target.value } : null)}
-                className="col-span-3"
-              />
-            </div>
-            
-            <DialogFooter className="mt-4">
-              <Button type="button" variant="outline" onClick={() => setIsModificationDialogOpen(false)} disabled={isPatching}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isPatching}>
-                {isPatching ? 'Saving...' : 'Save & Approve (VERIFIED)'}
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsModificationDialogOpen(false)} className="border-slate-700 text-slate-300">Cancel</Button>
+              <Button type="submit" disabled={isPatching} className="bg-primary hover:bg-primary/50 text-white font-bold">
+                {isPatching ? <Loader2 className="animate-spin mr-2" /> : null} Finalize & Verify
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 }
