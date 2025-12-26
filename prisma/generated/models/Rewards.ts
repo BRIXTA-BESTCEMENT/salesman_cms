@@ -272,6 +272,7 @@ export type RewardsWhereInput = {
   logs?: Prisma.GiftAllocationLogListRelationFilter
   redemptions?: Prisma.RewardRedemptionListRelationFilter
   usedInSlabs?: Prisma.SchemeSlabsListRelationFilter
+  schemes?: Prisma.SchemesOffersListRelationFilter
 }
 
 export type RewardsOrderByWithRelationInput = {
@@ -289,6 +290,7 @@ export type RewardsOrderByWithRelationInput = {
   logs?: Prisma.GiftAllocationLogOrderByRelationAggregateInput
   redemptions?: Prisma.RewardRedemptionOrderByRelationAggregateInput
   usedInSlabs?: Prisma.SchemeSlabsOrderByRelationAggregateInput
+  schemes?: Prisma.SchemesOffersOrderByRelationAggregateInput
 }
 
 export type RewardsWhereUniqueInput = Prisma.AtLeast<{
@@ -309,6 +311,7 @@ export type RewardsWhereUniqueInput = Prisma.AtLeast<{
   logs?: Prisma.GiftAllocationLogListRelationFilter
   redemptions?: Prisma.RewardRedemptionListRelationFilter
   usedInSlabs?: Prisma.SchemeSlabsListRelationFilter
+  schemes?: Prisma.SchemesOffersListRelationFilter
 }, "id" | "name">
 
 export type RewardsOrderByWithAggregationInput = {
@@ -358,6 +361,7 @@ export type RewardsCreateInput = {
   logs?: Prisma.GiftAllocationLogCreateNestedManyWithoutGiftItemInput
   redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutRewardInput
   usedInSlabs?: Prisma.SchemeSlabsCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsUncheckedCreateInput = {
@@ -374,6 +378,7 @@ export type RewardsUncheckedCreateInput = {
   logs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutGiftItemInput
   redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutRewardInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersUncheckedCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsUpdateInput = {
@@ -389,6 +394,7 @@ export type RewardsUpdateInput = {
   logs?: Prisma.GiftAllocationLogUpdateManyWithoutGiftItemNestedInput
   redemptions?: Prisma.RewardRedemptionUpdateManyWithoutRewardNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsUncheckedUpdateInput = {
@@ -405,6 +411,7 @@ export type RewardsUncheckedUpdateInput = {
   logs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutGiftItemNestedInput
   redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutRewardNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsCreateManyInput = {
@@ -531,6 +538,44 @@ export type RewardsUpdateOneRequiredWithoutLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RewardsUpdateToOneWithWhereWithoutLogsInput, Prisma.RewardsUpdateWithoutLogsInput>, Prisma.RewardsUncheckedUpdateWithoutLogsInput>
 }
 
+export type RewardsCreateNestedManyWithoutSchemesInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+}
+
+export type RewardsUncheckedCreateNestedManyWithoutSchemesInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+}
+
+export type RewardsUpdateManyWithoutSchemesNestedInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  upsert?: Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput[]
+  set?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  disconnect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  delete?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  update?: Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput[]
+  updateMany?: Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput | Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput[]
+  deleteMany?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+}
+
+export type RewardsUncheckedUpdateManyWithoutSchemesNestedInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  upsert?: Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput[]
+  set?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  disconnect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  delete?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  update?: Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput[]
+  updateMany?: Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput | Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput[]
+  deleteMany?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+}
+
 export type RewardsCreateNestedManyWithoutCategoryInput = {
   create?: Prisma.XOR<Prisma.RewardsCreateWithoutCategoryInput, Prisma.RewardsUncheckedCreateWithoutCategoryInput> | Prisma.RewardsCreateWithoutCategoryInput[] | Prisma.RewardsUncheckedCreateWithoutCategoryInput[]
   connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutCategoryInput | Prisma.RewardsCreateOrConnectWithoutCategoryInput[]
@@ -615,6 +660,7 @@ export type RewardsCreateWithoutLogsInput = {
   category?: Prisma.RewardCategoryCreateNestedOneWithoutRewardsInput
   redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutRewardInput
   usedInSlabs?: Prisma.SchemeSlabsCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsUncheckedCreateWithoutLogsInput = {
@@ -630,6 +676,7 @@ export type RewardsUncheckedCreateWithoutLogsInput = {
   updatedAt?: Date | string
   redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutRewardInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersUncheckedCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsCreateOrConnectWithoutLogsInput = {
@@ -660,6 +707,7 @@ export type RewardsUpdateWithoutLogsInput = {
   category?: Prisma.RewardCategoryUpdateOneWithoutRewardsNestedInput
   redemptions?: Prisma.RewardRedemptionUpdateManyWithoutRewardNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsUncheckedUpdateWithoutLogsInput = {
@@ -675,6 +723,75 @@ export type RewardsUncheckedUpdateWithoutLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutRewardNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput
+}
+
+export type RewardsCreateWithoutSchemesInput = {
+  name: string
+  pointCost: number
+  stock?: number
+  totalAvailableQuantity: number
+  isActive?: boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: Prisma.RewardCategoryCreateNestedOneWithoutRewardsInput
+  logs?: Prisma.GiftAllocationLogCreateNestedManyWithoutGiftItemInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutRewardInput
+  usedInSlabs?: Prisma.SchemeSlabsCreateNestedManyWithoutRewardInput
+}
+
+export type RewardsUncheckedCreateWithoutSchemesInput = {
+  id?: number
+  name: string
+  pointCost: number
+  categoryId?: number | null
+  stock?: number
+  totalAvailableQuantity: number
+  isActive?: boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  logs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutGiftItemInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutRewardInput
+  usedInSlabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutRewardInput
+}
+
+export type RewardsCreateOrConnectWithoutSchemesInput = {
+  where: Prisma.RewardsWhereUniqueInput
+  create: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput>
+}
+
+export type RewardsUpsertWithWhereUniqueWithoutSchemesInput = {
+  where: Prisma.RewardsWhereUniqueInput
+  update: Prisma.XOR<Prisma.RewardsUpdateWithoutSchemesInput, Prisma.RewardsUncheckedUpdateWithoutSchemesInput>
+  create: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput>
+}
+
+export type RewardsUpdateWithWhereUniqueWithoutSchemesInput = {
+  where: Prisma.RewardsWhereUniqueInput
+  data: Prisma.XOR<Prisma.RewardsUpdateWithoutSchemesInput, Prisma.RewardsUncheckedUpdateWithoutSchemesInput>
+}
+
+export type RewardsUpdateManyWithWhereWithoutSchemesInput = {
+  where: Prisma.RewardsScalarWhereInput
+  data: Prisma.XOR<Prisma.RewardsUpdateManyMutationInput, Prisma.RewardsUncheckedUpdateManyWithoutSchemesInput>
+}
+
+export type RewardsScalarWhereInput = {
+  AND?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+  OR?: Prisma.RewardsScalarWhereInput[]
+  NOT?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+  id?: Prisma.IntFilter<"Rewards"> | number
+  name?: Prisma.StringFilter<"Rewards"> | string
+  pointCost?: Prisma.IntFilter<"Rewards"> | number
+  categoryId?: Prisma.IntNullableFilter<"Rewards"> | number | null
+  stock?: Prisma.IntFilter<"Rewards"> | number
+  totalAvailableQuantity?: Prisma.IntFilter<"Rewards"> | number
+  isActive?: Prisma.BoolFilter<"Rewards"> | boolean
+  meta?: Prisma.JsonNullableFilter<"Rewards">
+  createdAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
 }
 
 export type RewardsCreateWithoutCategoryInput = {
@@ -689,6 +806,7 @@ export type RewardsCreateWithoutCategoryInput = {
   logs?: Prisma.GiftAllocationLogCreateNestedManyWithoutGiftItemInput
   redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutRewardInput
   usedInSlabs?: Prisma.SchemeSlabsCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsUncheckedCreateWithoutCategoryInput = {
@@ -704,6 +822,7 @@ export type RewardsUncheckedCreateWithoutCategoryInput = {
   logs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutGiftItemInput
   redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutRewardInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersUncheckedCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsCreateOrConnectWithoutCategoryInput = {
@@ -732,22 +851,6 @@ export type RewardsUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.RewardsUpdateManyMutationInput, Prisma.RewardsUncheckedUpdateManyWithoutCategoryInput>
 }
 
-export type RewardsScalarWhereInput = {
-  AND?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
-  OR?: Prisma.RewardsScalarWhereInput[]
-  NOT?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
-  id?: Prisma.IntFilter<"Rewards"> | number
-  name?: Prisma.StringFilter<"Rewards"> | string
-  pointCost?: Prisma.IntFilter<"Rewards"> | number
-  categoryId?: Prisma.IntNullableFilter<"Rewards"> | number | null
-  stock?: Prisma.IntFilter<"Rewards"> | number
-  totalAvailableQuantity?: Prisma.IntFilter<"Rewards"> | number
-  isActive?: Prisma.BoolFilter<"Rewards"> | boolean
-  meta?: Prisma.JsonNullableFilter<"Rewards">
-  createdAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
-}
-
 export type RewardsCreateWithoutRedemptionsInput = {
   name: string
   pointCost: number
@@ -760,6 +863,7 @@ export type RewardsCreateWithoutRedemptionsInput = {
   category?: Prisma.RewardCategoryCreateNestedOneWithoutRewardsInput
   logs?: Prisma.GiftAllocationLogCreateNestedManyWithoutGiftItemInput
   usedInSlabs?: Prisma.SchemeSlabsCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsUncheckedCreateWithoutRedemptionsInput = {
@@ -775,6 +879,7 @@ export type RewardsUncheckedCreateWithoutRedemptionsInput = {
   updatedAt?: Date | string
   logs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutGiftItemInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersUncheckedCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsCreateOrConnectWithoutRedemptionsInput = {
@@ -805,6 +910,7 @@ export type RewardsUpdateWithoutRedemptionsInput = {
   category?: Prisma.RewardCategoryUpdateOneWithoutRewardsNestedInput
   logs?: Prisma.GiftAllocationLogUpdateManyWithoutGiftItemNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsUncheckedUpdateWithoutRedemptionsInput = {
@@ -820,6 +926,7 @@ export type RewardsUncheckedUpdateWithoutRedemptionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   logs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutGiftItemNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsCreateWithoutUsedInSlabsInput = {
@@ -834,6 +941,7 @@ export type RewardsCreateWithoutUsedInSlabsInput = {
   category?: Prisma.RewardCategoryCreateNestedOneWithoutRewardsInput
   logs?: Prisma.GiftAllocationLogCreateNestedManyWithoutGiftItemInput
   redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsUncheckedCreateWithoutUsedInSlabsInput = {
@@ -849,6 +957,7 @@ export type RewardsUncheckedCreateWithoutUsedInSlabsInput = {
   updatedAt?: Date | string
   logs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutGiftItemInput
   redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutRewardInput
+  schemes?: Prisma.SchemesOffersUncheckedCreateNestedManyWithoutRewardsInput
 }
 
 export type RewardsCreateOrConnectWithoutUsedInSlabsInput = {
@@ -879,6 +988,7 @@ export type RewardsUpdateWithoutUsedInSlabsInput = {
   category?: Prisma.RewardCategoryUpdateOneWithoutRewardsNestedInput
   logs?: Prisma.GiftAllocationLogUpdateManyWithoutGiftItemNestedInput
   redemptions?: Prisma.RewardRedemptionUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsUncheckedUpdateWithoutUsedInSlabsInput = {
@@ -894,6 +1004,51 @@ export type RewardsUncheckedUpdateWithoutUsedInSlabsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   logs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutGiftItemNestedInput
   redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput
+}
+
+export type RewardsUpdateWithoutSchemesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.RewardCategoryUpdateOneWithoutRewardsNestedInput
+  logs?: Prisma.GiftAllocationLogUpdateManyWithoutGiftItemNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutRewardNestedInput
+  usedInSlabs?: Prisma.SchemeSlabsUpdateManyWithoutRewardNestedInput
+}
+
+export type RewardsUncheckedUpdateWithoutSchemesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  logs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutGiftItemNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutRewardNestedInput
+  usedInSlabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutRewardNestedInput
+}
+
+export type RewardsUncheckedUpdateManyWithoutSchemesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RewardsCreateManyCategoryInput = {
@@ -920,6 +1075,7 @@ export type RewardsUpdateWithoutCategoryInput = {
   logs?: Prisma.GiftAllocationLogUpdateManyWithoutGiftItemNestedInput
   redemptions?: Prisma.RewardRedemptionUpdateManyWithoutRewardNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsUncheckedUpdateWithoutCategoryInput = {
@@ -935,6 +1091,7 @@ export type RewardsUncheckedUpdateWithoutCategoryInput = {
   logs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutGiftItemNestedInput
   redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutRewardNestedInput
   usedInSlabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutRewardNestedInput
+  schemes?: Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput
 }
 
 export type RewardsUncheckedUpdateManyWithoutCategoryInput = {
@@ -958,12 +1115,14 @@ export type RewardsCountOutputType = {
   logs: number
   redemptions: number
   usedInSlabs: number
+  schemes: number
 }
 
 export type RewardsCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   logs?: boolean | RewardsCountOutputTypeCountLogsArgs
   redemptions?: boolean | RewardsCountOutputTypeCountRedemptionsArgs
   usedInSlabs?: boolean | RewardsCountOutputTypeCountUsedInSlabsArgs
+  schemes?: boolean | RewardsCountOutputTypeCountSchemesArgs
 }
 
 /**
@@ -997,6 +1156,13 @@ export type RewardsCountOutputTypeCountUsedInSlabsArgs<ExtArgs extends runtime.T
   where?: Prisma.SchemeSlabsWhereInput
 }
 
+/**
+ * RewardsCountOutputType without action
+ */
+export type RewardsCountOutputTypeCountSchemesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SchemesOffersWhereInput
+}
+
 
 export type RewardsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1013,6 +1179,7 @@ export type RewardsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   logs?: boolean | Prisma.Rewards$logsArgs<ExtArgs>
   redemptions?: boolean | Prisma.Rewards$redemptionsArgs<ExtArgs>
   usedInSlabs?: boolean | Prisma.Rewards$usedInSlabsArgs<ExtArgs>
+  schemes?: boolean | Prisma.Rewards$schemesArgs<ExtArgs>
   _count?: boolean | Prisma.RewardsCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rewards"]>
 
@@ -1063,6 +1230,7 @@ export type RewardsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   logs?: boolean | Prisma.Rewards$logsArgs<ExtArgs>
   redemptions?: boolean | Prisma.Rewards$redemptionsArgs<ExtArgs>
   usedInSlabs?: boolean | Prisma.Rewards$usedInSlabsArgs<ExtArgs>
+  schemes?: boolean | Prisma.Rewards$schemesArgs<ExtArgs>
   _count?: boolean | Prisma.RewardsCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RewardsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1079,6 +1247,7 @@ export type $RewardsPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     logs: Prisma.$GiftAllocationLogPayload<ExtArgs>[]
     redemptions: Prisma.$RewardRedemptionPayload<ExtArgs>[]
     usedInSlabs: Prisma.$SchemeSlabsPayload<ExtArgs>[]
+    schemes: Prisma.$SchemesOffersPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1489,6 +1658,7 @@ export interface Prisma__RewardsClient<T, Null = never, ExtArgs extends runtime.
   logs<T extends Prisma.Rewards$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rewards$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GiftAllocationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   redemptions<T extends Prisma.Rewards$redemptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rewards$redemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RewardRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   usedInSlabs<T extends Prisma.Rewards$usedInSlabsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rewards$usedInSlabsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SchemeSlabsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  schemes<T extends Prisma.Rewards$schemesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rewards$schemesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SchemesOffersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2012,6 +2182,30 @@ export type Rewards$usedInSlabsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.SchemeSlabsScalarFieldEnum | Prisma.SchemeSlabsScalarFieldEnum[]
+}
+
+/**
+ * Rewards.schemes
+ */
+export type Rewards$schemesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SchemesOffers
+   */
+  select?: Prisma.SchemesOffersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SchemesOffers
+   */
+  omit?: Prisma.SchemesOffersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SchemesOffersInclude<ExtArgs> | null
+  where?: Prisma.SchemesOffersWhereInput
+  orderBy?: Prisma.SchemesOffersOrderByWithRelationInput | Prisma.SchemesOffersOrderByWithRelationInput[]
+  cursor?: Prisma.SchemesOffersWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SchemesOffersScalarFieldEnum | Prisma.SchemesOffersScalarFieldEnum[]
 }
 
 /**

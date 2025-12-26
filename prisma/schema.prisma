@@ -878,6 +878,7 @@ model Rewards {
   logs                    GiftAllocationLog[]
   redemptions             RewardRedemption[]
   usedInSlabs             SchemeSlabs[]
+  schemes                 SchemesOffers[] @relation("SchemeToRewards")
 
   createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt               DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -959,6 +960,7 @@ model SchemesOffers{
   // Relation to Mason_PC_Side
   masons      MasonOnScheme[]
   slabs       SchemeSlabs[]
+  rewards     Rewards[] @relation("SchemeToRewards")
 
   @@map("schemes_offers")
 }

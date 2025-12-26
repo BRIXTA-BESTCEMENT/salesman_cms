@@ -1,185 +1,301 @@
 // src/app/dashboard/masonpcSide/schemesOffers.tsx
 'use client';
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { Search, Loader2 } from 'lucide-react';
+import {
+  Search, Loader2, IndianRupee, CheckCircle2,
+  XCircle, Ban, TrendingUp, Plus, Eye, ChevronRight
+} from 'lucide-react';
 
-// Import the reusable DataTable
+// Reusable Components
 import { DataTableReusable } from '@/components/data-table-reusable';
-// Import the schema for this page
 import { schemesOffersSchema } from '@/lib/shared-zod-schema';
-
-// UI Components for Filtering
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
-// import { BASE_URL } from '@/lib/Reusable-constants'; // Keep if needed elsewhere
-
-// API Endpoints
-const SCHEMES_OFFERS_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/schemes-offers`;
-
-// The Zod schema provides the full type definition needed.
-type SchemeOffer = z.infer<typeof schemesOffersSchema>;
-
-// --- HELPER FUNCTIONS ---
-
-/**
- * Formats an ISO date string to a more readable format (e.g., "Jan 1, 2024")
- */
-const formatDate = (dateString: string | null | undefined) => {
-  if (!dateString) return 'N/A';
-  try {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(new Date(dateString));
-  } catch {
-    return 'Invalid Date';
-  }
+// Types
+type RewardRecord = {
+  id: number;
+  name: string;
+  pointCost: number;
+  stock: number;
+  isActive: boolean;
+  categoryName: string;
+  createdAt: string;
+  updatedAt: string;
+  schemeIds: string[];
 };
 
-// --- MAIN COMPONENT ---
+type SchemeOffer = z.infer<typeof schemesOffersSchema>;
 
-export default function SchemesOffersPage() {
-  const [schemesOffers, setSchemesOffers] = useState<SchemeOffer[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+type CategoryOption = { id: number; name: string; };
+
+// API Endpoints
+const REWARDS_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/rewards`;
+const CATEGORIES_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/reward-categories`;
+const SCHEMES_OFFERS_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/schemes-offers`;
+
+export default function SchemesRewardsManagement() {
+  // --- State ---
+  const [schemes, setSchemes] = useState<SchemeOffer[]>([]);
+  const [rewards, setRewards] = useState<RewardRecord[]>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [selectedScheme, setSelectedScheme] = useState<SchemeOffer | null>(null);
+
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // --- Filter States ---
-  const [searchQuery, setSearchQuery] = useState(''); // Scheme Name
+  const [schemeSearch, setSchemeSearch] = useState('');
+  const [rewardSearch, setRewardSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  // --- Data Fetching Functions ---
-
-  /**
-   * Fetches the main schemes/offers data.
-   */
-  const fetchSchemesOffers = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  // --- Fetching Logic ---
+  const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
-      const response = await fetch(SCHEMES_OFFERS_API_ENDPOINT);
-      if (!response.ok) {
-         if (response.status === 401) {
-          toast.error('You are not authenticated. Redirecting to login.');
-          window.location.href = '/login';
-          return;
-        }
-        if (response.status === 403) {
-          toast.error('You do not have permission to access this page. Redirecting.');
-          window.location.href = '/dashboard';
-          return;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: SchemeOffer[] = await response.json();
-      setSchemesOffers(data);
-      toast.success("Schemes & offers loaded successfully!");
-    } catch (error: any) {
-      console.error("Failed to fetch schemes/offers:", error);
-      toast.error(`Failed to fetch schemes/offers: ${error.message}`);
-      setError(error.message);
+      const [schemesRes, rewardsRes, categoriesRes] = await Promise.all([
+        fetch(SCHEMES_OFFERS_API_ENDPOINT),
+        fetch(REWARDS_API_ENDPOINT),
+        fetch(CATEGORIES_API_ENDPOINT)
+      ]);
+
+      if (!schemesRes.ok || !rewardsRes.ok) throw new Error("Failed to load data");
+
+      const schemesData = await schemesRes.json();
+      const rewardsData = await rewardsRes.json();
+      const categoriesData = await categoriesRes.json();
+
+      setSchemes(schemesData);
+      setRewards(rewardsData);
+      setCategories(categoriesData.filter((c: any) => c.name));
+      toast.success("Dashboard data synchronized");
+    } catch (err: any) {
+      setError(err.message);
+      toast.error("Error syncing data");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }, []); 
+  }, []);
 
-  // Initial data loads
-  useEffect(() => {
-    fetchSchemesOffers();
-  }, [fetchSchemesOffers]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
+  // --- Helpers ---
+  const formatDate = (date: string | null) => {
+    if (!date) return 'N/A';
+    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date));
+  };
 
-  // --- Filtering Logic ---
+  const getRewardStatus = (isActive: boolean, stock: number) => {
+    if (!isActive) return { text: 'Inactive', color: 'bg-gray-100 text-gray-700' };
+    if (stock <= 0) return { text: 'Out of Stock', color: 'bg-red-100 text-red-700' };
+    if (stock < 5) return { text: 'Low Stock', color: 'bg-orange-100 text-orange-700' };
+    return { text: 'Active', color: 'bg-green-100 text-green-700' };
+  };
+
+  // --- Memoized Filtered Data ---
   const filteredSchemes = useMemo(() => {
-    // ⚠️ Removed manual reset of currentPage state
-    
-    return schemesOffers.filter((scheme) => {
-      // 1. Scheme Name Search (fuzzy match)
-      const nameMatch = !searchQuery ||
-        scheme.name.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      return nameMatch;
-    });
-  }, [schemesOffers, searchQuery]);
+    return schemes.filter(s => s.name.toLowerCase().includes(schemeSearch.toLowerCase()));
+  }, [schemes, schemeSearch]);
 
-  // --- Define Columns for Schemes & Offers DataTable (unchanged) ---
-  const schemesOffersColumns: ColumnDef<SchemeOffer>[] = [
+  const filteredRewards = useMemo(() => {
+    return rewards.filter(r => {
+      console.log('Reward:', r.name, 'Schemes:', r.schemeIds, 'Selected:', selectedScheme?.id);
+      const matchesScheme = !selectedScheme ||
+        (r.schemeIds && r.schemeIds.some(id => id.toLowerCase() === selectedScheme.id.toLowerCase()));
+      const matchesSearch = r.name.toLowerCase().includes(rewardSearch.toLowerCase());
+      const matchesCategory = categoryFilter === 'all' || r.categoryName === categoryFilter;
+      const statusData = getRewardStatus(r.isActive, r.stock);
+      const matchesStatus = statusFilter === 'all' || statusData.text === statusFilter;
+
+      return matchesScheme && matchesSearch && matchesCategory && matchesStatus;
+    });
+  }, [rewards, rewardSearch, categoryFilter, statusFilter, selectedScheme]);
+
+  // --- Column Definitions ---
+  const schemeColumns: ColumnDef<SchemeOffer>[] = [
     { accessorKey: "name", header: "Scheme Name" },
-    { 
-      accessorKey: "description", 
-      header: "Description",
-      cell: ({ row }) => <span className="max-w-[300px] truncate block">{row.original.description ?? 'N/A'}</span>,
+    { accessorKey: "startDate", header: "Start", cell: ({ row }) => formatDate(row.original.startDate) },
+    { accessorKey: "endDate", header: "End", cell: ({ row }) => formatDate(row.original.endDate) },
+    {
+      id: "actions",
+      header: "Action",
+      cell: ({ row }) => {
+        // Compare current row ID with selected scheme ID
+        const isCurrentlySelected = selectedScheme?.id === row.original.id;
+
+        return (
+          <Button
+            variant={isCurrentlySelected ? "default" : "outline"}
+            size="sm"
+            className={isCurrentlySelected ? "bg-[#facc15] text-black hover:bg-[#eab308]" : ""}
+            onClick={() => {
+              // Toggle logic: If clicking the one already selected, clear it (null)
+              setSelectedScheme(isCurrentlySelected ? null : row.original);
+            }}
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            {isCurrentlySelected ? "Viewing" : "View Rewards"}
+          </Button>
+        );
+      }
+    }
+  ];
+
+  const rewardColumns: ColumnDef<RewardRecord>[] = [
+    {
+      accessorKey: "name",
+      header: "Reward Name",
+      enableSorting: true,
     },
-    { 
-      accessorKey: "startDate", 
-      header: "Start Date",
-      cell: ({ row }) => formatDate(row.original.startDate) 
+    {
+      accessorKey: "categoryName",
+      header: "Category",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+          {row.original.categoryName}
+        </Badge>
+      )
     },
-    { 
-      accessorKey: "endDate", 
-      header: "End Date",
-      cell: ({ row }) => formatDate(row.original.endDate) 
+    {
+      accessorKey: "pointCost",
+      header: "Point Cost",
+      cell: ({ row }) => (
+        <div className='flex items-center text-primary font-semibold'>
+          {row.original.pointCost} <IndianRupee className='w-3 h-3 ml-1' />
+        </div>
+      ),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created On",
+      cell: ({ row }) => formatDate(row.original.createdAt)
+    },
+    {
+      accessorKey: "updatedAt",
+      header: "Last Update",
+      cell: ({ row }) => formatDate(row.original.updatedAt)
     },
   ];
 
-  const handleSchemeOfferOrderChange = (newOrder: SchemeOffer[]) => {
-    console.log("New scheme/offer order:", newOrder.map(r => r.id));
-  };
-
-  // --- Loading / Error Gates ---
-  if (isLoading) return <div className="flex justify-center items-center min-h-screen">Loading schemes & offers...</div>;
-
-  if (error) return (
-    <div className="text-center text-red-500 min-h-screen pt-10">
-      Error: {error}
-      <Button onClick={fetchSchemesOffers} className="ml-4">Retry</Button>
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center">
+      <Loader2 className="animate-spin h-8 w-8 text-primary" />
     </div>
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
-        {/* Header Section */}
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Schemes & Offers</h2>
+    <div className="flex flex-col space-y-6 p-8 bg-background min-h-screen">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Marketing & Rewards</h1>
+          <p className="text-muted-foreground">Manage schemes and their associated reward items</p>
         </div>
+        <div className="flex gap-3">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline"><Plus className="w-4 h-4 mr-2" /> Add Scheme</Button>
+            </DialogTrigger>
+            <DialogContent><DialogHeader><DialogTitle>Create New Scheme</DialogTitle></DialogHeader>
+              <p className="text-sm">Form logic will go here...</p>
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button><Plus className="w-4 h-4 mr-2" /> Add Reward</Button>
+            </DialogTrigger>
+            <DialogContent><DialogHeader><DialogTitle>Add New Reward</DialogTitle></DialogHeader>
+              <p className="text-sm">Form logic will go here...</p>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
 
-        {/* --- Filter Components --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
-          {/* 1. Scheme Name Search Input */}
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Scheme Name</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Top Table: Schemes */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Active Schemes & Offers</CardTitle>
+              <CardDescription>Select a scheme to filter rewards below</CardDescription>
+            </div>
+            <div className="relative w-64">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9"
+                placeholder="Search schemes..."
+                className="pl-8"
+                value={schemeSearch}
+                onChange={(e) => setSchemeSearch(e.target.value)}
               />
             </div>
           </div>
-        </div>
-        {/* --- End Filter Components --- */}
+        </CardHeader>
+        <CardContent>
+          <DataTableReusable columns={schemeColumns} data={filteredSchemes} />
+        </CardContent>
+      </Card>
 
-        {/* Data Table Section */}
-        <div className="bg-card p-6 rounded-lg border border-border">
-          {filteredSchemes.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">No schemes or offers found matching the selected filters.</div>
-          ) : (
-            <DataTableReusable
-              columns={schemesOffersColumns}
-              data={filteredSchemes}
-              enableRowDragging={false} 
-              onRowOrderChange={handleSchemeOfferOrderChange}
-            />
-          )}
-        </div>
-      </div>
+      {/* Bottom Table: Rewards */}
+      {selectedScheme && (
+        <Card className={selectedScheme ? "border-primary/50 shadow-md" : ""}>
+          <CardHeader className="pb-3">
+            <div className="flex flex-col md:flex-row justify-between gap-4">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  {selectedScheme ? (
+                    <>Viewing Rewards for: <Badge className="text-lg px-3">{selectedScheme.name}</Badge></>
+                  ) : "All Available Rewards"}
+                </CardTitle>
+                {selectedScheme && (
+                  <Button variant="link" className="p-0 h-auto text-xs" onClick={() => setSelectedScheme(null)}>
+                    Clear selection to see all rewards
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <div className="relative w-48">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search rewards..."
+                    className="pl-8 h-9"
+                    value={rewardSearch}
+                    onChange={(e) => setRewardSearch(e.target.value)}
+                  />
+                </div>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-[140px] h-9"><SelectValue placeholder="Category" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map(c => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[140px] h-9"><SelectValue placeholder="Status" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataTableReusable columns={rewardColumns} data={filteredRewards} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

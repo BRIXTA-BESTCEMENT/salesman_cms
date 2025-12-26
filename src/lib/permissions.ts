@@ -59,7 +59,6 @@ export interface DashboardPermissions {
     masonOnMeetings: boolean;
     bagsLift: boolean;
     pointsLedger: boolean;
-    rewards: boolean;
     rewardsRedemption: boolean;
   };
   scoresAndRatings: {
@@ -118,7 +117,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -172,7 +170,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -226,7 +223,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -282,7 +278,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -336,7 +331,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -390,7 +384,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -444,7 +437,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -498,7 +490,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: true,
       bagsLift: true,
       pointsLedger: true,
-      rewards: true,
       rewardsRedemption: true,
     },
     scoresAndRatings: {
@@ -554,7 +545,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: false,
       bagsLift: false,
       pointsLedger: false,
-      rewards: false,
       rewardsRedemption: false,
     },
     scoresAndRatings: {
@@ -608,7 +598,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: false,
       bagsLift: false,
       pointsLedger: false,
-      rewards: false,
       rewardsRedemption: false,
     },
     scoresAndRatings: {
@@ -662,7 +651,6 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       masonOnMeetings: false,
       bagsLift: false,
       pointsLedger: false,
-      rewards: false,
       rewardsRedemption: false,
     },
     scoresAndRatings: {

@@ -81,7 +81,6 @@ export async function generateAndStreamXlsx(
 
 /**
  * Generates and streams a multi-sheet XLSX.
- * sheets: { [sheetName]: { headers: string[], rows: any[] } }
  */
 export async function generateAndStreamXlsxMulti(
   sheets: Record<string, { headers: string[]; rows: any[] }>,

@@ -10,7 +10,6 @@ import MasonOnMeetingsPage from '@/app/dashboard/masonpcSide/masonOnMeetings';
 import BagsLiftPage from '@/app/dashboard/masonpcSide/bagsLift';
 import PointsLedgerPage from '@/app/dashboard/masonpcSide/pointsLedger';
 import RewardsRedemptionPage from '@/app/dashboard/masonpcSide/rewardRedemption';
-import RewardsMasterListPage from '@/app/dashboard/masonpcSide/rewards'; // For rewards.tsx
 
 // This component receives the permissions as props
 // from the server component (page.tsx)
@@ -23,7 +22,6 @@ interface MasonPcTabsProps {
   canSeeBagsLift: boolean;
   canSeePointsLedger: boolean;
   canSeeRewardsRedemption: boolean;
-  canSeeRewardsMaster: boolean; // For rewards.tsx
 }
 
 export function MasonPcTabs({
@@ -35,7 +33,6 @@ export function MasonPcTabs({
   canSeeBagsLift,
   canSeePointsLedger,
   canSeeRewardsRedemption,
-  canSeeRewardsMaster,
 }: MasonPcTabsProps) {
 
   // Determine the default tab based on the first permission they have
@@ -48,7 +45,6 @@ export function MasonPcTabs({
   else if (canSeeBagsLift) defaultTab = "bagsLift";
   else if (canSeePointsLedger) defaultTab = "pointsLedger";
   else if (canSeeRewardsRedemption) defaultTab = "rewardsRedemption";
-  else if (canSeeRewardsMaster) defaultTab = "rewardsMaster";
 
 
   return (
@@ -77,9 +73,6 @@ export function MasonPcTabs({
         )} */}
         {canSeeRewardsRedemption && (
           <TabsTrigger value="rewardsRedemption">Rewards Redemption</TabsTrigger>
-        )}
-        {canSeeRewardsMaster && (
-          <TabsTrigger value="rewardsMaster">Rewards Master List</TabsTrigger>
         )}
       </TabsList>
 
@@ -122,11 +115,6 @@ export function MasonPcTabs({
       {canSeeRewardsRedemption && (
         <TabsContent value="rewardsRedemption" className="space-y-4">
           <RewardsRedemptionPage />
-        </TabsContent>
-      )}
-      {canSeeRewardsMaster && (
-        <TabsContent value="rewardsMaster" className="space-y-4">
-          <RewardsMasterListPage />
         </TabsContent>
       )}
     </Tabs>

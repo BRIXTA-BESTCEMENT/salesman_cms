@@ -740,7 +740,7 @@ export default function UsersManagement({ adminUser }: Props) {
                         id="edit-firstName"
                         value={formData.firstName}
                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        placeholder="John"
+                        placeholder="Name"
                         required
                       />
                     </div>
@@ -750,7 +750,7 @@ export default function UsersManagement({ adminUser }: Props) {
                         id="edit-lastName"
                         value={formData.lastName}
                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        placeholder="Doe"
+                        placeholder="Surname"
                         required
                       />
                     </div>
@@ -762,7 +762,7 @@ export default function UsersManagement({ adminUser }: Props) {
                       type="tel"
                       value={formData.phoneNumber}
                       onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="0000099999"
                     />
                   </div>
                   <div className="flex items-center space-x-2 pt-2">

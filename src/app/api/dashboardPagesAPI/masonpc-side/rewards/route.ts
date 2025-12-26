@@ -46,6 +46,9 @@ export async function GET() {
         updatedAt: true,
         category: { // Include the category name for flattening
           select: { name: true }
+        },
+        schemes: {
+          select: { id: true }
         }
       },
       orderBy: {
@@ -63,28 +66,30 @@ export async function GET() {
       totalAvailableQuantity: record.totalAvailableQuantity, // Int field
       isActive: record.isActive,
       categoryName: record.category?.name ?? 'Uncategorized', // Flattened field
+      schemeIds: record.schemes.map(s => String(s.id)),
       createdAt: record.createdAt.toISOString(),
       updatedAt: record.updatedAt.toISOString(),
     }));
-    
+
     // 6. Validate core data structure
     // Create a temporary schema for the API response structure that includes the flattened categoryName
     const rewardResponseSchema = z.object({
-        id: z.number().int(),
-        name: z.string(),
-        pointCost: z.number().int(),
-        stock: z.number().int(),
-        totalAvailableQuantity: z.number().int(),
-        isActive: z.boolean(),
-        categoryName: z.string(), // Flattened field
-        createdAt: z.string(),
-        updatedAt: z.string(),
+      id: z.number().int(),
+      name: z.string(),
+      pointCost: z.number().int(),
+      stock: z.number().int(),
+      totalAvailableQuantity: z.number().int(),
+      isActive: z.boolean(),
+      categoryName: z.string(), // Flattened field
+      schemeIds: z.array(z.string()),
+      createdAt: z.string(),
+      updatedAt: z.string(),
     });
 
     const validatedReports = z.array(rewardResponseSchema).parse(formattedRewards);
 
     return NextResponse.json(validatedReports, { status: 200 });
-    
+
   } catch (error) {
     console.error('Error fetching rewards data:', error);
     // Handle Zod validation errors specifically

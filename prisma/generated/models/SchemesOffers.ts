@@ -184,6 +184,7 @@ export type SchemesOffersWhereInput = {
   endDate?: Prisma.DateTimeNullableFilter<"SchemesOffers"> | Date | string | null
   masons?: Prisma.MasonOnSchemeListRelationFilter
   slabs?: Prisma.SchemeSlabsListRelationFilter
+  rewards?: Prisma.RewardsListRelationFilter
 }
 
 export type SchemesOffersOrderByWithRelationInput = {
@@ -194,6 +195,7 @@ export type SchemesOffersOrderByWithRelationInput = {
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   masons?: Prisma.MasonOnSchemeOrderByRelationAggregateInput
   slabs?: Prisma.SchemeSlabsOrderByRelationAggregateInput
+  rewards?: Prisma.RewardsOrderByRelationAggregateInput
 }
 
 export type SchemesOffersWhereUniqueInput = Prisma.AtLeast<{
@@ -207,6 +209,7 @@ export type SchemesOffersWhereUniqueInput = Prisma.AtLeast<{
   endDate?: Prisma.DateTimeNullableFilter<"SchemesOffers"> | Date | string | null
   masons?: Prisma.MasonOnSchemeListRelationFilter
   slabs?: Prisma.SchemeSlabsListRelationFilter
+  rewards?: Prisma.RewardsListRelationFilter
 }, "id">
 
 export type SchemesOffersOrderByWithAggregationInput = {
@@ -239,6 +242,7 @@ export type SchemesOffersCreateInput = {
   endDate?: Date | string | null
   masons?: Prisma.MasonOnSchemeCreateNestedManyWithoutSchemeInput
   slabs?: Prisma.SchemeSlabsCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsCreateNestedManyWithoutSchemesInput
 }
 
 export type SchemesOffersUncheckedCreateInput = {
@@ -249,6 +253,7 @@ export type SchemesOffersUncheckedCreateInput = {
   endDate?: Date | string | null
   masons?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutSchemeInput
   slabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsUncheckedCreateNestedManyWithoutSchemesInput
 }
 
 export type SchemesOffersUpdateInput = {
@@ -259,6 +264,7 @@ export type SchemesOffersUpdateInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   masons?: Prisma.MasonOnSchemeUpdateManyWithoutSchemeNestedInput
   slabs?: Prisma.SchemeSlabsUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUpdateManyWithoutSchemesNestedInput
 }
 
 export type SchemesOffersUncheckedUpdateInput = {
@@ -269,6 +275,7 @@ export type SchemesOffersUncheckedUpdateInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   masons?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutSchemeNestedInput
   slabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUncheckedUpdateManyWithoutSchemesNestedInput
 }
 
 export type SchemesOffersCreateManyInput = {
@@ -293,6 +300,16 @@ export type SchemesOffersUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type SchemesOffersListRelationFilter = {
+  every?: Prisma.SchemesOffersWhereInput
+  some?: Prisma.SchemesOffersWhereInput
+  none?: Prisma.SchemesOffersWhereInput
+}
+
+export type SchemesOffersOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type SchemesOffersCountOrderByAggregateInput = {
@@ -324,6 +341,44 @@ export type SchemesOffersScalarRelationFilter = {
   isNot?: Prisma.SchemesOffersWhereInput
 }
 
+export type SchemesOffersCreateNestedManyWithoutRewardsInput = {
+  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutRewardsInput, Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput> | Prisma.SchemesOffersCreateWithoutRewardsInput[] | Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput[]
+  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput | Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput[]
+  connect?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+}
+
+export type SchemesOffersUncheckedCreateNestedManyWithoutRewardsInput = {
+  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutRewardsInput, Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput> | Prisma.SchemesOffersCreateWithoutRewardsInput[] | Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput[]
+  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput | Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput[]
+  connect?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+}
+
+export type SchemesOffersUpdateManyWithoutRewardsNestedInput = {
+  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutRewardsInput, Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput> | Prisma.SchemesOffersCreateWithoutRewardsInput[] | Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput[]
+  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput | Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput[]
+  upsert?: Prisma.SchemesOffersUpsertWithWhereUniqueWithoutRewardsInput | Prisma.SchemesOffersUpsertWithWhereUniqueWithoutRewardsInput[]
+  set?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  disconnect?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  delete?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  connect?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  update?: Prisma.SchemesOffersUpdateWithWhereUniqueWithoutRewardsInput | Prisma.SchemesOffersUpdateWithWhereUniqueWithoutRewardsInput[]
+  updateMany?: Prisma.SchemesOffersUpdateManyWithWhereWithoutRewardsInput | Prisma.SchemesOffersUpdateManyWithWhereWithoutRewardsInput[]
+  deleteMany?: Prisma.SchemesOffersScalarWhereInput | Prisma.SchemesOffersScalarWhereInput[]
+}
+
+export type SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput = {
+  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutRewardsInput, Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput> | Prisma.SchemesOffersCreateWithoutRewardsInput[] | Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput[]
+  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput | Prisma.SchemesOffersCreateOrConnectWithoutRewardsInput[]
+  upsert?: Prisma.SchemesOffersUpsertWithWhereUniqueWithoutRewardsInput | Prisma.SchemesOffersUpsertWithWhereUniqueWithoutRewardsInput[]
+  set?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  disconnect?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  delete?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  connect?: Prisma.SchemesOffersWhereUniqueInput | Prisma.SchemesOffersWhereUniqueInput[]
+  update?: Prisma.SchemesOffersUpdateWithWhereUniqueWithoutRewardsInput | Prisma.SchemesOffersUpdateWithWhereUniqueWithoutRewardsInput[]
+  updateMany?: Prisma.SchemesOffersUpdateManyWithWhereWithoutRewardsInput | Prisma.SchemesOffersUpdateManyWithWhereWithoutRewardsInput[]
+  deleteMany?: Prisma.SchemesOffersScalarWhereInput | Prisma.SchemesOffersScalarWhereInput[]
+}
+
 export type SchemesOffersCreateNestedOneWithoutMasonsInput = {
   create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
   connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutMasonsInput
@@ -352,6 +407,58 @@ export type SchemesOffersUpdateOneRequiredWithoutSlabsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SchemesOffersUpdateToOneWithWhereWithoutSlabsInput, Prisma.SchemesOffersUpdateWithoutSlabsInput>, Prisma.SchemesOffersUncheckedUpdateWithoutSlabsInput>
 }
 
+export type SchemesOffersCreateWithoutRewardsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  masons?: Prisma.MasonOnSchemeCreateNestedManyWithoutSchemeInput
+  slabs?: Prisma.SchemeSlabsCreateNestedManyWithoutSchemeInput
+}
+
+export type SchemesOffersUncheckedCreateWithoutRewardsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  masons?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutSchemeInput
+  slabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutSchemeInput
+}
+
+export type SchemesOffersCreateOrConnectWithoutRewardsInput = {
+  where: Prisma.SchemesOffersWhereUniqueInput
+  create: Prisma.XOR<Prisma.SchemesOffersCreateWithoutRewardsInput, Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput>
+}
+
+export type SchemesOffersUpsertWithWhereUniqueWithoutRewardsInput = {
+  where: Prisma.SchemesOffersWhereUniqueInput
+  update: Prisma.XOR<Prisma.SchemesOffersUpdateWithoutRewardsInput, Prisma.SchemesOffersUncheckedUpdateWithoutRewardsInput>
+  create: Prisma.XOR<Prisma.SchemesOffersCreateWithoutRewardsInput, Prisma.SchemesOffersUncheckedCreateWithoutRewardsInput>
+}
+
+export type SchemesOffersUpdateWithWhereUniqueWithoutRewardsInput = {
+  where: Prisma.SchemesOffersWhereUniqueInput
+  data: Prisma.XOR<Prisma.SchemesOffersUpdateWithoutRewardsInput, Prisma.SchemesOffersUncheckedUpdateWithoutRewardsInput>
+}
+
+export type SchemesOffersUpdateManyWithWhereWithoutRewardsInput = {
+  where: Prisma.SchemesOffersScalarWhereInput
+  data: Prisma.XOR<Prisma.SchemesOffersUpdateManyMutationInput, Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsInput>
+}
+
+export type SchemesOffersScalarWhereInput = {
+  AND?: Prisma.SchemesOffersScalarWhereInput | Prisma.SchemesOffersScalarWhereInput[]
+  OR?: Prisma.SchemesOffersScalarWhereInput[]
+  NOT?: Prisma.SchemesOffersScalarWhereInput | Prisma.SchemesOffersScalarWhereInput[]
+  id?: Prisma.UuidFilter<"SchemesOffers"> | string
+  name?: Prisma.StringFilter<"SchemesOffers"> | string
+  description?: Prisma.StringNullableFilter<"SchemesOffers"> | string | null
+  startDate?: Prisma.DateTimeNullableFilter<"SchemesOffers"> | Date | string | null
+  endDate?: Prisma.DateTimeNullableFilter<"SchemesOffers"> | Date | string | null
+}
+
 export type SchemesOffersCreateWithoutMasonsInput = {
   id?: string
   name: string
@@ -359,6 +466,7 @@ export type SchemesOffersCreateWithoutMasonsInput = {
   startDate?: Date | string | null
   endDate?: Date | string | null
   slabs?: Prisma.SchemeSlabsCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsCreateNestedManyWithoutSchemesInput
 }
 
 export type SchemesOffersUncheckedCreateWithoutMasonsInput = {
@@ -368,6 +476,7 @@ export type SchemesOffersUncheckedCreateWithoutMasonsInput = {
   startDate?: Date | string | null
   endDate?: Date | string | null
   slabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsUncheckedCreateNestedManyWithoutSchemesInput
 }
 
 export type SchemesOffersCreateOrConnectWithoutMasonsInput = {
@@ -393,6 +502,7 @@ export type SchemesOffersUpdateWithoutMasonsInput = {
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   slabs?: Prisma.SchemeSlabsUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUpdateManyWithoutSchemesNestedInput
 }
 
 export type SchemesOffersUncheckedUpdateWithoutMasonsInput = {
@@ -402,6 +512,7 @@ export type SchemesOffersUncheckedUpdateWithoutMasonsInput = {
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   slabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUncheckedUpdateManyWithoutSchemesNestedInput
 }
 
 export type SchemesOffersCreateWithoutSlabsInput = {
@@ -411,6 +522,7 @@ export type SchemesOffersCreateWithoutSlabsInput = {
   startDate?: Date | string | null
   endDate?: Date | string | null
   masons?: Prisma.MasonOnSchemeCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsCreateNestedManyWithoutSchemesInput
 }
 
 export type SchemesOffersUncheckedCreateWithoutSlabsInput = {
@@ -420,6 +532,7 @@ export type SchemesOffersUncheckedCreateWithoutSlabsInput = {
   startDate?: Date | string | null
   endDate?: Date | string | null
   masons?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsUncheckedCreateNestedManyWithoutSchemesInput
 }
 
 export type SchemesOffersCreateOrConnectWithoutSlabsInput = {
@@ -445,6 +558,7 @@ export type SchemesOffersUpdateWithoutSlabsInput = {
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   masons?: Prisma.MasonOnSchemeUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUpdateManyWithoutSchemesNestedInput
 }
 
 export type SchemesOffersUncheckedUpdateWithoutSlabsInput = {
@@ -454,6 +568,35 @@ export type SchemesOffersUncheckedUpdateWithoutSlabsInput = {
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   masons?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUncheckedUpdateManyWithoutSchemesNestedInput
+}
+
+export type SchemesOffersUpdateWithoutRewardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  masons?: Prisma.MasonOnSchemeUpdateManyWithoutSchemeNestedInput
+  slabs?: Prisma.SchemeSlabsUpdateManyWithoutSchemeNestedInput
+}
+
+export type SchemesOffersUncheckedUpdateWithoutRewardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  masons?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutSchemeNestedInput
+  slabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutSchemeNestedInput
+}
+
+export type SchemesOffersUncheckedUpdateManyWithoutRewardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -464,11 +607,13 @@ export type SchemesOffersUncheckedUpdateWithoutSlabsInput = {
 export type SchemesOffersCountOutputType = {
   masons: number
   slabs: number
+  rewards: number
 }
 
 export type SchemesOffersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   masons?: boolean | SchemesOffersCountOutputTypeCountMasonsArgs
   slabs?: boolean | SchemesOffersCountOutputTypeCountSlabsArgs
+  rewards?: boolean | SchemesOffersCountOutputTypeCountRewardsArgs
 }
 
 /**
@@ -495,6 +640,13 @@ export type SchemesOffersCountOutputTypeCountSlabsArgs<ExtArgs extends runtime.T
   where?: Prisma.SchemeSlabsWhereInput
 }
 
+/**
+ * SchemesOffersCountOutputType without action
+ */
+export type SchemesOffersCountOutputTypeCountRewardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RewardsWhereInput
+}
+
 
 export type SchemesOffersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -504,6 +656,7 @@ export type SchemesOffersSelect<ExtArgs extends runtime.Types.Extensions.Interna
   endDate?: boolean
   masons?: boolean | Prisma.SchemesOffers$masonsArgs<ExtArgs>
   slabs?: boolean | Prisma.SchemesOffers$slabsArgs<ExtArgs>
+  rewards?: boolean | Prisma.SchemesOffers$rewardsArgs<ExtArgs>
   _count?: boolean | Prisma.SchemesOffersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["schemesOffers"]>
 
@@ -535,6 +688,7 @@ export type SchemesOffersOmit<ExtArgs extends runtime.Types.Extensions.InternalA
 export type SchemesOffersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   masons?: boolean | Prisma.SchemesOffers$masonsArgs<ExtArgs>
   slabs?: boolean | Prisma.SchemesOffers$slabsArgs<ExtArgs>
+  rewards?: boolean | Prisma.SchemesOffers$rewardsArgs<ExtArgs>
   _count?: boolean | Prisma.SchemesOffersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SchemesOffersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -545,6 +699,7 @@ export type $SchemesOffersPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     masons: Prisma.$MasonOnSchemePayload<ExtArgs>[]
     slabs: Prisma.$SchemeSlabsPayload<ExtArgs>[]
+    rewards: Prisma.$RewardsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -948,6 +1103,7 @@ export interface Prisma__SchemesOffersClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   masons<T extends Prisma.SchemesOffers$masonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SchemesOffers$masonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MasonOnSchemePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   slabs<T extends Prisma.SchemesOffers$slabsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SchemesOffers$slabsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SchemeSlabsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rewards<T extends Prisma.SchemesOffers$rewardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SchemesOffers$rewardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RewardsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1415,6 +1571,30 @@ export type SchemesOffers$slabsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.SchemeSlabsScalarFieldEnum | Prisma.SchemeSlabsScalarFieldEnum[]
+}
+
+/**
+ * SchemesOffers.rewards
+ */
+export type SchemesOffers$rewardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Rewards
+   */
+  select?: Prisma.RewardsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Rewards
+   */
+  omit?: Prisma.RewardsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RewardsInclude<ExtArgs> | null
+  where?: Prisma.RewardsWhereInput
+  orderBy?: Prisma.RewardsOrderByWithRelationInput | Prisma.RewardsOrderByWithRelationInput[]
+  cursor?: Prisma.RewardsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RewardsScalarFieldEnum | Prisma.RewardsScalarFieldEnum[]
 }
 
 /**
