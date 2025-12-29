@@ -140,6 +140,10 @@ const getRoleBadgeVariant = (role: string) => {
 const isUserActive = (workosUserId: string | null) => {
   return workosUserId && !workosUserId.startsWith('pending_') && !workosUserId.startsWith('temp_');
 };
+const isAppOnlyUserActive = (status: string | null) => {
+  return status && !status.startsWith('pending_');
+};
+
 
 export default function UsersManagement({ adminUser }: Props) {
   const [users, setUsers] = useState<User[]>([]);
@@ -467,7 +471,7 @@ export default function UsersManagement({ adminUser }: Props) {
       enableSorting: false,
       cell: ({ row }) => {
         const user = row.original;
-        const isActive = isUserActive(user.workosUserId);
+        const isActive = (isUserActive(user.workosUserId) || isAppOnlyUserActive(user.status));
         return (
           <div className="flex items-center space-x-2">
             {isActive ? (

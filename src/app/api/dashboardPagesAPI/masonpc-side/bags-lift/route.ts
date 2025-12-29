@@ -60,6 +60,7 @@ export async function GET() {
         mason: { 
             select: { 
                 name: true,
+                phoneNumber: true,
                 user: {
                     select: {
                         firstName: true,
@@ -91,6 +92,7 @@ export async function GET() {
       id: record.id,
       masonId: record.masonId,
       masonName: record.mason.name,
+      phoneNumber: record.mason.phoneNumber ?? '-',
       dealerName: record.dealer?.name ?? null,
       purchaseDate: record.purchaseDate.toISOString(),
       bagCount: record.bagCount,
@@ -122,6 +124,7 @@ export async function GET() {
         id: z.string(),
         masonId: z.string(),
         masonName: z.string(),
+        phoneNumber: z.string().nullable().optional(),
         dealerName: z.string().nullable(),
         purchaseDate: z.string(),
         bagCount: z.number().int(),

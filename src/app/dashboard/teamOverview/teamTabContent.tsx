@@ -142,7 +142,8 @@ export function TeamTabContent() {
     });
     if (!res.ok) throw new Error('Failed to update dealer mapping');
     toast.success('Dealer mapping updated!');
-  }, [editDealerMappingURI]);
+    await loadTeamData();
+  }, [editDealerMappingURI, loadTeamData]);
 
   const handleSaveMasonMapping = useCallback(async (userId: number, masonIds: string[]) => {
     const res = await fetch(editMasonMappingURI, {
@@ -152,7 +153,8 @@ export function TeamTabContent() {
     });
     if (!res.ok) throw new Error('Failed to update mason mapping');
     toast.success('Mason mapping updated!');
-  }, [editMasonMappingURI]);
+    await loadTeamData();
+  }, [editMasonMappingURI, loadTeamData]);
 
 
   // --- 3. Table Configuration ---

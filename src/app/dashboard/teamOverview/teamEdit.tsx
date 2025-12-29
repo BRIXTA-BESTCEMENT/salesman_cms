@@ -2,16 +2,16 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription 
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
-import { 
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select';
-import { 
-  Loader2, PencilIcon, StoreIcon, UsersIcon, ShieldCheck, Trash2 
+import {
+  Loader2, PencilIcon, StoreIcon, UsersIcon, ShieldCheck, Trash2
 } from 'lucide-react'; // Added Trash2
 import { toast } from 'sonner';
 
@@ -67,9 +67,14 @@ const RoleTab = ({ member, currentUserRole, onSave }: { member: TeamMember, curr
   }, [assignableRoles, member.role]);
 
   const handleSave = async () => {
-    setIsSaving(true);
-    await onSave(member.id, newRole);
-    setIsSaving(false);
+    try {
+      setIsSaving(true);
+      await onSave(member.id, newRole);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSaving(false); // This will ALWAYS run
+    }
   };
 
   return (
@@ -167,8 +172,8 @@ const HierarchyTab = ({ member, allTeamMembers, currentUserRole, onSave }: { mem
 };
 
 // 3. Dealer/Mason Filter Helper Component
-const LocationFilter = ({ 
-  areas, regions, selectedArea, selectedRegion, onAreaChange, onRegionChange, onClear 
+const LocationFilter = ({
+  areas, regions, selectedArea, selectedRegion, onAreaChange, onRegionChange, onClear
 }: any) => (
   <div className="flex flex-col gap-2 mb-4 p-3 bg-muted/30 rounded-lg border">
     <div className="flex gap-2">
@@ -201,7 +206,7 @@ const DealerTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
   const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const { locations, loading: locLoading } = useDealerLocations();
   const [area, setArea] = useState<string | null>(null);
   const [region, setRegion] = useState<string | null>(null);
@@ -220,9 +225,9 @@ const DealerTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
         if (res.ok) {
           const data = await res.json();
           setOptions(data.dealers.map((d: any) => ({ value: d.id, label: d.name })));
-          if(!area && !region) setSelectedDealerIds(data.assignedDealerIds ?? []);
+          if (!area && !region) setSelectedDealerIds(data.assignedDealerIds ?? []);
         }
-      } catch (e) { toast.error("Failed to load dealers"); } 
+      } catch (e) { toast.error("Failed to load dealers"); }
       finally { setLoading(false); }
     })();
   }, [member.id, area, region, locLoading]);
@@ -234,7 +239,7 @@ const DealerTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
 
   return (
     <div className="space-y-4 py-4">
-      <LocationFilter 
+      <LocationFilter
         areas={locations.areas} regions={locations.regions}
         selectedArea={area} selectedRegion={region}
         onAreaChange={setArea} onRegionChange={setRegion}
@@ -248,11 +253,11 @@ const DealerTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
           placeholder="Select Dealers..."
         />
       )}
-      
+
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         {/* Unassign Button */}
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={handleUnassignAll}
           disabled={isSaving || selectedDealerIds.length === 0}
           className="w-full sm:w-auto text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
@@ -262,16 +267,19 @@ const DealerTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
         </Button>
 
         {/* Save Button */}
-        <Button 
-          onClick={async () => { 
-            setIsSaving(true); 
-            await onSave(member.id, selectedDealerIds); 
-            setIsSaving(false); 
-          }} 
-          disabled={isSaving} 
+        <Button
+          onClick={async () => {
+            setIsSaving(true);
+            try {
+              await onSave(member.id, selectedDealerIds);
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          disabled={isSaving}
           className="w-full flex-1"
         >
-          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
+          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Dealers
         </Button>
       </div>
@@ -287,7 +295,7 @@ const MasonTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
   const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const { locations, loading: locLoading } = useDealerLocations();
   const [area, setArea] = useState<string | null>(null);
   const [region, setRegion] = useState<string | null>(null);
@@ -309,9 +317,9 @@ const MasonTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
             value: m.id,
             label: `${m.name} (${m.dealer?.name || 'No Dealer'})`
           })));
-          if(!area && !region) setSelectedMasonIds(data.assignedMasonIds ?? []);
+          if (!area && !region) setSelectedMasonIds(data.assignedMasonIds ?? []);
         }
-      } catch (e) { toast.error("Failed to load masons"); } 
+      } catch (e) { toast.error("Failed to load masons"); }
       finally { setLoading(false); }
     })();
   }, [member.id, area, region, locLoading]);
@@ -323,7 +331,7 @@ const MasonTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
 
   return (
     <div className="space-y-4 py-4">
-      <LocationFilter 
+      <LocationFilter
         areas={locations.areas} regions={locations.regions}
         selectedArea={area} selectedRegion={region}
         onAreaChange={setArea} onRegionChange={setRegion}
@@ -337,11 +345,11 @@ const MasonTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
           placeholder="Select Masons..."
         />
       )}
-      
+
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
-         {/* Unassign Button */}
-        <Button 
-          variant="outline" 
+        {/* Unassign Button */}
+        <Button
+          variant="outline"
           onClick={handleUnassignAll}
           disabled={isSaving || selectedMasonIds.length === 0}
           className="w-full sm:w-auto text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
@@ -351,16 +359,19 @@ const MasonTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
         </Button>
 
         {/* Save Button */}
-        <Button 
-          onClick={async () => { 
-            setIsSaving(true); 
-            await onSave(member.id, selectedMasonIds); 
-            setIsSaving(false); 
-          }} 
-          disabled={isSaving} 
+        <Button
+          onClick={async () => {
+            setIsSaving(true);
+            try {
+              await onSave(member.id, selectedMasonIds);
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          disabled={isSaving}
           className="w-full flex-1"
         >
-          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
+          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Masons
         </Button>
       </div>
@@ -370,8 +381,8 @@ const MasonTab = ({ member, onSave }: { member: TeamMember, onSave: any }) => {
 
 
 // --- MAIN EXPORT COMPONENT ---
-export default function TeamEditModal({ 
-  member, allTeamMembers, currentUserRole, onSaveRole, onSaveMapping, onSaveDealerMapping, onSaveMasonMapping 
+export default function TeamEditModal({
+  member, allTeamMembers, currentUserRole, onSaveRole, onSaveMapping, onSaveDealerMapping, onSaveMasonMapping
 }: TeamEditProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -381,9 +392,9 @@ export default function TeamEditModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className="text-blue-500 border-blue-500 hover:bg-blue-50"
         >
           <PencilIcon className="w-4 h-4 mr-2" />
@@ -394,30 +405,30 @@ export default function TeamEditModal({
         <DialogHeader>
           <DialogTitle>Manage: {member.name}</DialogTitle>
           <DialogDescription>
-             Current Role: <span className="font-semibold text-foreground">{member.role}</span>
+            Current Role: <span className="font-semibold text-foreground">{member.role}</span>
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="role" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="role" className="flex gap-2"><ShieldCheck className="w-4 h-4"/> Role</TabsTrigger>
-            <TabsTrigger value="hierarchy" className="flex gap-2"><UsersIcon className="w-4 h-4"/> Hierarchy</TabsTrigger>
-            <TabsTrigger value="dealers" className="flex gap-2"><StoreIcon className="w-4 h-4"/> Dealers</TabsTrigger>
-            <TabsTrigger value="masons" className="flex gap-2"><PencilIcon className="w-4 h-4"/> Masons</TabsTrigger>
+            <TabsTrigger value="role" className="flex gap-2"><ShieldCheck className="w-4 h-4" /> Role</TabsTrigger>
+            <TabsTrigger value="hierarchy" className="flex gap-2"><UsersIcon className="w-4 h-4" /> Hierarchy</TabsTrigger>
+            <TabsTrigger value="dealers" className="flex gap-2"><StoreIcon className="w-4 h-4" /> Dealers</TabsTrigger>
+            <TabsTrigger value="masons" className="flex gap-2"><PencilIcon className="w-4 h-4" /> Masons</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="role">
             <RoleTab member={member} currentUserRole={currentUserRole} onSave={onSaveRole} />
           </TabsContent>
-          
+
           <TabsContent value="hierarchy">
             <HierarchyTab member={member} allTeamMembers={allTeamMembers} currentUserRole={currentUserRole} onSave={onSaveMapping} />
           </TabsContent>
-          
+
           <TabsContent value="dealers">
             <DealerTab member={member} onSave={onSaveDealerMapping} />
           </TabsContent>
-          
+
           <TabsContent value="masons">
             <MasonTab member={member} onSave={onSaveMasonMapping} />
           </TabsContent>

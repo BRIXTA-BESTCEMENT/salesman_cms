@@ -217,10 +217,10 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Bag Lifts',
         icon: ShoppingBag,
         columns: [
-            'id', 'masonId', 'masonName', 'dealerId', 'dealerName',
+            'id', 'masonId', 'masonName', 'phoneNumber', 'dealerId', 'dealerName',
             'siteId', 'siteName', 'siteAddress', 'siteKeyPersonName', 'siteKeyPersonPhone',
             'purchaseDate', 'bagCount', 'pointsCredited', 'status',
-            'imageUrl', 'verificationSiteImageUrl', 'verificationProofImageUrl', 'approvedByUserId', 'approverName', 'approvedAt', 'createdAt',
+            'imageUrl', 'verificationSiteImageUrl', 'verificationProofImageUrl', 'approvedByUserId', 'approverName', 'associatedSalesmanName','approvedAt', 'createdAt',
         ],
     },
     {

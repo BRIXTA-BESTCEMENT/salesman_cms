@@ -1,7 +1,12 @@
 // src/lib/reports-transformer.ts
 import prisma from '@/lib/prisma';
-import { Prisma } from '../../prisma/generated/client';
 
+// Helper to format user name or default to email (used in TSOAssignment)
+const formatUserName = (user: { firstName: string | null, lastName: string | null, email: string } | null) => {
+  if (!user) return null;
+  const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
+  return name || user.email;
+};
 // Users
 export type FlattenedUser = {
   id: number;
@@ -266,7 +271,7 @@ export async function getFlattenedDailyVisitReports(companyId: number): Promise<
     orderBy: { reportDate: 'desc' },
   });
 
-  return raw.map((r:any) => ({
+  return raw.map((r: any) => ({
     id: r.id,
     reportDate: r.reportDate.toISOString().slice(0, 10),
     dealerType: r.dealerType,
@@ -519,7 +524,7 @@ export type FlattenedTechnicalSite = {
   firstVistDate: string | null;
   lastVisitDate: string | null;
   needFollowUp: boolean | null;
-  
+
   createdAt: string;
   updatedAt: string;
 
@@ -566,25 +571,25 @@ export async function getFlattenedTechnicalSites(companyId: number): Promise<Fla
     concernedPerson: s.concernedPerson,
     phoneNo: s.phoneNo,
     address: s.address ?? null,
-    
+
     latitude: s.latitude?.toNumber() ?? null,
     longitude: s.longitude?.toNumber() ?? null,
-    
+
     siteType: s.siteType ?? null,
     area: s.area ?? null,
     region: s.region ?? null,
-    
+
     keyPersonName: s.keyPersonName ?? null,
     keyPersonPhoneNum: s.keyPersonPhoneNum ?? null,
-    
+
     stageOfConstruction: s.stageOfConstruction ?? null,
-    
+
     // Dates -> String (YYYY-MM-DD)
     constructionStartDate: s.constructionStartDate?.toISOString().slice(0, 10) ?? null,
     constructionEndDate: s.constructionEndDate?.toISOString().slice(0, 10) ?? null,
     firstVistDate: s.firstVistDate?.toISOString().slice(0, 10) ?? null,
     lastVisitDate: s.lastVisitDate?.toISOString().slice(0, 10) ?? null,
-    
+
     convertedSite: s.convertedSite ?? false,
     needFollowUp: s.needFollowUp ?? false,
 
@@ -595,11 +600,11 @@ export async function getFlattenedTechnicalSites(companyId: number): Promise<Fla
     associatedSalesmen: s.associatedUsers
       .map((u: any) => `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || u.email)
       .join(', '),
-      
+
     associatedDealers: s.associatedDealers
       .map((d: any) => d.name)
       .join(', '),
-      
+
     associatedMasons: s.associatedMasons
       .map((m: any) => m.name)
       .join(', '),
@@ -611,7 +616,7 @@ export type FlattenedPermanentJourneyPlan = {
   id: string;
   planDate: string;
   areaToBeVisited: string;
-  route: string | null; 
+  route: string | null;
   description: string | null;
   status: string;
   createdAt: string;
@@ -641,13 +646,13 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
   const rawReports = await prisma.permanentJourneyPlan.findMany({
     where: { user: { companyId } },
     select: {
-      id: true, 
-      planDate: true, 
-      areaToBeVisited: true, 
+      id: true,
+      planDate: true,
+      areaToBeVisited: true,
       route: true,
-      description: true, 
+      description: true,
       status: true,
-      
+
       plannedNewSiteVisits: true,
       plannedFollowUpSiteVisits: true,
       plannedNewDealerVisits: true,
@@ -659,7 +664,7 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
       noOfMasonPcSchemes: true,
       diversionReason: true,
 
-      createdAt: true, 
+      createdAt: true,
       updatedAt: true,
       user: { select: { firstName: true, lastName: true, email: true } },
       createdBy: { select: { firstName: true, lastName: true, email: true } },
@@ -674,7 +679,7 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
     route: r.route ?? null,
     description: r.description ?? null,
     status: r.status,
-    
+
     plannedNewSiteVisits: r.plannedNewSiteVisits ?? 0,
     plannedFollowUpSiteVisits: r.plannedFollowUpSiteVisits ?? 0,
     plannedNewDealerVisits: r.plannedNewDealerVisits ?? 0,
@@ -1386,7 +1391,7 @@ export async function getFlattenedTSOMeeetings(companyId: number): Promise<Flatt
     orderBy: { date: 'desc' },
   });
 
-  return raw.map((r:any) => ({
+  return raw.map((r: any) => ({
     id: r.id,
     type: r.type,
     date: r.date.toISOString().slice(0, 10),
@@ -1428,7 +1433,7 @@ export async function getFlattenedRewards(): Promise<FlattenedReward[]> {
     orderBy: { name: 'asc' }, // CORRECTED: Order by 'name'
   });
 
-  return raw.map((r:any) => ({
+  return raw.map((r: any) => ({
     id: r.id,
     itemName: r.name, // Mapping 'name' to the desired output key 'itemName'
     pointCost: r.pointCost, // Type is Int, no need for .toNumber()
@@ -1485,7 +1490,7 @@ export async function getFlattenedGiftAllocationLogs(companyId: number): Promise
     orderBy: { createdAt: 'desc' },
   });
 
-  return raw.map((r:any) => {
+  return raw.map((r: any) => {
     // Helper function to format user name or default to email
     const formatUserName = (user: { firstName: string | null, lastName: string | null, email: string } | null) => {
       if (!user) return null;
@@ -1559,7 +1564,7 @@ export async function getFlattenedMasonPCSide(companyId: number): Promise<Flatte
     orderBy: { name: 'asc' },
   });
 
-  return raw.map((r:any) => ({
+  return raw.map((r: any) => ({
     id: r.id,
     name: r.name,
     phoneNumber: r.phoneNumber,
@@ -1598,7 +1603,7 @@ export async function getFlattenedSchemesOffers(): Promise<FlattenedSchemesOffer
     orderBy: { name: 'asc' },
   });
 
-  return raw.map((r:any) => ({
+  return raw.map((r: any) => ({
     id: r.id,
     name: r.name,
     description: r.description ?? null,
@@ -1636,7 +1641,7 @@ export async function getFlattenedMasonsOnSchemes(companyId: number): Promise<Fl
     orderBy: { enrolledAt: 'desc' },
   });
 
-  return raw.map((r:any) => ({
+  return raw.map((r: any) => ({
     masonId: r.masonId,
     masonName: r.mason.name,
     schemeId: r.schemeId,
@@ -1674,7 +1679,7 @@ export async function getFlattenedMasonsOnMeetings(companyId: number): Promise<F
     orderBy: { attendedAt: 'desc' },
   });
 
-  return raw.map((r:any) => ({
+  return raw.map((r: any) => ({
     masonId: r.masonId,
     masonName: r.mason.name,
     meetingId: r.meetingId,
@@ -1684,258 +1689,271 @@ export async function getFlattenedMasonsOnMeetings(companyId: number): Promise<F
   }));
 }
 
-// Helper to format user name or default to email (used in TSOAssignment)
-const formatUserName = (user: { firstName: string | null, lastName: string | null, email: string } | null) => {
-    if (!user) return null;
-    const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
-    return name || user.email;
-};
-
-
 // RewardCategory (Master List - No company filter needed)
 export type FlattenedRewardCategory = {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 };
 
 export async function getFlattenedRewardCategories(): Promise<FlattenedRewardCategory[]> {
-    const raw = await prisma.rewardCategory.findMany({
-        select: {
-            id: true,
-            name: true,
-        },
-        orderBy: { name: 'asc' },
-    });
+  const raw = await prisma.rewardCategory.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: { name: 'asc' },
+  });
 
-    return raw.map((r:any) => ({
-        id: r.id,
-        name: r.name,
-    }));
+  return raw.map((r: any) => ({
+    id: r.id,
+    name: r.name,
+  }));
 }
 
 // KYCSubmissions
 export type FlattenedKYCSubmission = {
-    id: string;
-    masonId: string;
-    masonName: string;
-    aadhaarNumber: string | null;
-    panNumber: string | null;
-    voterIdNumber: string | null;
-    status: string;
-    remark: string | null;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  masonId: string;
+  masonName: string;
+  aadhaarNumber: string | null;
+  panNumber: string | null;
+  voterIdNumber: string | null;
+  status: string;
+  remark: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export async function getFlattenedKYCSubmissions(companyId: number): Promise<FlattenedKYCSubmission[]> {
-    const raw = await prisma.kYCSubmission.findMany({
-        // Filter by Masons whose associated user belongs to the company
-        where: { mason: { user: { companyId } } },
-        select: {
-            id: true,
-            masonId: true,
-            aadhaarNumber: true,
-            panNumber: true,
-            voterIdNumber: true,
-            status: true,
-            remark: true,
-            createdAt: true,
-            updatedAt: true,
-            mason: { select: { name: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-    });
+  const raw = await prisma.kYCSubmission.findMany({
+    // Filter by Masons whose associated user belongs to the company
+    where: { mason: { user: { companyId } } },
+    select: {
+      id: true,
+      masonId: true,
+      aadhaarNumber: true,
+      panNumber: true,
+      voterIdNumber: true,
+      status: true,
+      remark: true,
+      createdAt: true,
+      updatedAt: true,
+      mason: { select: { name: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
-    return raw.map((r:any) => ({
-        id: r.id,
-        masonId: r.masonId,
-        masonName: r.mason.name,
-        aadhaarNumber: r.aadhaarNumber ?? null,
-        panNumber: r.panNumber ?? null,
-        voterIdNumber: r.voterIdNumber ?? null,
-        status: r.status,
-        remark: r.remark ?? null,
-        createdAt: r.createdAt.toISOString(),
-        updatedAt: r.updatedAt.toISOString(),
-    }));
+  return raw.map((r: any) => ({
+    id: r.id,
+    masonId: r.masonId,
+    masonName: r.mason.name,
+    aadhaarNumber: r.aadhaarNumber ?? null,
+    panNumber: r.panNumber ?? null,
+    voterIdNumber: r.voterIdNumber ?? null,
+    status: r.status,
+    remark: r.remark ?? null,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
+  }));
 }
 
 // TSOAssignment (Join Table)
 export type FlattenedTSOAssignment = {
-    masonId: string;
-    masonName: string;
-    tsoId: number;
-    tsoName: string;
-    tsoEmail: string;
-    createdAt: string;
+  masonId: string;
+  masonName: string;
+  tsoId: number;
+  tsoName: string;
+  tsoEmail: string;
+  createdAt: string;
 };
 
 export async function getFlattenedTSOAssignments(companyId: number): Promise<FlattenedTSOAssignment[]> {
-    const raw = await prisma.tSOAssignment.findMany({
-        // Filter by TSO (User) belonging to the company
-        where: { tso: { companyId } },
-        select: {
-            masonId: true,
-            tsoId: true,
-            createdAt: true,
-            mason: { select: { name: true } },
-            tso: { select: { firstName: true, lastName: true, email: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-    });
+  const raw = await prisma.tSOAssignment.findMany({
+    // Filter by TSO (User) belonging to the company
+    where: { tso: { companyId } },
+    select: {
+      masonId: true,
+      tsoId: true,
+      createdAt: true,
+      mason: { select: { name: true } },
+      tso: { select: { firstName: true, lastName: true, email: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
-    return raw.map((r:any) => ({
-        masonId: r.masonId,
-        masonName: r.mason.name,
-        tsoId: r.tsoId,
-        tsoName: formatUserName(r.tso)!,
-        tsoEmail: r.tso.email,
-        createdAt: r.createdAt.toISOString(),
-    }));
+  return raw.map((r: any) => ({
+    masonId: r.masonId,
+    masonName: r.mason.name,
+    tsoId: r.tsoId,
+    tsoName: formatUserName(r.tso)!,
+    tsoEmail: r.tso.email,
+    createdAt: r.createdAt.toISOString(),
+  }));
 }
 
 // BagLifts
 export type FlattenedBagLift = {
-    id: string;
-    masonId: string;
-    masonName: string;
-    dealerId: string | null;
-    dealerName: string | null;
-    siteId: string | null;
-    siteName: string | null;
-    siteAddress: string | null;
-    siteKeyPersonName: string | null;
-    siteKeyPersonPhone: string | null;
-    imageUrl: string | null;
-    verificationSiteImageUrl: string | null;
-    verificationProofImageUrl: string | null;
-    purchaseDate: string;
-    bagCount: number;
-    pointsCredited: number;
-    status: string;
-    approvedByUserId: number | null;
-    approverName: string | null;
-    approvedAt: string | null;
-    createdAt: string;
+  id: string;
+  masonId: string;
+  masonName: string;
+  phoneNumber: string | null;
+  dealerId: string | null;
+  dealerName: string | null;
+  siteId: string | null;
+  siteName: string | null;
+  siteAddress: string | null;
+  siteKeyPersonName: string | null;
+  siteKeyPersonPhone: string | null;
+  imageUrl: string | null;
+  verificationSiteImageUrl: string | null;
+  verificationProofImageUrl: string | null;
+  purchaseDate: string;
+  bagCount: number;
+  pointsCredited: number;
+  status: string;
+  approvedByUserId: number | null;
+  approverName: string | null;
+  associatedSalesmanName: string | null;
+  approvedAt: string | null;
+  createdAt: string;
 };
 
 export async function getFlattenedBagLifts(companyId: number): Promise<FlattenedBagLift[]> {
-    const raw = await prisma.bagLift.findMany({
-        // Filter by Masons whose associated user belongs to the company
-        where: {
-            OR: [
-                { mason: { user: { companyId } } }, 
-                { mason: { userId: null } }         
-            ]
-        },
+  const raw = await prisma.bagLift.findMany({
+    // Filter by Masons whose associated user belongs to the company
+    where: {
+      OR: [
+        { mason: { user: { companyId } } },
+        { mason: { userId: null } }
+      ]
+    },
+    select: {
+      id: true,
+      masonId: true,
+      dealerId: true,
+      purchaseDate: true,
+      bagCount: true,
+      pointsCredited: true,
+      status: true,
+      approvedBy: true,
+      approvedAt: true,
+      createdAt: true,
+
+      imageUrl: true,
+      siteId: true,
+      siteKeyPersonName: true,
+      siteKeyPersonPhone: true,
+      verificationSiteImageUrl: true,
+      verificationProofImageUrl: true,
+      mason: {
         select: {
-            id: true,
-            masonId: true,
-            dealerId: true,
-            purchaseDate: true,
-            bagCount: true,
-            pointsCredited: true,
-            status: true,
-            approvedBy: true,
-            approvedAt: true,
-            createdAt: true,
-            
-            imageUrl: true,
-            siteId: true,
-            siteKeyPersonName: true,
-            siteKeyPersonPhone: true,
-            verificationSiteImageUrl: true,
-            verificationProofImageUrl: true,
+          name: true,
+          phoneNumber: true,
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              role: true,
+              area: true,
+              region: true
+            }
+          }
+        }
+      },
+      dealer: { select: { name: true } },
+      site: { select: { siteName: true, address: true } },
+      approver: { select: { firstName: true, lastName: true, email: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
-            mason: { select: { name: true } },
-            dealer: { select: { name: true } },
-            site: { select: { siteName: true, address: true } },
-            approver: { select: { firstName: true, lastName: true, email: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-    });
+  return raw.map((r: any) => ({
+    id: r.id,
+    masonId: r.masonId,
+    masonName: r.mason.name,
+    phoneNumber: r.mason.phoneNumber,
+    dealerId: r.dealerId ?? null,
+    dealerName: r.dealer?.name ?? null,
 
-    return raw.map((r:any) => ({
-        id: r.id,
-        masonId: r.masonId,
-        masonName: r.mason.name,
-        dealerId: r.dealerId ?? null,
-        dealerName: r.dealer?.name ?? null,
-        
-        siteId: r.siteId ?? null,
-        siteName: r.site?.siteName ?? null,
-        siteAddress: r.site?.address ?? null,
-        siteKeyPersonName: r.siteKeyPersonName ?? null,
-        siteKeyPersonPhone: r.siteKeyPersonPhone ?? null,
-        imageUrl: r.imageUrl ?? null,
-        verificationSiteImageUrl: r.verificationSiteImageUrl ?? null,
-        verificationProofImageUrl: r.verificationProofImageUrl ?? null,
+    siteId: r.siteId ?? null,
+    siteName: r.site?.siteName ?? null,
+    siteAddress: r.site?.address ?? null,
+    siteKeyPersonName: r.siteKeyPersonName ?? null,
+    siteKeyPersonPhone: r.siteKeyPersonPhone ?? null,
+    imageUrl: r.imageUrl ?? null,
+    verificationSiteImageUrl: r.verificationSiteImageUrl ?? null,
+    verificationProofImageUrl: r.verificationProofImageUrl ?? null,
 
-        purchaseDate: r.purchaseDate.toISOString().slice(0, 10),
-        bagCount: r.bagCount,
-        pointsCredited: r.pointsCredited,
-        status: r.status,
-        approvedByUserId: r.approvedBy ?? null,
-        approverName: formatUserName(r.approver),
-        approvedAt: r.approvedAt?.toISOString() ?? null,
-        createdAt: r.createdAt.toISOString(),
-    }));
+    purchaseDate: r.purchaseDate.toISOString().slice(0, 10),
+    bagCount: r.bagCount,
+    pointsCredited: r.pointsCredited,
+    status: r.status,
+    approvedByUserId: r.approvedBy ?? null,
+    // Actual Approver
+    approverName: formatUserName(r.approver),
+    // Fallback: Associated Salesman
+    associatedSalesmanName: formatUserName(r.mason.user),
+
+    approvedAt: r.approvedAt?.toISOString() ?? null,
+    createdAt: r.createdAt.toISOString(),
+  }));
 }
 
 // RewardRedemptions
 export type FlattenedRewardRedemption = {
-    id: string;
-    masonId: string;
-    masonName: string;
-    rewardId: number;
-    rewardName: string;
-    quantity: number;
-    status: string;
-    pointsDebited: number;
-    deliveryName: string | null;
-    deliveryPhone: string | null;
-    deliveryAddress: string | null;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  masonId: string;
+  masonName: string;
+  rewardId: number;
+  rewardName: string;
+  quantity: number;
+  status: string;
+  pointsDebited: number;
+  deliveryName: string | null;
+  deliveryPhone: string | null;
+  deliveryAddress: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export async function getFlattenedRewardRedemptions(companyId: number): Promise<FlattenedRewardRedemption[]> {
-    const raw = await prisma.rewardRedemption.findMany({
-        // Filter by Masons whose associated user belongs to the company
-        where: { mason: { user: { companyId } } },
-        select: {
-            id: true,
-            masonId: true,
-            rewardId: true,
-            quantity: true,
-            status: true,
-            pointsDebited: true,
-            deliveryName: true,
-            deliveryPhone: true,
-            deliveryAddress: true,
-            createdAt: true,
-            updatedAt: true,
-            mason: { select: { name: true } },
-            reward: { select: { name: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-    });
+  const raw = await prisma.rewardRedemption.findMany({
+    // Filter by Masons whose associated user belongs to the company
+    where: { mason: { user: { companyId } } },
+    select: {
+      id: true,
+      masonId: true,
+      rewardId: true,
+      quantity: true,
+      status: true,
+      pointsDebited: true,
+      deliveryName: true,
+      deliveryPhone: true,
+      deliveryAddress: true,
+      createdAt: true,
+      updatedAt: true,
+      mason: { select: { name: true } },
+      reward: { select: { name: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
-    return raw.map((r:any) => ({
-        id: r.id,
-        masonId: r.masonId,
-        masonName: r.mason.name,
-        rewardId: r.rewardId,
-        rewardName: r.reward.name,
-        quantity: r.quantity,
-        status: r.status,
-        pointsDebited: r.pointsDebited,
-        deliveryName: r.deliveryName ?? null,
-        deliveryPhone: r.deliveryPhone ?? null,
-        deliveryAddress: r.deliveryAddress ?? null,
-        createdAt: r.createdAt.toISOString(),
-        updatedAt: r.updatedAt.toISOString(),
-    }));
+  return raw.map((r: any) => ({
+    id: r.id,
+    masonId: r.masonId,
+    masonName: r.mason.name,
+    rewardId: r.rewardId,
+    rewardName: r.reward.name,
+    quantity: r.quantity,
+    status: r.status,
+    pointsDebited: r.pointsDebited,
+    deliveryName: r.deliveryName ?? null,
+    deliveryPhone: r.deliveryPhone ?? null,
+    deliveryAddress: r.deliveryAddress ?? null,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
+  }));
 }
 
 // PointsLedger
@@ -1947,7 +1965,7 @@ export type FlattenedPointsLedger = {
   points: number;
   memo: string | null;
   createdAt: string; // ISO String
-  sourceDescription: string | null; 
+  sourceDescription: string | null;
 };
 
 export async function getFlattenedPointsLedger(companyId: number): Promise<FlattenedPointsLedger[]> {
@@ -1961,7 +1979,7 @@ export async function getFlattenedPointsLedger(companyId: number): Promise<Flatt
       points: true,
       memo: true,
       createdAt: true,
-      
+
       mason: { select: { name: true } },
       bagLift: {
         select: {
@@ -1979,7 +1997,7 @@ export async function getFlattenedPointsLedger(companyId: number): Promise<Flatt
   });
 
   return raw.map((r: any) => {
-    let description = r.memo; 
+    let description = r.memo;
 
     if (r.bagLift) {
       const dealerInfo = r.bagLift.dealer?.name ? ` @ ${r.bagLift.dealer.name}` : '';
@@ -2025,12 +2043,12 @@ export const transformerMap = {
   dealerBrandCapacities: getFlattenedDealerBrandCapacities,
 
   tsoMeetings: getFlattenedTSOMeeetings,
-  flattendRewards: getFlattenedRewards, 
+  flattendRewards: getFlattenedRewards,
   giftAllocationLogs: getFlattenedGiftAllocationLogs,
   masonPCSide: getFlattenedMasonPCSide,
   schemesOffers: getFlattenedSchemesOffers,
   masonsOnSchemes: getFlattenedMasonsOnSchemes,
-  masonsOnMeetings: getFlattenedMasonsOnMeetings, 
+  masonsOnMeetings: getFlattenedMasonsOnMeetings,
   rewardCategories: getFlattenedRewardCategories,
   kycSubmissions: getFlattenedKYCSubmissions,
   tsoAssignments: getFlattenedTSOAssignments,

@@ -333,6 +333,7 @@ export default function BagsLiftPage() {
   // --- 3. Define Columns for Bag Lift DataTable ---
   const bagLiftColumns: ColumnDef<BagLiftRecord>[] = [
     { accessorKey: "masonName", header: "Mason Name" },
+    { accessorKey: "phoneNumber", header: "Mason Phone" },
     { accessorKey: "dealerName", header: "Associated Dealer" },
     {
       accessorKey: "purchaseDate",

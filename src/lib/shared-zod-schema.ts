@@ -850,6 +850,8 @@ export const tsoAssignmentSchema = z.object({
 export const bagLiftSchema = z.object({
   id: z.string(),
   masonId: z.string(),
+  masonName: z.string(),
+  phoneNumber: z.string().nullable().optional(),
   dealerId: z.string().nullable(),
   purchaseDate: z.string(), // ISO String
   bagCount: z.number().int(),
