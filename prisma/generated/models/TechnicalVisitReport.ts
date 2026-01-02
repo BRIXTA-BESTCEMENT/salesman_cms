@@ -119,6 +119,7 @@ export type TechnicalVisitReportMinAggregateOutputType = {
   masonId: string | null
   pjpId: string | null
   meetingId: string | null
+  journeyId: string | null
 }
 
 export type TechnicalVisitReportMaxAggregateOutputType = {
@@ -186,6 +187,7 @@ export type TechnicalVisitReportMaxAggregateOutputType = {
   masonId: string | null
   pjpId: string | null
   meetingId: string | null
+  journeyId: string | null
 }
 
 export type TechnicalVisitReportCountAggregateOutputType = {
@@ -255,6 +257,7 @@ export type TechnicalVisitReportCountAggregateOutputType = {
   masonId: number
   pjpId: number
   meetingId: number
+  journeyId: number
   _all: number
 }
 
@@ -352,6 +355,7 @@ export type TechnicalVisitReportMinAggregateInputType = {
   masonId?: true
   pjpId?: true
   meetingId?: true
+  journeyId?: true
 }
 
 export type TechnicalVisitReportMaxAggregateInputType = {
@@ -419,6 +423,7 @@ export type TechnicalVisitReportMaxAggregateInputType = {
   masonId?: true
   pjpId?: true
   meetingId?: true
+  journeyId?: true
 }
 
 export type TechnicalVisitReportCountAggregateInputType = {
@@ -488,6 +493,7 @@ export type TechnicalVisitReportCountAggregateInputType = {
   masonId?: true
   pjpId?: true
   meetingId?: true
+  journeyId?: true
   _all?: true
 }
 
@@ -644,6 +650,7 @@ export type TechnicalVisitReportGroupByOutputType = {
   masonId: string | null
   pjpId: string | null
   meetingId: string | null
+  journeyId: string | null
   _count: TechnicalVisitReportCountAggregateOutputType | null
   _avg: TechnicalVisitReportAvgAggregateOutputType | null
   _sum: TechnicalVisitReportSumAggregateOutputType | null
@@ -736,6 +743,7 @@ export type TechnicalVisitReportWhereInput = {
   masonId?: Prisma.UuidNullableFilter<"TechnicalVisitReport"> | string | null
   pjpId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
   meetingId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
+  journeyId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
   mason?: Prisma.XOR<Prisma.Mason_PC_SideNullableScalarRelationFilter, Prisma.Mason_PC_SideWhereInput> | null
@@ -811,6 +819,7 @@ export type TechnicalVisitReportOrderByWithRelationInput = {
   masonId?: Prisma.SortOrderInput | Prisma.SortOrder
   pjpId?: Prisma.SortOrderInput | Prisma.SortOrder
   meetingId?: Prisma.SortOrderInput | Prisma.SortOrder
+  journeyId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   site?: Prisma.TechnicalSiteOrderByWithRelationInput
   mason?: Prisma.Mason_PC_SideOrderByWithRelationInput
@@ -889,6 +898,7 @@ export type TechnicalVisitReportWhereUniqueInput = Prisma.AtLeast<{
   masonId?: Prisma.UuidNullableFilter<"TechnicalVisitReport"> | string | null
   pjpId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
   meetingId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
+  journeyId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
   mason?: Prisma.XOR<Prisma.Mason_PC_SideNullableScalarRelationFilter, Prisma.Mason_PC_SideWhereInput> | null
@@ -964,6 +974,7 @@ export type TechnicalVisitReportOrderByWithAggregationInput = {
   masonId?: Prisma.SortOrderInput | Prisma.SortOrder
   pjpId?: Prisma.SortOrderInput | Prisma.SortOrder
   meetingId?: Prisma.SortOrderInput | Prisma.SortOrder
+  journeyId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TechnicalVisitReportCountOrderByAggregateInput
   _avg?: Prisma.TechnicalVisitReportAvgOrderByAggregateInput
   _max?: Prisma.TechnicalVisitReportMaxOrderByAggregateInput
@@ -1041,6 +1052,7 @@ export type TechnicalVisitReportScalarWhereWithAggregatesInput = {
   masonId?: Prisma.UuidNullableWithAggregatesFilter<"TechnicalVisitReport"> | string | null
   pjpId?: Prisma.StringNullableWithAggregatesFilter<"TechnicalVisitReport"> | string | null
   meetingId?: Prisma.StringNullableWithAggregatesFilter<"TechnicalVisitReport"> | string | null
+  journeyId?: Prisma.StringNullableWithAggregatesFilter<"TechnicalVisitReport"> | string | null
 }
 
 export type TechnicalVisitReportCreateInput = {
@@ -1105,6 +1117,7 @@ export type TechnicalVisitReportCreateInput = {
   promotionalActivity?: string | null
   channelPartnerVisit?: string | null
   siteVisitType?: string | null
+  journeyId?: string | null
   user: Prisma.UserCreateNestedOneWithoutTechnicalVisitReportsInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutTechnicalVisitReportsInput
   mason?: Prisma.Mason_PC_SideCreateNestedOneWithoutTechnicalVisitReportsInput
@@ -1180,6 +1193,7 @@ export type TechnicalVisitReportUncheckedCreateInput = {
   masonId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutTechnicalVisitReportInput
 }
 
@@ -1245,6 +1259,7 @@ export type TechnicalVisitReportUpdateInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutTechnicalVisitReportsNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutTechnicalVisitReportsNestedInput
   mason?: Prisma.Mason_PC_SideUpdateOneWithoutTechnicalVisitReportsNestedInput
@@ -1320,6 +1335,7 @@ export type TechnicalVisitReportUncheckedUpdateInput = {
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutTechnicalVisitReportNestedInput
 }
 
@@ -1390,6 +1406,7 @@ export type TechnicalVisitReportCreateManyInput = {
   masonId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
 }
 
 export type TechnicalVisitReportUpdateManyMutationInput = {
@@ -1454,6 +1471,7 @@ export type TechnicalVisitReportUpdateManyMutationInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicalVisitReportUncheckedUpdateManyInput = {
@@ -1523,6 +1541,7 @@ export type TechnicalVisitReportUncheckedUpdateManyInput = {
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicalVisitReportListRelationFilter = {
@@ -1602,6 +1621,7 @@ export type TechnicalVisitReportCountOrderByAggregateInput = {
   masonId?: Prisma.SortOrder
   pjpId?: Prisma.SortOrder
   meetingId?: Prisma.SortOrder
+  journeyId?: Prisma.SortOrder
 }
 
 export type TechnicalVisitReportAvgOrderByAggregateInput = {
@@ -1683,6 +1703,7 @@ export type TechnicalVisitReportMaxOrderByAggregateInput = {
   masonId?: Prisma.SortOrder
   pjpId?: Prisma.SortOrder
   meetingId?: Prisma.SortOrder
+  journeyId?: Prisma.SortOrder
 }
 
 export type TechnicalVisitReportMinOrderByAggregateInput = {
@@ -1750,6 +1771,7 @@ export type TechnicalVisitReportMinOrderByAggregateInput = {
   masonId?: Prisma.SortOrder
   pjpId?: Prisma.SortOrder
   meetingId?: Prisma.SortOrder
+  journeyId?: Prisma.SortOrder
 }
 
 export type TechnicalVisitReportSumOrderByAggregateInput = {
@@ -2077,6 +2099,7 @@ export type TechnicalVisitReportCreateWithoutUserInput = {
   promotionalActivity?: string | null
   channelPartnerVisit?: string | null
   siteVisitType?: string | null
+  journeyId?: string | null
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutTechnicalVisitReportsInput
   mason?: Prisma.Mason_PC_SideCreateNestedOneWithoutTechnicalVisitReportsInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutTechnicalVisitReportsInput
@@ -2150,6 +2173,7 @@ export type TechnicalVisitReportUncheckedCreateWithoutUserInput = {
   masonId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutTechnicalVisitReportInput
 }
 
@@ -2249,6 +2273,7 @@ export type TechnicalVisitReportScalarWhereInput = {
   masonId?: Prisma.UuidNullableFilter<"TechnicalVisitReport"> | string | null
   pjpId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
   meetingId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
+  journeyId?: Prisma.StringNullableFilter<"TechnicalVisitReport"> | string | null
 }
 
 export type TechnicalVisitReportCreateWithoutPermanentJourneyPlanInput = {
@@ -2313,6 +2338,7 @@ export type TechnicalVisitReportCreateWithoutPermanentJourneyPlanInput = {
   promotionalActivity?: string | null
   channelPartnerVisit?: string | null
   siteVisitType?: string | null
+  journeyId?: string | null
   user: Prisma.UserCreateNestedOneWithoutTechnicalVisitReportsInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutTechnicalVisitReportsInput
   mason?: Prisma.Mason_PC_SideCreateNestedOneWithoutTechnicalVisitReportsInput
@@ -2386,6 +2412,7 @@ export type TechnicalVisitReportUncheckedCreateWithoutPermanentJourneyPlanInput 
   siteId?: string | null
   masonId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutTechnicalVisitReportInput
 }
 
@@ -2477,6 +2504,7 @@ export type TechnicalVisitReportCreateWithoutMeetingInput = {
   promotionalActivity?: string | null
   channelPartnerVisit?: string | null
   siteVisitType?: string | null
+  journeyId?: string | null
   user: Prisma.UserCreateNestedOneWithoutTechnicalVisitReportsInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutTechnicalVisitReportsInput
   mason?: Prisma.Mason_PC_SideCreateNestedOneWithoutTechnicalVisitReportsInput
@@ -2550,6 +2578,7 @@ export type TechnicalVisitReportUncheckedCreateWithoutMeetingInput = {
   siteId?: string | null
   masonId?: string | null
   pjpId?: string | null
+  journeyId?: string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutTechnicalVisitReportInput
 }
 
@@ -2641,6 +2670,7 @@ export type TechnicalVisitReportCreateWithoutSiteInput = {
   promotionalActivity?: string | null
   channelPartnerVisit?: string | null
   siteVisitType?: string | null
+  journeyId?: string | null
   user: Prisma.UserCreateNestedOneWithoutTechnicalVisitReportsInput
   mason?: Prisma.Mason_PC_SideCreateNestedOneWithoutTechnicalVisitReportsInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutTechnicalVisitReportsInput
@@ -2714,6 +2744,7 @@ export type TechnicalVisitReportUncheckedCreateWithoutSiteInput = {
   masonId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutTechnicalVisitReportInput
 }
 
@@ -2805,6 +2836,7 @@ export type TechnicalVisitReportCreateWithoutMasonInput = {
   promotionalActivity?: string | null
   channelPartnerVisit?: string | null
   siteVisitType?: string | null
+  journeyId?: string | null
   user: Prisma.UserCreateNestedOneWithoutTechnicalVisitReportsInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutTechnicalVisitReportsInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutTechnicalVisitReportsInput
@@ -2878,6 +2910,7 @@ export type TechnicalVisitReportUncheckedCreateWithoutMasonInput = {
   siteId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutTechnicalVisitReportInput
 }
 
@@ -2969,6 +3002,7 @@ export type TechnicalVisitReportCreateWithoutGiftAllocationLogsInput = {
   promotionalActivity?: string | null
   channelPartnerVisit?: string | null
   siteVisitType?: string | null
+  journeyId?: string | null
   user: Prisma.UserCreateNestedOneWithoutTechnicalVisitReportsInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutTechnicalVisitReportsInput
   mason?: Prisma.Mason_PC_SideCreateNestedOneWithoutTechnicalVisitReportsInput
@@ -3043,6 +3077,7 @@ export type TechnicalVisitReportUncheckedCreateWithoutGiftAllocationLogsInput = 
   masonId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
 }
 
 export type TechnicalVisitReportCreateOrConnectWithoutGiftAllocationLogsInput = {
@@ -3123,6 +3158,7 @@ export type TechnicalVisitReportUpdateWithoutGiftAllocationLogsInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutTechnicalVisitReportsNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutTechnicalVisitReportsNestedInput
   mason?: Prisma.Mason_PC_SideUpdateOneWithoutTechnicalVisitReportsNestedInput
@@ -3197,6 +3233,7 @@ export type TechnicalVisitReportUncheckedUpdateWithoutGiftAllocationLogsInput = 
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicalVisitReportCreateManyUserInput = {
@@ -3265,6 +3302,7 @@ export type TechnicalVisitReportCreateManyUserInput = {
   masonId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
 }
 
 export type TechnicalVisitReportUpdateWithoutUserInput = {
@@ -3329,6 +3367,7 @@ export type TechnicalVisitReportUpdateWithoutUserInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   site?: Prisma.TechnicalSiteUpdateOneWithoutTechnicalVisitReportsNestedInput
   mason?: Prisma.Mason_PC_SideUpdateOneWithoutTechnicalVisitReportsNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutTechnicalVisitReportsNestedInput
@@ -3402,6 +3441,7 @@ export type TechnicalVisitReportUncheckedUpdateWithoutUserInput = {
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutTechnicalVisitReportNestedInput
 }
 
@@ -3471,6 +3511,7 @@ export type TechnicalVisitReportUncheckedUpdateManyWithoutUserInput = {
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicalVisitReportCreateManyPermanentJourneyPlanInput = {
@@ -3539,6 +3580,7 @@ export type TechnicalVisitReportCreateManyPermanentJourneyPlanInput = {
   siteId?: string | null
   masonId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
 }
 
 export type TechnicalVisitReportUpdateWithoutPermanentJourneyPlanInput = {
@@ -3603,6 +3645,7 @@ export type TechnicalVisitReportUpdateWithoutPermanentJourneyPlanInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutTechnicalVisitReportsNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutTechnicalVisitReportsNestedInput
   mason?: Prisma.Mason_PC_SideUpdateOneWithoutTechnicalVisitReportsNestedInput
@@ -3676,6 +3719,7 @@ export type TechnicalVisitReportUncheckedUpdateWithoutPermanentJourneyPlanInput 
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutTechnicalVisitReportNestedInput
 }
 
@@ -3745,6 +3789,7 @@ export type TechnicalVisitReportUncheckedUpdateManyWithoutPermanentJourneyPlanIn
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicalVisitReportCreateManyMeetingInput = {
@@ -3813,6 +3858,7 @@ export type TechnicalVisitReportCreateManyMeetingInput = {
   siteId?: string | null
   masonId?: string | null
   pjpId?: string | null
+  journeyId?: string | null
 }
 
 export type TechnicalVisitReportUpdateWithoutMeetingInput = {
@@ -3877,6 +3923,7 @@ export type TechnicalVisitReportUpdateWithoutMeetingInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutTechnicalVisitReportsNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutTechnicalVisitReportsNestedInput
   mason?: Prisma.Mason_PC_SideUpdateOneWithoutTechnicalVisitReportsNestedInput
@@ -3950,6 +3997,7 @@ export type TechnicalVisitReportUncheckedUpdateWithoutMeetingInput = {
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutTechnicalVisitReportNestedInput
 }
 
@@ -4019,6 +4067,7 @@ export type TechnicalVisitReportUncheckedUpdateManyWithoutMeetingInput = {
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicalVisitReportCreateManySiteInput = {
@@ -4087,6 +4136,7 @@ export type TechnicalVisitReportCreateManySiteInput = {
   masonId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
 }
 
 export type TechnicalVisitReportUpdateWithoutSiteInput = {
@@ -4151,6 +4201,7 @@ export type TechnicalVisitReportUpdateWithoutSiteInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutTechnicalVisitReportsNestedInput
   mason?: Prisma.Mason_PC_SideUpdateOneWithoutTechnicalVisitReportsNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutTechnicalVisitReportsNestedInput
@@ -4224,6 +4275,7 @@ export type TechnicalVisitReportUncheckedUpdateWithoutSiteInput = {
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutTechnicalVisitReportNestedInput
 }
 
@@ -4293,6 +4345,7 @@ export type TechnicalVisitReportUncheckedUpdateManyWithoutSiteInput = {
   masonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicalVisitReportCreateManyMasonInput = {
@@ -4361,6 +4414,7 @@ export type TechnicalVisitReportCreateManyMasonInput = {
   siteId?: string | null
   pjpId?: string | null
   meetingId?: string | null
+  journeyId?: string | null
 }
 
 export type TechnicalVisitReportUpdateWithoutMasonInput = {
@@ -4425,6 +4479,7 @@ export type TechnicalVisitReportUpdateWithoutMasonInput = {
   promotionalActivity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channelPartnerVisit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteVisitType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutTechnicalVisitReportsNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutTechnicalVisitReportsNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutTechnicalVisitReportsNestedInput
@@ -4498,6 +4553,7 @@ export type TechnicalVisitReportUncheckedUpdateWithoutMasonInput = {
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutTechnicalVisitReportNestedInput
 }
 
@@ -4567,6 +4623,7 @@ export type TechnicalVisitReportUncheckedUpdateManyWithoutMasonInput = {
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -4667,6 +4724,7 @@ export type TechnicalVisitReportSelect<ExtArgs extends runtime.Types.Extensions.
   masonId?: boolean
   pjpId?: boolean
   meetingId?: boolean
+  journeyId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.TechnicalVisitReport$siteArgs<ExtArgs>
   mason?: boolean | Prisma.TechnicalVisitReport$masonArgs<ExtArgs>
@@ -4743,6 +4801,7 @@ export type TechnicalVisitReportSelectCreateManyAndReturn<ExtArgs extends runtim
   masonId?: boolean
   pjpId?: boolean
   meetingId?: boolean
+  journeyId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.TechnicalVisitReport$siteArgs<ExtArgs>
   mason?: boolean | Prisma.TechnicalVisitReport$masonArgs<ExtArgs>
@@ -4817,6 +4876,7 @@ export type TechnicalVisitReportSelectUpdateManyAndReturn<ExtArgs extends runtim
   masonId?: boolean
   pjpId?: boolean
   meetingId?: boolean
+  journeyId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.TechnicalVisitReport$siteArgs<ExtArgs>
   mason?: boolean | Prisma.TechnicalVisitReport$masonArgs<ExtArgs>
@@ -4891,9 +4951,10 @@ export type TechnicalVisitReportSelectScalar = {
   masonId?: boolean
   pjpId?: boolean
   meetingId?: boolean
+  journeyId?: boolean
 }
 
-export type TechnicalVisitReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "reportDate" | "region" | "area" | "siteNameConcernedPerson" | "phoneNo" | "emailId" | "latitude" | "longitude" | "marketName" | "siteAddress" | "whatsappNo" | "visitCategory" | "customerType" | "constAreaSqFt" | "currentBrandPrice" | "siteStock" | "estRequirement" | "supplyingDealerName" | "nearbyDealerName" | "isConverted" | "conversionType" | "conversionFromBrand" | "conversionQuantityValue" | "conversionQuantityUnit" | "isTechService" | "serviceDesc" | "serviceType" | "dhalaiVerificationCode" | "isVerificationStatus" | "qualityComplaint" | "influencerName" | "influencerPhone" | "isSchemeEnrolled" | "influencerProductivity" | "influencerType" | "visitType" | "clientsRemarks" | "salespersonRemarks" | "purposeOfVisit" | "siteVisitBrandInUse" | "siteVisitStage" | "sitePhotoUrl" | "inTimeImageUrl" | "outTimeImageUrl" | "checkInTime" | "checkOutTime" | "timeSpentinLoc" | "firstVisitTime" | "lastVisitTime" | "firstVisitDay" | "lastVisitDay" | "siteVisitsCount" | "otherVisitsCount" | "totalVisitsCount" | "createdAt" | "updatedAt" | "associatedPartyName" | "promotionalActivity" | "channelPartnerVisit" | "siteVisitType" | "siteId" | "masonId" | "pjpId" | "meetingId", ExtArgs["result"]["technicalVisitReport"]>
+export type TechnicalVisitReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "reportDate" | "region" | "area" | "siteNameConcernedPerson" | "phoneNo" | "emailId" | "latitude" | "longitude" | "marketName" | "siteAddress" | "whatsappNo" | "visitCategory" | "customerType" | "constAreaSqFt" | "currentBrandPrice" | "siteStock" | "estRequirement" | "supplyingDealerName" | "nearbyDealerName" | "isConverted" | "conversionType" | "conversionFromBrand" | "conversionQuantityValue" | "conversionQuantityUnit" | "isTechService" | "serviceDesc" | "serviceType" | "dhalaiVerificationCode" | "isVerificationStatus" | "qualityComplaint" | "influencerName" | "influencerPhone" | "isSchemeEnrolled" | "influencerProductivity" | "influencerType" | "visitType" | "clientsRemarks" | "salespersonRemarks" | "purposeOfVisit" | "siteVisitBrandInUse" | "siteVisitStage" | "sitePhotoUrl" | "inTimeImageUrl" | "outTimeImageUrl" | "checkInTime" | "checkOutTime" | "timeSpentinLoc" | "firstVisitTime" | "lastVisitTime" | "firstVisitDay" | "lastVisitDay" | "siteVisitsCount" | "otherVisitsCount" | "totalVisitsCount" | "createdAt" | "updatedAt" | "associatedPartyName" | "promotionalActivity" | "channelPartnerVisit" | "siteVisitType" | "siteId" | "masonId" | "pjpId" | "meetingId" | "journeyId", ExtArgs["result"]["technicalVisitReport"]>
 export type TechnicalVisitReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.TechnicalVisitReport$siteArgs<ExtArgs>
@@ -4995,6 +5056,7 @@ export type $TechnicalVisitReportPayload<ExtArgs extends runtime.Types.Extension
     masonId: string | null
     pjpId: string | null
     meetingId: string | null
+    journeyId: string | null
   }, ExtArgs["result"]["technicalVisitReport"]>
   composites: {}
 }
@@ -5490,6 +5552,7 @@ export interface TechnicalVisitReportFieldRefs {
   readonly masonId: Prisma.FieldRef<"TechnicalVisitReport", 'String'>
   readonly pjpId: Prisma.FieldRef<"TechnicalVisitReport", 'String'>
   readonly meetingId: Prisma.FieldRef<"TechnicalVisitReport", 'String'>
+  readonly journeyId: Prisma.FieldRef<"TechnicalVisitReport", 'String'>
 }
     
 

@@ -4223,7 +4223,8 @@ export const TechnicalVisitReportScalarFieldEnum = {
   siteId: 'siteId',
   masonId: 'masonId',
   pjpId: 'pjpId',
-  meetingId: 'meetingId'
+  meetingId: 'meetingId',
+  journeyId: 'journeyId'
 } as const
 
 export type TechnicalVisitReportScalarFieldEnum = (typeof TechnicalVisitReportScalarFieldEnum)[keyof typeof TechnicalVisitReportScalarFieldEnum]

@@ -1530,6 +1530,7 @@ export type FlattenedMasonPCSide = {
   referredToUser: string | null;
   dealerName: string | null; // from dealerId
   associatedSalesman: string | null; // from userId
+  kycSubmittedAt: string | null;
 };
 
 export async function getFlattenedMasonPCSide(companyId: number): Promise<FlattenedMasonPCSide[]> {
@@ -1560,26 +1561,54 @@ export async function getFlattenedMasonPCSide(companyId: number): Promise<Flatte
       user: {
         select: { firstName: true, lastName: true, email: true },
       },
+      kycSubmissions: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        select: { 
+          aadhaarNumber: true,
+            panNumber: true,
+            voterIdNumber: true,
+            documents: true, // jsonb
+            remark: true,
+            createdAt: true,
+         },
+      }
     },
     orderBy: { name: 'asc' },
   });
 
-  return raw.map((r: any) => ({
-    id: r.id,
-    name: r.name,
-    phoneNumber: r.phoneNumber,
-    firebaseUid: r.firebaseUid ?? null,
-    kycDocumentName: r.kycDocumentName ?? null,
-    kycDocumentIdNum: r.kycDocumentIdNum ?? null,
-    kycStatus: r.kycStatus ?? null, // Uses new field name
-    bagsLifted: r.bagsLifted ?? null,
-    pointsBalance: r.pointsBalance ?? null, // Uses new field name
-    isReferred: r.isReferred ?? null,
-    referredByUser: r.referredByUser ?? null,
-    referredToUser: r.referredToUser ?? null,
-    dealerName: r.dealer?.name ?? null,
-    associatedSalesman: r.user ? (`${r.user.firstName ?? ''} ${r.user.lastName ?? ''}`.trim() || r.user.email) : null,
-  }));
+  return raw.map((r: any) => {
+    const latestKyc = r.kycSubmissions?.[0];
+    const formattedDate = latestKyc?.createdAt 
+      ? new Date(latestKyc.createdAt).toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        })
+      : null;
+
+    return {
+      id: r.id,
+      name: r.name,
+      phoneNumber: r.phoneNumber,
+      firebaseUid: r.firebaseUid ?? null,
+      kycDocumentName: r.kycDocumentName ?? null,
+      kycDocumentIdNum: r.kycDocumentIdNum ?? null,
+      kycStatus: r.kycStatus ?? null,
+      bagsLifted: r.bagsLifted ?? null,
+      pointsBalance: r.pointsBalance ?? null,
+      isReferred: r.isReferred ?? null,
+      referredByUser: r.referredByUser ?? null,
+      referredToUser: r.referredToUser ?? null,
+      dealerName: r.dealer?.name ?? null,
+      associatedSalesman: r.user ? (`${r.user.firstName ?? ''} ${r.user.lastName ?? ''}`.trim() || r.user.email) : null,
+      kycSubmittedAt: formattedDate,
+    };
+  });
 }
 
 // Schemes & Offers (Master List)
@@ -1752,7 +1781,15 @@ export async function getFlattenedKYCSubmissions(companyId: number): Promise<Fla
     voterIdNumber: r.voterIdNumber ?? null,
     status: r.status,
     remark: r.remark ?? null,
-    createdAt: r.createdAt.toISOString(),
+    createdAt: new Date(r.createdAt).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }),
     updatedAt: r.updatedAt.toISOString(),
   }));
 }

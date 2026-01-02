@@ -727,10 +727,12 @@ model TechnicalVisitReport {
   meetingId             String?               @map("meeting_id") @db.VarChar(255)
   meeting               TSOMeeting?           @relation("TVRMeeting", fields: [meetingId], references: [id])
   giftAllocationLogs    GiftAllocationLog[]
+  journeyId               String?   @map("journey_id") @db.VarChar(255)
 
   @@index([userId], map: "idx_technical_visit_reports_user_id")
   @@index([meetingId], map: "idx_technical_visit_reports_meeting_id")
   @@index([siteId], map: "idx_tvr_site_id")
+  @@index([journeyId], map: "idx_tvr_journey_id")
   @@map("technical_visit_reports")
 }
 

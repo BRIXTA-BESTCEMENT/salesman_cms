@@ -204,11 +204,8 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Masons & Contractors',
         icon: Construction,
         columns: [
-            'id', 'name', 'phoneNumber', 'kycDocumentName', 'kycDocumentIdNum',
-            'kycStatus',
-            'bagsLifted',
-            'pointsBalance',
-            'isReferred',
+            'id', 'name', 'phoneNumber', 'kycDocumentName', 'kycDocumentIdNum', 'kycStatus',  'kycSubmittedAt',
+            'bagsLifted', 'pointsBalance', 'isReferred',
             'referredByUser', 'referredToUser', 'dealerName', 'associatedSalesman'
         ],
     },
