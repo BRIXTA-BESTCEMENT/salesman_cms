@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
 import {
@@ -131,8 +131,6 @@ export default function PJPVerifyPage() {
   // Dependency Data
   const [allDealers, setAllDealers] = useState<OptionItem[]>([]);
   const [allSites, setAllSites] = useState<OptionItem[]>([]);
-  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
-  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
   // Selection States
   const [selectedDealerId, setSelectedDealerId] = useState<string>('null');
@@ -145,9 +143,25 @@ export default function PJPVerifyPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSalesmanFilter, setSelectedSalesmanFilter] = useState<string>('all');
   const [selectedRegionFilter, setSelectedRegionFilter] = useState<string>('all');
+  const [verifyAllpjps, setVerifyAllPjps] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const API_BASE = `/api/dashboardPagesAPI/permanent-journey-plan`;
   const OPTIONS_API = `/api/dashboardPagesAPI/masonpc-side/mason-pc/form-options`;
+  const BULK_VERIFY = `/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification/bulk-verify`;
+
+  // Helper to toggle a single selection
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id); // Deselect if already there
+      } else {
+        next.add(id);    // Select if not there
+      }
+      return next;
+    });
+  };
 
   const fetchDependencies = useCallback(async () => {
     try {
@@ -208,6 +222,40 @@ export default function PJPVerifyPage() {
     } catch (e: any) { toast.error(e.message); } finally { setIsPatching(false); }
   };
 
+  const selectAll = () => {
+    if (selectedIds.size === filteredPJPs.length && filteredPJPs.length > 0) {
+      setSelectedIds(new Set());
+    }
+    else {
+      setSelectedIds(new Set(filteredPJPs.map(p => p.id)));
+    }
+  };
+
+  const handleBulkVerify = async () => {
+    const idsToVerify = Array.from(selectedIds);
+
+    if (idsToVerify.length === 0) return;
+
+    setIsPatching(true);
+    try {
+      const res = await fetch(`${BULK_VERIFY}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: Array.from(selectedIds) }),
+      });
+
+      if (res.ok) {
+        toast.success(`${idsToVerify.length} plans verified!`);
+        setSelectedIds(new Set()); // Reset checkboxes
+        fetchPendingPJPs();        // Refresh the list
+      }
+    } catch (error) {
+      toast.error("Bulk verification failed");
+    } finally {
+      setVerifyAllPjps(false);
+    }
+  };
+
   // --- FILTER LOGIC ---
   const filteredPJPs = useMemo(() => {
     return pendingPJPs.filter(pjp => {
@@ -242,7 +290,32 @@ export default function PJPVerifyPage() {
           <Button variant="default" size="sm" className="bg-green-600" onClick={() => openModificationDialog(row.original)}>Review & Verify</Button>
         </div>
       )
-    }
+    },
+    {
+      id: 'select',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] uppercase text-white">Select</span>
+          <input
+            name='Select'
+            type="checkbox"
+            onChange={selectAll}
+            checked={selectedIds.size === filteredPJPs.length && filteredPJPs.length > 0}
+            className="h-4 w-4 rounded border-slate-700 bg-slate-800 cursor-pointer"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex justify-center">
+          <input
+            type="checkbox"
+            checked={selectedIds.has(row.original.id)}
+            onChange={() => toggleSelect(row.original.id)}
+            className="h-4 w-4 rounded border-slate-700 bg-slate-800 cursor-pointer"
+          />
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -251,6 +324,39 @@ export default function PJPVerifyPage() {
         <h2 className="text-3xl font-bold tracking-tight text-white">PJP Verification Queue</h2>
         <p className="text-muted-foreground text-sm">Review and verify plans submitted by sales executives.</p>
       </div>
+
+      {/* --- BULK ACTION BAR --- */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center justify-between p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-4">
+            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-black font-bold">
+              {selectedIds.size}
+            </div>
+            <div>
+              <p className="text-white font-medium">Items Selected</p>
+              <p className="text-xs text-amber-500/80">Bulk verify will approve these plans without modifications.</p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedIds(new Set())}
+              className="text-slate-400 hover:text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleBulkVerify}
+              disabled={verifyAllpjps}
+              className="bg-primary text-white font-bold"
+            >
+              {verifyAllpjps ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
+              Verify Selected PJPs
+            </Button>
+          </div>
+        </div>
+      )}
 
       <Card className="shadow-xl bg-slate-900/20 border-slate-800">
         <CardContent className="p-6">
