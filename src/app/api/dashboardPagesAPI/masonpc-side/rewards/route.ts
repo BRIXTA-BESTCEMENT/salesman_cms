@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/rewards/route.ts
 import 'server-only';
 export const runtime = 'nodejs';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -12,6 +12,15 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive',];
+
+const rewardCreateSchema = z.object({
+  name: z.string().min(1),
+  pointCost: z.number().int().min(1),
+  stock: z.number().int().min(0),
+  categoryId: z.number().int().optional().nullable(),
+  isActive: z.boolean().default(true),
+  schemeIds: z.array(z.string().uuid()).optional(),
+});
 
 export async function GET() {
   try {
@@ -98,5 +107,44 @@ export async function GET() {
     }
     // Return a 500 status with a generic error message
     return NextResponse.json({ error: 'Failed to fetch rewards data' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const claims = await getTokenClaims();
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const currentUser = await prisma.user.findUnique({
+      where: { workosUserId: claims.sub },
+      select: { role: true }
+    });
+
+    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const parsed = rewardCreateSchema.parse(body);
+
+    const newReward = await prisma.rewards.create({
+      data: {
+        name: parsed.name,
+        pointCost: parsed.pointCost,
+        stock: parsed.stock,
+        totalAvailableQuantity: parsed.stock, // Initial stock sync
+        categoryId: parsed.categoryId,
+        isActive: parsed.isActive,
+        schemes: parsed.schemeIds ? {
+          connect: parsed.schemeIds.map(id => ({ id }))
+        } : undefined,
+      },
+    });
+
+    return NextResponse.json(newReward, { status: 201 });
+  } catch (error) {
+    console.error('Error creating reward:', error);
+    if (error instanceof z.ZodError) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to create reward' }, { status: 500 });
   }
 }

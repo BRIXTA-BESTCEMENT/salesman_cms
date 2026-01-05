@@ -1,18 +1,25 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/schemes-offers/route.ts
 import 'server-only';
 export const runtime = 'nodejs';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 // Assuming the schema is in the same shared file
-import { schemesOffersSchema } from '@/lib/shared-zod-schema'; 
+import { schemesOffersSchema } from '@/lib/shared-zod-schema';
 
 // Re-using the allowed roles from your sample. Adjust as needed.
 const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive',];
+
+const schemeCreateSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional().nullable(),
+  startDate: z.string().optional().nullable(),
+  endDate: z.string().optional().nullable(),
+});
 
 export async function GET() {
   try {
@@ -56,7 +63,7 @@ export async function GET() {
     const validatedSchemes = z.array(schemesOffersSchema).parse(formattedSchemes);
 
     return NextResponse.json(validatedSchemes, { status: 200 });
-    
+
   } catch (error) {
     console.error('Error fetching schemes-offers data:', error);
     // Handle Zod validation errors specifically
@@ -67,5 +74,35 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to fetch schemes-offers data' }, { status: 500 });
   } finally {
     // await prisma.$disconnect();
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const claims = await getTokenClaims();
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const currentUser = await prisma.user.findUnique({ where: { workosUserId: claims.sub } });
+    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const parsed = schemeCreateSchema.parse(body);
+
+    const newScheme = await prisma.schemesOffers.create({
+      data: {
+        name: parsed.name,
+        description: parsed.description,
+        startDate: parsed.startDate ? new Date(parsed.startDate) : null,
+        endDate: parsed.endDate ? new Date(parsed.endDate) : null,
+      },
+    });
+
+    return NextResponse.json(newScheme, { status: 201 });
+  } catch (error) {
+    console.error('Error creating scheme:', error);
+    if (error instanceof z.ZodError) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to create scheme' }, { status: 500 });
   }
 }

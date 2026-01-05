@@ -9,19 +9,22 @@ import {
   Eye,
   MapPin,
   User,
-  Calendar,
+  Calendar as CalendarIcon,
   Target,
   Users,
-  Briefcase,
-  Info,
   Route,
   ClipboardList
 } from 'lucide-react';
+import { IconCalendar } from '@tabler/icons-react';
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
 
 // Shadcn UI Components
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -33,9 +36,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 
 // Reusable Components
+import { cn } from '@/lib/utils';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { permanentJourneyPlanSchema } from '@/lib/shared-zod-schema';
 
@@ -61,6 +64,7 @@ export default function PJPListPage() {
 
   // Filters
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
   const [selectedStatusFilter, setSelectedStatusFilter] = React.useState<string>('all');
   const [selectedSalesmanFilter, setSelectedSalesmanFilter] = React.useState<string>('all');
 
@@ -216,6 +220,39 @@ export default function PJPListPage() {
             <label className="text-xs font-bold text-muted-foreground uppercase">Search Plans</label>
             <Input placeholder="Salesman or area..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
+          {/* 1. Date Range Picker */}
+            <div className="flex flex-col space-y-1.5 w-full sm:w-[300px]">
+              <label className="text-xs font-bold text-muted-foreground uppercase">Filter by Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-9",
+                      !dateRange && "text-muted-foreground"
+                    )}
+                  >
+                    <IconCalendar className="mr-2 h-4 w-4" />
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
+                      ) : (format(dateRange.from, "LLL dd, y"))
+                    ) : (
+                      <span>Select Date Range</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="range"
+                    defaultMonth={dateRange?.from || new Date()}
+                    selected={dateRange}
+                    onSelect={(range) => setDateRange(range)}
+                    numberOfMonths={2}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           <div className="flex flex-col space-y-1.5 w-[180px]">
             <label className="text-xs font-bold text-muted-foreground uppercase">Salesman</label>
             <Select value={selectedSalesmanFilter} onValueChange={setSelectedSalesmanFilter}>
@@ -245,7 +282,7 @@ export default function PJPListPage() {
               </DialogTitle>
               <DialogDescription className="mt-1 flex items-center gap-4 text-xs font-medium">
                 <span className="flex items-center gap-1"><User className="w-3 h-3 text-primary" /> {selectedPjp.salesmanName}</span>
-                <span className="flex items-center gap-1"><Calendar className="w-3 h-3 text-primary" /> {selectedPjp.planDate}</span>
+                <span className="flex items-center gap-1"><CalendarIcon className="w-3 h-3 text-primary" /> {selectedPjp.planDate}</span>
               </DialogDescription>
             </div>
 

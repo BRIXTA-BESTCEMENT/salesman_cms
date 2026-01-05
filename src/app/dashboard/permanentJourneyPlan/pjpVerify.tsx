@@ -14,11 +14,14 @@ import {
   ChevronsUpDown,
   MapPin,
   ClipboardCheck,
-  User,
+  Calendar as CalendarIcon,
   FilterX,
   Store,
   HardHat
 } from 'lucide-react';
+import { IconCalendar } from '@tabler/icons-react';
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { Input } from '@/components/ui/input';
@@ -29,6 +32,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Zone } from '@/lib/Reusable-constants';
+import { Calendar } from "@/components/ui/calendar"; // The actual UI component
 // Combobox / Searchable Dropdown Imports
 import {
   Command,
@@ -140,9 +144,12 @@ export default function PJPVerifyPage() {
   const [isModificationDialogOpen, setIsModificationDialogOpen] = useState(false);
   const [pjpToModify, setPjpToModify] = useState<PJPModificationState | null>(null);
   const [isPatching, setIsPatching] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSalesmanFilter, setSelectedSalesmanFilter] = useState<string>('all');
   const [selectedRegionFilter, setSelectedRegionFilter] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
   const [verifyAllpjps, setVerifyAllPjps] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -363,6 +370,40 @@ export default function PJPVerifyPage() {
 
           {/* --- FIXED FILTER SECTION WITH BORDERS --- */}
           <div className="flex flex-wrap gap-4 mb-8 p-4 rounded-xl border border-slate-800 items-end">
+            {/* 1. Date Range Picker */}
+            <div className="space-y-1.5 flex flex-col w-full sm:w-[300px]">
+              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Plan Date Range</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-10 border-slate-700 bg-slate-800/50 text-white",
+                      !dateRange && "text-slate-400"
+                    )}
+                  >
+                    <IconCalendar className="mr-2 h-4 w-4" />
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
+                      ) : (format(dateRange.from, "LLL dd, y"))
+                    ) : (
+                      <span>All Dates</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 border-slate-800 bg-slate-900" align="start">
+                  <Calendar
+                    mode="range"
+                    defaultMonth={dateRange?.from || new Date()}
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    numberOfMonths={2}
+                    className="bg-slate-900 text-white border-slate-800"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="space-y-1.5 flex flex-col">
               <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Search Queue</Label>
               <div className="relative">

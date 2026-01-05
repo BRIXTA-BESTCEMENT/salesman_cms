@@ -6,8 +6,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
-  Search, Loader2, IndianRupee, CheckCircle2,
-  XCircle, Ban, TrendingUp, Plus, Eye, ChevronRight
+  Search, Loader2, IndianRupee, Plus, Eye,
 } from 'lucide-react';
 
 // Reusable Components
@@ -19,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AddSchemesRewards } from '@/components/add-schemes-rewards';
 
 // Types
 type RewardRecord = {
@@ -201,24 +201,9 @@ export default function SchemesRewardsManagement() {
           <h1 className="text-3xl font-bold">Marketing & Rewards</h1>
           <p className="text-muted-foreground">Manage schemes and their associated reward items</p>
         </div>
-        <div className="flex gap-3">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline"><Plus className="w-4 h-4 mr-2" /> Add Scheme</Button>
-            </DialogTrigger>
-            <DialogContent><DialogHeader><DialogTitle>Create New Scheme</DialogTitle></DialogHeader>
-              <p className="text-sm">Form logic will go here...</p>
-            </DialogContent>
-          </Dialog>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button><Plus className="w-4 h-4 mr-2" /> Add Reward</Button>
-            </DialogTrigger>
-            <DialogContent><DialogHeader><DialogTitle>Add New Reward</DialogTitle></DialogHeader>
-              <p className="text-sm">Form logic will go here...</p>
-            </DialogContent>
-          </Dialog>
-        </div>
+
+        {/* CONSOLIDATED ADD SCHEMES/REWARDS BUTTON */}
+        <AddSchemesRewards onSuccess={fetchData} />
       </div>
 
       {/* Top Table: Schemes */}

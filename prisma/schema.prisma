@@ -862,33 +862,6 @@ model Mason_PC_Side {
   @@map("mason_pc_side")
 }
 
-// Rewards (RENAMED FROM GiftInventory, Columns Modified)
-model Rewards {
-  id                      Int       @id @default(autoincrement())
-  name                    String    @map("item_name") @unique @db.VarChar(255)
-  pointCost               Int       @map("point_cost") // Renamed from unit_price, Type changed to Int
-  
-  // NEW/MODIFIED FIELDS
-  categoryId              Int?      @map("category_id")
-  stock                   Int       @default(0)
-  totalAvailableQuantity  Int       @map("total_available_quantity") // Kept for existing logic
-  isActive                Boolean   @default(true) @map("is_active")
-  meta                    Json?
-
-  // Relations
-  category                RewardCategory? @relation(fields: [categoryId], references: [id], onDelete: NoAction)
-  logs                    GiftAllocationLog[]
-  redemptions             RewardRedemption[]
-  usedInSlabs             SchemeSlabs[]
-  schemes                 SchemesOffers[] @relation("SchemeToRewards")
-
-  createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt               DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([categoryId])
-  @@map("rewards")
-}
-
 // GiftAllocationLog (FK updated to point to Rewards)
 model GiftAllocationLog {
   id                      String    @id @default(uuid()) @db.VarChar(255)
@@ -951,6 +924,43 @@ model AuthSession {
   @@map("auth_sessions")
 }
 
+// Rewards
+model Rewards {
+  id                      Int       @id @default(autoincrement())
+  name                    String    @map("item_name") @unique @db.VarChar(255)
+  pointCost               Int       @map("point_cost") // Renamed from unit_price, Type changed to Int
+  
+  // NEW/MODIFIED FIELDS
+  categoryId              Int?      @map("category_id")
+  stock                   Int       @default(0)
+  totalAvailableQuantity  Int       @map("total_available_quantity") // Kept for existing logic
+  isActive                Boolean   @default(true) @map("is_active")
+  meta                    Json?
+
+  // Relations
+  category                RewardCategory? @relation(fields: [categoryId], references: [id], onDelete: NoAction)
+  logs                    GiftAllocationLog[]
+  redemptions             RewardRedemption[]
+  usedInSlabs             SchemeSlabs[]
+  schemes                 SchemesOffers[] @relation("SchemeToRewards")
+
+  createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([categoryId])
+  @@map("rewards")
+}
+
+//  RewardCategory
+model RewardCategory {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(120) @unique
+
+  rewards Rewards[]
+
+  @@map("reward_categories")
+}
+
 // Schems & Offers for Mason_PC_Side
 model SchemesOffers{
   id          String   @id @default(uuid()) @db.Uuid
@@ -965,90 +975,6 @@ model SchemesOffers{
   rewards     Rewards[] @relation("SchemeToRewards")
 
   @@map("schemes_offers")
-}
-
-// JOIN TABLE for Mason_PC_Side & SchemesOffers ---
-model MasonOnScheme {
-  // Relation to Mason_PC_Side
-  masonId String        @map("mason_id") @db.Uuid
-  mason   Mason_PC_Side @relation(fields: [masonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  // Relation to SchemesOffers
-  schemeId String        @map("scheme_id") @db.Uuid
-  scheme   SchemesOffers @relation(fields: [schemeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  // Extra data about the relationship
-  enrolledAt DateTime? @default(now()) @map("enrolled_at")
-  status     String?   @map("status") // e.g., 'active', 'completed', 'cancelled', 'pending', 'inactive'
-
-  siteId String? @map("site_id") @db.Uuid // FK to TechnicalSite
-  site TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
-
-  // A composite primary key ensures a mason can only be in a scheme ONCE.
-  @@id([masonId, schemeId])
-  @@index([siteId], map: "idx_mos_site_id")
-  @@map("mason_on_scheme")
-}
-
-// Join table for Masons and Meetings
-model MasonsOnMeetings {
-  masonId   String     @map("mason_id") @db.Uuid
-  mason     Mason_PC_Side @relation(fields: [masonId], references: [id], onDelete: Cascade)
-  
-  meetingId String     @map("meeting_id") @db.VarChar(255)
-  meeting   TSOMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-
-  attendedAt DateTime @default(now()) @map("attended_at")
-
-  @@id([masonId, meetingId]) // Composite primary key
-  @@index([meetingId])
-  @@map("masons_on_meetings")
-}
-
-//  RewardCategory
-model RewardCategory {
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(120) @unique
-
-  rewards Rewards[]
-
-  @@map("reward_categories")
-}
-
-//  KYCSubmissions
-model KYCSubmission {
-  id String @id @default(uuid()) @db.Uuid
-  masonId String @map("mason_id") @db.Uuid
-  aadhaarNumber String? @map("aadhaar_number") @db.VarChar(20)
-  panNumber String? @map("pan_number") @db.VarChar(20)
-  voterIdNumber String? @map("voter_id_number") @db.VarChar(20)
-  documents Json?
-  // Status as String
-  status String @default("pending") @db.VarChar(20) // "pending", "approved", "rejected"
-  remark String? @db.Text
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  mason Mason_PC_Side @relation(fields: [masonId], references: [id], onDelete: Cascade)
-
-  @@index([masonId])
-  @@map("kyc_submissions")
-}
-
-//  TSOAssignment
-model TSOAssignment {
-  tsoId     Int       @map("tso_id")
-  masonId   String    @map("mason_id") @db.Uuid
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  // tso is opposite of User.tsoAssignments
-  tso       User          @relation("TSOAssignments", fields: [tsoId], references: [id])
-  // mason is opposite of Mason_PC_Side.tsoAssignments
-  mason     Mason_PC_Side @relation("MasonAssignments", fields: [masonId], references: [id], onDelete: Cascade)
-
-  @@id([tsoId, masonId])
-  @@index([tsoId])
-  @@map("tso_assignments")
 }
 
 // BagLifts
@@ -1182,6 +1108,80 @@ model MasonSlabAchievements {
   @@index([masonId])
   @@index([schemeSlabId])
   @@map("mason_slab_achievements")
+}
+
+// JOIN TABLE for Mason_PC_Side & SchemesOffers ---
+model MasonOnScheme {
+  // Relation to Mason_PC_Side
+  masonId String        @map("mason_id") @db.Uuid
+  mason   Mason_PC_Side @relation(fields: [masonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Relation to SchemesOffers
+  schemeId String        @map("scheme_id") @db.Uuid
+  scheme   SchemesOffers @relation(fields: [schemeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // Extra data about the relationship
+  enrolledAt DateTime? @default(now()) @map("enrolled_at")
+  status     String?   @map("status") // e.g., 'active', 'completed', 'cancelled', 'pending', 'inactive'
+
+  siteId String? @map("site_id") @db.Uuid // FK to TechnicalSite
+  site TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  // A composite primary key ensures a mason can only be in a scheme ONCE.
+  @@id([masonId, schemeId])
+  @@index([siteId], map: "idx_mos_site_id")
+  @@map("mason_on_scheme")
+}
+
+// Join table for Masons and Meetings
+model MasonsOnMeetings {
+  masonId   String     @map("mason_id") @db.Uuid
+  mason     Mason_PC_Side @relation(fields: [masonId], references: [id], onDelete: Cascade)
+  
+  meetingId String     @map("meeting_id") @db.VarChar(255)
+  meeting   TSOMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  attendedAt DateTime @default(now()) @map("attended_at")
+
+  @@id([masonId, meetingId]) // Composite primary key
+  @@index([meetingId])
+  @@map("masons_on_meetings")
+}
+
+//  KYCSubmissions
+model KYCSubmission {
+  id String @id @default(uuid()) @db.Uuid
+  masonId String @map("mason_id") @db.Uuid
+  aadhaarNumber String? @map("aadhaar_number") @db.VarChar(20)
+  panNumber String? @map("pan_number") @db.VarChar(20)
+  voterIdNumber String? @map("voter_id_number") @db.VarChar(20)
+  documents Json?
+  // Status as String
+  status String @default("pending") @db.VarChar(20) // "pending", "approved", "rejected"
+  remark String? @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  mason Mason_PC_Side @relation(fields: [masonId], references: [id], onDelete: Cascade)
+
+  @@index([masonId])
+  @@map("kyc_submissions")
+}
+
+//  TSOAssignment
+model TSOAssignment {
+  tsoId     Int       @map("tso_id")
+  masonId   String    @map("mason_id") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // tso is opposite of User.tsoAssignments
+  tso       User          @relation("TSOAssignments", fields: [tsoId], references: [id])
+  // mason is opposite of Mason_PC_Side.tsoAssignments
+  mason     Mason_PC_Side @relation("MasonAssignments", fields: [masonId], references: [id], onDelete: Cascade)
+
+  @@id([tsoId, masonId])
+  @@index([tsoId])
+  @@map("tso_assignments")
 }
 
 // Satellite Image Tables

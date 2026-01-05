@@ -277,16 +277,6 @@ export default function SalesmanGeoTrackingPage() {
       cell: ({ row }) => row.original.siteName ?? 'N/A',
     },
     {
-      accessorKey: 'checkInTime',
-      header: 'Check-in Time',
-      cell: ({ row }) => row.original.displayCheckInTime,
-    },
-    {
-      accessorKey: 'checkOutTime',
-      header: 'Check-out Time',
-      cell: ({ row }) => row.original.displayCheckOutTime,
-    },
-    {
       accessorKey: 'totalDistanceTravelled',
       header: 'Distance (km)',
       cell: ({ row }) => (row.original.totalDistanceTravelled ? `${row.original.totalDistanceTravelled.toFixed(2)} km` : 'N/A'),
@@ -297,17 +287,22 @@ export default function SalesmanGeoTrackingPage() {
       cell: ({ row }) => row.original.locationType ?? 'N/A',
     },
     {
-      accessorKey: 'appState',
-      header: 'App State',
-      cell: ({ row }) => row.original.appState ?? 'N/A'
-    },
-    {
       accessorKey: 'isActive',
-      header: 'Active',
+      header: 'Active Now',
       cell: ({ row }) => (row.original.isActive ? 'Yes' : 'No'),
     },
+    {
+      accessorKey: 'checkInTime',
+      header: 'Check-in Time',
+      cell: ({ row }) => row.original.displayCheckInTime,
+    },
+    {
+      accessorKey: 'checkOutTime',
+      header: 'Check-out Time',
+      cell: ({ row }) => row.original.displayCheckOutTime,
+    },
   ];
-
+  
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">

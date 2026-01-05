@@ -96,13 +96,16 @@ export default function SlmAttendancePage() {
 
   // --- Filter States ---
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [roleFilter, setRoleFilter] = React.useState('all');
+
+  const [jobTitleFilter, setJobTitleFilter] = React.useState('all'); // e.g., executive, manager
+  const [companyCategoryFilter, setCompanyCategoryFilter] = React.useState('all'); // SALES, TECHNICAL
+
   const [areaFilter, setAreaFilter] = React.useState('all');
   const [regionFilter, setRegionFilter] = React.useState('all');
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
 
   // --- Filter Options States (KEPT) ---
-  const [userRoleFilter, setUserRoleFilter] = React.useState('all'); // user role
+  const [availableJobTitles, setAvailableJobTitles] = React.useState<string[]>([]);
   const [availableRoles, setAvailableRoles] = React.useState<string[]>([]); // user's company role
   const [availableAreas, setAvailableAreas] = React.useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = React.useState<string[]>([]);
@@ -196,7 +199,10 @@ export default function SlmAttendancePage() {
       const response = await fetch(ROLES_API_ENDPOINT);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data: RolesResponse = await response.json();
-      setAvailableRoles(data.roles && Array.isArray(data.roles) ? data.roles.filter(Boolean) : []);
+
+      const rolesList = data.roles && Array.isArray(data.roles) ? data.roles.filter(Boolean) : [];
+      setAvailableJobTitles(rolesList);
+
     } catch (err: any) {
       console.error('Failed to fetch filter roles:', err);
       setRoleError('Failed to load Role filters.');
@@ -233,38 +239,43 @@ export default function SlmAttendancePage() {
     };
   }, [attendanceReports]);
 
-  // --- Filtering Logic (PAGINATION REMOVED) ---
+  // --- Filtering Logic ---
   const filteredReports = React.useMemo(() => {
-    // REMOVED: setCurrentPage(1); // Not needed when relying on DataTableReusable
     const lowerCaseSearch = (searchQuery || '').toLowerCase();
 
     return attendanceReports.filter((report) => {
-      // 1. Search Filter (Salesman Name, Date, Location, In/Out Time)
+      // 1. Search Filter
       const matchesSearch =
         !lowerCaseSearch ||
         (report.salesmanName && report.salesmanName.toLowerCase().includes(lowerCaseSearch)) ||
         (report.date && report.date.toLowerCase().includes(lowerCaseSearch)) ||
-        (report.location && report.location.toLowerCase().includes(lowerCaseSearch)) ||
-        (report.inTime && report.inTime.toLowerCase().includes(lowerCaseSearch)) ||
-        (report.outTime && report.outTime.toLowerCase().includes(lowerCaseSearch));
+        (report.location && report.location.toLowerCase().includes(lowerCaseSearch));
 
-      // 2. Role Filter (handle both 'salesmanRole' and 'role' keys)
-      const reportRole = (report as any).salesmanRole || (report as any).role || '';
-      const roleMatch = roleFilter === 'all' || reportRole.toLowerCase() === roleFilter.toLowerCase();
-      const userRoleMatch = userRoleFilter === 'all' || reportRole.toUpperCase() === userRoleFilter.toUpperCase();
+      // 2. User Role (Designation: Executive, Manager, etc.)
+      // Based on your columns: salesmanRole contains the designation
+      const reportDesignation = report.salesmanRole || '';
+      const matchesJobTitle = jobTitleFilter === 'all' ||
+        reportDesignation.toLowerCase() === jobTitleFilter.toLowerCase();
 
-      // 3. Area Filter (try 'area' key; fallback to location parsing if necessary)
+      // 3. Company Role (Category: SALES, TECHNICAL)
+      // Based on your columns: role contains the category
+      const reportCategory = report.role || '';
+      const matchesCategory = companyCategoryFilter === 'all' ||
+        reportCategory.toUpperCase() === companyCategoryFilter.toUpperCase();
+
+      // 4. Area & Region Filter (Safety added)
+      // If the record doesn't have 'area' or 'region' properties, we only filter if the user selected 'all'
       const reportArea = (report as any).area || '';
-      const areaMatch = areaFilter === 'all' || (reportArea && reportArea.toLowerCase() === areaFilter.toLowerCase());
+      const areaMatch = areaFilter === 'all' ||
+        (reportArea && reportArea.toLowerCase() === areaFilter.toLowerCase());
 
-      // 4. Region Filter (try 'region' key)
       const reportRegion = (report as any).region || '';
-      const regionMatch = regionFilter === 'all' || (reportRegion && reportRegion.toLowerCase() === regionFilter.toLowerCase());
+      const regionMatch = regionFilter === 'all' ||
+        (reportRegion && reportRegion.toLowerCase() === regionFilter.toLowerCase());
 
-      return matchesSearch && roleMatch && userRoleMatch && areaMatch && regionMatch;
+      return matchesSearch && matchesJobTitle && matchesCategory && areaMatch && regionMatch;
     });
-  }, [attendanceReports, searchQuery, roleFilter, userRoleFilter, areaFilter, regionFilter]);
-
+  }, [attendanceReports, searchQuery, jobTitleFilter, companyCategoryFilter, areaFilter, regionFilter]);
   const handleViewReport = (report: SalesmanAttendanceReport) => {
     setSelectedReport(report);
     setIsViewModalOpen(true);
@@ -472,9 +483,24 @@ export default function SlmAttendancePage() {
               </div>
             </div>
 
-            {/* Row 2: Roles */}
-            {renderSelectFilter('User Role', userRoleFilter, setUserRoleFilter, ['SALES', 'TECHNICAL'])}
-            {renderSelectFilter('Company Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
+            {/* Corrected Row 2: Roles */}
+            {/* User Role = executive/manager etc */}
+            {renderSelectFilter(
+              'User Role',
+              jobTitleFilter,
+              setJobTitleFilter,
+              availableJobTitles, // Now correctly populated
+              isLoadingRoles
+            )}
+
+            {/* Company Role = SALES / TECHNICAL */}
+            {renderSelectFilter(
+              'Company Role',
+              companyCategoryFilter,
+              setCompanyCategoryFilter,
+              ['SALES', 'TECHNICAL'],
+              false
+            )}
 
             {/* Row 3: Geography */}
             {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}

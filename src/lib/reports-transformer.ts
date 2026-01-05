@@ -622,6 +622,7 @@ export type FlattenedPermanentJourneyPlan = {
   createdAt: string;
   updatedAt: string;
 
+  // Visit Metrics & Specifics
   plannedNewSiteVisits: number;
   plannedFollowUpSiteVisits: number;
   plannedNewDealerVisits: number;
@@ -633,76 +634,97 @@ export type FlattenedPermanentJourneyPlan = {
   noOfMasonPcSchemes: number;
   diversionReason: string | null;
 
+  // New Fields from GET route
+  verificationStatus: string;
+  additionalVisitRemarks: string | null;
+  userId: string;
+  dealerId: string | null;
+  siteId: string | null;
+  visitDealerName: string | null; // Combined Dealer/Site name
+  taskIds: string[];
+
+  // User/Creator Info
   assignedSalesmanName: string;
   assignedSalesmanEmail: string;
-
   creatorName: string;
   creatorEmail: string;
+  createdByRole: string;
 
-  dealerName: string | null;
+  dealerName: string | null; // Explicit dealer relation name
 };
 
 export async function getFlattenedPermanentJourneyPlans(companyId: number): Promise<FlattenedPermanentJourneyPlan[]> {
   const rawReports = await prisma.permanentJourneyPlan.findMany({
     where: { user: { companyId } },
-    select: {
-      id: true,
-      planDate: true,
-      areaToBeVisited: true,
-      route: true,
-      description: true,
-      status: true,
-
-      plannedNewSiteVisits: true,
-      plannedFollowUpSiteVisits: true,
-      plannedNewDealerVisits: true,
-      plannedInfluencerVisits: true,
-      influencerName: true,
-      influencerPhone: true,
-      activityType: true,
-      noOfConvertedBags: true,
-      noOfMasonPcSchemes: true,
-      diversionReason: true,
-
-      createdAt: true,
-      updatedAt: true,
-      user: { select: { firstName: true, lastName: true, email: true } },
-      createdBy: { select: { firstName: true, lastName: true, email: true } },
+    include: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true
+        }
+      },
+      createdBy: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          role: true
+        }
+      },
       dealer: { select: { name: true } },
+      site: { select: { siteName: true } },
+      dailyTasks: { select: { id: true } },
     },
     orderBy: { planDate: 'desc' },
   });
 
-  return rawReports.map((r: any) => ({
-    id: r.id,
-    areaToBeVisited: r.areaToBeVisited,
-    route: r.route ?? null,
-    description: r.description ?? null,
-    status: r.status,
+  return rawReports.map((r: any) => {
+    const salesmanName = `${r.user.firstName || ''} ${r.user.lastName || ''}`.trim() || r.user.email;
+    const createdByName = `${r.createdBy.firstName || ''} ${r.createdBy.lastName || ''}`.trim() || r.createdBy.email;
+    const visitTargetName = r.dealer?.name ?? r.site?.siteName ?? null;
 
-    plannedNewSiteVisits: r.plannedNewSiteVisits ?? 0,
-    plannedFollowUpSiteVisits: r.plannedFollowUpSiteVisits ?? 0,
-    plannedNewDealerVisits: r.plannedNewDealerVisits ?? 0,
-    plannedInfluencerVisits: r.plannedInfluencerVisits ?? 0,
-    influencerName: r.influencerName ?? null,
-    influencerPhone: r.influencerPhone ?? null,
-    activityType: r.activityType ?? null,
-    noOfConvertedBags: r.noOfConvertedBags ?? 0,
-    noOfMasonPcSchemes: r.noOfMasonPcSchemes ?? 0,
-    diversionReason: r.diversionReason ?? null,
+    return {
+      id: r.id,
+      areaToBeVisited: r.areaToBeVisited,
+      route: r.route ?? null,
+      description: r.description ?? null,
+      status: r.status,
+      verificationStatus: r.verificationStatus,
+      additionalVisitRemarks: r.additionalVisitRemarks ?? null,
 
-    planDate: r.planDate instanceof Date ? r.planDate.toISOString().slice(0, 10) : r.planDate,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+      plannedNewSiteVisits: r.plannedNewSiteVisits ?? 0,
+      plannedFollowUpSiteVisits: r.plannedFollowUpSiteVisits ?? 0,
+      plannedNewDealerVisits: r.plannedNewDealerVisits ?? 0,
+      plannedInfluencerVisits: r.plannedInfluencerVisits ?? 0,
+      influencerName: r.influencerName ?? null,
+      influencerPhone: r.influencerPhone ?? null,
+      activityType: r.activityType ?? null,
+      noOfConvertedBags: r.noOfConvertedBags ?? 0,
+      noOfMasonPcSchemes: r.noOfMasonPcSchemes ?? 0,
+      diversionReason: r.diversionReason ?? null,
 
-    assignedSalesmanName: `${r.user.firstName ?? ''} ${r.user.lastName ?? ''}`.trim() || r.user.email,
-    assignedSalesmanEmail: r.user.email,
+      planDate: r.planDate instanceof Date ? r.planDate.toISOString().split('T')[0] : r.planDate,
+      createdAt: r.createdAt.toISOString(),
+      updatedAt: r.updatedAt.toISOString(),
 
-    creatorName: `${r.createdBy.firstName ?? ''} ${r.createdBy.lastName ?? ''}`.trim() || r.createdBy.email,
-    creatorEmail: r.createdBy.email,
+      userId: r.userId,
+      dealerId: r.dealerId,
+      siteId: r.siteId,
+      visitDealerName: visitTargetName,
+      taskIds: r.dailyTasks.map((task: any) => task.id),
 
-    dealerName: r.dealer?.name ?? null,
-  }));
+      assignedSalesmanName: salesmanName,
+      assignedSalesmanEmail: r.user.email,
+
+      creatorName: createdByName,
+      creatorEmail: r.createdBy.email,
+      createdByRole: r.createdBy.role,
+
+      dealerName: r.dealer?.name ?? null,
+    };
+  });
 }
 
 // Competition Report
@@ -1564,14 +1586,14 @@ export async function getFlattenedMasonPCSide(companyId: number): Promise<Flatte
       kycSubmissions: {
         orderBy: { createdAt: 'desc' },
         take: 1,
-        select: { 
+        select: {
           aadhaarNumber: true,
-            panNumber: true,
-            voterIdNumber: true,
-            documents: true, // jsonb
-            remark: true,
-            createdAt: true,
-         },
+          panNumber: true,
+          voterIdNumber: true,
+          documents: true, // jsonb
+          remark: true,
+          createdAt: true,
+        },
       }
     },
     orderBy: { name: 'asc' },
@@ -1579,16 +1601,16 @@ export async function getFlattenedMasonPCSide(companyId: number): Promise<Flatte
 
   return raw.map((r: any) => {
     const latestKyc = r.kycSubmissions?.[0];
-    const formattedDate = latestKyc?.createdAt 
+    const formattedDate = latestKyc?.createdAt
       ? new Date(latestKyc.createdAt).toLocaleString('en-IN', {
-          timeZone: 'Asia/Kolkata',
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        })
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
       : null;
 
     return {
