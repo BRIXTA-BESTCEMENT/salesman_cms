@@ -77,7 +77,7 @@ const formatTimeIST = (dateString: string | null) => {
   if (!dateString) return 'N/A';
   try {
     return new Date(dateString).toLocaleTimeString('en-IN', {
-      timeZone: 'Asia/Kolkata',
+      timeZone: 'UTC',
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
@@ -318,9 +318,6 @@ export default function TechnicalVisitReportsPage() {
       cell: ({ row }) => (
         <div className="flex flex-col">
           <span className="text-sm">{row.original.date}</span>
-          <span className="text-xs text-muted-foreground">
-            In: {formatTimeIST(row.original.checkInTime)}
-          </span>
         </div>
       )
     },

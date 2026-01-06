@@ -305,6 +305,22 @@ export async function getFlattenedDailyVisitReports(companyId: number): Promise<
 }
 
 // TVR
+const toISTDate = (date: Date | null) => {
+  if (!date) return '';
+  // Returns YYYY-MM-DD in IST
+  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+};
+
+const toISTDateTime = (date: Date | null) => {
+  if (!date) return null;
+  // Returns readable Date & Time in IST (e.g. "06/01/2026, 10:30 am")
+  return date.toLocaleString('en-IN', { 
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true 
+  }).toUpperCase();
+};
+
 export type FlattenedTechnicalVisitReport = {
   // All scalar fields from TechnicalVisitReport
   id: string;
@@ -455,18 +471,18 @@ export async function getFlattenedTechnicalVisitReports(companyId: number): Prom
     timeSpentinLoc: r.timeSpentinLoc ?? null,
     inTimeImageUrl: r.inTimeImageUrl ?? null,
     outTimeImageUrl: r.outTimeImageUrl ?? null,
-    reportDate: r.reportDate.toISOString().slice(0, 10), // Date only
-    checkInTime: r.checkInTime.toISOString(),
-    checkOutTime: r.checkOutTime?.toISOString() ?? null,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    reportDate: toISTDate(r.reportDate),
+    checkInTime: toISTDateTime(r.checkInTime) || '',
+    checkOutTime: toISTDateTime(r.checkOutTime),
+    createdAt: toISTDateTime(r.createdAt) || '',
+    updatedAt: toISTDateTime(r.updatedAt) || '',
+    firstVisitTime: toISTDateTime(r.firstVisitTime),
+    lastVisitTime: toISTDateTime(r.lastVisitTime),
     conversionQuantityValue: r.conversionQuantityValue?.toNumber() ?? null,
     siteVisitBrandInUse: r.siteVisitBrandInUse.join(', '),
     influencerType: r.influencerType.join(', '),
     purposeOfVisit: r.purposeOfVisit ?? null,
     sitePhotoUrl: r.sitePhotoUrl ?? null,
-    firstVisitTime: r.firstVisitTime?.toISOString() ?? null,
-    lastVisitTime: r.lastVisitTime?.toISOString() ?? null,
     firstVisitDay: r.firstVisitDay ?? null,
     lastVisitDay: r.lastVisitDay ?? null,
     siteVisitsCount: r.siteVisitsCount ?? null,

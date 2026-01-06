@@ -14,6 +14,12 @@ const allowedRoles = [
   'senior-executive', 'executive',
 ];
 
+const getISTDateString = (date: Date | null) => {
+  if (!date) return '';
+  // 'en-CA' locale forces YYYY-MM-DD format
+  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+};
+
 // GET /api/dashboardPagesAPI/technical-reports
 // Fetches all technical visit reports from the database
 export async function GET() {
@@ -75,7 +81,7 @@ export async function GET() {
         id: report.id,
         salesmanName: salesmanName,
         role: report.user.role,
-        
+
         // --- Contact & Location ---
         area: report.user.area,
         region: report.user.region,
@@ -89,7 +95,7 @@ export async function GET() {
         longitude: report.longitude ? parseFloat(report.longitude.toString()) : null,
 
         // --- Visit Details ---
-        date: report.reportDate.toISOString().split('T')[0] || '',
+        date: getISTDateString(report.reportDate),
         visitType: report.visitType,
         visitCategory: report.visitCategory || null,
         customerType: report.customerType || null,
@@ -99,7 +105,7 @@ export async function GET() {
         siteVisitStage: report.siteVisitStage || '', // Map null to empty string
         constAreaSqFt: report.constAreaSqFt || null,
         siteVisitBrandInUse: report.siteVisitBrandInUse || [],
-        
+
         // Decimal Conversions
         currentBrandPrice: report.currentBrandPrice ? parseFloat(report.currentBrandPrice.toString()) : null,
         siteStock: report.siteStock ? parseFloat(report.siteStock.toString()) : null,
@@ -146,7 +152,7 @@ export async function GET() {
         inTimeImageUrl: report.inTimeImageUrl || null,
         outTimeImageUrl: report.outTimeImageUrl || null,
         sitePhotoUrl: report.sitePhotoUrl || null,
-        
+
         // --- History & Counters ---
         createdAt: report.createdAt.toISOString(),
         updatedAt: report.updatedAt.toISOString(),
