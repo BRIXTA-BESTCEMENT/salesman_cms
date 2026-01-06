@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/salesman-attendance/route.ts
 import 'server-only';
 export const runtime = 'nodejs';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma'; // Replaced local PrismaClient with shared instance
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { z } from 'zod'; // Added Zod Import
@@ -12,7 +12,7 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive',];
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const claims = await getTokenClaims();
 
@@ -32,11 +32,36 @@ export async function GET() {
       return NextResponse.json({ error: `Forbidden: Only the following roles can view attendance data: ${allowedRoles.join(', ')}` }, { status: 403 });
     }
 
+    // --- 3. FILTER LOGIC ADDED HERE ---
+    const searchParams = request.nextUrl.searchParams;
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+
+    let dateFilter: any = {};
+
+    if (startDateParam) {
+      const start = new Date(startDateParam);
+      // If end date is present use it, otherwise assume single day filter
+      const end = endDateParam ? new Date(endDateParam) : new Date(startDateParam);
+      
+      // Set end time to the very end of the day (23:59:59.999)
+      end.setHours(23, 59, 59, 999);
+
+      dateFilter = {
+        attendanceDate: {
+          gte: start,
+          lte: end,
+        },
+      };
+    }
+    // ----------------------------------
+
     const attendanceRecords = await prisma.salesmanAttendance.findMany({
       where: {
         user: { // Access the User relation
           companyId: currentUser.companyId, // Filter by the admin/manager's company
         },
+        ...dateFilter,
       },
       include: {
         user: {

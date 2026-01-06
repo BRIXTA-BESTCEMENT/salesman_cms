@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/slm-geotracking/route.ts
 import 'server-only';
 export const runtime = 'nodejs';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive',];
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const claims = await getTokenClaims();
 
@@ -33,12 +33,36 @@ export async function GET() {
       return NextResponse.json({ error: `Forbidden: Only the following roles can add dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
     }
 
+    // --- 1. EXTRACT DATE FILTERS ---
+    const searchParams = request.nextUrl.searchParams;
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+
+    let dateFilter: any = {};
+
+    if (startDateParam) {
+      const start = new Date(startDateParam);
+      const end = endDateParam ? new Date(endDateParam) : new Date(startDateParam);
+      
+      // Ensure we cover the entire end day
+      end.setHours(23, 59, 59, 999);
+
+      dateFilter = {
+        recordedAt: {
+          gte: start,
+          lte: end,
+        },
+      };
+    }
+    // -------------------------------
+
     // 4. Fetch GeoTracking Records for the current user's company
     const geotrackingReports = await prisma.geoTracking.findMany({
       where: {
         user: {
           companyId: currentUser.companyId,
         },
+        ...dateFilter,
       },
       // We must include the user and company to get the workosOrganizationId
       include: {
@@ -62,7 +86,7 @@ export async function GET() {
       orderBy: {
         recordedAt: 'desc',
       },
-      take: 200,
+      take: startDateParam ? undefined : 350,
     });
 
     // 5. Format the data for the frontend table display

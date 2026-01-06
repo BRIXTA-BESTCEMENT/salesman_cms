@@ -10,7 +10,13 @@ import { permanentJourneyPlanSchema } from '@/lib/shared-zod-schema';
 const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive','executive',];
+  'senior-executive', 'executive',];
+
+const getISTDate = (date: Date | null) => {
+  if (!date) return '';
+  // Returns YYYY-MM-DD based on Asia/Kolkata time
+  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,16 +41,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const verificationStatus = searchParams.get('verificationStatus');
 
-    // 4. Construct the WHERE clause (NEW)
+    // 4. Construct the WHERE clause
     const whereClause: any = {
-        user: { 
-            companyId: currentUser.companyId,
-        },
+      user: {
+        companyId: currentUser.companyId,
+      },
     };
 
     // Apply the verification status filter if present
     if (verificationStatus) {
-        whereClause.verificationStatus = verificationStatus;
+      whereClause.verificationStatus = verificationStatus;
     }
 
 
@@ -53,7 +59,7 @@ export async function GET(request: NextRequest) {
       where: whereClause, // Use the constructed whereClause
       include: {
         // Include salesman details to get their name
-        user: { 
+        user: {
           select: {
             id: true,
             firstName: true,
@@ -89,11 +95,11 @@ export async function GET(request: NextRequest) {
     });
 
     // Map the data to match the frontend's PermanentJourneyPlan schema
-    const formattedPlans = permanentJourneyPlans.map((plan:any) => {
+    const formattedPlans = permanentJourneyPlans.map((plan: any) => {
       // Construct salesman and creator names, handling potential nulls
       const salesmanName = `${plan.user.firstName || ''} ${plan.user.lastName || ''}`.trim() || plan.user.email;
       const createdByName = `${plan.createdBy.firstName || ''} ${plan.createdBy.lastName || ''}`.trim() || plan.createdBy.email;
-      const taskIds = plan.dailyTasks.map((task:any) => task.id);
+      const taskIds = plan.dailyTasks.map((task: any) => task.id);
       const visitTargetName = plan.dealer?.name ?? plan.site?.siteName ?? null;
 
       return {
@@ -104,7 +110,7 @@ export async function GET(request: NextRequest) {
         createdByRole: plan.createdBy.role,
         areaToBeVisited: plan.areaToBeVisited,
         route: plan.route,
-        planDate: plan.planDate.toISOString().split('T')[0],
+        planDate: getISTDate(plan.planDate),
         description: plan.description,
         status: plan.status,
         plannedNewSiteVisits: plan.plannedNewSiteVisits ?? 0,
@@ -117,7 +123,7 @@ export async function GET(request: NextRequest) {
         noOfConvertedBags: plan.noOfConvertedBags ?? 0,
         noOfMasonPcSchemes: plan.noOfMasonPcSchemes ?? 0,
         diversionReason: plan.diversionReason,
-  
+
         taskIds: taskIds,
         dealerId: plan.dealerId,
         siteId: plan.siteId,

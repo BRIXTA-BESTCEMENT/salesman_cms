@@ -20,10 +20,12 @@ const allowedRoles = [
     'assistant-manager',
 ];
 
-/**
- * GET: Fetch all Permanent Journey Plans with verificationStatus = 'PENDING' 
- * for the current user's company.
- */
+const getISTDate = (date: Date | null) => {
+  if (!date) return '';
+  // Returns YYYY-MM-DD based on Asia/Kolkata time
+  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+};
+
 export async function GET(request: NextRequest) {
     try {
         const claims = await getTokenClaims();
@@ -102,7 +104,7 @@ export async function GET(request: NextRequest) {
                 areaToBeVisited: plan.areaToBeVisited,
                 route: plan.route,
 
-                planDate: plan.planDate.toISOString().split('T')[0],
+                planDate: getISTDate(plan.planDate),
                 description: plan.description,
                 status: plan.status,
                 plannedNewSiteVisits: plan.plannedNewSiteVisits ?? 0,

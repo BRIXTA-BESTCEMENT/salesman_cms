@@ -257,9 +257,24 @@ export default function SalesmanGeoTrackingPage() {
       const reportRegion = (track.region || '').toString();
       const regionMatch = regionFilter === 'all' || reportRegion.toLowerCase() === regionFilter.toLowerCase();
 
-      return matchesSearch && roleMatch && areaMatch && regionMatch;
+      // 5. Date Filter
+      let matchesDate = true;
+      if (dateRange && dateRange.from) {
+        const trackDate = new Date(track.recordedAt);
+        const fromDate = new Date(dateRange.from);
+        const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
+
+        // Normalize to midnight for comparison
+        trackDate.setHours(0, 0, 0, 0);
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+
+        matchesDate = trackDate >= fromDate && trackDate <= toDate;
+      }
+
+      return matchesSearch && roleMatch && areaMatch && regionMatch && matchesDate;
     });
-  }, [tracks, searchQuery, roleFilter, areaFilter, regionFilter]);
+  }, [tracks, searchQuery, roleFilter, areaFilter, regionFilter, dateRange]);
 
   const columns: ColumnDef<DisplayGeoTrack>[] = [
     {

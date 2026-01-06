@@ -108,9 +108,24 @@ export default function PJPListPage() {
         (pjp.areaToBeVisited || '').toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = selectedStatusFilter === 'all' || pjp.status === selectedStatusFilter;
       const matchesSalesman = selectedSalesmanFilter === 'all' || pjp.salesmanName === selectedSalesmanFilter;
-      return matchesSearch && matchesStatus && matchesSalesman;
+      
+      let matchesDate = true;
+      if (dateRange && dateRange.from) {
+        const planDate = new Date(pjp.planDate); // Assuming YYYY-MM-DD string
+        const fromDate = new Date(dateRange.from);
+        // If 'to' is undefined, default to 'from' (single day selection)
+        const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
+
+        // Normalize all times to midnight (00:00:00) to compare dates only
+        planDate.setHours(0, 0, 0, 0);
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999); // Set end of range to end of day
+
+        matchesDate = planDate >= fromDate && planDate <= toDate;
+      }
+      return matchesSearch && matchesStatus && matchesSalesman && matchesDate;
     });
-  }, [pjps, searchQuery, selectedStatusFilter, selectedSalesmanFilter]);
+  }, [pjps, searchQuery, selectedStatusFilter, selectedSalesmanFilter, dateRange]);
 
   const columns: ColumnDef<PermanentJourneyPlan>[] = [
     { accessorKey: "salesmanName", header: "Salesman" },

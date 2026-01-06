@@ -270,9 +270,25 @@ export default function PJPVerifyPage() {
         pjp.areaToBeVisited.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesSalesman = selectedSalesmanFilter === 'all' || pjp.salesmanName === selectedSalesmanFilter;
       const matchesRegion = selectedRegionFilter === 'all' || selectedRegionFilter === 'All Zone' || pjp.salesmanRegion === selectedRegionFilter;
-      return matchesSearch && matchesSalesman && matchesRegion;
+
+      let matchesDate = true;
+      if (dateRange && dateRange.from) {
+        const planDate = new Date(pjp.planDate); // Assuming YYYY-MM-DD string
+        const fromDate = new Date(dateRange.from);
+        // If 'to' is undefined, default to 'from' (single day selection)
+        const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
+
+        // Normalize all times to midnight (00:00:00) to compare dates only
+        planDate.setHours(0, 0, 0, 0);
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999); // Set end of range to end of day
+
+        matchesDate = planDate >= fromDate && planDate <= toDate;
+      }
+
+      return matchesSearch && matchesSalesman && matchesRegion && matchesDate;
     });
-  }, [pendingPJPs, searchQuery, selectedSalesmanFilter, selectedRegionFilter]);
+  }, [pendingPJPs, searchQuery, selectedSalesmanFilter, selectedRegionFilter, dateRange]);
 
   const pjpVerificationColumns: ColumnDef<PermanentJourneyPlanVerification>[] = [
     { accessorKey: 'salesmanName', header: 'Salesman' },
