@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Edit, Trash2, UserCheck, UserX, Loader2, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, UserCheck, UserX, Loader2, Search, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -137,13 +137,16 @@ const getRoleBadgeVariant = (role: string) => {
   }
 };
 
-const isUserActive = (workosUserId: string | null) => {
-  return workosUserId && !workosUserId.startsWith('pending_') && !workosUserId.startsWith('temp_');
-};
-const isAppOnlyUserActive = (status: string | null) => {
-  return status && !status.startsWith('pending_');
-};
+const isUserEffectivelyActive = (user: User) => {
+  // 1. If there is an invite token, they haven't accepted the invite yet -> Pending
+  if (user.inviteToken) return false;
 
+  // 2. If the status is explicitly 'pending' or starts with 'pending_' -> Pending
+  if (user.status?.toLowerCase().startsWith('pending')) return false;
+
+  // 3. Finally, check if status is explicitly 'active'
+  return user.status?.toLowerCase() === 'active';
+};
 
 export default function UsersManagement({ adminUser }: Props) {
   const [users, setUsers] = useState<User[]>([]);
@@ -471,7 +474,24 @@ export default function UsersManagement({ adminUser }: Props) {
       enableSorting: false,
       cell: ({ row }) => {
         const user = row.original;
-        const isActive = (isUserActive(user.workosUserId) || isAppOnlyUserActive(user.status));
+
+        // LOGIC 1: App-Only Check
+        // If they have NO WorkOS ID and NO Invite Token, they are purely local (App-Only)
+        // regardless of what the status string says.
+        const isAppOnly = !user.workosUserId && !user.inviteToken;
+
+        // LOGIC 2: Active vs Pending (Only for Dashboard Users)
+        const isActive = isUserEffectivelyActive(user);
+
+        if (isAppOnly) {
+          return (
+             <div className="flex items-center space-x-2">
+              <Smartphone className="w-4 h-4 text-blue-500" />
+              <span className="text-blue-600 text-sm font-medium">App-Only</span>
+            </div>
+          );
+        }
+
         return (
           <div className="flex items-center space-x-2">
             {isActive ? (

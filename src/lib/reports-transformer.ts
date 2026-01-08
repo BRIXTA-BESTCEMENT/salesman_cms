@@ -7,6 +7,23 @@ const formatUserName = (user: { firstName: string | null, lastName: string | nul
   const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
   return name || user.email;
 };
+
+const toISTDate = (date: Date | null) => {
+  if (!date) return '';
+  // Returns YYYY-MM-DD in IST
+  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+};
+
+const toISTDateTime = (date: Date | null) => {
+  if (!date) return null;
+  // Returns readable Date & Time in IST (e.g. "06/01/2026, 10:30 am")
+  return date.toLocaleString('en-IN', { 
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true 
+  }).toUpperCase();
+};
+
 // Users
 export type FlattenedUser = {
   id: number;
@@ -305,21 +322,6 @@ export async function getFlattenedDailyVisitReports(companyId: number): Promise<
 }
 
 // TVR
-const toISTDate = (date: Date | null) => {
-  if (!date) return '';
-  // Returns YYYY-MM-DD in IST
-  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-};
-
-const toISTDateTime = (date: Date | null) => {
-  if (!date) return null;
-  // Returns readable Date & Time in IST (e.g. "06/01/2026, 10:30 am")
-  return date.toLocaleString('en-IN', { 
-    timeZone: 'Asia/Kolkata',
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', hour12: true 
-  }).toUpperCase();
-};
 
 export type FlattenedTechnicalVisitReport = {
   // All scalar fields from TechnicalVisitReport
@@ -918,9 +920,9 @@ export async function getFlattenedSalesmanAttendance(companyId: number): Promise
     outTimeImageUrl: r.outTimeImageUrl ?? null,
 
     // DateTime Fields (Conversion to string)
-    attendanceDate: r.attendanceDate.toISOString().slice(0, 10), // Date only
-    inTimeTimestamp: r.inTimeTimestamp.toISOString(),
-    outTimeTimestamp: r.outTimeTimestamp?.toISOString() ?? null,
+    attendanceDate: toISTDate(r.attendanceDate), // Date only
+    inTimeTimestamp: toISTDateTime(r.inTimeTimestamp) || '-',
+    outTimeTimestamp: toISTDateTime(r.outTimeTimestamp) ?? null,
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
 
