@@ -930,14 +930,6 @@ export type SatelliteSceneUncheckedUpdateManyWithoutAoiNestedInput = {
   deleteMany?: Prisma.SatelliteSceneScalarWhereInput | Prisma.SatelliteSceneScalarWhereInput[]
 }
 
-export type NullableFloatFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type SatelliteSceneCreateNestedOneWithoutGridChangeScoresEarlierInput = {
   create?: Prisma.XOR<Prisma.SatelliteSceneCreateWithoutGridChangeScoresEarlierInput, Prisma.SatelliteSceneUncheckedCreateWithoutGridChangeScoresEarlierInput>
   connectOrCreate?: Prisma.SatelliteSceneCreateOrConnectWithoutGridChangeScoresEarlierInput

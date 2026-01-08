@@ -384,6 +384,7 @@ export type UserWhereInput = {
   geoTrackingRecords?: Prisma.GeoTrackingListRelationFilter
   assignedTasks?: Prisma.DailyTaskListRelationFilter
   createdTasks?: Prisma.DailyTaskListRelationFilter
+  journeys?: Prisma.JourneyListRelationFilter
   ratings?: Prisma.RatingListRelationFilter
   salesOrders?: Prisma.SalesOrderListRelationFilter
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanListRelationFilter
@@ -436,6 +437,7 @@ export type UserOrderByWithRelationInput = {
   geoTrackingRecords?: Prisma.GeoTrackingOrderByRelationAggregateInput
   assignedTasks?: Prisma.DailyTaskOrderByRelationAggregateInput
   createdTasks?: Prisma.DailyTaskOrderByRelationAggregateInput
+  journeys?: Prisma.JourneyOrderByRelationAggregateInput
   ratings?: Prisma.RatingOrderByRelationAggregateInput
   salesOrders?: Prisma.SalesOrderOrderByRelationAggregateInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanOrderByRelationAggregateInput
@@ -492,6 +494,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   geoTrackingRecords?: Prisma.GeoTrackingListRelationFilter
   assignedTasks?: Prisma.DailyTaskListRelationFilter
   createdTasks?: Prisma.DailyTaskListRelationFilter
+  journeys?: Prisma.JourneyListRelationFilter
   ratings?: Prisma.RatingListRelationFilter
   salesOrders?: Prisma.SalesOrderListRelationFilter
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanListRelationFilter
@@ -601,6 +604,7 @@ export type UserCreateInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -651,6 +655,7 @@ export type UserUncheckedCreateInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -700,6 +705,7 @@ export type UserUpdateInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -750,6 +756,7 @@ export type UserUncheckedUpdateInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -1194,6 +1201,20 @@ export type UserUpdateOneRequiredWithoutGeoTrackingRecordsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGeoTrackingRecordsInput, Prisma.UserUpdateWithoutGeoTrackingRecordsInput>, Prisma.UserUncheckedUpdateWithoutGeoTrackingRecordsInput>
 }
 
+export type UserCreateNestedOneWithoutJourneysInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutJourneysInput, Prisma.UserUncheckedCreateWithoutJourneysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutJourneysInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutJourneysNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutJourneysInput, Prisma.UserUncheckedCreateWithoutJourneysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutJourneysInput
+  upsert?: Prisma.UserUpsertWithoutJourneysInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutJourneysInput, Prisma.UserUpdateWithoutJourneysInput>, Prisma.UserUncheckedUpdateWithoutJourneysInput>
+}
+
 export type UserCreateNestedOneWithoutAssignedTasksInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedTasksInput, Prisma.UserUncheckedCreateWithoutAssignedTasksInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedTasksInput
@@ -1396,20 +1417,6 @@ export type UserUpdateOneWithoutGiftTransfersReceivedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGiftTransfersReceivedInput, Prisma.UserUpdateWithoutGiftTransfersReceivedInput>, Prisma.UserUncheckedUpdateWithoutGiftTransfersReceivedInput>
 }
 
-export type UserCreateNestedOneWithoutTsoAssignmentsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTsoAssignmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutTsoAssignmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTsoAssignmentsInput
-  upsert?: Prisma.UserUpsertWithoutTsoAssignmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTsoAssignmentsInput, Prisma.UserUpdateWithoutTsoAssignmentsInput>, Prisma.UserUncheckedUpdateWithoutTsoAssignmentsInput>
-}
-
 export type UserCreateNestedOneWithoutBagLiftApprovalsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutBagLiftApprovalsInput, Prisma.UserUncheckedCreateWithoutBagLiftApprovalsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutBagLiftApprovalsInput
@@ -1424,6 +1431,20 @@ export type UserUpdateOneWithoutBagLiftApprovalsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBagLiftApprovalsInput, Prisma.UserUpdateWithoutBagLiftApprovalsInput>, Prisma.UserUncheckedUpdateWithoutBagLiftApprovalsInput>
+}
+
+export type UserCreateNestedOneWithoutTsoAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTsoAssignmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTsoAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTsoAssignmentsInput
+  upsert?: Prisma.UserUpsertWithoutTsoAssignmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTsoAssignmentsInput, Prisma.UserUpdateWithoutTsoAssignmentsInput>, Prisma.UserUncheckedUpdateWithoutTsoAssignmentsInput>
 }
 
 export type UserCreateWithoutCompanyInput = {
@@ -1458,6 +1479,7 @@ export type UserCreateWithoutCompanyInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -1507,6 +1529,7 @@ export type UserUncheckedCreateWithoutCompanyInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -1610,6 +1633,7 @@ export type UserCreateWithoutReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -1659,6 +1683,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -1712,6 +1737,7 @@ export type UserCreateWithoutReportsToInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -1761,6 +1787,7 @@ export type UserUncheckedCreateWithoutReportsToInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -1830,6 +1857,7 @@ export type UserUpdateWithoutReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -1879,6 +1907,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -1943,6 +1972,7 @@ export type UserCreateWithoutDealersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -1992,6 +2022,7 @@ export type UserUncheckedCreateWithoutDealersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -2056,6 +2087,7 @@ export type UserUpdateWithoutDealersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -2105,6 +2137,7 @@ export type UserUncheckedUpdateWithoutDealersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -2154,6 +2187,7 @@ export type UserCreateWithoutNotificationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -2203,6 +2237,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -2267,6 +2302,7 @@ export type UserUpdateWithoutNotificationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -2316,6 +2352,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -2363,6 +2400,7 @@ export type UserCreateWithoutDailyVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -2412,6 +2450,7 @@ export type UserUncheckedCreateWithoutDailyVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -2476,6 +2515,7 @@ export type UserUpdateWithoutDailyVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -2525,6 +2565,7 @@ export type UserUncheckedUpdateWithoutDailyVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -2574,6 +2615,7 @@ export type UserCreateWithoutPermanentJourneyPlansAssignedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
@@ -2623,6 +2665,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansAssignedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2676,6 +2719,7 @@ export type UserCreateWithoutPermanentJourneyPlansCreatedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -2725,6 +2769,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansCreatedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -2789,6 +2834,7 @@ export type UserUpdateWithoutPermanentJourneyPlansAssignedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
@@ -2838,6 +2884,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansAssignedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2897,6 +2944,7 @@ export type UserUpdateWithoutPermanentJourneyPlansCreatedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -2946,6 +2994,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansCreatedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -2993,6 +3042,7 @@ export type UserCreateWithoutSalesmanAttendanceInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -3042,6 +3092,7 @@ export type UserUncheckedCreateWithoutSalesmanAttendanceInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -3106,6 +3157,7 @@ export type UserUpdateWithoutSalesmanAttendanceInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -3155,6 +3207,7 @@ export type UserUncheckedUpdateWithoutSalesmanAttendanceInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -3203,6 +3256,7 @@ export type UserCreateWithoutSalesmanLeaveApplicationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -3252,6 +3306,7 @@ export type UserUncheckedCreateWithoutSalesmanLeaveApplicationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -3316,6 +3371,7 @@ export type UserUpdateWithoutSalesmanLeaveApplicationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -3365,6 +3421,7 @@ export type UserUncheckedUpdateWithoutSalesmanLeaveApplicationsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -3413,6 +3470,7 @@ export type UserCreateWithoutCompetitionReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -3462,6 +3520,7 @@ export type UserUncheckedCreateWithoutCompetitionReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -3526,6 +3585,7 @@ export type UserUpdateWithoutCompetitionReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -3575,6 +3635,7 @@ export type UserUncheckedUpdateWithoutCompetitionReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -3623,6 +3684,7 @@ export type UserCreateWithoutGeoTrackingRecordsInput = {
   competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -3672,6 +3734,7 @@ export type UserUncheckedCreateWithoutGeoTrackingRecordsInput = {
   competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -3736,6 +3799,7 @@ export type UserUpdateWithoutGeoTrackingRecordsInput = {
   competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -3783,6 +3847,221 @@ export type UserUncheckedUpdateWithoutGeoTrackingRecordsInput = {
   salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
   salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedUpdateManyWithoutUserNestedInput
   competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+}
+
+export type UserCreateWithoutJourneysInput = {
+  workosUserId?: string | null
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
+  reports?: Prisma.UserCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
+  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
+  bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+}
+
+export type UserUncheckedCreateWithoutJourneysInput = {
+  id?: number
+  workosUserId?: string | null
+  companyId: number
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  reportsToId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+}
+
+export type UserCreateOrConnectWithoutJourneysInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutJourneysInput, Prisma.UserUncheckedCreateWithoutJourneysInput>
+}
+
+export type UserUpsertWithoutJourneysInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutJourneysInput, Prisma.UserUncheckedUpdateWithoutJourneysInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutJourneysInput, Prisma.UserUncheckedCreateWithoutJourneysInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutJourneysInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutJourneysInput, Prisma.UserUncheckedUpdateWithoutJourneysInput>
+}
+
+export type UserUpdateWithoutJourneysInput = {
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
+  reports?: Prisma.UserUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUpdateManyWithoutUserNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
+  additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+}
+
+export type UserUncheckedUpdateWithoutJourneysInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
@@ -3833,6 +4112,7 @@ export type UserCreateWithoutAssignedTasksInput = {
   competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -3882,6 +4162,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -3935,6 +4216,7 @@ export type UserCreateWithoutCreatedTasksInput = {
   competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -3984,6 +4266,7 @@ export type UserUncheckedCreateWithoutCreatedTasksInput = {
   competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -4048,6 +4331,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
   competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -4097,6 +4381,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -4156,6 +4441,7 @@ export type UserUpdateWithoutCreatedTasksInput = {
   competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -4205,6 +4491,7 @@ export type UserUncheckedUpdateWithoutCreatedTasksInput = {
   competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -4254,6 +4541,7 @@ export type UserCreateWithoutSalesOrdersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
@@ -4303,6 +4591,7 @@ export type UserUncheckedCreateWithoutSalesOrdersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
@@ -4367,6 +4656,7 @@ export type UserUpdateWithoutSalesOrdersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
@@ -4416,6 +4706,7 @@ export type UserUncheckedUpdateWithoutSalesOrdersInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4464,6 +4755,7 @@ export type UserCreateWithoutRatingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
@@ -4513,6 +4805,7 @@ export type UserUncheckedCreateWithoutRatingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
@@ -4577,6 +4870,7 @@ export type UserUpdateWithoutRatingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
@@ -4626,6 +4920,7 @@ export type UserUncheckedUpdateWithoutRatingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4674,6 +4969,7 @@ export type UserCreateWithoutDealerBrandMappingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -4723,6 +5019,7 @@ export type UserUncheckedCreateWithoutDealerBrandMappingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -4787,6 +5084,7 @@ export type UserUpdateWithoutDealerBrandMappingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -4836,6 +5134,7 @@ export type UserUncheckedUpdateWithoutDealerBrandMappingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -4883,6 +5182,7 @@ export type UserCreateWithoutTechnicalVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -4932,6 +5232,7 @@ export type UserUncheckedCreateWithoutTechnicalVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -4996,6 +5297,7 @@ export type UserUpdateWithoutTechnicalVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -5045,6 +5347,7 @@ export type UserUncheckedUpdateWithoutTechnicalVisitReportsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -5094,6 +5397,7 @@ export type UserCreateWithoutCreatedMeetingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -5143,6 +5447,7 @@ export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -5207,6 +5512,7 @@ export type UserUpdateWithoutCreatedMeetingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -5256,6 +5562,7 @@ export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -5304,6 +5611,7 @@ export type UserCreateWithoutAdditionalSitesInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -5353,6 +5661,7 @@ export type UserUncheckedCreateWithoutAdditionalSitesInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -5422,6 +5731,7 @@ export type UserCreateWithoutAssignedMasonsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -5471,6 +5781,7 @@ export type UserUncheckedCreateWithoutAssignedMasonsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -5535,6 +5846,7 @@ export type UserUpdateWithoutAssignedMasonsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -5584,6 +5896,7 @@ export type UserUncheckedUpdateWithoutAssignedMasonsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -5632,6 +5945,7 @@ export type UserCreateWithoutGiftLogsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -5681,6 +5995,7 @@ export type UserUncheckedCreateWithoutGiftLogsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -5734,6 +6049,7 @@ export type UserCreateWithoutGiftTransfersSentInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -5783,6 +6099,7 @@ export type UserUncheckedCreateWithoutGiftTransfersSentInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -5836,6 +6153,7 @@ export type UserCreateWithoutGiftTransfersReceivedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -5885,6 +6203,7 @@ export type UserUncheckedCreateWithoutGiftTransfersReceivedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -5949,6 +6268,7 @@ export type UserUpdateWithoutGiftLogsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -5998,6 +6318,7 @@ export type UserUncheckedUpdateWithoutGiftLogsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -6057,6 +6378,7 @@ export type UserUpdateWithoutGiftTransfersSentInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -6106,6 +6428,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersSentInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -6165,6 +6488,7 @@ export type UserUpdateWithoutGiftTransfersReceivedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -6214,6 +6538,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -6224,216 +6549,6 @@ export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
   giftTransfersSent?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutSourceUserNestedInput
   assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
-  bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
-  additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
-}
-
-export type UserCreateWithoutTsoAssignmentsInput = {
-  workosUserId?: string | null
-  email: string
-  firstName?: string | null
-  lastName?: string | null
-  role: string
-  createdAt?: Date | string | null
-  updatedAt?: Date | string | null
-  phoneNumber?: string | null
-  inviteToken?: string | null
-  status?: string
-  region?: string | null
-  area?: string | null
-  salesmanLoginId?: string | null
-  hashedPassword?: string | null
-  isTechnicalRole?: boolean
-  techLoginId?: string | null
-  techHashedPassword?: string | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  noOfPJP?: number | null
-  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
-  reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
-  reports?: Prisma.UserCreateNestedManyWithoutReportsToInput
-  dealers?: Prisma.DealerCreateNestedManyWithoutUserInput
-  dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutUserInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutUserInput
-  salesmanAttendance?: Prisma.SalesmanAttendanceCreateNestedManyWithoutUserInput
-  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationCreateNestedManyWithoutUserInput
-  competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
-  geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
-  createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
-  ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
-  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
-  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
-  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
-  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutUserInput
-  createdMeetings?: Prisma.TSOMeetingCreateNestedManyWithoutCreatedByInput
-  giftLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutUserInput
-  giftTransfersSent?: Prisma.GiftAllocationLogCreateNestedManyWithoutSourceUserInput
-  giftTransfersReceived?: Prisma.GiftAllocationLogCreateNestedManyWithoutDestinationUserInput
-  assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
-  bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
-  additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
-}
-
-export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
-  id?: number
-  workosUserId?: string | null
-  companyId: number
-  email: string
-  firstName?: string | null
-  lastName?: string | null
-  role: string
-  createdAt?: Date | string | null
-  updatedAt?: Date | string | null
-  phoneNumber?: string | null
-  inviteToken?: string | null
-  status?: string
-  region?: string | null
-  area?: string | null
-  salesmanLoginId?: string | null
-  hashedPassword?: string | null
-  isTechnicalRole?: boolean
-  techLoginId?: string | null
-  techHashedPassword?: string | null
-  reportsToId?: number | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  noOfPJP?: number | null
-  reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
-  dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
-  dailyVisitReports?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutUserInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutUserInput
-  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedCreateNestedManyWithoutUserInput
-  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedCreateNestedManyWithoutUserInput
-  competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
-  geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
-  assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
-  createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
-  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
-  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
-  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
-  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
-  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutUserInput
-  createdMeetings?: Prisma.TSOMeetingUncheckedCreateNestedManyWithoutCreatedByInput
-  giftLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutUserInput
-  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutSourceUserInput
-  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDestinationUserInput
-  assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
-  bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
-  additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
-}
-
-export type UserCreateOrConnectWithoutTsoAssignmentsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
-}
-
-export type UserUpsertWithoutTsoAssignmentsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutTsoAssignmentsInput, Prisma.UserUncheckedUpdateWithoutTsoAssignmentsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutTsoAssignmentsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutTsoAssignmentsInput, Prisma.UserUncheckedUpdateWithoutTsoAssignmentsInput>
-}
-
-export type UserUpdateWithoutTsoAssignmentsInput = {
-  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
-  reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
-  reports?: Prisma.UserUpdateManyWithoutReportsToNestedInput
-  dealers?: Prisma.DealerUpdateManyWithoutUserNestedInput
-  dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutUserNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutUserNestedInput
-  salesmanAttendance?: Prisma.SalesmanAttendanceUpdateManyWithoutUserNestedInput
-  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUpdateManyWithoutUserNestedInput
-  competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
-  geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
-  createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
-  ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
-  salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
-  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
-  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
-  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutUserNestedInput
-  createdMeetings?: Prisma.TSOMeetingUpdateManyWithoutCreatedByNestedInput
-  giftLogs?: Prisma.GiftAllocationLogUpdateManyWithoutUserNestedInput
-  giftTransfersSent?: Prisma.GiftAllocationLogUpdateManyWithoutSourceUserNestedInput
-  giftTransfersReceived?: Prisma.GiftAllocationLogUpdateManyWithoutDestinationUserNestedInput
-  assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
-  bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
-  additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
-}
-
-export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyId?: Prisma.IntFieldUpdateOperationsInput | number
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
-  dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
-  dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutUserNestedInput
-  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
-  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedUpdateManyWithoutUserNestedInput
-  competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
-  geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
-  assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
-  createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
-  ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
-  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
-  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
-  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
-  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutUserNestedInput
-  createdMeetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutCreatedByNestedInput
-  giftLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutUserNestedInput
-  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutSourceUserNestedInput
-  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDestinationUserNestedInput
-  assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
   bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
@@ -6472,6 +6587,7 @@ export type UserCreateWithoutBagLiftApprovalsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
@@ -6521,6 +6637,7 @@ export type UserUncheckedCreateWithoutBagLiftApprovalsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
   assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
   createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
@@ -6585,6 +6702,7 @@ export type UserUpdateWithoutBagLiftApprovalsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -6634,6 +6752,7 @@ export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -6645,6 +6764,220 @@ export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
   giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDestinationUserNestedInput
   assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
   tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+}
+
+export type UserCreateWithoutTsoAssignmentsInput = {
+  workosUserId?: string | null
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
+  reports?: Prisma.UserCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
+  bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+}
+
+export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
+  id?: number
+  workosUserId?: string | null
+  companyId: number
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  reportsToId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+}
+
+export type UserCreateOrConnectWithoutTsoAssignmentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
+}
+
+export type UserUpsertWithoutTsoAssignmentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTsoAssignmentsInput, Prisma.UserUncheckedUpdateWithoutTsoAssignmentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTsoAssignmentsInput, Prisma.UserUncheckedCreateWithoutTsoAssignmentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTsoAssignmentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTsoAssignmentsInput, Prisma.UserUncheckedUpdateWithoutTsoAssignmentsInput>
+}
+
+export type UserUpdateWithoutTsoAssignmentsInput = {
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
+  reports?: Prisma.UserUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUpdateManyWithoutUserNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
+  additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
 }
@@ -6706,6 +7039,7 @@ export type UserUpdateWithoutCompanyInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -6755,6 +7089,7 @@ export type UserUncheckedUpdateWithoutCompanyInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -6853,6 +7188,7 @@ export type UserUpdateWithoutReportsToInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -6902,6 +7238,7 @@ export type UserUncheckedUpdateWithoutReportsToInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -6976,6 +7313,7 @@ export type UserUpdateWithoutAdditionalSitesInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
@@ -7025,6 +7363,7 @@ export type UserUncheckedUpdateWithoutAdditionalSitesInput = {
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
   assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
   createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
   permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
@@ -7082,6 +7421,7 @@ export type UserCountOutputType = {
   geoTrackingRecords: number
   assignedTasks: number
   createdTasks: number
+  journeys: number
   ratings: number
   salesOrders: number
   permanentJourneyPlansAssigned: number
@@ -7109,6 +7449,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   geoTrackingRecords?: boolean | UserCountOutputTypeCountGeoTrackingRecordsArgs
   assignedTasks?: boolean | UserCountOutputTypeCountAssignedTasksArgs
   createdTasks?: boolean | UserCountOutputTypeCountCreatedTasksArgs
+  journeys?: boolean | UserCountOutputTypeCountJourneysArgs
   ratings?: boolean | UserCountOutputTypeCountRatingsArgs
   salesOrders?: boolean | UserCountOutputTypeCountSalesOrdersArgs
   permanentJourneyPlansAssigned?: boolean | UserCountOutputTypeCountPermanentJourneyPlansAssignedArgs
@@ -7203,6 +7544,13 @@ export type UserCountOutputTypeCountAssignedTasksArgs<ExtArgs extends runtime.Ty
  */
 export type UserCountOutputTypeCountCreatedTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DailyTaskWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountJourneysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.JourneyWhereInput
 }
 
 /**
@@ -7340,6 +7688,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   geoTrackingRecords?: boolean | Prisma.User$geoTrackingRecordsArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.User$assignedTasksArgs<ExtArgs>
   createdTasks?: boolean | Prisma.User$createdTasksArgs<ExtArgs>
+  journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
   ratings?: boolean | Prisma.User$ratingsArgs<ExtArgs>
   salesOrders?: boolean | Prisma.User$salesOrdersArgs<ExtArgs>
   permanentJourneyPlansAssigned?: boolean | Prisma.User$permanentJourneyPlansAssignedArgs<ExtArgs>
@@ -7453,6 +7802,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   geoTrackingRecords?: boolean | Prisma.User$geoTrackingRecordsArgs<ExtArgs>
   assignedTasks?: boolean | Prisma.User$assignedTasksArgs<ExtArgs>
   createdTasks?: boolean | Prisma.User$createdTasksArgs<ExtArgs>
+  journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
   ratings?: boolean | Prisma.User$ratingsArgs<ExtArgs>
   salesOrders?: boolean | Prisma.User$salesOrdersArgs<ExtArgs>
   permanentJourneyPlansAssigned?: boolean | Prisma.User$permanentJourneyPlansAssignedArgs<ExtArgs>
@@ -7493,6 +7843,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     geoTrackingRecords: Prisma.$GeoTrackingPayload<ExtArgs>[]
     assignedTasks: Prisma.$DailyTaskPayload<ExtArgs>[]
     createdTasks: Prisma.$DailyTaskPayload<ExtArgs>[]
+    journeys: Prisma.$JourneyPayload<ExtArgs>[]
     ratings: Prisma.$RatingPayload<ExtArgs>[]
     salesOrders: Prisma.$SalesOrderPayload<ExtArgs>[]
     permanentJourneyPlansAssigned: Prisma.$PermanentJourneyPlanPayload<ExtArgs>[]
@@ -7938,6 +8289,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   geoTrackingRecords<T extends Prisma.User$geoTrackingRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$geoTrackingRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeoTrackingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedTasks<T extends Prisma.User$assignedTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdTasks<T extends Prisma.User$createdTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  journeys<T extends Prisma.User$journeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$journeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ratings<T extends Prisma.User$ratingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   salesOrders<T extends Prisma.User$salesOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$salesOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalesOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permanentJourneyPlansAssigned<T extends Prisma.User$permanentJourneyPlansAssignedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$permanentJourneyPlansAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PermanentJourneyPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -8656,6 +9008,30 @@ export type User$createdTasksArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.DailyTaskScalarFieldEnum | Prisma.DailyTaskScalarFieldEnum[]
+}
+
+/**
+ * User.journeys
+ */
+export type User$journeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Journey
+   */
+  select?: Prisma.JourneySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Journey
+   */
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
+  orderBy?: Prisma.JourneyOrderByWithRelationInput | Prisma.JourneyOrderByWithRelationInput[]
+  cursor?: Prisma.JourneyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.JourneyScalarFieldEnum | Prisma.JourneyScalarFieldEnum[]
 }
 
 /**

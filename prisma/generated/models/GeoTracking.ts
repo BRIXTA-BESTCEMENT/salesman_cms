@@ -79,6 +79,7 @@ export type GeoTrackingMinAggregateOutputType = {
   isActive: boolean | null
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
+  linkedJourneyId: string | null
   siteId: string | null
   dealerId: string | null
   createdAt: Date | null
@@ -110,6 +111,7 @@ export type GeoTrackingMaxAggregateOutputType = {
   isActive: boolean | null
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
+  linkedJourneyId: string | null
   siteId: string | null
   dealerId: string | null
   createdAt: Date | null
@@ -141,6 +143,7 @@ export type GeoTrackingCountAggregateOutputType = {
   isActive: number
   destLat: number
   destLng: number
+  linkedJourneyId: number
   siteId: number
   dealerId: number
   createdAt: number
@@ -202,6 +205,7 @@ export type GeoTrackingMinAggregateInputType = {
   isActive?: true
   destLat?: true
   destLng?: true
+  linkedJourneyId?: true
   siteId?: true
   dealerId?: true
   createdAt?: true
@@ -233,6 +237,7 @@ export type GeoTrackingMaxAggregateInputType = {
   isActive?: true
   destLat?: true
   destLng?: true
+  linkedJourneyId?: true
   siteId?: true
   dealerId?: true
   createdAt?: true
@@ -264,6 +269,7 @@ export type GeoTrackingCountAggregateInputType = {
   isActive?: true
   destLat?: true
   destLng?: true
+  linkedJourneyId?: true
   siteId?: true
   dealerId?: true
   createdAt?: true
@@ -382,6 +388,7 @@ export type GeoTrackingGroupByOutputType = {
   isActive: boolean
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
+  linkedJourneyId: string | null
   siteId: string | null
   dealerId: string | null
   createdAt: Date
@@ -436,6 +443,7 @@ export type GeoTrackingWhereInput = {
   isActive?: Prisma.BoolFilter<"GeoTracking"> | boolean
   destLat?: Prisma.DecimalNullableFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.StringNullableFilter<"GeoTracking"> | string | null
   siteId?: Prisma.UuidNullableFilter<"GeoTracking"> | string | null
   dealerId?: Prisma.StringNullableFilter<"GeoTracking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"GeoTracking"> | Date | string
@@ -443,6 +451,7 @@ export type GeoTrackingWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }
 
 export type GeoTrackingOrderByWithRelationInput = {
@@ -470,6 +479,7 @@ export type GeoTrackingOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   destLat?: Prisma.SortOrderInput | Prisma.SortOrder
   destLng?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedJourneyId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -477,6 +487,7 @@ export type GeoTrackingOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   site?: Prisma.TechnicalSiteOrderByWithRelationInput
   dealer?: Prisma.DealerOrderByWithRelationInput
+  journey?: Prisma.JourneyOrderByWithRelationInput
 }
 
 export type GeoTrackingWhereUniqueInput = Prisma.AtLeast<{
@@ -507,6 +518,7 @@ export type GeoTrackingWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"GeoTracking"> | boolean
   destLat?: Prisma.DecimalNullableFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.StringNullableFilter<"GeoTracking"> | string | null
   siteId?: Prisma.UuidNullableFilter<"GeoTracking"> | string | null
   dealerId?: Prisma.StringNullableFilter<"GeoTracking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"GeoTracking"> | Date | string
@@ -514,6 +526,7 @@ export type GeoTrackingWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }, "id">
 
 export type GeoTrackingOrderByWithAggregationInput = {
@@ -541,6 +554,7 @@ export type GeoTrackingOrderByWithAggregationInput = {
   isActive?: Prisma.SortOrder
   destLat?: Prisma.SortOrderInput | Prisma.SortOrder
   destLng?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedJourneyId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -580,6 +594,7 @@ export type GeoTrackingScalarWhereWithAggregatesInput = {
   isActive?: Prisma.BoolWithAggregatesFilter<"GeoTracking"> | boolean
   destLat?: Prisma.DecimalNullableWithAggregatesFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableWithAggregatesFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.StringNullableWithAggregatesFilter<"GeoTracking"> | string | null
   siteId?: Prisma.UuidNullableWithAggregatesFilter<"GeoTracking"> | string | null
   dealerId?: Prisma.StringNullableWithAggregatesFilter<"GeoTracking"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GeoTracking"> | Date | string
@@ -615,6 +630,7 @@ export type GeoTrackingCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutGeoTrackingRecordsInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutGeoTrackingRecordsInput
   dealer?: Prisma.DealerCreateNestedOneWithoutGeoTrackingsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutGeoTrackingsInput
 }
 
 export type GeoTrackingUncheckedCreateInput = {
@@ -642,6 +658,7 @@ export type GeoTrackingUncheckedCreateInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   siteId?: string | null
   dealerId?: string | null
   createdAt?: Date | string
@@ -677,6 +694,7 @@ export type GeoTrackingUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutGeoTrackingRecordsNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutGeoTrackingRecordsNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutGeoTrackingsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutGeoTrackingsNestedInput
 }
 
 export type GeoTrackingUncheckedUpdateInput = {
@@ -704,6 +722,7 @@ export type GeoTrackingUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -735,6 +754,7 @@ export type GeoTrackingCreateManyInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   siteId?: string | null
   dealerId?: string | null
   createdAt?: Date | string
@@ -794,6 +814,7 @@ export type GeoTrackingUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -835,6 +856,7 @@ export type GeoTrackingCountOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
+  linkedJourneyId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -880,6 +902,7 @@ export type GeoTrackingMaxOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
+  linkedJourneyId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -911,6 +934,7 @@ export type GeoTrackingMinOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
+  linkedJourneyId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1019,6 +1043,48 @@ export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
 }
 
+export type GeoTrackingCreateNestedManyWithoutJourneyInput = {
+  create?: Prisma.XOR<Prisma.GeoTrackingCreateWithoutJourneyInput, Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput> | Prisma.GeoTrackingCreateWithoutJourneyInput[] | Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput[]
+  connectOrCreate?: Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput | Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput[]
+  createMany?: Prisma.GeoTrackingCreateManyJourneyInputEnvelope
+  connect?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+}
+
+export type GeoTrackingUncheckedCreateNestedManyWithoutJourneyInput = {
+  create?: Prisma.XOR<Prisma.GeoTrackingCreateWithoutJourneyInput, Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput> | Prisma.GeoTrackingCreateWithoutJourneyInput[] | Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput[]
+  connectOrCreate?: Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput | Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput[]
+  createMany?: Prisma.GeoTrackingCreateManyJourneyInputEnvelope
+  connect?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+}
+
+export type GeoTrackingUpdateManyWithoutJourneyNestedInput = {
+  create?: Prisma.XOR<Prisma.GeoTrackingCreateWithoutJourneyInput, Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput> | Prisma.GeoTrackingCreateWithoutJourneyInput[] | Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput[]
+  connectOrCreate?: Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput | Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput[]
+  upsert?: Prisma.GeoTrackingUpsertWithWhereUniqueWithoutJourneyInput | Prisma.GeoTrackingUpsertWithWhereUniqueWithoutJourneyInput[]
+  createMany?: Prisma.GeoTrackingCreateManyJourneyInputEnvelope
+  set?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  disconnect?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  delete?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  connect?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  update?: Prisma.GeoTrackingUpdateWithWhereUniqueWithoutJourneyInput | Prisma.GeoTrackingUpdateWithWhereUniqueWithoutJourneyInput[]
+  updateMany?: Prisma.GeoTrackingUpdateManyWithWhereWithoutJourneyInput | Prisma.GeoTrackingUpdateManyWithWhereWithoutJourneyInput[]
+  deleteMany?: Prisma.GeoTrackingScalarWhereInput | Prisma.GeoTrackingScalarWhereInput[]
+}
+
+export type GeoTrackingUncheckedUpdateManyWithoutJourneyNestedInput = {
+  create?: Prisma.XOR<Prisma.GeoTrackingCreateWithoutJourneyInput, Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput> | Prisma.GeoTrackingCreateWithoutJourneyInput[] | Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput[]
+  connectOrCreate?: Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput | Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput[]
+  upsert?: Prisma.GeoTrackingUpsertWithWhereUniqueWithoutJourneyInput | Prisma.GeoTrackingUpsertWithWhereUniqueWithoutJourneyInput[]
+  createMany?: Prisma.GeoTrackingCreateManyJourneyInputEnvelope
+  set?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  disconnect?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  delete?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  connect?: Prisma.GeoTrackingWhereUniqueInput | Prisma.GeoTrackingWhereUniqueInput[]
+  update?: Prisma.GeoTrackingUpdateWithWhereUniqueWithoutJourneyInput | Prisma.GeoTrackingUpdateWithWhereUniqueWithoutJourneyInput[]
+  updateMany?: Prisma.GeoTrackingUpdateManyWithWhereWithoutJourneyInput | Prisma.GeoTrackingUpdateManyWithWhereWithoutJourneyInput[]
+  deleteMany?: Prisma.GeoTrackingScalarWhereInput | Prisma.GeoTrackingScalarWhereInput[]
+}
+
 export type GeoTrackingCreateNestedManyWithoutSiteInput = {
   create?: Prisma.XOR<Prisma.GeoTrackingCreateWithoutSiteInput, Prisma.GeoTrackingUncheckedCreateWithoutSiteInput> | Prisma.GeoTrackingCreateWithoutSiteInput[] | Prisma.GeoTrackingUncheckedCreateWithoutSiteInput[]
   connectOrCreate?: Prisma.GeoTrackingCreateOrConnectWithoutSiteInput | Prisma.GeoTrackingCreateOrConnectWithoutSiteInput[]
@@ -1089,6 +1155,7 @@ export type GeoTrackingCreateWithoutUserInput = {
   updatedAt?: Date | string
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutGeoTrackingRecordsInput
   dealer?: Prisma.DealerCreateNestedOneWithoutGeoTrackingsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutGeoTrackingsInput
 }
 
 export type GeoTrackingUncheckedCreateWithoutUserInput = {
@@ -1115,6 +1182,7 @@ export type GeoTrackingUncheckedCreateWithoutUserInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   siteId?: string | null
   dealerId?: string | null
   createdAt?: Date | string
@@ -1175,6 +1243,7 @@ export type GeoTrackingScalarWhereInput = {
   isActive?: Prisma.BoolFilter<"GeoTracking"> | boolean
   destLat?: Prisma.DecimalNullableFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableFilter<"GeoTracking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.StringNullableFilter<"GeoTracking"> | string | null
   siteId?: Prisma.UuidNullableFilter<"GeoTracking"> | string | null
   dealerId?: Prisma.StringNullableFilter<"GeoTracking"> | string | null
   createdAt?: Prisma.DateTimeFilter<"GeoTracking"> | Date | string
@@ -1209,6 +1278,7 @@ export type GeoTrackingCreateWithoutDealerInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutGeoTrackingRecordsInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutGeoTrackingRecordsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutGeoTrackingsInput
 }
 
 export type GeoTrackingUncheckedCreateWithoutDealerInput = {
@@ -1236,6 +1306,7 @@ export type GeoTrackingUncheckedCreateWithoutDealerInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   siteId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1267,6 +1338,94 @@ export type GeoTrackingUpdateManyWithWhereWithoutDealerInput = {
   data: Prisma.XOR<Prisma.GeoTrackingUpdateManyMutationInput, Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerInput>
 }
 
+export type GeoTrackingCreateWithoutJourneyInput = {
+  id?: string
+  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  recordedAt?: Date | string
+  accuracy?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  speed?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heading?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  altitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  locationType?: string | null
+  activityType?: string | null
+  appState?: string | null
+  batteryLevel?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isCharging?: boolean | null
+  networkStatus?: string | null
+  ipAddress?: string | null
+  siteName?: string | null
+  checkInTime?: Date | string | null
+  checkOutTime?: Date | string | null
+  totalDistanceTravelled?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  journeyId?: string | null
+  isActive?: boolean
+  destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutGeoTrackingRecordsInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutGeoTrackingRecordsInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutGeoTrackingsInput
+}
+
+export type GeoTrackingUncheckedCreateWithoutJourneyInput = {
+  id?: string
+  userId: number
+  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  recordedAt?: Date | string
+  accuracy?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  speed?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heading?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  altitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  locationType?: string | null
+  activityType?: string | null
+  appState?: string | null
+  batteryLevel?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isCharging?: boolean | null
+  networkStatus?: string | null
+  ipAddress?: string | null
+  siteName?: string | null
+  checkInTime?: Date | string | null
+  checkOutTime?: Date | string | null
+  totalDistanceTravelled?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  journeyId?: string | null
+  isActive?: boolean
+  destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: string | null
+  dealerId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type GeoTrackingCreateOrConnectWithoutJourneyInput = {
+  where: Prisma.GeoTrackingWhereUniqueInput
+  create: Prisma.XOR<Prisma.GeoTrackingCreateWithoutJourneyInput, Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput>
+}
+
+export type GeoTrackingCreateManyJourneyInputEnvelope = {
+  data: Prisma.GeoTrackingCreateManyJourneyInput | Prisma.GeoTrackingCreateManyJourneyInput[]
+  skipDuplicates?: boolean
+}
+
+export type GeoTrackingUpsertWithWhereUniqueWithoutJourneyInput = {
+  where: Prisma.GeoTrackingWhereUniqueInput
+  update: Prisma.XOR<Prisma.GeoTrackingUpdateWithoutJourneyInput, Prisma.GeoTrackingUncheckedUpdateWithoutJourneyInput>
+  create: Prisma.XOR<Prisma.GeoTrackingCreateWithoutJourneyInput, Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput>
+}
+
+export type GeoTrackingUpdateWithWhereUniqueWithoutJourneyInput = {
+  where: Prisma.GeoTrackingWhereUniqueInput
+  data: Prisma.XOR<Prisma.GeoTrackingUpdateWithoutJourneyInput, Prisma.GeoTrackingUncheckedUpdateWithoutJourneyInput>
+}
+
+export type GeoTrackingUpdateManyWithWhereWithoutJourneyInput = {
+  where: Prisma.GeoTrackingScalarWhereInput
+  data: Prisma.XOR<Prisma.GeoTrackingUpdateManyMutationInput, Prisma.GeoTrackingUncheckedUpdateManyWithoutJourneyInput>
+}
+
 export type GeoTrackingCreateWithoutSiteInput = {
   id?: string
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1295,6 +1454,7 @@ export type GeoTrackingCreateWithoutSiteInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutGeoTrackingRecordsInput
   dealer?: Prisma.DealerCreateNestedOneWithoutGeoTrackingsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutGeoTrackingsInput
 }
 
 export type GeoTrackingUncheckedCreateWithoutSiteInput = {
@@ -1322,6 +1482,7 @@ export type GeoTrackingUncheckedCreateWithoutSiteInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   dealerId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1377,6 +1538,7 @@ export type GeoTrackingCreateManyUserInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   siteId?: string | null
   dealerId?: string | null
   createdAt?: Date | string
@@ -1411,6 +1573,7 @@ export type GeoTrackingUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   site?: Prisma.TechnicalSiteUpdateOneWithoutGeoTrackingRecordsNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutGeoTrackingsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutGeoTrackingsNestedInput
 }
 
 export type GeoTrackingUncheckedUpdateWithoutUserInput = {
@@ -1437,6 +1600,7 @@ export type GeoTrackingUncheckedUpdateWithoutUserInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1467,6 +1631,7 @@ export type GeoTrackingUncheckedUpdateManyWithoutUserInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1498,6 +1663,7 @@ export type GeoTrackingCreateManyDealerInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   siteId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1531,6 +1697,7 @@ export type GeoTrackingUpdateWithoutDealerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutGeoTrackingRecordsNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutGeoTrackingRecordsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutGeoTrackingsNestedInput
 }
 
 export type GeoTrackingUncheckedUpdateWithoutDealerInput = {
@@ -1558,6 +1725,7 @@ export type GeoTrackingUncheckedUpdateWithoutDealerInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1588,7 +1756,132 @@ export type GeoTrackingUncheckedUpdateManyWithoutDealerInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type GeoTrackingCreateManyJourneyInput = {
+  id?: string
+  userId: number
+  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  recordedAt?: Date | string
+  accuracy?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  speed?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heading?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  altitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  locationType?: string | null
+  activityType?: string | null
+  appState?: string | null
+  batteryLevel?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isCharging?: boolean | null
+  networkStatus?: string | null
+  ipAddress?: string | null
+  siteName?: string | null
+  checkInTime?: Date | string | null
+  checkOutTime?: Date | string | null
+  totalDistanceTravelled?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  journeyId?: string | null
+  isActive?: boolean
+  destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: string | null
+  dealerId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type GeoTrackingUpdateWithoutJourneyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accuracy?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  speed?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heading?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  altitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  locationType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  batteryLevel?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isCharging?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  networkStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkInTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOutTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalDistanceTravelled?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutGeoTrackingRecordsNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutGeoTrackingRecordsNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutGeoTrackingsNestedInput
+}
+
+export type GeoTrackingUncheckedUpdateWithoutJourneyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accuracy?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  speed?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heading?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  altitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  locationType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  batteryLevel?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isCharging?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  networkStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkInTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOutTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalDistanceTravelled?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type GeoTrackingUncheckedUpdateManyWithoutJourneyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accuracy?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  speed?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  heading?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  altitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  locationType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  batteryLevel?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isCharging?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  networkStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkInTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  checkOutTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalDistanceTravelled?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  journeyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1618,6 +1911,7 @@ export type GeoTrackingCreateManySiteInput = {
   isActive?: boolean
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: string | null
   dealerId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1651,6 +1945,7 @@ export type GeoTrackingUpdateWithoutSiteInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutGeoTrackingRecordsNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutGeoTrackingsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutGeoTrackingsNestedInput
 }
 
 export type GeoTrackingUncheckedUpdateWithoutSiteInput = {
@@ -1678,6 +1973,7 @@ export type GeoTrackingUncheckedUpdateWithoutSiteInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1708,6 +2004,7 @@ export type GeoTrackingUncheckedUpdateManyWithoutSiteInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  linkedJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1740,6 +2037,7 @@ export type GeoTrackingSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   isActive?: boolean
   destLat?: boolean
   destLng?: boolean
+  linkedJourneyId?: boolean
   siteId?: boolean
   dealerId?: boolean
   createdAt?: boolean
@@ -1747,6 +2045,7 @@ export type GeoTrackingSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.GeoTracking$siteArgs<ExtArgs>
   dealer?: boolean | Prisma.GeoTracking$dealerArgs<ExtArgs>
+  journey?: boolean | Prisma.GeoTracking$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["geoTracking"]>
 
 export type GeoTrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1774,6 +2073,7 @@ export type GeoTrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   isActive?: boolean
   destLat?: boolean
   destLng?: boolean
+  linkedJourneyId?: boolean
   siteId?: boolean
   dealerId?: boolean
   createdAt?: boolean
@@ -1781,6 +2081,7 @@ export type GeoTrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.GeoTracking$siteArgs<ExtArgs>
   dealer?: boolean | Prisma.GeoTracking$dealerArgs<ExtArgs>
+  journey?: boolean | Prisma.GeoTracking$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["geoTracking"]>
 
 export type GeoTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1808,6 +2109,7 @@ export type GeoTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   isActive?: boolean
   destLat?: boolean
   destLng?: boolean
+  linkedJourneyId?: boolean
   siteId?: boolean
   dealerId?: boolean
   createdAt?: boolean
@@ -1815,6 +2117,7 @@ export type GeoTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.GeoTracking$siteArgs<ExtArgs>
   dealer?: boolean | Prisma.GeoTracking$dealerArgs<ExtArgs>
+  journey?: boolean | Prisma.GeoTracking$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["geoTracking"]>
 
 export type GeoTrackingSelectScalar = {
@@ -1842,27 +2145,31 @@ export type GeoTrackingSelectScalar = {
   isActive?: boolean
   destLat?: boolean
   destLng?: boolean
+  linkedJourneyId?: boolean
   siteId?: boolean
   dealerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GeoTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "latitude" | "longitude" | "recordedAt" | "accuracy" | "speed" | "heading" | "altitude" | "locationType" | "activityType" | "appState" | "batteryLevel" | "isCharging" | "networkStatus" | "ipAddress" | "siteName" | "checkInTime" | "checkOutTime" | "totalDistanceTravelled" | "journeyId" | "isActive" | "destLat" | "destLng" | "siteId" | "dealerId" | "createdAt" | "updatedAt", ExtArgs["result"]["geoTracking"]>
+export type GeoTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "latitude" | "longitude" | "recordedAt" | "accuracy" | "speed" | "heading" | "altitude" | "locationType" | "activityType" | "appState" | "batteryLevel" | "isCharging" | "networkStatus" | "ipAddress" | "siteName" | "checkInTime" | "checkOutTime" | "totalDistanceTravelled" | "journeyId" | "isActive" | "destLat" | "destLng" | "linkedJourneyId" | "siteId" | "dealerId" | "createdAt" | "updatedAt", ExtArgs["result"]["geoTracking"]>
 export type GeoTrackingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.GeoTracking$siteArgs<ExtArgs>
   dealer?: boolean | Prisma.GeoTracking$dealerArgs<ExtArgs>
+  journey?: boolean | Prisma.GeoTracking$journeyArgs<ExtArgs>
 }
 export type GeoTrackingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.GeoTracking$siteArgs<ExtArgs>
   dealer?: boolean | Prisma.GeoTracking$dealerArgs<ExtArgs>
+  journey?: boolean | Prisma.GeoTracking$journeyArgs<ExtArgs>
 }
 export type GeoTrackingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   site?: boolean | Prisma.GeoTracking$siteArgs<ExtArgs>
   dealer?: boolean | Prisma.GeoTracking$dealerArgs<ExtArgs>
+  journey?: boolean | Prisma.GeoTracking$journeyArgs<ExtArgs>
 }
 
 export type $GeoTrackingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1871,6 +2178,7 @@ export type $GeoTrackingPayload<ExtArgs extends runtime.Types.Extensions.Interna
     user: Prisma.$UserPayload<ExtArgs>
     site: Prisma.$TechnicalSitePayload<ExtArgs> | null
     dealer: Prisma.$DealerPayload<ExtArgs> | null
+    journey: Prisma.$JourneyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1897,6 +2205,7 @@ export type $GeoTrackingPayload<ExtArgs extends runtime.Types.Extensions.Interna
     isActive: boolean
     destLat: runtime.Decimal | null
     destLng: runtime.Decimal | null
+    linkedJourneyId: string | null
     siteId: string | null
     dealerId: string | null
     createdAt: Date
@@ -2298,6 +2607,7 @@ export interface Prisma__GeoTrackingClient<T, Null = never, ExtArgs extends runt
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   site<T extends Prisma.GeoTracking$siteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeoTracking$siteArgs<ExtArgs>>): Prisma.Prisma__TechnicalSiteClient<runtime.Types.Result.GetResult<Prisma.$TechnicalSitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   dealer<T extends Prisma.GeoTracking$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeoTracking$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  journey<T extends Prisma.GeoTracking$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeoTracking$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2351,6 +2661,7 @@ export interface GeoTrackingFieldRefs {
   readonly isActive: Prisma.FieldRef<"GeoTracking", 'Boolean'>
   readonly destLat: Prisma.FieldRef<"GeoTracking", 'Decimal'>
   readonly destLng: Prisma.FieldRef<"GeoTracking", 'Decimal'>
+  readonly linkedJourneyId: Prisma.FieldRef<"GeoTracking", 'String'>
   readonly siteId: Prisma.FieldRef<"GeoTracking", 'String'>
   readonly dealerId: Prisma.FieldRef<"GeoTracking", 'String'>
   readonly createdAt: Prisma.FieldRef<"GeoTracking", 'DateTime'>
@@ -2786,6 +3097,25 @@ export type GeoTracking$dealerArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.DealerInclude<ExtArgs> | null
   where?: Prisma.DealerWhereInput
+}
+
+/**
+ * GeoTracking.journey
+ */
+export type GeoTracking$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Journey
+   */
+  select?: Prisma.JourneySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Journey
+   */
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
 }
 
 /**

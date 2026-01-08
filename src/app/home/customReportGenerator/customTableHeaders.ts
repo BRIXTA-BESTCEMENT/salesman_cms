@@ -65,19 +65,19 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Technical Visit Reports',
         icon: PencilRuler,
         columns: [
-            'id', 'reportDate', 'visitType', 'siteNameConcernedPerson', 'phoneNo', 'emailId',
-            'phone/whatsappNo', 'marketName', 'siteAddress', 'region', 'area', 'latitude',
+            'id', 'reportDate', 'visitType', 'salesmanName', 'salesmanEmail','siteNameConcernedPerson', 'phoneNo',
+            'marketName', 'siteAddress', 'region', 'area', 'latitude',
             'longitude', 'visitCategory', 'customerType', 'purposeOfVisit', 'siteVisitStage',
             'constAreaSqFt', 'siteVisitBrandInUse', 'currentBrandPrice', 'siteStock', 'estRequirement',
-            'supplyingDealerName', 'nearbyDealerName', 'associatedPartyName', 'channelPartnerVisit', 'isConverted',
+            'supplyingDealerName', 'nearbyDealerName', 'associatedPartyName', 'isConverted',
             'conversionType', 'conversionFromBrand', 'conversionQuantityValue', 'conversionQuantityUnit', 'isTechService',
-            'serviceDesc', 'serviceType', 'dhalaiVerificationCode', 'isVerificationStatus', 'qualityComplaint',
+            'serviceDesc', 'qualityComplaint',
             'influencerName', 'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity', 'influencerType',
             'masonId', 'clientsRemarks', 'salespersonRemarks', 'promotionalActivity', 'siteVisitType',
             'sitePhotoUrl', 'inTimeImageUrl', 'outTimeImageUrl', 'checkInTime', 'checkOutTime',
             'timeSpentinLoc', 'createdAt', 'updatedAt', 'firstVisitTime', 'lastVisitTime',
             'firstVisitDay', 'lastVisitDay', 'siteVisitsCount', 'otherVisitsCount', 'totalVisitsCount',
-            'salesmanName', 'salesmanEmail', 'pjpId', 'meetingId', 'siteId'
+            'pjpId', 'meetingId', 'siteId'
         ],
     },
     {

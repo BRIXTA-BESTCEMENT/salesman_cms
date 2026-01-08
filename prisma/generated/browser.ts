@@ -68,6 +68,16 @@ export type CompetitionReport = Prisma.CompetitionReportModel
  */
 export type GeoTracking = Prisma.GeoTrackingModel
 /**
+ * Model Journey
+ * 
+ */
+export type Journey = Prisma.JourneyModel
+/**
+ * Model JourneyBreadcrumb
+ * 
+ */
+export type JourneyBreadcrumb = Prisma.JourneyBreadcrumbModel
+/**
  * Model DailyTask
  * 
  */
@@ -123,11 +133,6 @@ export type TechnicalSite = Prisma.TechnicalSiteModel
  */
 export type Mason_PC_Side = Prisma.Mason_PC_SideModel
 /**
- * Model Rewards
- * 
- */
-export type Rewards = Prisma.RewardsModel
-/**
  * Model GiftAllocationLog
  * 
  */
@@ -143,35 +148,20 @@ export type OtpVerification = Prisma.OtpVerificationModel
  */
 export type AuthSession = Prisma.AuthSessionModel
 /**
- * Model SchemesOffers
+ * Model Rewards
  * 
  */
-export type SchemesOffers = Prisma.SchemesOffersModel
-/**
- * Model MasonOnScheme
- * 
- */
-export type MasonOnScheme = Prisma.MasonOnSchemeModel
-/**
- * Model MasonsOnMeetings
- * 
- */
-export type MasonsOnMeetings = Prisma.MasonsOnMeetingsModel
+export type Rewards = Prisma.RewardsModel
 /**
  * Model RewardCategory
  * 
  */
 export type RewardCategory = Prisma.RewardCategoryModel
 /**
- * Model KYCSubmission
+ * Model SchemesOffers
  * 
  */
-export type KYCSubmission = Prisma.KYCSubmissionModel
-/**
- * Model TSOAssignment
- * 
- */
-export type TSOAssignment = Prisma.TSOAssignmentModel
+export type SchemesOffers = Prisma.SchemesOffersModel
 /**
  * Model BagLift
  * 
@@ -197,6 +187,26 @@ export type SchemeSlabs = Prisma.SchemeSlabsModel
  * 
  */
 export type MasonSlabAchievements = Prisma.MasonSlabAchievementsModel
+/**
+ * Model MasonOnScheme
+ * 
+ */
+export type MasonOnScheme = Prisma.MasonOnSchemeModel
+/**
+ * Model MasonsOnMeetings
+ * 
+ */
+export type MasonsOnMeetings = Prisma.MasonsOnMeetingsModel
+/**
+ * Model KYCSubmission
+ * 
+ */
+export type KYCSubmission = Prisma.KYCSubmissionModel
+/**
+ * Model TSOAssignment
+ * 
+ */
+export type TSOAssignment = Prisma.TSOAssignmentModel
 /**
  * Model Aoi
  * 

@@ -7,18 +7,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
-  Loader2,
-  Search,
-  Eye,
-  ExternalLink,
-  MapPin,
-  User,
-  Calendar,
-  Clock,
-  Briefcase,
-  Store,
-  HardHat,
-  Camera
+  Loader2, Search, Eye, ExternalLink, MapPin,
+  User, Calendar, Briefcase, Store, HardHat, Camera,
+  Image as ImageIcon, LogIn, LogOut, 
+  RefreshCw, Wrench, Users,
 } from 'lucide-react';
 
 // Import the reusable DataTable
@@ -342,26 +334,92 @@ export default function TechnicalVisitReportsPage() {
 
   // --- LAYOUT RENDERERS FOR MODAL ---
   const renderIHBDetails = (r: TechnicalVisitReport) => (
-    <Card className="border-l-4 border-l-primary">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-bold flex items-center gap-2">
-          <HardHat className="w-4 h-4" />
-          Construction Site Analysis
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid grid-cols-2 gap-4 pt-2">
-        <InfoField label="Stage" value={r.siteVisitStage} />
-        <InfoField label="Area (SqFt)" value={r.constAreaSqFt?.toString()} />
-        <InfoField label="Site Stock" value={r.siteStock ? `${r.siteStock} Bags` : '0'} />
-        <InfoField label="Est. Requirement" value={r.estRequirement ? `${r.estRequirement} Bags` : '0'} />
-        <InfoField label="Brands In Use" value={r.siteVisitBrandInUse?.join(', ')} fullWidth />
-        <InfoField label="Current Price" value={r.currentBrandPrice?.toString()} />
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      
+      {/* 1. CONSTRUCTION SITE BASIC INFO */}
+      <Card className="border-l-4 border-l-primary">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
+            <HardHat className="w-4 h-4" />
+            Construction Site Analysis
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-4 pt-2">
+          <InfoField label="Stage" value={r.siteVisitStage} />
+          <InfoField label="Area (SqFt)" value={r.constAreaSqFt?.toString()} />
+          <InfoField label="Site Stock" value={r.siteStock ? `${r.siteStock} Bags` : '0'} />
+          <InfoField label="Est. Requirement" value={r.estRequirement ? `${r.estRequirement} Bags` : '0'} />
+          <InfoField label="Brands In Use" value={r.siteVisitBrandInUse?.join(', ')} fullWidth />
+          <InfoField label="Current Price" value={r.currentBrandPrice ? `₹${r.currentBrandPrice}` : 'N/A'} />
+          <InfoField label="Supplying Dealer" value={r.supplyingDealerName} fullWidth />
+        </CardContent>
+      </Card>
+
+      {/* 2. CONVERSION & TECH SERVICES (Side by Side) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <Card className={`border-l-4 ${r.isConverted ? 'border-l-green-500' : 'border-l-muted'}`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Conversion Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-3 pt-2">
+            <InfoField label="Is Converted?" value={r.isConverted ? "YES" : "NO"} />
+            {r.isConverted && (
+              <>
+                <InfoField label="Conversion Type" value={r.conversionType} />
+                <InfoField label="From Brand" value={r.conversionFromBrand} />
+                <InfoField label="Quantity" value={`${r.conversionQuantityValue || 0} ${r.conversionQuantityUnit || ''}`} />
+                <InfoField label="Converted Dealer" value={r.nearbyDealerName} />
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className={`border-l-4 ${r.isTechService ? 'border-l-purple-400' : 'border-l-muted'}`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <Wrench className="w-4 h-4" />
+              Technical Services
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-3 pt-2">
+            <InfoField label="Service Given?" value={r.isTechService ? "YES" : "NO"} />
+            {r.isTechService && (
+              <>
+                <InfoField label="Description" value={r.serviceDesc} />
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 3. LINKED INFLUENCER / MASON (If applicable) */}
+      {(r.influencerName || r.influencerPhone) && (
+        <Card className="border-l-4 border-l-orange-400">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Linked Influencer / Mason
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-4 pt-2">
+            <InfoField label="Name" value={r.influencerName} />
+            <InfoField label="Type" value={r.influencerType?.join(', ')} />
+            <InfoField label="Phone" value={r.influencerPhone} />
+            <InfoField label="Productivity" value={r.influencerProductivity} />
+            <InfoField label="Scheme Enrolled?" value={r.isSchemeEnrolled ? "YES" : "NO"} />
+          </CardContent>
+        </Card>
+      )}
+
+    </div>
   );
 
   const renderDealerDetails = (r: TechnicalVisitReport) => (
-    <Card className="border-l-4 border-l-red-500">
+    <Card className="border-l-4 border-l-amber-700">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
           <Store className="w-4 h-4" />
@@ -379,11 +437,12 @@ export default function TechnicalVisitReportsPage() {
         <div className="col-span-2 grid grid-cols-2 gap-4 p-2 rounded-lg">
           <InfoField label="Bag Picked (Converted)" value={r.isConverted ? "YES" : "NO"} />
           {r.isConverted && (
-            <>
-              <InfoField label="Quantity" value={`${r.conversionQuantityValue} ${r.conversionQuantityUnit}`} />
-              <InfoField label="Converted From" value={r.conversionFromBrand} />
-            </>
-          )}
+              <>
+                <InfoField label="Quantity" value={`${r.conversionQuantityValue || 0} ${r.conversionQuantityUnit || ''}`} />
+                <InfoField label="Rate per Bag" value={r.currentBrandPrice ? `₹${r.currentBrandPrice}` : 'N/A'} />
+                <InfoField label="Date of Supply" value={r.date ? new Date(r.date).toLocaleDateString() : 'N/A'} />
+              </>
+            )}
         </div>
       </CardContent>
     </Card>
@@ -401,8 +460,12 @@ export default function TechnicalVisitReportsPage() {
         <InfoField label="Influencer Name" value={r.influencerName} />
         <InfoField label="Type" value={r.influencerType?.join(', ')} />
         <InfoField label="Phone" value={r.influencerPhone} />
-        <InfoField label="Productivity Score" value={r.influencerProductivity} />
         <InfoField label="Scheme Enrolled?" value={r.isSchemeEnrolled ? "YES" : "NO"} />
+        <Separator className="col-span-2 my-1" />
+        <InfoField label="Productivity Score" value={r.influencerProductivity} />
+        <InfoField label="Preferred Brands" value={r.siteVisitBrandInUse?.join(', ')} fullWidth />
+        <InfoField label="Visit Category" value={r.visitCategory} />
+        <InfoField label="Purpose" value={r.purposeOfVisit} />
       </CardContent>
     </Card>
   );
@@ -537,25 +600,27 @@ export default function TechnicalVisitReportsPage() {
                 </CardContent>
               </Card>
 
-              {/* 4. IMAGES EVIDENCE */}
+              {/* 4. IMAGES EVIDENCE (Stacked Vertically) */}
               <div>
                 <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
                   <Camera className="w-4 h-4" /> Photo Evidence
                 </h4>
 
-                <div className="flex flex-col gap-4">
-                  {/* PRIMARY FOCUS: Site/Shop Photo (Large) */}
+                <div className="flex flex-col gap-6">
+
+                  {/* 1. SITE PHOTO (TOP) */}
                   {selectedReport.sitePhotoUrl && (
                     <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
                       <div className="bg-muted px-4 py-2 text-sm font-semibold border-b flex justify-between items-center">
-                        <span>Site / Shop Overview</span>
+                        <span className="flex items-center gap-2">
+                          <ImageIcon className="w-4 h-4" /> Site / Shop Overview
+                        </span>
                       </div>
                       <a href={selectedReport.sitePhotoUrl} target="_blank" rel="noreferrer" className="block relative group">
-                        {/* Increased height to h-64 (mobile) and h-80 (desktop) for emphasis */}
                         <img
                           src={selectedReport.sitePhotoUrl}
-                          className="w-full h-64 sm:h-[500px] object-contain"
-                          alt="Evidence Image"
+                          className="w-full h-auto max-h-[500px] object-contain bg-black/5"
+                          alt="Site Evidence"
                         />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                           <ExternalLink className="text-white w-5 h-5" />
@@ -565,40 +630,58 @@ export default function TechnicalVisitReportsPage() {
                     </div>
                   )}
 
-                  {/* SECONDARY: Selfies (Grid below) */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {selectedReport.inTimeImageUrl ? (
-                      <div className="border rounded-lg overflow-hidden bg-background">
-                        <div className="bg-muted px-3 py-1 text-xs font-medium border-b truncate">Check-In Selfie</div>
-                        <a href={selectedReport.inTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
-                          <img src={selectedReport.inTimeImageUrl} className="w-full h-40 object-cover bg-muted/20" alt="Check In" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <ExternalLink className="text-white w-6 h-6" />
-                          </div>
-                        </a>
+                  {/* 2. CHECK-IN PHOTO (MIDDLE) */}
+                  {selectedReport.inTimeImageUrl ? (
+                    <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
+                      <div className="bg-emerald-50 px-4 py-2 text-sm font-semibold border-b flex justify-between items-center text-emerald-800">
+                        <span className="flex items-center gap-2">
+                          <LogIn className="w-4 h-4" /> Check-In Selfie
+                        </span>
                       </div>
-                    ) : (
-                      <div className="border rounded-lg h-40 flex items-center justify-center bg-muted/10 text-muted-foreground text-xs italic">
-                        No Check-In Photo
-                      </div>
-                    )}
+                      <a href={selectedReport.inTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
+                        <img
+                          src={selectedReport.inTimeImageUrl}
+                          className="w-full h-auto max-h-[400px] object-contain bg-black/5"
+                          alt="Check In"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <ExternalLink className="text-white w-5 h-5" />
+                          <span className="text-white font-medium text-sm">View Full Image</span>
+                        </div>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="border rounded-lg h-24 flex items-center justify-center bg-muted/10 text-muted-foreground text-sm italic border-dashed">
+                      No Check-In Photo Available
+                    </div>
+                  )}
 
-                    {selectedReport.outTimeImageUrl ? (
-                      <div className="border rounded-lg overflow-hidden bg-background">
-                        <div className="bg-muted px-3 py-1 text-xs font-medium border-b truncate">Check-Out Selfie</div>
-                        <a href={selectedReport.outTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
-                          <img src={selectedReport.outTimeImageUrl} className="w-full h-40 object-cover bg-muted/20" alt="Check Out" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <ExternalLink className="text-white w-6 h-6" />
-                          </div>
-                        </a>
+                  {/* 3. CHECK-OUT PHOTO (BOTTOM) */}
+                  {selectedReport.outTimeImageUrl ? (
+                    <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
+                      <div className="bg-orange-50 px-4 py-2 text-sm font-semibold border-b flex justify-between items-center text-orange-800">
+                        <span className="flex items-center gap-2">
+                          <LogOut className="w-4 h-4" /> Check-Out Selfie
+                        </span>
                       </div>
-                    ) : (
-                      <div className="border rounded-lg h-40 flex items-center justify-center bg-muted/10 text-muted-foreground text-xs italic">
-                        No Check-Out Photo
-                      </div>
-                    )}
-                  </div>
+                      <a href={selectedReport.outTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
+                        <img
+                          src={selectedReport.outTimeImageUrl}
+                          className="w-full h-auto max-h-[400px] object-contain bg-black/5"
+                          alt="Check Out"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <ExternalLink className="text-white w-5 h-5" />
+                          <span className="text-white font-medium text-sm">View Full Image</span>
+                        </div>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="border rounded-lg h-24 flex items-center justify-center bg-muted/10 text-muted-foreground text-sm italic border-dashed">
+                      No Check-Out Photo Available
+                    </div>
+                  )}
+
                 </div>
               </div>
 

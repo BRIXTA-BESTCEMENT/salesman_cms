@@ -379,20 +379,6 @@ export type SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput = {
   deleteMany?: Prisma.SchemesOffersScalarWhereInput | Prisma.SchemesOffersScalarWhereInput[]
 }
 
-export type SchemesOffersCreateNestedOneWithoutMasonsInput = {
-  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
-  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutMasonsInput
-  connect?: Prisma.SchemesOffersWhereUniqueInput
-}
-
-export type SchemesOffersUpdateOneRequiredWithoutMasonsNestedInput = {
-  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
-  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutMasonsInput
-  upsert?: Prisma.SchemesOffersUpsertWithoutMasonsInput
-  connect?: Prisma.SchemesOffersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.SchemesOffersUpdateToOneWithWhereWithoutMasonsInput, Prisma.SchemesOffersUpdateWithoutMasonsInput>, Prisma.SchemesOffersUncheckedUpdateWithoutMasonsInput>
-}
-
 export type SchemesOffersCreateNestedOneWithoutSlabsInput = {
   create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutSlabsInput, Prisma.SchemesOffersUncheckedCreateWithoutSlabsInput>
   connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutSlabsInput
@@ -405,6 +391,20 @@ export type SchemesOffersUpdateOneRequiredWithoutSlabsNestedInput = {
   upsert?: Prisma.SchemesOffersUpsertWithoutSlabsInput
   connect?: Prisma.SchemesOffersWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.SchemesOffersUpdateToOneWithWhereWithoutSlabsInput, Prisma.SchemesOffersUpdateWithoutSlabsInput>, Prisma.SchemesOffersUncheckedUpdateWithoutSlabsInput>
+}
+
+export type SchemesOffersCreateNestedOneWithoutMasonsInput = {
+  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
+  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutMasonsInput
+  connect?: Prisma.SchemesOffersWhereUniqueInput
+}
+
+export type SchemesOffersUpdateOneRequiredWithoutMasonsNestedInput = {
+  create?: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
+  connectOrCreate?: Prisma.SchemesOffersCreateOrConnectWithoutMasonsInput
+  upsert?: Prisma.SchemesOffersUpsertWithoutMasonsInput
+  connect?: Prisma.SchemesOffersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SchemesOffersUpdateToOneWithWhereWithoutMasonsInput, Prisma.SchemesOffersUpdateWithoutMasonsInput>, Prisma.SchemesOffersUncheckedUpdateWithoutMasonsInput>
 }
 
 export type SchemesOffersCreateWithoutRewardsInput = {
@@ -457,62 +457,6 @@ export type SchemesOffersScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"SchemesOffers"> | string | null
   startDate?: Prisma.DateTimeNullableFilter<"SchemesOffers"> | Date | string | null
   endDate?: Prisma.DateTimeNullableFilter<"SchemesOffers"> | Date | string | null
-}
-
-export type SchemesOffersCreateWithoutMasonsInput = {
-  id?: string
-  name: string
-  description?: string | null
-  startDate?: Date | string | null
-  endDate?: Date | string | null
-  slabs?: Prisma.SchemeSlabsCreateNestedManyWithoutSchemeInput
-  rewards?: Prisma.RewardsCreateNestedManyWithoutSchemesInput
-}
-
-export type SchemesOffersUncheckedCreateWithoutMasonsInput = {
-  id?: string
-  name: string
-  description?: string | null
-  startDate?: Date | string | null
-  endDate?: Date | string | null
-  slabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutSchemeInput
-  rewards?: Prisma.RewardsUncheckedCreateNestedManyWithoutSchemesInput
-}
-
-export type SchemesOffersCreateOrConnectWithoutMasonsInput = {
-  where: Prisma.SchemesOffersWhereUniqueInput
-  create: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
-}
-
-export type SchemesOffersUpsertWithoutMasonsInput = {
-  update: Prisma.XOR<Prisma.SchemesOffersUpdateWithoutMasonsInput, Prisma.SchemesOffersUncheckedUpdateWithoutMasonsInput>
-  create: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
-  where?: Prisma.SchemesOffersWhereInput
-}
-
-export type SchemesOffersUpdateToOneWithWhereWithoutMasonsInput = {
-  where?: Prisma.SchemesOffersWhereInput
-  data: Prisma.XOR<Prisma.SchemesOffersUpdateWithoutMasonsInput, Prisma.SchemesOffersUncheckedUpdateWithoutMasonsInput>
-}
-
-export type SchemesOffersUpdateWithoutMasonsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  slabs?: Prisma.SchemeSlabsUpdateManyWithoutSchemeNestedInput
-  rewards?: Prisma.RewardsUpdateManyWithoutSchemesNestedInput
-}
-
-export type SchemesOffersUncheckedUpdateWithoutMasonsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  slabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutSchemeNestedInput
-  rewards?: Prisma.RewardsUncheckedUpdateManyWithoutSchemesNestedInput
 }
 
 export type SchemesOffersCreateWithoutSlabsInput = {
@@ -568,6 +512,62 @@ export type SchemesOffersUncheckedUpdateWithoutSlabsInput = {
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   masons?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUncheckedUpdateManyWithoutSchemesNestedInput
+}
+
+export type SchemesOffersCreateWithoutMasonsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  slabs?: Prisma.SchemeSlabsCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsCreateNestedManyWithoutSchemesInput
+}
+
+export type SchemesOffersUncheckedCreateWithoutMasonsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  slabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutSchemeInput
+  rewards?: Prisma.RewardsUncheckedCreateNestedManyWithoutSchemesInput
+}
+
+export type SchemesOffersCreateOrConnectWithoutMasonsInput = {
+  where: Prisma.SchemesOffersWhereUniqueInput
+  create: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
+}
+
+export type SchemesOffersUpsertWithoutMasonsInput = {
+  update: Prisma.XOR<Prisma.SchemesOffersUpdateWithoutMasonsInput, Prisma.SchemesOffersUncheckedUpdateWithoutMasonsInput>
+  create: Prisma.XOR<Prisma.SchemesOffersCreateWithoutMasonsInput, Prisma.SchemesOffersUncheckedCreateWithoutMasonsInput>
+  where?: Prisma.SchemesOffersWhereInput
+}
+
+export type SchemesOffersUpdateToOneWithWhereWithoutMasonsInput = {
+  where?: Prisma.SchemesOffersWhereInput
+  data: Prisma.XOR<Prisma.SchemesOffersUpdateWithoutMasonsInput, Prisma.SchemesOffersUncheckedUpdateWithoutMasonsInput>
+}
+
+export type SchemesOffersUpdateWithoutMasonsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slabs?: Prisma.SchemeSlabsUpdateManyWithoutSchemeNestedInput
+  rewards?: Prisma.RewardsUpdateManyWithoutSchemesNestedInput
+}
+
+export type SchemesOffersUncheckedUpdateWithoutMasonsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutSchemeNestedInput
   rewards?: Prisma.RewardsUncheckedUpdateManyWithoutSchemesNestedInput
 }
 

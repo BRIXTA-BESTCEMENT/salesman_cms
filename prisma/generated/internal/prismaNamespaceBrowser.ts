@@ -61,6 +61,8 @@ export const ModelName = {
   SalesmanLeaveApplication: 'SalesmanLeaveApplication',
   CompetitionReport: 'CompetitionReport',
   GeoTracking: 'GeoTracking',
+  Journey: 'Journey',
+  JourneyBreadcrumb: 'JourneyBreadcrumb',
   DailyTask: 'DailyTask',
   SalesOrder: 'SalesOrder',
   DealerReportsAndScores: 'DealerReportsAndScores',
@@ -72,21 +74,21 @@ export const ModelName = {
   TSOMeeting: 'TSOMeeting',
   TechnicalSite: 'TechnicalSite',
   Mason_PC_Side: 'Mason_PC_Side',
-  Rewards: 'Rewards',
   GiftAllocationLog: 'GiftAllocationLog',
   OtpVerification: 'OtpVerification',
   AuthSession: 'AuthSession',
-  SchemesOffers: 'SchemesOffers',
-  MasonOnScheme: 'MasonOnScheme',
-  MasonsOnMeetings: 'MasonsOnMeetings',
+  Rewards: 'Rewards',
   RewardCategory: 'RewardCategory',
-  KYCSubmission: 'KYCSubmission',
-  TSOAssignment: 'TSOAssignment',
+  SchemesOffers: 'SchemesOffers',
   BagLift: 'BagLift',
   RewardRedemption: 'RewardRedemption',
   PointsLedger: 'PointsLedger',
   SchemeSlabs: 'SchemeSlabs',
   MasonSlabAchievements: 'MasonSlabAchievements',
+  MasonOnScheme: 'MasonOnScheme',
+  MasonsOnMeetings: 'MasonsOnMeetings',
+  KYCSubmission: 'KYCSubmission',
+  TSOAssignment: 'TSOAssignment',
   Aoi: 'Aoi',
   AoiGridCell: 'AoiGridCell',
   SatelliteScene: 'SatelliteScene',
@@ -404,6 +406,7 @@ export const GeoTrackingScalarFieldEnum = {
   isActive: 'isActive',
   destLat: 'destLat',
   destLng: 'destLng',
+  linkedJourneyId: 'linkedJourneyId',
   siteId: 'siteId',
   dealerId: 'dealerId',
   createdAt: 'createdAt',
@@ -411,6 +414,48 @@ export const GeoTrackingScalarFieldEnum = {
 } as const
 
 export type GeoTrackingScalarFieldEnum = (typeof GeoTrackingScalarFieldEnum)[keyof typeof GeoTrackingScalarFieldEnum]
+
+
+export const JourneyScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  pjpId: 'pjpId',
+  siteId: 'siteId',
+  dealerId: 'dealerId',
+  siteName: 'siteName',
+  destLat: 'destLat',
+  destLng: 'destLng',
+  status: 'status',
+  isActive: 'isActive',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  totalDistance: 'totalDistance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type JourneyScalarFieldEnum = (typeof JourneyScalarFieldEnum)[keyof typeof JourneyScalarFieldEnum]
+
+
+export const JourneyBreadcrumbScalarFieldEnum = {
+  id: 'id',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  h3Index: 'h3Index',
+  speed: 'speed',
+  accuracy: 'accuracy',
+  heading: 'heading',
+  altitude: 'altitude',
+  batteryLevel: 'batteryLevel',
+  isCharging: 'isCharging',
+  networkStatus: 'networkStatus',
+  isMocked: 'isMocked',
+  recordedAt: 'recordedAt',
+  createdAt: 'createdAt',
+  journeyId: 'journeyId'
+} as const
+
+export type JourneyBreadcrumbScalarFieldEnum = (typeof JourneyBreadcrumbScalarFieldEnum)[keyof typeof JourneyBreadcrumbScalarFieldEnum]
 
 
 export const DailyTaskScalarFieldEnum = {
@@ -667,22 +712,6 @@ export const Mason_PC_SideScalarFieldEnum = {
 export type Mason_PC_SideScalarFieldEnum = (typeof Mason_PC_SideScalarFieldEnum)[keyof typeof Mason_PC_SideScalarFieldEnum]
 
 
-export const RewardsScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  pointCost: 'pointCost',
-  categoryId: 'categoryId',
-  stock: 'stock',
-  totalAvailableQuantity: 'totalAvailableQuantity',
-  isActive: 'isActive',
-  meta: 'meta',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type RewardsScalarFieldEnum = (typeof RewardsScalarFieldEnum)[keyof typeof RewardsScalarFieldEnum]
-
-
 export const GiftAllocationLogScalarFieldEnum = {
   id: 'id',
   giftId: 'giftId',
@@ -720,35 +749,20 @@ export const AuthSessionScalarFieldEnum = {
 export type AuthSessionScalarFieldEnum = (typeof AuthSessionScalarFieldEnum)[keyof typeof AuthSessionScalarFieldEnum]
 
 
-export const SchemesOffersScalarFieldEnum = {
+export const RewardsScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  description: 'description',
-  startDate: 'startDate',
-  endDate: 'endDate'
+  pointCost: 'pointCost',
+  categoryId: 'categoryId',
+  stock: 'stock',
+  totalAvailableQuantity: 'totalAvailableQuantity',
+  isActive: 'isActive',
+  meta: 'meta',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
-export type SchemesOffersScalarFieldEnum = (typeof SchemesOffersScalarFieldEnum)[keyof typeof SchemesOffersScalarFieldEnum]
-
-
-export const MasonOnSchemeScalarFieldEnum = {
-  masonId: 'masonId',
-  schemeId: 'schemeId',
-  enrolledAt: 'enrolledAt',
-  status: 'status',
-  siteId: 'siteId'
-} as const
-
-export type MasonOnSchemeScalarFieldEnum = (typeof MasonOnSchemeScalarFieldEnum)[keyof typeof MasonOnSchemeScalarFieldEnum]
-
-
-export const MasonsOnMeetingsScalarFieldEnum = {
-  masonId: 'masonId',
-  meetingId: 'meetingId',
-  attendedAt: 'attendedAt'
-} as const
-
-export type MasonsOnMeetingsScalarFieldEnum = (typeof MasonsOnMeetingsScalarFieldEnum)[keyof typeof MasonsOnMeetingsScalarFieldEnum]
+export type RewardsScalarFieldEnum = (typeof RewardsScalarFieldEnum)[keyof typeof RewardsScalarFieldEnum]
 
 
 export const RewardCategoryScalarFieldEnum = {
@@ -759,29 +773,15 @@ export const RewardCategoryScalarFieldEnum = {
 export type RewardCategoryScalarFieldEnum = (typeof RewardCategoryScalarFieldEnum)[keyof typeof RewardCategoryScalarFieldEnum]
 
 
-export const KYCSubmissionScalarFieldEnum = {
+export const SchemesOffersScalarFieldEnum = {
   id: 'id',
-  masonId: 'masonId',
-  aadhaarNumber: 'aadhaarNumber',
-  panNumber: 'panNumber',
-  voterIdNumber: 'voterIdNumber',
-  documents: 'documents',
-  status: 'status',
-  remark: 'remark',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  name: 'name',
+  description: 'description',
+  startDate: 'startDate',
+  endDate: 'endDate'
 } as const
 
-export type KYCSubmissionScalarFieldEnum = (typeof KYCSubmissionScalarFieldEnum)[keyof typeof KYCSubmissionScalarFieldEnum]
-
-
-export const TSOAssignmentScalarFieldEnum = {
-  tsoId: 'tsoId',
-  masonId: 'masonId',
-  createdAt: 'createdAt'
-} as const
-
-export type TSOAssignmentScalarFieldEnum = (typeof TSOAssignmentScalarFieldEnum)[keyof typeof TSOAssignmentScalarFieldEnum]
+export type SchemesOffersScalarFieldEnum = (typeof SchemesOffersScalarFieldEnum)[keyof typeof SchemesOffersScalarFieldEnum]
 
 
 export const BagLiftScalarFieldEnum = {
@@ -861,6 +861,51 @@ export const MasonSlabAchievementsScalarFieldEnum = {
 } as const
 
 export type MasonSlabAchievementsScalarFieldEnum = (typeof MasonSlabAchievementsScalarFieldEnum)[keyof typeof MasonSlabAchievementsScalarFieldEnum]
+
+
+export const MasonOnSchemeScalarFieldEnum = {
+  masonId: 'masonId',
+  schemeId: 'schemeId',
+  enrolledAt: 'enrolledAt',
+  status: 'status',
+  siteId: 'siteId'
+} as const
+
+export type MasonOnSchemeScalarFieldEnum = (typeof MasonOnSchemeScalarFieldEnum)[keyof typeof MasonOnSchemeScalarFieldEnum]
+
+
+export const MasonsOnMeetingsScalarFieldEnum = {
+  masonId: 'masonId',
+  meetingId: 'meetingId',
+  attendedAt: 'attendedAt'
+} as const
+
+export type MasonsOnMeetingsScalarFieldEnum = (typeof MasonsOnMeetingsScalarFieldEnum)[keyof typeof MasonsOnMeetingsScalarFieldEnum]
+
+
+export const KYCSubmissionScalarFieldEnum = {
+  id: 'id',
+  masonId: 'masonId',
+  aadhaarNumber: 'aadhaarNumber',
+  panNumber: 'panNumber',
+  voterIdNumber: 'voterIdNumber',
+  documents: 'documents',
+  status: 'status',
+  remark: 'remark',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type KYCSubmissionScalarFieldEnum = (typeof KYCSubmissionScalarFieldEnum)[keyof typeof KYCSubmissionScalarFieldEnum]
+
+
+export const TSOAssignmentScalarFieldEnum = {
+  tsoId: 'tsoId',
+  masonId: 'masonId',
+  createdAt: 'createdAt'
+} as const
+
+export type TSOAssignmentScalarFieldEnum = (typeof TSOAssignmentScalarFieldEnum)[keyof typeof TSOAssignmentScalarFieldEnum]
 
 
 export const AoiScalarFieldEnum = {

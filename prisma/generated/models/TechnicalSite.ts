@@ -1008,22 +1008,6 @@ export type TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput =
   deleteMany?: Prisma.TechnicalSiteScalarWhereInput | Prisma.TechnicalSiteScalarWhereInput[]
 }
 
-export type TechnicalSiteCreateNestedOneWithoutMasonOnSchemesInput = {
-  create?: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
-  connectOrCreate?: Prisma.TechnicalSiteCreateOrConnectWithoutMasonOnSchemesInput
-  connect?: Prisma.TechnicalSiteWhereUniqueInput
-}
-
-export type TechnicalSiteUpdateOneWithoutMasonOnSchemesNestedInput = {
-  create?: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
-  connectOrCreate?: Prisma.TechnicalSiteCreateOrConnectWithoutMasonOnSchemesInput
-  upsert?: Prisma.TechnicalSiteUpsertWithoutMasonOnSchemesInput
-  disconnect?: Prisma.TechnicalSiteWhereInput | boolean
-  delete?: Prisma.TechnicalSiteWhereInput | boolean
-  connect?: Prisma.TechnicalSiteWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TechnicalSiteUpdateToOneWithWhereWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUpdateWithoutMasonOnSchemesInput>, Prisma.TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput>
-}
-
 export type TechnicalSiteCreateNestedOneWithoutBagLiftsInput = {
   create?: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutBagLiftsInput, Prisma.TechnicalSiteUncheckedCreateWithoutBagLiftsInput>
   connectOrCreate?: Prisma.TechnicalSiteCreateOrConnectWithoutBagLiftsInput
@@ -1038,6 +1022,22 @@ export type TechnicalSiteUpdateOneWithoutBagLiftsNestedInput = {
   delete?: Prisma.TechnicalSiteWhereInput | boolean
   connect?: Prisma.TechnicalSiteWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.TechnicalSiteUpdateToOneWithWhereWithoutBagLiftsInput, Prisma.TechnicalSiteUpdateWithoutBagLiftsInput>, Prisma.TechnicalSiteUncheckedUpdateWithoutBagLiftsInput>
+}
+
+export type TechnicalSiteCreateNestedOneWithoutMasonOnSchemesInput = {
+  create?: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
+  connectOrCreate?: Prisma.TechnicalSiteCreateOrConnectWithoutMasonOnSchemesInput
+  connect?: Prisma.TechnicalSiteWhereUniqueInput
+}
+
+export type TechnicalSiteUpdateOneWithoutMasonOnSchemesNestedInput = {
+  create?: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
+  connectOrCreate?: Prisma.TechnicalSiteCreateOrConnectWithoutMasonOnSchemesInput
+  upsert?: Prisma.TechnicalSiteUpsertWithoutMasonOnSchemesInput
+  disconnect?: Prisma.TechnicalSiteWhereInput | boolean
+  delete?: Prisma.TechnicalSiteWhereInput | boolean
+  connect?: Prisma.TechnicalSiteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TechnicalSiteUpdateToOneWithWhereWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUpdateWithoutMasonOnSchemesInput>, Prisma.TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput>
 }
 
 export type TechnicalSiteCreateWithoutAssociatedUsersInput = {
@@ -2095,158 +2095,6 @@ export type TechnicalSiteUpdateManyWithWhereWithoutAssociatedMasonsInput = {
   data: Prisma.XOR<Prisma.TechnicalSiteUpdateManyMutationInput, Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsInput>
 }
 
-export type TechnicalSiteCreateWithoutMasonOnSchemesInput = {
-  id?: string
-  siteName: string
-  concernedPerson: string
-  phoneNo: string
-  address?: string | null
-  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  siteType?: string | null
-  area?: string | null
-  region?: string | null
-  keyPersonName?: string | null
-  keyPersonPhoneNum?: string | null
-  stageOfConstruction?: string | null
-  constructionStartDate?: Date | string | null
-  constructionEndDate?: Date | string | null
-  convertedSite?: boolean | null
-  firstVistDate?: Date | string | null
-  lastVisitDate?: Date | string | null
-  needFollowUp?: boolean | null
-  imageUrl?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutSiteInput
-  meetings?: Prisma.TSOMeetingCreateNestedManyWithoutSiteInput
-  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutSiteInput
-  geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutSiteInput
-  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutSiteInput
-  permanentJourneyPlans?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutSiteInput
-  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedSitesInput
-  associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedSitesInput
-  associatedUsers?: Prisma.UserCreateNestedManyWithoutAdditionalSitesInput
-}
-
-export type TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput = {
-  id?: string
-  siteName: string
-  concernedPerson: string
-  phoneNo: string
-  address?: string | null
-  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  siteType?: string | null
-  area?: string | null
-  region?: string | null
-  keyPersonName?: string | null
-  keyPersonPhoneNum?: string | null
-  stageOfConstruction?: string | null
-  constructionStartDate?: Date | string | null
-  constructionEndDate?: Date | string | null
-  convertedSite?: boolean | null
-  firstVistDate?: Date | string | null
-  lastVisitDate?: Date | string | null
-  needFollowUp?: boolean | null
-  imageUrl?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutSiteInput
-  meetings?: Prisma.TSOMeetingUncheckedCreateNestedManyWithoutSiteInput
-  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutSiteInput
-  geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutSiteInput
-  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutSiteInput
-  permanentJourneyPlans?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutSiteInput
-  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedSitesInput
-  associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedSitesInput
-  associatedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutAdditionalSitesInput
-}
-
-export type TechnicalSiteCreateOrConnectWithoutMasonOnSchemesInput = {
-  where: Prisma.TechnicalSiteWhereUniqueInput
-  create: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
-}
-
-export type TechnicalSiteUpsertWithoutMasonOnSchemesInput = {
-  update: Prisma.XOR<Prisma.TechnicalSiteUpdateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput>
-  create: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
-  where?: Prisma.TechnicalSiteWhereInput
-}
-
-export type TechnicalSiteUpdateToOneWithWhereWithoutMasonOnSchemesInput = {
-  where?: Prisma.TechnicalSiteWhereInput
-  data: Prisma.XOR<Prisma.TechnicalSiteUpdateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput>
-}
-
-export type TechnicalSiteUpdateWithoutMasonOnSchemesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  siteName?: Prisma.StringFieldUpdateOperationsInput | string
-  concernedPerson?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  siteType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  keyPersonName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  keyPersonPhoneNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stageOfConstruction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  constructionStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  constructionEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  convertedSite?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  firstVistDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lastVisitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  needFollowUp?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutSiteNestedInput
-  meetings?: Prisma.TSOMeetingUpdateManyWithoutSiteNestedInput
-  bagLifts?: Prisma.BagLiftUpdateManyWithoutSiteNestedInput
-  geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutSiteNestedInput
-  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutSiteNestedInput
-  permanentJourneyPlans?: Prisma.PermanentJourneyPlanUpdateManyWithoutSiteNestedInput
-  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedSitesNestedInput
-  associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedSitesNestedInput
-  associatedUsers?: Prisma.UserUpdateManyWithoutAdditionalSitesNestedInput
-}
-
-export type TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  siteName?: Prisma.StringFieldUpdateOperationsInput | string
-  concernedPerson?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  siteType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  keyPersonName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  keyPersonPhoneNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stageOfConstruction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  constructionStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  constructionEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  convertedSite?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  firstVistDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lastVisitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  needFollowUp?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutSiteNestedInput
-  meetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutSiteNestedInput
-  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutSiteNestedInput
-  geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutSiteNestedInput
-  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutSiteNestedInput
-  permanentJourneyPlans?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutSiteNestedInput
-  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedSitesNestedInput
-  associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedSitesNestedInput
-  associatedUsers?: Prisma.UserUncheckedUpdateManyWithoutAdditionalSitesNestedInput
-}
-
 export type TechnicalSiteCreateWithoutBagLiftsInput = {
   id?: string
   siteName: string
@@ -2391,6 +2239,158 @@ export type TechnicalSiteUncheckedUpdateWithoutBagLiftsInput = {
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutSiteNestedInput
   meetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutSiteNestedInput
   masonOnSchemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutSiteNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutSiteNestedInput
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutSiteNestedInput
+  permanentJourneyPlans?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutSiteNestedInput
+  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedSitesNestedInput
+  associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedSitesNestedInput
+  associatedUsers?: Prisma.UserUncheckedUpdateManyWithoutAdditionalSitesNestedInput
+}
+
+export type TechnicalSiteCreateWithoutMasonOnSchemesInput = {
+  id?: string
+  siteName: string
+  concernedPerson: string
+  phoneNo: string
+  address?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteType?: string | null
+  area?: string | null
+  region?: string | null
+  keyPersonName?: string | null
+  keyPersonPhoneNum?: string | null
+  stageOfConstruction?: string | null
+  constructionStartDate?: Date | string | null
+  constructionEndDate?: Date | string | null
+  convertedSite?: boolean | null
+  firstVistDate?: Date | string | null
+  lastVisitDate?: Date | string | null
+  needFollowUp?: boolean | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutSiteInput
+  meetings?: Prisma.TSOMeetingCreateNestedManyWithoutSiteInput
+  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutSiteInput
+  geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutSiteInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutSiteInput
+  permanentJourneyPlans?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutSiteInput
+  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedSitesInput
+  associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedSitesInput
+  associatedUsers?: Prisma.UserCreateNestedManyWithoutAdditionalSitesInput
+}
+
+export type TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput = {
+  id?: string
+  siteName: string
+  concernedPerson: string
+  phoneNo: string
+  address?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteType?: string | null
+  area?: string | null
+  region?: string | null
+  keyPersonName?: string | null
+  keyPersonPhoneNum?: string | null
+  stageOfConstruction?: string | null
+  constructionStartDate?: Date | string | null
+  constructionEndDate?: Date | string | null
+  convertedSite?: boolean | null
+  firstVistDate?: Date | string | null
+  lastVisitDate?: Date | string | null
+  needFollowUp?: boolean | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutSiteInput
+  meetings?: Prisma.TSOMeetingUncheckedCreateNestedManyWithoutSiteInput
+  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutSiteInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutSiteInput
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutSiteInput
+  permanentJourneyPlans?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutSiteInput
+  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedSitesInput
+  associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedSitesInput
+  associatedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutAdditionalSitesInput
+}
+
+export type TechnicalSiteCreateOrConnectWithoutMasonOnSchemesInput = {
+  where: Prisma.TechnicalSiteWhereUniqueInput
+  create: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
+}
+
+export type TechnicalSiteUpsertWithoutMasonOnSchemesInput = {
+  update: Prisma.XOR<Prisma.TechnicalSiteUpdateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput>
+  create: Prisma.XOR<Prisma.TechnicalSiteCreateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedCreateWithoutMasonOnSchemesInput>
+  where?: Prisma.TechnicalSiteWhereInput
+}
+
+export type TechnicalSiteUpdateToOneWithWhereWithoutMasonOnSchemesInput = {
+  where?: Prisma.TechnicalSiteWhereInput
+  data: Prisma.XOR<Prisma.TechnicalSiteUpdateWithoutMasonOnSchemesInput, Prisma.TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput>
+}
+
+export type TechnicalSiteUpdateWithoutMasonOnSchemesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  siteName?: Prisma.StringFieldUpdateOperationsInput | string
+  concernedPerson?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  keyPersonName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  keyPersonPhoneNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stageOfConstruction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  constructionStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  constructionEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedSite?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  firstVistDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needFollowUp?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutSiteNestedInput
+  meetings?: Prisma.TSOMeetingUpdateManyWithoutSiteNestedInput
+  bagLifts?: Prisma.BagLiftUpdateManyWithoutSiteNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutSiteNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutSiteNestedInput
+  permanentJourneyPlans?: Prisma.PermanentJourneyPlanUpdateManyWithoutSiteNestedInput
+  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedSitesNestedInput
+  associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedSitesNestedInput
+  associatedUsers?: Prisma.UserUpdateManyWithoutAdditionalSitesNestedInput
+}
+
+export type TechnicalSiteUncheckedUpdateWithoutMasonOnSchemesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  siteName?: Prisma.StringFieldUpdateOperationsInput | string
+  concernedPerson?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siteType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  keyPersonName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  keyPersonPhoneNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stageOfConstruction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  constructionStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  constructionEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedSite?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  firstVistDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  needFollowUp?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutSiteNestedInput
+  meetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutSiteNestedInput
+  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutSiteNestedInput
   geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutSiteNestedInput
   dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutSiteNestedInput
   permanentJourneyPlans?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutSiteNestedInput

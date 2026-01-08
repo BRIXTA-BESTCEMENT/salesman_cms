@@ -922,62 +922,6 @@ export type Mason_PC_SideUpdateOneRequiredWithoutAuthSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutAuthSessionsInput, Prisma.Mason_PC_SideUpdateWithoutAuthSessionsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutAuthSessionsInput>
 }
 
-export type Mason_PC_SideCreateNestedOneWithoutSchemesInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutSchemesInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-}
-
-export type Mason_PC_SideUpdateOneRequiredWithoutSchemesNestedInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutSchemesInput
-  upsert?: Prisma.Mason_PC_SideUpsertWithoutSchemesInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutSchemesInput, Prisma.Mason_PC_SideUpdateWithoutSchemesInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutSchemesInput>
-}
-
-export type Mason_PC_SideCreateNestedOneWithoutMeetingsInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutMeetingsInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-}
-
-export type Mason_PC_SideUpdateOneRequiredWithoutMeetingsNestedInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutMeetingsInput
-  upsert?: Prisma.Mason_PC_SideUpsertWithoutMeetingsInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutMeetingsInput, Prisma.Mason_PC_SideUpdateWithoutMeetingsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutMeetingsInput>
-}
-
-export type Mason_PC_SideCreateNestedOneWithoutKycSubmissionsInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutKycSubmissionsInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-}
-
-export type Mason_PC_SideUpdateOneRequiredWithoutKycSubmissionsNestedInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutKycSubmissionsInput
-  upsert?: Prisma.Mason_PC_SideUpsertWithoutKycSubmissionsInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUpdateWithoutKycSubmissionsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput>
-}
-
-export type Mason_PC_SideCreateNestedOneWithoutTsoAssignmentsInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutTsoAssignmentsInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-}
-
-export type Mason_PC_SideUpdateOneRequiredWithoutTsoAssignmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
-  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutTsoAssignmentsInput
-  upsert?: Prisma.Mason_PC_SideUpsertWithoutTsoAssignmentsInput
-  connect?: Prisma.Mason_PC_SideWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUpdateWithoutTsoAssignmentsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput>
-}
-
 export type Mason_PC_SideCreateNestedOneWithoutBagLiftsInput = {
   create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutBagLiftsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutBagLiftsInput>
   connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutBagLiftsInput
@@ -1032,6 +976,62 @@ export type Mason_PC_SideUpdateOneRequiredWithoutSlabAchievementsNestedInput = {
   upsert?: Prisma.Mason_PC_SideUpsertWithoutSlabAchievementsInput
   connect?: Prisma.Mason_PC_SideWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutSlabAchievementsInput, Prisma.Mason_PC_SideUpdateWithoutSlabAchievementsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutSlabAchievementsInput>
+}
+
+export type Mason_PC_SideCreateNestedOneWithoutSchemesInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutSchemesInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+}
+
+export type Mason_PC_SideUpdateOneRequiredWithoutSchemesNestedInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutSchemesInput
+  upsert?: Prisma.Mason_PC_SideUpsertWithoutSchemesInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutSchemesInput, Prisma.Mason_PC_SideUpdateWithoutSchemesInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutSchemesInput>
+}
+
+export type Mason_PC_SideCreateNestedOneWithoutMeetingsInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutMeetingsInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+}
+
+export type Mason_PC_SideUpdateOneRequiredWithoutMeetingsNestedInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutMeetingsInput
+  upsert?: Prisma.Mason_PC_SideUpsertWithoutMeetingsInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutMeetingsInput, Prisma.Mason_PC_SideUpdateWithoutMeetingsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutMeetingsInput>
+}
+
+export type Mason_PC_SideCreateNestedOneWithoutKycSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutKycSubmissionsInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+}
+
+export type Mason_PC_SideUpdateOneRequiredWithoutKycSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutKycSubmissionsInput
+  upsert?: Prisma.Mason_PC_SideUpsertWithoutKycSubmissionsInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUpdateWithoutKycSubmissionsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput>
+}
+
+export type Mason_PC_SideCreateNestedOneWithoutTsoAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutTsoAssignmentsInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+}
+
+export type Mason_PC_SideUpdateOneRequiredWithoutTsoAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
+  connectOrCreate?: Prisma.Mason_PC_SideCreateOrConnectWithoutTsoAssignmentsInput
+  upsert?: Prisma.Mason_PC_SideUpsertWithoutTsoAssignmentsInput
+  connect?: Prisma.Mason_PC_SideWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.Mason_PC_SideUpdateToOneWithWhereWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUpdateWithoutTsoAssignmentsInput>, Prisma.Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput>
 }
 
 export type Mason_PC_SideCreateWithoutUserInput = {
@@ -1818,566 +1818,6 @@ export type Mason_PC_SideUncheckedUpdateWithoutAuthSessionsInput = {
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
 }
 
-export type Mason_PC_SideCreateWithoutSchemesInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
-  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
-  meetings?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
-  kycSubmissions?: Prisma.KYCSubmissionCreateNestedManyWithoutMasonInput
-  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideUncheckedCreateWithoutSchemesInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  dealerId?: string | null
-  userId?: number | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
-  meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
-  kycSubmissions?: Prisma.KYCSubmissionUncheckedCreateNestedManyWithoutMasonInput
-  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideCreateOrConnectWithoutSchemesInput = {
-  where: Prisma.Mason_PC_SideWhereUniqueInput
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
-}
-
-export type Mason_PC_SideUpsertWithoutSchemesInput = {
-  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutSchemesInput>
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
-  where?: Prisma.Mason_PC_SideWhereInput
-}
-
-export type Mason_PC_SideUpdateToOneWithWhereWithoutSchemesInput = {
-  where?: Prisma.Mason_PC_SideWhereInput
-  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutSchemesInput>
-}
-
-export type Mason_PC_SideUpdateWithoutSchemesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
-  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
-  meetings?: Prisma.MasonsOnMeetingsUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
-  kycSubmissions?: Prisma.KYCSubmissionUpdateManyWithoutMasonNestedInput
-  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
-export type Mason_PC_SideUncheckedUpdateWithoutSchemesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
-  meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
-  kycSubmissions?: Prisma.KYCSubmissionUncheckedUpdateManyWithoutMasonNestedInput
-  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
-export type Mason_PC_SideCreateWithoutMeetingsInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
-  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
-  schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
-  kycSubmissions?: Prisma.KYCSubmissionCreateNestedManyWithoutMasonInput
-  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideUncheckedCreateWithoutMeetingsInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  dealerId?: string | null
-  userId?: number | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
-  kycSubmissions?: Prisma.KYCSubmissionUncheckedCreateNestedManyWithoutMasonInput
-  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideCreateOrConnectWithoutMeetingsInput = {
-  where: Prisma.Mason_PC_SideWhereUniqueInput
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
-}
-
-export type Mason_PC_SideUpsertWithoutMeetingsInput = {
-  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutMeetingsInput>
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
-  where?: Prisma.Mason_PC_SideWhereInput
-}
-
-export type Mason_PC_SideUpdateToOneWithWhereWithoutMeetingsInput = {
-  where?: Prisma.Mason_PC_SideWhereInput
-  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutMeetingsInput>
-}
-
-export type Mason_PC_SideUpdateWithoutMeetingsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
-  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
-  schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
-  kycSubmissions?: Prisma.KYCSubmissionUpdateManyWithoutMasonNestedInput
-  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
-export type Mason_PC_SideUncheckedUpdateWithoutMeetingsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
-  kycSubmissions?: Prisma.KYCSubmissionUncheckedUpdateManyWithoutMasonNestedInput
-  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
-export type Mason_PC_SideCreateWithoutKycSubmissionsInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
-  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
-  schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
-  meetings?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
-  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  dealerId?: string | null
-  userId?: number | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
-  meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
-  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideCreateOrConnectWithoutKycSubmissionsInput = {
-  where: Prisma.Mason_PC_SideWhereUniqueInput
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
-}
-
-export type Mason_PC_SideUpsertWithoutKycSubmissionsInput = {
-  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput>
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
-  where?: Prisma.Mason_PC_SideWhereInput
-}
-
-export type Mason_PC_SideUpdateToOneWithWhereWithoutKycSubmissionsInput = {
-  where?: Prisma.Mason_PC_SideWhereInput
-  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput>
-}
-
-export type Mason_PC_SideUpdateWithoutKycSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
-  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
-  schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
-  meetings?: Prisma.MasonsOnMeetingsUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
-  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
-export type Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
-  meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
-  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
-export type Mason_PC_SideCreateWithoutTsoAssignmentsInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
-  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
-  schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
-  meetings?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
-  kycSubmissions?: Prisma.KYCSubmissionCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput = {
-  id?: string
-  name: string
-  phoneNumber: string
-  kycDocumentName?: string | null
-  kycDocumentIdNum?: string | null
-  kycStatus?: string | null
-  bagsLifted?: number | null
-  pointsBalance?: number | null
-  firebaseUid?: string | null
-  isReferred?: boolean | null
-  referredByUser?: string | null
-  referredToUser?: string | null
-  dealerId?: string | null
-  userId?: number | null
-  deviceId?: string | null
-  fcmToken?: string | null
-  schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
-  meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
-  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
-  kycSubmissions?: Prisma.KYCSubmissionUncheckedCreateNestedManyWithoutMasonInput
-  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
-  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
-  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
-}
-
-export type Mason_PC_SideCreateOrConnectWithoutTsoAssignmentsInput = {
-  where: Prisma.Mason_PC_SideWhereUniqueInput
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
-}
-
-export type Mason_PC_SideUpsertWithoutTsoAssignmentsInput = {
-  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput>
-  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
-  where?: Prisma.Mason_PC_SideWhereInput
-}
-
-export type Mason_PC_SideUpdateToOneWithWhereWithoutTsoAssignmentsInput = {
-  where?: Prisma.Mason_PC_SideWhereInput
-  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput>
-}
-
-export type Mason_PC_SideUpdateWithoutTsoAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
-  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
-  schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
-  meetings?: Prisma.MasonsOnMeetingsUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
-  kycSubmissions?: Prisma.KYCSubmissionUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
-export type Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
-  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
-  meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
-  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
-  kycSubmissions?: Prisma.KYCSubmissionUncheckedUpdateManyWithoutMasonNestedInput
-  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
-  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
-  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
-  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
-  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
-  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
-}
-
 export type Mason_PC_SideCreateWithoutBagLiftsInput = {
   id?: string
   name: string
@@ -2934,6 +2374,566 @@ export type Mason_PC_SideUncheckedUpdateWithoutSlabAchievementsInput = {
   pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
   rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
   authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
+  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideCreateWithoutSchemesInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
+  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
+  meetings?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
+  kycSubmissions?: Prisma.KYCSubmissionCreateNestedManyWithoutMasonInput
+  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideUncheckedCreateWithoutSchemesInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  dealerId?: string | null
+  userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
+  meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
+  kycSubmissions?: Prisma.KYCSubmissionUncheckedCreateNestedManyWithoutMasonInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideCreateOrConnectWithoutSchemesInput = {
+  where: Prisma.Mason_PC_SideWhereUniqueInput
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
+}
+
+export type Mason_PC_SideUpsertWithoutSchemesInput = {
+  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutSchemesInput>
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedCreateWithoutSchemesInput>
+  where?: Prisma.Mason_PC_SideWhereInput
+}
+
+export type Mason_PC_SideUpdateToOneWithWhereWithoutSchemesInput = {
+  where?: Prisma.Mason_PC_SideWhereInput
+  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutSchemesInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutSchemesInput>
+}
+
+export type Mason_PC_SideUpdateWithoutSchemesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
+  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
+  meetings?: Prisma.MasonsOnMeetingsUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
+  kycSubmissions?: Prisma.KYCSubmissionUpdateManyWithoutMasonNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
+  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideUncheckedUpdateWithoutSchemesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
+  meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
+  kycSubmissions?: Prisma.KYCSubmissionUncheckedUpdateManyWithoutMasonNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
+  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideCreateWithoutMeetingsInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
+  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
+  schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
+  kycSubmissions?: Prisma.KYCSubmissionCreateNestedManyWithoutMasonInput
+  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideUncheckedCreateWithoutMeetingsInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  dealerId?: string | null
+  userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
+  kycSubmissions?: Prisma.KYCSubmissionUncheckedCreateNestedManyWithoutMasonInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideCreateOrConnectWithoutMeetingsInput = {
+  where: Prisma.Mason_PC_SideWhereUniqueInput
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
+}
+
+export type Mason_PC_SideUpsertWithoutMeetingsInput = {
+  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutMeetingsInput>
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutMeetingsInput>
+  where?: Prisma.Mason_PC_SideWhereInput
+}
+
+export type Mason_PC_SideUpdateToOneWithWhereWithoutMeetingsInput = {
+  where?: Prisma.Mason_PC_SideWhereInput
+  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutMeetingsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutMeetingsInput>
+}
+
+export type Mason_PC_SideUpdateWithoutMeetingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
+  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
+  schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
+  kycSubmissions?: Prisma.KYCSubmissionUpdateManyWithoutMasonNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
+  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideUncheckedUpdateWithoutMeetingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
+  kycSubmissions?: Prisma.KYCSubmissionUncheckedUpdateManyWithoutMasonNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
+  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideCreateWithoutKycSubmissionsInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
+  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
+  schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
+  meetings?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
+  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  dealerId?: string | null
+  userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
+  meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideCreateOrConnectWithoutKycSubmissionsInput = {
+  where: Prisma.Mason_PC_SideWhereUniqueInput
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
+}
+
+export type Mason_PC_SideUpsertWithoutKycSubmissionsInput = {
+  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput>
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutKycSubmissionsInput>
+  where?: Prisma.Mason_PC_SideWhereInput
+}
+
+export type Mason_PC_SideUpdateToOneWithWhereWithoutKycSubmissionsInput = {
+  where?: Prisma.Mason_PC_SideWhereInput
+  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutKycSubmissionsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput>
+}
+
+export type Mason_PC_SideUpdateWithoutKycSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
+  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
+  schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
+  meetings?: Prisma.MasonsOnMeetingsUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
+  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideUncheckedUpdateWithoutKycSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
+  meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
+  associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideCreateWithoutTsoAssignmentsInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  dealer?: Prisma.DealerCreateNestedOneWithoutMasonsInput
+  user?: Prisma.UserCreateNestedOneWithoutAssignedMasonsInput
+  schemes?: Prisma.MasonOnSchemeCreateNestedManyWithoutMasonInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMasonInput
+  meetings?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationCreateNestedManyWithoutMasonInput
+  kycSubmissions?: Prisma.KYCSubmissionCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput = {
+  id?: string
+  name: string
+  phoneNumber: string
+  kycDocumentName?: string | null
+  kycDocumentIdNum?: string | null
+  kycStatus?: string | null
+  bagsLifted?: number | null
+  pointsBalance?: number | null
+  firebaseUid?: string | null
+  isReferred?: boolean | null
+  referredByUser?: string | null
+  referredToUser?: string | null
+  dealerId?: string | null
+  userId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  schemes?: Prisma.MasonOnSchemeUncheckedCreateNestedManyWithoutMasonInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutMasonInput
+  meetings?: Prisma.MasonsOnMeetingsUncheckedCreateNestedManyWithoutMasonInput
+  otps?: Prisma.OtpVerificationUncheckedCreateNestedManyWithoutMasonInput
+  kycSubmissions?: Prisma.KYCSubmissionUncheckedCreateNestedManyWithoutMasonInput
+  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutMasonInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedCreateNestedManyWithoutMasonInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutMasonInput
+  authSessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutMason_PC_SideInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedCreateNestedManyWithoutMasonInput
+  associatedDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedMasonsInput
+}
+
+export type Mason_PC_SideCreateOrConnectWithoutTsoAssignmentsInput = {
+  where: Prisma.Mason_PC_SideWhereUniqueInput
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
+}
+
+export type Mason_PC_SideUpsertWithoutTsoAssignmentsInput = {
+  update: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput>
+  create: Prisma.XOR<Prisma.Mason_PC_SideCreateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedCreateWithoutTsoAssignmentsInput>
+  where?: Prisma.Mason_PC_SideWhereInput
+}
+
+export type Mason_PC_SideUpdateToOneWithWhereWithoutTsoAssignmentsInput = {
+  where?: Prisma.Mason_PC_SideWhereInput
+  data: Prisma.XOR<Prisma.Mason_PC_SideUpdateWithoutTsoAssignmentsInput, Prisma.Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput>
+}
+
+export type Mason_PC_SideUpdateWithoutTsoAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealer?: Prisma.DealerUpdateOneWithoutMasonsNestedInput
+  user?: Prisma.UserUpdateOneWithoutAssignedMasonsNestedInput
+  schemes?: Prisma.MasonOnSchemeUpdateManyWithoutMasonNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMasonNestedInput
+  meetings?: Prisma.MasonsOnMeetingsUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUpdateManyWithoutMasonNestedInput
+  kycSubmissions?: Prisma.KYCSubmissionUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUpdateManyWithoutMasonNestedInput
+  associatedDealers?: Prisma.DealerUpdateManyWithoutAssociatedMasonsNestedInput
+  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedMasonsNestedInput
+}
+
+export type Mason_PC_SideUncheckedUpdateWithoutTsoAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  kycDocumentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycDocumentIdNum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kycStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bagsLifted?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pointsBalance?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isReferred?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredByUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referredToUser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemes?: Prisma.MasonOnSchemeUncheckedUpdateManyWithoutMasonNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutMasonNestedInput
+  meetings?: Prisma.MasonsOnMeetingsUncheckedUpdateManyWithoutMasonNestedInput
+  otps?: Prisma.OtpVerificationUncheckedUpdateManyWithoutMasonNestedInput
+  kycSubmissions?: Prisma.KYCSubmissionUncheckedUpdateManyWithoutMasonNestedInput
+  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutMasonNestedInput
+  pointsLedger?: Prisma.PointsLedgerUncheckedUpdateManyWithoutMasonNestedInput
+  rewardRedemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutMasonNestedInput
+  authSessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutMason_PC_SideNestedInput
+  slabAchievements?: Prisma.MasonSlabAchievementsUncheckedUpdateManyWithoutMasonNestedInput
   associatedDealers?: Prisma.DealerUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedMasonsNestedInput
 }

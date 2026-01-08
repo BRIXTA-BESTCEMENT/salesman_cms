@@ -451,6 +451,11 @@ export type RewardsUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type RewardsScalarRelationFilter = {
+  is?: Prisma.RewardsWhereInput
+  isNot?: Prisma.RewardsWhereInput
+}
+
 export type RewardsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -504,11 +509,6 @@ export type RewardsSumOrderByAggregateInput = {
   totalAvailableQuantity?: Prisma.SortOrder
 }
 
-export type RewardsScalarRelationFilter = {
-  is?: Prisma.RewardsWhereInput
-  isNot?: Prisma.RewardsWhereInput
-}
-
 export type RewardsListRelationFilter = {
   every?: Prisma.RewardsWhereInput
   some?: Prisma.RewardsWhereInput
@@ -536,44 +536,6 @@ export type RewardsUpdateOneRequiredWithoutLogsNestedInput = {
   upsert?: Prisma.RewardsUpsertWithoutLogsInput
   connect?: Prisma.RewardsWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.RewardsUpdateToOneWithWhereWithoutLogsInput, Prisma.RewardsUpdateWithoutLogsInput>, Prisma.RewardsUncheckedUpdateWithoutLogsInput>
-}
-
-export type RewardsCreateNestedManyWithoutSchemesInput = {
-  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
-  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
-  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-}
-
-export type RewardsUncheckedCreateNestedManyWithoutSchemesInput = {
-  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
-  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
-  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-}
-
-export type RewardsUpdateManyWithoutSchemesNestedInput = {
-  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
-  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
-  upsert?: Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput[]
-  set?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  disconnect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  delete?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  update?: Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput[]
-  updateMany?: Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput | Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput[]
-  deleteMany?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
-}
-
-export type RewardsUncheckedUpdateManyWithoutSchemesNestedInput = {
-  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
-  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
-  upsert?: Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput[]
-  set?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  disconnect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  delete?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
-  update?: Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput[]
-  updateMany?: Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput | Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput[]
-  deleteMany?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
 }
 
 export type RewardsCreateNestedManyWithoutCategoryInput = {
@@ -615,6 +577,44 @@ export type RewardsUncheckedUpdateManyWithoutCategoryNestedInput = {
   connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
   update?: Prisma.RewardsUpdateWithWhereUniqueWithoutCategoryInput | Prisma.RewardsUpdateWithWhereUniqueWithoutCategoryInput[]
   updateMany?: Prisma.RewardsUpdateManyWithWhereWithoutCategoryInput | Prisma.RewardsUpdateManyWithWhereWithoutCategoryInput[]
+  deleteMany?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+}
+
+export type RewardsCreateNestedManyWithoutSchemesInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+}
+
+export type RewardsUncheckedCreateNestedManyWithoutSchemesInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+}
+
+export type RewardsUpdateManyWithoutSchemesNestedInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  upsert?: Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput[]
+  set?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  disconnect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  delete?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  update?: Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput[]
+  updateMany?: Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput | Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput[]
+  deleteMany?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+}
+
+export type RewardsUncheckedUpdateManyWithoutSchemesNestedInput = {
+  create?: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput> | Prisma.RewardsCreateWithoutSchemesInput[] | Prisma.RewardsUncheckedCreateWithoutSchemesInput[]
+  connectOrCreate?: Prisma.RewardsCreateOrConnectWithoutSchemesInput | Prisma.RewardsCreateOrConnectWithoutSchemesInput[]
+  upsert?: Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpsertWithWhereUniqueWithoutSchemesInput[]
+  set?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  disconnect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  delete?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  connect?: Prisma.RewardsWhereUniqueInput | Prisma.RewardsWhereUniqueInput[]
+  update?: Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput | Prisma.RewardsUpdateWithWhereUniqueWithoutSchemesInput[]
+  updateMany?: Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput | Prisma.RewardsUpdateManyWithWhereWithoutSchemesInput[]
   deleteMany?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
 }
 
@@ -726,74 +726,6 @@ export type RewardsUncheckedUpdateWithoutLogsInput = {
   schemes?: Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput
 }
 
-export type RewardsCreateWithoutSchemesInput = {
-  name: string
-  pointCost: number
-  stock?: number
-  totalAvailableQuantity: number
-  isActive?: boolean
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  category?: Prisma.RewardCategoryCreateNestedOneWithoutRewardsInput
-  logs?: Prisma.GiftAllocationLogCreateNestedManyWithoutGiftItemInput
-  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutRewardInput
-  usedInSlabs?: Prisma.SchemeSlabsCreateNestedManyWithoutRewardInput
-}
-
-export type RewardsUncheckedCreateWithoutSchemesInput = {
-  id?: number
-  name: string
-  pointCost: number
-  categoryId?: number | null
-  stock?: number
-  totalAvailableQuantity: number
-  isActive?: boolean
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  logs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutGiftItemInput
-  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutRewardInput
-  usedInSlabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutRewardInput
-}
-
-export type RewardsCreateOrConnectWithoutSchemesInput = {
-  where: Prisma.RewardsWhereUniqueInput
-  create: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput>
-}
-
-export type RewardsUpsertWithWhereUniqueWithoutSchemesInput = {
-  where: Prisma.RewardsWhereUniqueInput
-  update: Prisma.XOR<Prisma.RewardsUpdateWithoutSchemesInput, Prisma.RewardsUncheckedUpdateWithoutSchemesInput>
-  create: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput>
-}
-
-export type RewardsUpdateWithWhereUniqueWithoutSchemesInput = {
-  where: Prisma.RewardsWhereUniqueInput
-  data: Prisma.XOR<Prisma.RewardsUpdateWithoutSchemesInput, Prisma.RewardsUncheckedUpdateWithoutSchemesInput>
-}
-
-export type RewardsUpdateManyWithWhereWithoutSchemesInput = {
-  where: Prisma.RewardsScalarWhereInput
-  data: Prisma.XOR<Prisma.RewardsUpdateManyMutationInput, Prisma.RewardsUncheckedUpdateManyWithoutSchemesInput>
-}
-
-export type RewardsScalarWhereInput = {
-  AND?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
-  OR?: Prisma.RewardsScalarWhereInput[]
-  NOT?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
-  id?: Prisma.IntFilter<"Rewards"> | number
-  name?: Prisma.StringFilter<"Rewards"> | string
-  pointCost?: Prisma.IntFilter<"Rewards"> | number
-  categoryId?: Prisma.IntNullableFilter<"Rewards"> | number | null
-  stock?: Prisma.IntFilter<"Rewards"> | number
-  totalAvailableQuantity?: Prisma.IntFilter<"Rewards"> | number
-  isActive?: Prisma.BoolFilter<"Rewards"> | boolean
-  meta?: Prisma.JsonNullableFilter<"Rewards">
-  createdAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
-}
-
 export type RewardsCreateWithoutCategoryInput = {
   name: string
   pointCost: number
@@ -849,6 +781,74 @@ export type RewardsUpdateWithWhereUniqueWithoutCategoryInput = {
 export type RewardsUpdateManyWithWhereWithoutCategoryInput = {
   where: Prisma.RewardsScalarWhereInput
   data: Prisma.XOR<Prisma.RewardsUpdateManyMutationInput, Prisma.RewardsUncheckedUpdateManyWithoutCategoryInput>
+}
+
+export type RewardsScalarWhereInput = {
+  AND?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+  OR?: Prisma.RewardsScalarWhereInput[]
+  NOT?: Prisma.RewardsScalarWhereInput | Prisma.RewardsScalarWhereInput[]
+  id?: Prisma.IntFilter<"Rewards"> | number
+  name?: Prisma.StringFilter<"Rewards"> | string
+  pointCost?: Prisma.IntFilter<"Rewards"> | number
+  categoryId?: Prisma.IntNullableFilter<"Rewards"> | number | null
+  stock?: Prisma.IntFilter<"Rewards"> | number
+  totalAvailableQuantity?: Prisma.IntFilter<"Rewards"> | number
+  isActive?: Prisma.BoolFilter<"Rewards"> | boolean
+  meta?: Prisma.JsonNullableFilter<"Rewards">
+  createdAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Rewards"> | Date | string
+}
+
+export type RewardsCreateWithoutSchemesInput = {
+  name: string
+  pointCost: number
+  stock?: number
+  totalAvailableQuantity: number
+  isActive?: boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: Prisma.RewardCategoryCreateNestedOneWithoutRewardsInput
+  logs?: Prisma.GiftAllocationLogCreateNestedManyWithoutGiftItemInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutRewardInput
+  usedInSlabs?: Prisma.SchemeSlabsCreateNestedManyWithoutRewardInput
+}
+
+export type RewardsUncheckedCreateWithoutSchemesInput = {
+  id?: number
+  name: string
+  pointCost: number
+  categoryId?: number | null
+  stock?: number
+  totalAvailableQuantity: number
+  isActive?: boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  logs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutGiftItemInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutRewardInput
+  usedInSlabs?: Prisma.SchemeSlabsUncheckedCreateNestedManyWithoutRewardInput
+}
+
+export type RewardsCreateOrConnectWithoutSchemesInput = {
+  where: Prisma.RewardsWhereUniqueInput
+  create: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput>
+}
+
+export type RewardsUpsertWithWhereUniqueWithoutSchemesInput = {
+  where: Prisma.RewardsWhereUniqueInput
+  update: Prisma.XOR<Prisma.RewardsUpdateWithoutSchemesInput, Prisma.RewardsUncheckedUpdateWithoutSchemesInput>
+  create: Prisma.XOR<Prisma.RewardsCreateWithoutSchemesInput, Prisma.RewardsUncheckedCreateWithoutSchemesInput>
+}
+
+export type RewardsUpdateWithWhereUniqueWithoutSchemesInput = {
+  where: Prisma.RewardsWhereUniqueInput
+  data: Prisma.XOR<Prisma.RewardsUpdateWithoutSchemesInput, Prisma.RewardsUncheckedUpdateWithoutSchemesInput>
+}
+
+export type RewardsUpdateManyWithWhereWithoutSchemesInput = {
+  where: Prisma.RewardsScalarWhereInput
+  data: Prisma.XOR<Prisma.RewardsUpdateManyMutationInput, Prisma.RewardsUncheckedUpdateManyWithoutSchemesInput>
 }
 
 export type RewardsCreateWithoutRedemptionsInput = {
@@ -1007,50 +1007,6 @@ export type RewardsUncheckedUpdateWithoutUsedInSlabsInput = {
   schemes?: Prisma.SchemesOffersUncheckedUpdateManyWithoutRewardsNestedInput
 }
 
-export type RewardsUpdateWithoutSchemesInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
-  stock?: Prisma.IntFieldUpdateOperationsInput | number
-  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  category?: Prisma.RewardCategoryUpdateOneWithoutRewardsNestedInput
-  logs?: Prisma.GiftAllocationLogUpdateManyWithoutGiftItemNestedInput
-  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutRewardNestedInput
-  usedInSlabs?: Prisma.SchemeSlabsUpdateManyWithoutRewardNestedInput
-}
-
-export type RewardsUncheckedUpdateWithoutSchemesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
-  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stock?: Prisma.IntFieldUpdateOperationsInput | number
-  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  logs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutGiftItemNestedInput
-  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutRewardNestedInput
-  usedInSlabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutRewardNestedInput
-}
-
-export type RewardsUncheckedUpdateManyWithoutSchemesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
-  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stock?: Prisma.IntFieldUpdateOperationsInput | number
-  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 export type RewardsCreateManyCategoryInput = {
   id?: number
   name: string
@@ -1098,6 +1054,50 @@ export type RewardsUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   pointCost?: Prisma.IntFieldUpdateOperationsInput | number
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RewardsUpdateWithoutSchemesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.RewardCategoryUpdateOneWithoutRewardsNestedInput
+  logs?: Prisma.GiftAllocationLogUpdateManyWithoutGiftItemNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutRewardNestedInput
+  usedInSlabs?: Prisma.SchemeSlabsUpdateManyWithoutRewardNestedInput
+}
+
+export type RewardsUncheckedUpdateWithoutSchemesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  logs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutGiftItemNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutRewardNestedInput
+  usedInSlabs?: Prisma.SchemeSlabsUncheckedUpdateManyWithoutRewardNestedInput
+}
+
+export type RewardsUncheckedUpdateManyWithoutSchemesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  pointCost?: Prisma.IntFieldUpdateOperationsInput | number
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   totalAvailableQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean

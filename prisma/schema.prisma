@@ -71,6 +71,7 @@ model User {
   geoTrackingRecords        GeoTracking[] @relation("UserGeoTracking") // Relationship for GeoTracking records
   assignedTasks             DailyTask[]  @relation("AssignedTasks") // Tasks assigned to this user (salesman)
   createdTasks              DailyTask[]  @relation("CreatedTasks") // Tasks created by this user (admin)
+  journeys                  Journey[]     @relation("UserJourneys")
   ratings                   Rating[]
   salesOrders               SalesOrder[]
   permanentJourneyPlansAssigned PermanentJourneyPlan[] @relation("PJP_AssignedUser")
@@ -438,6 +439,7 @@ model GeoTracking {
   isActive                Boolean   @default(true) @map("is_active")
   destLat                 Decimal?  @map("dest_lat") @db.Decimal(10, 7)
   destLng                 Decimal?  @map("dest_lng") @db.Decimal(10, 7)
+  linkedJourneyId String?  @map("linked_journey_id") @db.VarChar(255)
 
   // Relationship to other tables
   user User @relation("UserGeoTracking", fields: [userId], references: [id], onDelete: Cascade)
@@ -445,6 +447,7 @@ model GeoTracking {
   site TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
   dealerId String? @map("dealer_id") @db.VarChar(255) // Matches Dealer.id type
   dealer   Dealer? @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+  journey         Journey? @relation("JourneyGeoTracking", fields: [linkedJourneyId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -456,7 +459,59 @@ model GeoTracking {
   @@index([dealerId], map: "idx_geo_dealer_id")
   @@index([userId], map: "idx_geo_tracking_user_id")
   @@index([recordedAt], map: "idx_geo_tracking_recorded_at") // Useful for time-based queries
+  @@index([linkedJourneyId, recordedAt], map: "idx_geo_linked_journey_time")
   @@map("geo_tracking") // Table name in DB
+}
+
+model Journey {
+  id     String @id @default(uuid()) @db.VarChar(255) // Client-side generated, but default UUID is safe
+  userId Int    @map("user_id")
+  pjpId    String? @map("pjp_id") @db.VarChar(255)
+  siteId   String? @map("site_id") @db.VarChar(255) // Optional: Add @relation if TechnicalSite model exists
+  dealerId String? @map("dealer_id") @db.VarChar(255) // Optional: Add @relation if Dealer model exists
+  siteName String? @map("site_name") @db.VarChar(255)
+  destLat Decimal? @map("dest_lat") @db.Decimal(10, 7)
+  destLng Decimal? @map("dest_lng") @db.Decimal(10, 7)
+  status   String  @default("ACTIVE") @db.VarChar(50)
+  isActive Boolean @default(true) @map("is_active")
+  startTime DateTime  @default(now()) @map("start_time") @db.Timestamptz(6)
+  endTime   DateTime? @map("end_time") @db.Timestamptz(6)
+  totalDistance Decimal? @default(0) @map("total_distance") @db.Decimal(10, 3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // --- RELATIONS ---
+  user         User          @relation("UserJourneys", fields: [userId], references: [id], onDelete: Cascade)
+  geoTrackings GeoTracking[] @relation("JourneyGeoTracking")
+  breadcrumbs JourneyBreadcrumb[] @relation("JourneyBreadcrumbs")
+
+  @@index([userId, status], map: "idx_journeys_user_status")
+  @@map("journeys")
+}
+
+model JourneyBreadcrumb {
+  id String @id @default(uuid()) @db.VarChar(255) // UUID generated on client
+  latitude  Decimal @db.Decimal(10, 7)
+  longitude Decimal @db.Decimal(10, 7)
+  h3Index String? @map("h3_index") @db.VarChar(15)
+  speed    Float? @db.Real // m/s
+  accuracy Float? @db.Real // meters
+  heading  Float? @db.Real // degrees
+  altitude Float? @db.Real // meters
+  batteryLevel  Float?   @map("battery_level") @db.Real
+  isCharging    Boolean? @map("is_charging")
+  networkStatus String?  @map("network_status") @db.VarChar(50)
+  isMocked      Boolean? @default(false) @map("is_mocked")
+  recordedAt DateTime @map("recorded_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // LINK TO PARENT
+  journeyId String  @map("journey_id") @db.VarChar(255)
+  journey   Journey @relation("JourneyBreadcrumbs", fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId, recordedAt], map: "idx_breadcrumbs_journey_time")
+  @@index([h3Index], map: "idx_breadcrumbs_h3")
+  @@map("journey_breadcrumbs")
 }
 
 // DailyTask model for admin to salesman task assignment + self assignment of tasks by salesmen
