@@ -57,137 +57,117 @@ Every single API route in this folder follows a critical, multi-tenant security 
 
 #### `src/app/api/users/`
 
-* **Purpose:** Provides the full CRUD (Create, Read, Update, Delete) API for the User Management page, handling both local database records (Prisma) and WorkOS identity management.
+* **Purpose:** Provides the full CRUD (Create, Read, Update, Delete) API for the User Management page, handling both local database records (Prisma) and WorkOS identity management. It also manages specific credential generation for the mobile apps (Salesman & Technical).
 * **`route.ts` (`/api/users`):**
-    * **`GET`:** Fetches all users for the admin's company. It validates the admin's session and role (checking `allowedAdminRoles`), then retrieves the `companyId` to fetch relevant users from Prisma.
-    * **`POST`:** Creates a new user and sends an invitation.
-        1.  **Validation:** Manually validates required fields (`email`, `firstName`, `lastName`, `role`) and checks for existing users or pending invites.
-        2.  **Credential Generation:**
-            * **Salesman:** Generates a unique `salesmanLoginId` and temporary password for executive roles.
-            * **Technical:** If `isTechnical` is true, generates a unique `techLoginId` and temporary password.
-        3.  **WorkOS Invitation:** Calls `workos.userManagement.sendInvitation()` to create the user in WorkOS.
-        4.  **Email:** Sends a custom HTML invitation email via **Resend** containing the Invite URL and any generated credentials.
-        5.  **Database:** Creates or updates the user in Prisma with `status: 'pending'`, storing the `workosUserId` (if available) and the generated login IDs.
+* **`GET`:**
+* Fetches all users for the admin's company after validating the session and checking `allowedAdminRoles`.
+* Supports a `?current=true` query param to fetch only the logged-in user's profile.
+
+* **`POST`:** Creates a new user and sends an invitation.
+1. **Validation:** Manually validates required fields and checks for existing users or pending invites.
+2. **Credential Generation:**
+* **Salesman:** If the role is executive, it generates a unique `salesmanLoginId` (prefix `EMP-`) and a temporary password.
+* **Technical:** If `isTechnical` is true, it generates a unique `techLoginId` (prefix `TSE-`) and a temporary password.
+
+3. **WorkOS Invitation:** Calls `workos.userManagement.sendInvitation()` to create the user in WorkOS and generate an invite token.
+4. **Email:** Sends a custom HTML invitation email via **Resend** containing the Invite URL (pointing to Magic Auth) and any generated mobile app credentials.
+5. **Database:** Creates or updates the user in Prisma with `status: 'pending'`, storing the `inviteToken` and the generated login IDs.
+
 * **`[userId]/route.ts` (`/api/users/:userId`):**
-    * **`GET`:** Fetches a single user by ID, ensuring they belong to the admin's company.
-    * **`PUT`:** Updates an existing user.
-        1.  **Validation:** Uses **Zod** (`updateUserSchema`) to validate fields like `firstName`, `role`, `isTechnical`, etc.
-        2.  **Technical Credential Logic:** If `isTechnical` is toggled to `true` (and credentials don't exist), it generates a new `techLoginId` and password, then immediately sends a specific "Technical App Credentials" email to the user.
-        3.  **Dual Update:** Updates the local Prisma database and concurrently updates the WorkOS user profile (syncing attributes like `role`, `region`, `area`).
-    * **`DELETE`:** Deletes a user. It verifies admin permissions, prevents self-deletion, and removes the user record from the local Prisma database.
+* **`GET`:** Fetches a single user by ID, ensuring they belong to the admin's company/route.ts].
+* **`PUT`:** Updates an existing user.
+1. **Validation:** Uses **Zod** (`updateUserSchema`) to validate fields like `firstName`, `role`, `isTechnical`, etc/route.ts].
+2. **Dashboard Upgrade:** If `isDashboardUser` is set to true for a user who doesn't have WorkOS access yet, it triggers the WorkOS invitation flow and sends the invite email/route.ts].
+3. **Technical Credential Logic:** If `isTechnical` is toggled to `true` (and credentials don't exist):
+* It generates a new `techLoginId` and password/route.ts].
+* **Specific Notification:** It sends a dedicated "Technical App Credentials" email using **Nodemailer** (via Gmail), distinct from the main invitation email/route.ts].
+
+4. **Dual Update:** Updates the local Prisma database and concurrently updates the WorkOS user profile (syncing attributes like `role`, `region`, `area`)/route.ts].
+
+* **`DELETE`:** Deletes a user. It verifies admin permissions, prevents self-deletion, and removes the user record from the local Prisma database/route.ts].
+
 * **`bulk-invite/route.ts`:**
-    * **`POST`:** Accepts an array of user objects. It iterates through them, applying the same logic as the single `POST` route (generating Salesman/Technical credentials, sending WorkOS invites, and sending emails via Resend) but handles errors individually to allow partial success (returning a 207 Multi-Status if needed).
+* **`POST`:** Accepts an array of user objects. It iterates through them, applying the same logic as the single `POST` route (generating Salesman/Technical credentials, sending WorkOS invites, and sending emails via Resend). It handles errors individually and returns a summary of successes and failures (potentially returning a 207 Multi-Status).
+
+* **`app-only/route.ts`:**
+* **Purpose:** Creates users who need access *only* to the mobile apps but **not** the dashboard (skipping WorkOS).
+* **`POST`:**
+1. **Logic:** Validates the admin role and checks for email conflicts.
+2. **Credential Generation:** Generates `salesmanLoginId` and/or `techLoginId` based on the role and flags.
+3. **Database:** Creates the user in Prisma with `status: 'active'` and `workosUserId: null`.
+4. **Email:** Sends the credentials email via **Resend**, but passes an empty string for the `inviteUrl` so no dashboard link is included.
+
 * **`user-locations/route.ts` & `user-roles/route.ts`:**
-    * **`GET`:** Helper routes for UI filters. They fetch user data for the current company and use Prisma's `distinct` feature to efficiently return unique lists of `region`/`area` or `role`.
+* **`GET`:** Helper routes for UI filters. They fetch user data for the current company and use Prisma's `distinct` feature to efficiently return unique lists of `region`/`area` or `role`.
 
 #### `src/app/api/dashboardPagesAPI/`
 
 This folder is a key architectural pattern. It doesn't contain generic CRUD logic. Instead, it holds **specialized `GET`, `POST`, `PATCH`, `PUT` and `DELETE` handlers** tailored for specific dashboard pages. This keeps the frontend components "dumb" and fast, as the server handles complex, multi-step logic.
 
 * **`.../reports/` (Folder):**
-    * Contains a `route.ts` for each report: `competition-reports`, `daily-visit-reports`, `sales-orders`, `technical-visit-reports`.
-    * **Logic:** Each file defines a `GET` handler that fetches all records for the `currentUser.companyId`. It performs an `include` on the `user` relation to add salesman details (name, role, area, region) to the response, which is then validated against a Zod schema.
+* Contains a `route.ts` for each report: `competition-reports`, `daily-visit-reports`, `sales-orders`, `technical-visit-reports`.
+* **Logic:** Each file defines a `GET` handler that fetches all records for the `currentUser.companyId`. It performs an `include` on the `user` relation to add salesman details (name, role, area, region) to the response, which is then validated against a Zod schema.
 
 * **`.../team-overview/` (Folder):**
-    * **`dataFetch/route.ts`:** `GET` handler that fetches all users for the team table within the `currentUser.companyId`, supporting an optional `role` filter. It formats the data to include `managedBy` and `manages` strings/arrays.
-    * **`editRole/route.ts`:** A critical `POST` mutation route.
-        1.  Gets `userId` and `newRole` from the body.
-        2.  Gets the *admin's* role (`currentUserRole`) from `getTokenClaims()`.
-        3.  **RBAC Check:** Performs the most important security check: `if (!canAssignRole(currentUserRole, newRole))`. If this fails, it returns a 403 Forbidden error.
-        4.  **Transaction:** Runs a `prisma.$transaction` to ensure both WorkOS and the local DB are updated.
-        5.  Calls `workos.userManagement.updateOrganizationMembership(...)` and `prisma.user.update(...)` to synchronize the role.
-    * **`slmLiveLocation/route.ts`:** `GET` handler for the "Live Location" map.
-        1.  Fetches all active `PermanentJourneyPlan` records to identify active salesmen.
-        2.  Makes parallel `axios.get` calls to an *external server* (`process.env.NEXT_PUBLIC_SALESMAN_APP_SERVER_URL`) for each salesman's latest location.
-        3.  Aggregates the results and returns a validated list.
-    * **`editMapping/route.ts`:** `POST` handler that allows an admin to update a user's `reportsToId` (manager) and `managesIds` (direct reports). It runs a transaction to atomically update all affected user records.
-    * **`editDealerMapping/route.ts`:**
-        * **`GET`:** Fetches *all* dealers for the admin's company (with optional `area`/`region` filters) *and* a list of `assignedDealerIds` already mapped to a specific `userId`.
-        * **`POST`:** Takes a `userId` and a list of `dealerIds`. It un-assigns all dealers from that user and then re-assigns only the dealers in the provided list.
-    * **`editMasonMapping/route.ts`:**
-        * **`GET`:** Fetches *all* masons for the company (optionally filtered by area/region via their dealer) and a list of `assignedMasonIds` for a specific user.
-        * **`POST`:** Similar to dealer mapping, it un-assigns all masons from the user and re-assigns the new list.
+* **`dataFetch/route.ts`:** `GET` handler that fetches all users for the team table within the `currentUser.companyId`, supporting an optional `role` filter. It formats the data to include `managedBy` and `manages` strings/arrays.
+* **`editRole/route.ts`:** A critical `POST` mutation route.
+1. Gets `userId` and `newRole` from the body.
+2. Gets the *admin's* role (`currentUserRole`) from `getTokenClaims()`.
+3. **RBAC Check:** Performs the most important security check: `if (!canAssignRole(currentUserRole, newRole))`. If this fails, it returns a 403 Forbidden error.
+4. **Transaction:** Runs a `prisma.$transaction` to ensure both WorkOS and the local DB are updated.
+5. Calls `workos.userManagement.updateOrganizationMembership(...)` and `prisma.user.update(...)` to synchronize the role.
+
+* **`slmLiveLocation/route.ts`:** `GET` handler for the "Live Location" map.
+1. Fetches all active `PermanentJourneyPlan` records to identify active salesmen.
+2. Makes parallel `axios.get` calls to an *external server* (`process.env.NEXT_PUBLIC_SALESMAN_APP_SERVER_URL`) for each salesman's latest location.
+3. Aggregates the results and returns a validated list.
+
+* **`editMapping/route.ts`:** `POST` handler that allows an admin to update a user's `reportsToId` (manager) and `managesIds` (direct reports). It runs a transaction to atomically update all affected user records.
+* **`editDealerMapping/route.ts`:**
+* **`GET`:** Fetches *all* dealers for the admin's company (with optional `area`/`region` filters) *and* a list of `assignedDealerIds` already mapped to a specific `userId`.
+* **`POST`:** Takes a `userId` and a list of `dealerIds`. It un-assigns all dealers from that user and then re-assigns only the dealers in the provided list.
+
+* **`editMasonMapping/route.ts`:**
+* **`GET`:** Fetches *all* masons for the company (optionally filtered by area/region via their dealer) and a list of `assignedMasonIds` for a specific user.
+* **`POST`:** Similar to dealer mapping, it un-assigns all masons from the user and re-assigns the new list.
 
 * **`.../dealerManagement/` (Folder):**
-    * **`route.ts`:**
-        * **`GET`:** Lists all dealers for the `currentUser.companyId` that have `verificationStatus: 'VERIFIED'`.
-        * **`POST`:** Creates a new dealer, associating it with the `currentUser.id`. It attempts to geocode the address using `OPENCAGE_GEO_API`.
-        * **`DELETE`:** Removes a dealer based on the `id` query parameter.
-    * **`dealer-verify/route.ts`:**
-        * **`GET`:** Lists all dealers for the `currentUser.companyId` that have `verificationStatus: 'PENDING'`.
-        * **`PUT`:** Takes a `dealerId` from the query param and a `verificationStatus` ("VERIFIED" or "REJECTED") from the body to approve or reject a new dealer.
-    * **`dealer-brand-mapping/route.ts`:** `GET` handler that fetches all `DealerBrandMapping` records and aggregates them by dealer, creating dynamic keys for each brand name (e.g., `"BrandA": 100`).
-    * **`dealer-locations/route.ts` & `dealer-types/route.ts`:** `GET` helpers that query the `Dealer` table for `distinct` region, area, and type values to populate UI filter dropdowns.
+* **`route.ts`:**
+* **`GET`:** Lists all dealers for the `currentUser.companyId` that have `verificationStatus: 'VERIFIED'`.
+* **`POST`:** Creates a new dealer, associating it with the `currentUser.id`. It attempts to geocode the address using `OPENCAGE_GEO_API`.
+* **`DELETE`:** Removes a dealer based on the `id` query parameter.
+
+* **`dealer-verify/route.ts`:**
+* **`GET`:** Lists all dealers for the `currentUser.companyId` that have `verificationStatus: 'PENDING'`.
+* **`PUT`:** Takes a `dealerId` from the query param and a `verificationStatus` ("VERIFIED" or "REJECTED") from the body to approve or reject a new dealer.
+
+* **`dealer-brand-mapping/route.ts`:** `GET` handler that fetches all `DealerBrandMapping` records and aggregates them by dealer, creating dynamic keys for each brand name (e.g., `"BrandA": 100`).
+* **`dealer-locations/route.ts` & `dealer-types/route.ts`:** `GET` helpers that query the `Dealer` table for `distinct` region, area, and type values to populate UI filter dropdowns.
 
 * **`.../technical-sites/` (Folder):**
-    * **`route.ts`:** `GET` handler that lists all `TechnicalSite` records linked to the `currentUser.companyId` via the users relationship.
+* **`route.ts`:** `GET` handler that lists all `TechnicalSite` records linked to the `currentUser.companyId` via the users relationship.
 
 * **`.../masonpc-side/` (Folder):**
-    * **`mason-pc/`:**
-        * **`route.ts` (GET):** Lists `Mason_PC_Side` records with joined KYC submissions and User details. Supports filtering by `kycStatus`. Flattens KYC document JSON.
-        * **`[id]/route.ts` (PATCH):** Updates a Mason's KYC status or assignments (user/dealer/site)/route.ts].
-            * If `verificationStatus` becomes 'VERIFIED', it triggers a **Joining Bonus** calculation and adds points to the Ledger and Mason balance inside a transaction.
-        * **`form-options/route.ts` (GET):** Helper that fetches Salesmen, Verified Dealers, and Technical Sites to populate dropdowns for Mason editing.
-    * **`bags-lift/`:**
-        * **`route.ts` (GET):** Lists `BagLift` records. Filters to include both assigned masons (company check) and unassigned masons.
-        * **`[id]/route.ts` (PATCH):** Handles approval/rejection of bag lifts/route.ts].
-            * **Approval:** Calculates extra bonus points (slab-based) and referral bonuses. Updates `BagLift` status, `PointsLedger`, and `Mason` balance atomically.
-            * **Rejection:** Reverses points if previously approved or simply marks as rejected.
-    * **`rewards-redemption/`:**
-        * **`route.ts` (GET):** Lists `RewardRedemption` records filtered by company.
-        * **`[id]/route.ts` (PATCH):** Manages order status (Approved, Shipped, Delivered, Rejected)/route.ts].
-            * **Approval:** Checks stock and deducts it from `Rewards` inventory.
-            * **Rejection:** Refunds points to the Mason's `PointsLedger` and returns stock if it was previously deducted.
-    * **`rewards/route.ts`:** `GET` handler for the master `Rewards` list (no company filter).
-    * **`reward-categories/route.ts`:** `GET` handler for `RewardCategory` list.
-    * **`points-ledger/route.ts`:** `GET` handler for `PointsLedger` history.
-    * **`tso-meetings/route.ts`:** `GET` handler for `TSOMeeting` records.
-    * **`schemes-offers/route.ts`:** `GET` handler for `SchemesOffers` records.
-    * **`masonOnMeetings/route.ts` & `masonOnSchemes/route.ts`:** `GET` handlers for the join tables tracking Mason participation.
-
-* **`.../permanent-journey-plan/` (Folder):**
-    * **`route.ts`:**
-        * **`GET`:** Lists PJPs with an optional `verificationStatus` filter.
-        * **`DELETE`:** Deletes a PJP.
-    * **`pjp-verification/route.ts`:** `GET` handler that lists *only* PJPs with `status: 'PENDING'` or `verificationStatus: 'PENDING'`.
-    * **`pjp-verification/[id]/route.ts`:**
-        * **`PUT`:** Updates only the status/verificationStatus (e.g., to 'VERIFIED')/route.ts].
-        * **`PATCH`:** Allows modification of PJP fields (planDate, area, dealerId/siteId, remarks) and *simultaneously* sets status to 'VERIFIED'/route.ts].
-
-* **`.../slm-geotracking/route.ts`:**
-    * **`GET`:** Fetches `GeoTracking` records for the company, including user details.
-
-* **`.../slm-leaves/route.ts`:**
-    * **`GET`:** Fetches leave applications.
-    * **`PATCH`:** Updates leave status (Approved/Rejected) and admin remarks.
-
-* **`.../assign-tasks/route.ts`:**
-    * **`GET`:** Fetches assignable salesmen, dealers, and existing `dailyTasks`.
-    * **`POST`:** Creates new `DailyTask` records.
-
-* **`.../slm-attendance/route.ts`:**
-    * **`GET`:** Fetches `SalesmanAttendance` records.
-
-* **`.../scores-ratings/route.ts`:**
-    * **`GET`:** Fetches `Rating` (for salesmen) or `DealerReportsAndScores` (for dealers) based on the `type` query param.
-
-#### `.../masonpc-side/`
-
 * **Purpose:** Provides data for the "Mason/PC Side" of the dashboard, handling data related to Masons, their activities (meetings, schemes), and rewards.
 * **`mason-pc/`:**
-    * **`route.ts` (`GET`):** Fetches all `Mason_PC_Side` records where the associated user belongs to the `currentUser.companyId`.
-        * **Features:** filters by `kycStatus` (e.g., pending, verified), joins the latest `KYCSubmission`, and normalizes JSONB documents into a usable format for the frontend.
-    * **`[id]/route.ts` (`PATCH`):** Updates a specific Mason/PC record.
-        * **Logic:** Handles updating assignments (Salesman/Dealer/Site) and KYC Status.
-        * **Bonus:** If status changes to `VERIFIED`, it triggers `calculateJoiningBonusPoints()` and atomically updates the Mason's point balance and the Points Ledger.
-    * **`form-options/route.ts` (`GET`):** A helper route that fetches lists of Technical Users, Dealers, and Technical Sites to populate dropdown menus in the Mason edit forms.
+* **`route.ts` (`GET`):** Fetches all `Mason_PC_Side` records where the associated user belongs to the `currentUser.companyId`.
+* **Features:** filters by `kycStatus` (e.g., pending, verified), joins the latest `KYCSubmission`, and normalizes JSONB documents into a usable format for the frontend.
+
+* **`[id]/route.ts` (`PATCH`):** Updates a specific Mason/PC record/route.ts].
+* **Logic:** Handles updating assignments (Salesman/Dealer/Site) and KYC Status.
+* **Bonus:** If status changes to `VERIFIED`, it triggers `calculateJoiningBonusPoints()` and atomically updates the Mason's point balance and the Points Ledger.
+
+* **`form-options/route.ts` (`GET`):** A helper route that fetches lists of Technical Users, Dealers, and Technical Sites to populate dropdown menus in the Mason edit forms.
+
 * **`bags-lift/`:**
-    * **`route.ts` (`GET`):** Fetches `BagLift` records.
-        * **Filter:** Uses a specific `OR` condition to return lifts assigned to the current company **OR** unassigned lifts (where `mason.userId` is null), ensuring no data is lost.
-        * **Data:** Joins and flattens `masonName`, `dealerName`, and `approverName`.
-    * **`[id]/route.ts` (`PATCH`):** Handles the Approval or Rejection of a Bag Lift.
-        * **Transaction:** Uses a database transaction to update the status, credit/debit the Mason's balance, and create a `PointsLedger` entry.
-        * **Calculations:** Triggers `calculateExtraBonusPoints` (for slab milestones) and `checkReferralBonusTrigger` (for referrer rewards) upon approval.
+* **`route.ts` (`GET`):** Fetches `BagLift` records.
+* **Filter:** Uses a specific `OR` condition to return lifts assigned to the current company **OR** unassigned lifts (where `mason.userId` is null), ensuring no data is lost.
+* **Data:** Joins and flattens `masonName`, `dealerName`, and `approverName`.
+
+* **`[id]/route.ts` (`PATCH`):** Handles the Approval or Rejection of a Bag Lift/route.ts].
+* **Transaction:** Uses a database transaction to update the status, credit/debit the Mason's balance, and create a `PointsLedger` entry.
+* **Calculations:** Triggers `calculateExtraBonusPoints` (for slab milestones) and `checkReferralBonusTrigger` (for referrer rewards) upon approval.
+
 * **`tso-meetings/route.ts` (`GET`):** Lists all `TSOMeeting` records where the `createdBy` user belongs to the `currentUser.companyId`.
 * **`schemes-offers/route.ts` (`GET`):** Lists all `SchemesOffers` records. This returns global schemes and is *not* company-filtered.
 * **`masonOnMeetings/route.ts` (`GET`):** Lists all `MasonsOnMeetings` (attendance) records where the `mason`'s associated user belongs to the `currentUser.companyId`.
@@ -196,12 +176,45 @@ This folder is a key architectural pattern. It doesn't contain generic CRUD logi
 * **`rewards/route.ts` (`GET`):** Lists all `Rewards` records from the master list (not company-filtered) to allow global catalog viewing. Flattens `categoryName`.
 * **`reward-categories/route.ts` (`GET`):** Lists all `RewardCategory` records (master list) to populate UI filters.
 * **`rewards-redemption/`:**
-    * **`route.ts` (`GET`):** Lists all `RewardRedemption` records for the `currentUser.companyId` by filtering via the associated mason. Joins and flattens `masonName` and `rewardName`.
-    * **`[id]/route.ts` (`PATCH`):** Handles the status update of a reward redemption request (e.g., approving, rejecting, shipping).
-        * **Stock Management:** Automatically deducts stock from `Rewards` when status changes to `approved`. Restores stock if an `approved` order is subsequently `rejected`.
-        * **Points Management:** Automatically refunds points to the Mason's ledger and balance if a request is `rejected` (whether it was previously approved or just placed).
-        * **Validation:** Prevents modifying already 'delivered' or 'rejected' orders and checks for insufficient stock before approval.
+* **`route.ts` (`GET`):** Lists all `RewardRedemption` records for the `currentUser.companyId` by filtering via the associated mason. Joins and flattens `masonName` and `rewardName`.
+* **`[id]/route.ts` (`PATCH`):** Handles the status update of a reward redemption request (e.g., approving, rejecting, shipping)/route.ts].
+* **Stock Management:** Automatically deducts stock from `Rewards` when status changes to `approved`. Restores stock if an `approved` order is subsequently `rejected`.
+* **Points Management:** Automatically refunds points to the Mason's ledger and balance if a request is `rejected` (whether it was previously approved or just placed).
+* **Validation:** Prevents modifying already 'delivered' or 'rejected' orders and checks for insufficient stock before approval.
 
+
+* **`.../permanent-journey-plan/` (Folder):**
+* **`route.ts`:**
+* **`GET`:** Lists PJPs with an optional `verificationStatus` filter.
+* **`DELETE`:** Deletes a PJP.
+
+* **`pjp-verification/route.ts`:** `GET` handler that lists *only* PJPs with `status: 'PENDING'` or `verificationStatus: 'PENDING'`.
+* **`pjp-verification/[id]/route.ts`:**
+* **`PUT`:** Updates only the status/verificationStatus (e.g., to 'VERIFIED')/route.ts].
+* **`PATCH`:** Allows modification of PJP fields (planDate, area, dealerId/siteId, remarks) and *simultaneously* sets status to 'VERIFIED'.
+
+
+* **`.../slm-geotracking/route.ts`:**
+* **`GET`:** Fetches `GeoTracking` records for the company, including user details.
+
+* **`.../slm-leaves/route.ts`:**
+* **`GET`:** Fetches leave applications.
+* **`PATCH`:** Updates leave status (Approved/Rejected) and admin remarks.
+
+* **`.../assign-tasks/route.ts`:**
+* **`GET`:** Fetches assignable salesmen, dealers, and existing `dailyTasks`.
+* **`POST`:** Creates new `DailyTask` records.
+
+* **`.../slm-attendance/route.ts`:**
+* **`GET`:** Fetches `SalesmanAttendance` records.
+
+* **`.../update-location/route.ts`:**
+* **`POST`:** Updates the `locationName` (address text) of a specific `SalesmanAttendance` record.
+* **Security:** Enforces strict role-based access control, allowing only specific roles (e.g., `president`, `general-manager`) to perform this update.
+* **Logic:** Validates the input `id` and `address` via Zod and directly updates the database record.
+
+* **`.../scores-ratings/route.ts`:**
+* **`GET`:** Fetches `Rating` (for salesmen) or `DealerReportsAndScores` (for dealers) based on the `type` query param.
 #### `src/app/api/custom-report-generator/route.ts`
 
 * **`GET`:** The backend for the custom report builder.
@@ -495,33 +508,49 @@ This folder contains all the frontend UI pages and components that are only acce
         * **Filtering**: Filters are applied client-side using `useMemo` based on search text and selected dropdown values.
         * **Rendering**: It renders a `DataTableReusable` component with columns for site details (Name, Contact, Phone, Region, Area, Type, Stage, Created On).
 
-* **`src/app/dashboard/users/`**
-    * **`page.tsx`**:
-        * **Purpose**: The Server Component wrapper that acts as the secure entry point for the User Management page.
-        * **Logic**:
-        * **Authentication:** Uses `withAuth` to ensure the user is signed in and `getTokenClaims` to retrieve roles.
-        * **Data Fetching:** Fetches the full `adminUser` profile (including `company` details) from Prisma using the WorkOS User ID.
-        * **RBAC (Security):** strict check against `allowedAdminRoles`. If the user's role is not authorized, they are immediately redirected to `/dashboard`.
-        * **Rendering:** Passes the fetched `adminUser` object as a prop to the `<UsersManagement />` client component.
-    * **`userManagement.tsx`**:
-        * **Purpose**: The main interactive Client Component for viewing and managing users.
-        * **State & Hooks:**
-        * Manages local state for `users` list, loading status, and form visibility.
-        * **`useUserLocations` Hook:** Dynamically fetches available "Regions" and "Areas" to populate the dropdowns in the Create/Edit forms, ensuring data consistency.
-    * **CRUD Operations:**
-        * **Read:** Fetches users via `GET /api/users`.
-        * **Create (`handleCreateUser`):** Sends a `POST` request. On success, it displays a tailored success message that includes the generated **Salesman ID** or **Technical ID** if applicable.
-        * **Update (`handleUpdateUser`):** Sends a `PUT` request to update user details, including the `isTechnical` toggle.
-        * **Delete (`handleDeleteUser`):** Implements a **Dual-Deletion** strategy:
-            1.  Calls `DELETE /api/users/[id]` to remove the record from the local database.
-            2.  If successful, calls `POST /api/delete-user` to remove the user from WorkOS, ensuring the two systems remain in sync.
-    * **UI:** Renders the `DataTableReusable` with custom columns (including a status badge for `isTechnicalRole`) and manages the Dialog modals for adding or editing users.
-    * **`bulkInvite.tsx`:**
-        * **Purpose**: A Client Component (Dialog) that facilitates bulk user creation via file upload (CSV/TXT) or direct text paste.
-        * **Validation Logic:**
-        * **Header Check:** The parser mandates the presence of specific headers: `email`, `firstName`, `lastName`, `phoneNumber`, `role`, `region`, `area`, and `isTechnical`.
-        * **Role Validation:** Validates every row's role against a hardcoded list of allowed `ROLES`.
-    * **Execution:** Parses the input on the client side to catch errors early, then sends the array of user objects to the `POST /api/users/bulk-invite` endpoint. It provides detailed feedback on how many invitations succeeded or failed.
+#### `src/app/dashboard/users/`
+
+* **`page.tsx`:**
+* **Purpose:** The Server Component wrapper that acts as the secure entry point for the User Management page.
+* **Logic:**
+* **Authentication:** Uses `withAuth` to ensure the user is signed in and `getTokenClaims` to retrieve roles.
+* **Data Fetching:** Fetches the full `adminUser` profile (including `company` details) from Prisma using the WorkOS User ID.
+* **RBAC (Security):** Strict check against `allowedAdminRoles`. If the user's role is not authorized, they are immediately redirected to `/dashboard`.
+* **Rendering:** Passes the fetched `adminUser` object as a prop to the `<UsersManagement />` client component.
+
+* **`userManagement.tsx`:**
+* **Purpose:** The main interactive Client Component for viewing and managing users.
+* **State & Hooks:**
+* Manages local state for `users` list, loading status, filters (Search, Role, Region), and form visibility.
+* **`useUserLocations` Hook:** Dynamically fetches available "Regions" and "Areas" to populate dropdowns, ensuring data consistency.
+
+* **CRUD Operations:**
+* **Read:** Fetches users via `GET /api/users`.
+* **Create (`handleCreateUser`):** Sends a `POST` request to create a standard dashboard user. Displays a success message with generated IDs.
+* **Update (`handleUpdateUser`):** Sends a `PUT` request.
+* **Dashboard Access:** Includes a specific flow to upgrade an "App-Only" user to a "Dashboard User" (`isDashboardUser: true`), which triggers an invitation email.
+* **Device Management:** Includes a "Clear Device ID" action to reset a user's mobile device binding, allowing them to log in on a new phone.
+
+* **Delete (`handleDeleteUser`):** Implements a **Dual-Deletion** strategy:
+1. Calls `DELETE /api/users/[id]` to remove the record from the local database.
+2. If successful, calls `POST /api/delete-user` to remove the user from WorkOS, ensuring the two systems remain in sync.
+
+* **UI:** Renders `DataTableReusable` with custom columns.
+* **Status Logic:** Distinguishes between **Active**, **Pending** (invited but not accepted), and **App-Only** (no WorkOS account, mobile access only).
+
+* **`appOnlyInvite.tsx`:**
+* **Purpose:** A specialized Dialog component for creating users who *only* need mobile app access and not the web dashboard.
+* **Logic:**
+* **Submission:** Sends user details to `POST /api/users/app-only`.
+* **Credential Generation:** Unlike the standard invite, this does *not* send an email. Instead, upon success, it immediately displays the generated **Salesman ID** (and Technical ID) in the UI so the admin can manually share it with the employee.
+
+* **`bulkInvite.tsx`:**
+* **Purpose:** A Client Component (Dialog) that facilitates bulk user creation via file upload (CSV/TXT) or direct text paste.
+* **Validation Logic:**
+* **Header Check:** Mandates specific headers: `email`, `firstName`, `lastName`, `phoneNumber`, `role`, `region`, `area`, and `isTechnical`.
+* **Role Validation:** Validates every row's role against a hardcoded list of allowed `ROLES`.
+
+* **Execution:** Parses input client-side to catch errors early, then sends the array of objects to `POST /api/users/bulk-invite`. Provides a summary of successful and failed creations.
 
 * **`src/app/dashboard/welcome/`**
     * **`page.tsx`**:
@@ -595,11 +624,74 @@ This folder contains all the frontend UI pages and components that are only acce
 
 ---
 
-Here is the updated and corrected markdown documentation for `src/components/` and `src/lib/`, accurately reflecting the logic and features found in your provided files.
-
 ### `src/components/`
 
-This folder contains your custom, reusable React components, built using the primitives from `src/components/ui/`. These "smart" components contain the majority of the application's frontend logic and UI patterns.
+This folder contains your custom, reusable React components, built using the primitives from `src/components/ui/`. These "smart" components contain the majority of the application's frontend logic, shared UI patterns, and custom hooks.
+
+* **`app-sidebar.tsx`:**
+* **Purpose:** The main navigation sidebar for the authenticated dashboard.
+* **Logic:**
+* **RBAC Rendering:** Accepts the `userRole` as a prop. It filters the navigation menu items (e.g., "User Management", "Dealer Management", "Reports") based on whether the current role is included in the allowed roles for each item.
+* **Structure:** Uses the `Sidebar` primitive to render a collapsible, responsive sidebar with a header (Team logo) and footer (User profile/logout).
+
+* **`site-header.tsx`:**
+* **Purpose:** The top navigation bar that sits above the main content area.
+* **Logic:**
+* **Breadcrumbs:** Automatically generates breadcrumb navigation based on the current route path (e.g., `Dashboard > Users > Manage`).
+* **Controls:** Houses the `SidebarTrigger` for mobile/desktop toggling and the `ModeToggle` for switching between Light/Dark themes.
+
+* **`conditionalSidebar.tsx`:**
+* **Purpose:** A wrapper component that controls the visibility of the sidebar layout.
+* **Logic:**
+* **Route Check:** Uses `usePathname()` to determine if the user is on a public page (like `/login`, `/setup-company`) or a secure dashboard page.
+* **Rendering:** If on a public route, it renders the children directly (full width). If on a protected route, it wraps the children in the `SidebarProvider` and `SidebarInset` to enforce the dashboard layout.
+
+* **`data-table-reusable.tsx`:**
+* **Purpose:** A highly powerful, generic table component powered by `@tanstack/react-table`.
+* **Logic:**
+* **Props:** Accepts `data` (array) and `columns` (column definitions).
+* **Features:** Built-in support for **Pagination** (10/20/30/50 rows), **Sorting** (click headers), **Filtering** (search inputs), and **Row Selection**.
+* **Styling:** Wraps the table in a unified card layout with consistent borders, spacing, and empty-state handling.
+
+* **`chart-area-reusable.tsx`:**
+* **Purpose:** A standardized Area Chart component for dashboard analytics.
+* **Logic:**
+* **Props:** Accepts `data` (time-series), `categories` (keys to plot), and `colors`.
+* **Rendering:** Wraps the `Recharts` library. It handles the responsive container sizing, tooltip formatting, and axis scaling automatically, ensuring all charts on the dashboard look consistent.
+
+* **`section-cards.tsx`:**
+* **Purpose:** Layout component for the "Summary Cards" seen at the top of report pages (e.g., "Total Visits", "Active Users").
+* **Logic:** Accepts a list of stats (title, value, icon, trend) and renders them as a responsive grid of `Card` components.
+
+* **`reusable-user-locations.tsx`:**
+* **Purpose:** A custom React Hook (`useUserLocations`) for location data.
+* **Logic:**
+* **Data Fetching:** On mount, it fetches unique "Regions" and "Areas" from `/api/users/user-locations`.
+* **Caching:** Manages `loading` and `error` states, providing a clean API `{ locations, loading, error }` for dropdown menus in forms (like "User Management" or "Assign Tasks").
+
+* **`reusable-dealer-locations.tsx`:**
+* **Purpose:** Similar to the user locations hook, but specifically for Dealer data.
+* **Logic:** Fetches from `/api/dashboardPagesAPI/dealerManagement/dealer-locations` to populate "Dealer Region" and "Dealer Area" dropdowns, which often differ from sales team regions.
+
+* **`multi-select.tsx`:**
+* **Purpose:** A form component allowing users to select multiple options from a dropdown.
+* **Logic:**
+* **Interaction:** Wraps the `Command` primitive to allow searching within the dropdown.
+* **State:** Manages an array of selected values, rendering them as dismissible `Badge` chips inside the input field.
+
+* **`InvitationEmail.tsx`:**
+* **Purpose:** A React Email template component.
+* **Logic:**
+* **Usage:** Not rendered directly in the dashboard UI. Instead, it is imported by server-side API routes (like `/api/users`) to generate the HTML for email invitations sent via Resend/Nodemailer.
+* **Props:** Accepts dynamic data like `companyName`, `inviteUrl`, and `userRole`.
+
+* **`add-schemes-rewards.tsx`:**
+* **Purpose:** A specialized modal form for the "Mason/PC" module.
+* **Logic:** Handles the creation of new loyalty schemes or rewards, including validation for points required, validity dates, and tier eligibility.
+
+* **`data-comparison-calculation.tsx`:**
+* **Purpose:** A utility component/hook for complex report logic.
+* **Logic:** likely used in reports like `dvrVpjp.tsx` to calculate ratios (e.g., "Planned vs. Actual Visits") and formatting the percentage differences for display tables.
 
 ### `src/components/app-sidebar.tsx`
 

@@ -94,9 +94,24 @@ export default function PJPListPage() {
   React.useEffect(() => { fetchPjps(); }, [fetchPjps]);
 
   // Summary Stats
+  // --- 1. UPDATED STATS CALCULATION (Today + Total) ---
   const stats = React.useMemo(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    const todaysPlans = pjps.filter(p => {
+      if (!p.planDate) return false;
+      const planDateStr = new Date(p.planDate).toISOString().split('T')[0];
+      return planDateStr === todayStr;
+    });
+
     return {
-      totalPlans: pjps.length,
+      // Today Stats
+      todayCount: todaysPlans.length,
+      todayBags: todaysPlans.reduce((acc, curr) => acc + (curr.noOfConvertedBags || 0), 0),
+      todaySites: todaysPlans.reduce((acc, curr) => acc + (curr.plannedNewSiteVisits || 0) + (curr.plannedFollowUpSiteVisits || 0), 0),
+
+      // Total Stats
+      totalCount: pjps.length,
       totalBags: pjps.reduce((acc, curr) => acc + (curr.noOfConvertedBags || 0), 0),
       totalSites: pjps.reduce((acc, curr) => acc + (curr.plannedNewSiteVisits || 0) + (curr.plannedFollowUpSiteVisits || 0), 0)
     };
@@ -108,7 +123,7 @@ export default function PJPListPage() {
         (pjp.areaToBeVisited || '').toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = selectedStatusFilter === 'all' || pjp.status === selectedStatusFilter;
       const matchesSalesman = selectedSalesmanFilter === 'all' || pjp.salesmanName === selectedSalesmanFilter;
-      
+
       let matchesDate = true;
       if (dateRange && dateRange.from) {
         const planDate = new Date(pjp.planDate); // Assuming YYYY-MM-DD string
@@ -205,28 +220,68 @@ export default function PJPListPage() {
         </div>
 
         {/* --- Summary Cards --- */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="bg-primary/5 border-primary/10">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-xs font-medium uppercase text-muted-foreground">Total Verified Plans</CardTitle>
-              <ClipboardList className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent><div className="text-2xl font-bold">{stats.totalPlans}</div></CardContent>
-          </Card>
-          <Card className="bg-primary/5 border-primary/10">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-xs font-medium uppercase text-muted-foreground">Total Target Bags</CardTitle>
-              <Target className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent><div className="text-2xl font-bold text-blue-600">{stats.totalBags}</div></CardContent>
-          </Card>
-          <Card className="bg-primary/5 border-primary/10">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-xs font-medium uppercase text-muted-foreground">Planned Site Visits</CardTitle>
-              <MapPin className="h-4 w-4 text-orange-500" />
-            </CardHeader>
-            <CardContent><div className="text-2xl font-bold text-orange-600">{stats.totalSites}</div></CardContent>
-          </Card>
+        <div className="space-y-4">
+
+          {/* Row 1: TODAY'S STATS (Large) */}
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="bg-primary/5 border-primary/10">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-wide">Today's Verified Plans</CardTitle>
+                <ClipboardList className="h-4 w-4 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats.todayCount}</div>
+                <p className="text-[10px] text-muted-foreground mt-1">Active plans for {format(new Date(), "dd MMM, yyyy")}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-primary/5 border-primary/10">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-wide">Today's Target Bags</CardTitle>
+                <Target className="h-4 w-4 text-blue-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-blue-600">{stats.todayBags}</div>
+                <p className="text-[10px] text-muted-foreground mt-1">Conversion goal for today</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-primary/5 border-primary/10">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-wide">Today's Site Visits</CardTitle>
+                <MapPin className="h-4 w-4 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-orange-600">{stats.todaySites}</div>
+                <p className="text-[10px] text-muted-foreground mt-1">Planned visits (New + Follow-up)</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Row 2: TOTAL STATS (Half Size / Compact) */}
+          <div className="grid gap-2 md:grid-cols-3">
+            <Card className="bg-muted/20 border-dashed shadow-none">
+              <CardContent className="p-1 flex items-center justify-center">
+                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Total Verified Plans:   </span>
+                <span className="text-base font-bold text-foreground">{stats.totalCount}</span>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/20 border-dashed shadow-none">
+              <CardContent className="p-1 flex items-center justify-center">
+                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Total Target Bags:   </span>
+                <span className="text-base font-bold text-blue-600/80">{stats.totalBags}</span>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/20 border-dashed shadow-none">
+              <CardContent className="p-1 flex items-center justify-center">
+                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Total Target Site Visits:   </span>
+                <span className="text-base font-bold text-orange-600/80">{stats.totalSites}</span>
+              </CardContent>
+            </Card>
+          </div>
+
         </div>
 
         {/* --- Filters --- */}
@@ -236,38 +291,38 @@ export default function PJPListPage() {
             <Input placeholder="Salesman or area..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           {/* 1. Date Range Picker */}
-            <div className="flex flex-col space-y-1.5 w-full sm:w-[300px]">
-              <label className="text-xs font-bold text-muted-foreground uppercase">Filter by Date</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal h-9",
-                      !dateRange && "text-muted-foreground"
-                    )}
-                  >
-                    <IconCalendar className="mr-2 h-4 w-4" />
-                    {dateRange?.from ? (
-                      dateRange.to ? (
-                        <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
-                      ) : (format(dateRange.from, "LLL dd, y"))
-                    ) : (
-                      <span>Select Date Range</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="range"
-                    defaultMonth={dateRange?.from || new Date()}
-                    selected={dateRange}
-                    onSelect={(range) => setDateRange(range)}
-                    numberOfMonths={2}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+          <div className="flex flex-col space-y-1.5 w-full sm:w-[300px]">
+            <label className="text-xs font-bold text-muted-foreground uppercase">Filter by Date</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal h-9",
+                    !dateRange && "text-muted-foreground"
+                  )}
+                >
+                  <IconCalendar className="mr-2 h-4 w-4" />
+                  {dateRange?.from ? (
+                    dateRange.to ? (
+                      <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
+                    ) : (format(dateRange.from, "LLL dd, y"))
+                  ) : (
+                    <span>Select Date Range</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  defaultMonth={dateRange?.from || new Date()}
+                  selected={dateRange}
+                  onSelect={(range) => setDateRange(range)}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="flex flex-col space-y-1.5 w-[180px]">
             <label className="text-xs font-bold text-muted-foreground uppercase">Salesman</label>
             <Select value={selectedSalesmanFilter} onValueChange={setSelectedSalesmanFilter}>
