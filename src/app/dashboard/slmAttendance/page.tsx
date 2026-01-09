@@ -12,7 +12,7 @@ import { DateRange } from "react-day-picker";
 // Import your Shadcn UI components
 import { Button } from '@/components/ui/button';
 import { IconCheck, IconX, IconCalendar } from '@tabler/icons-react';
-import { ExternalLink, Users, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, Users, CheckCircle2, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -39,6 +39,7 @@ import {
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { cn } from '@/lib/utils';
 import { salesmanAttendanceSchema } from '@/lib/shared-zod-schema';
+import SyncLocationBtn from '@/app/home/customReportGenerator/syncLocationBtn';
 //import { BASE_URL } from '@/lib/Reusable-constants';
 
 type SalesmanAttendanceReport = z.infer<typeof salesmanAttendanceSchema>;
@@ -281,6 +282,89 @@ export default function SlmAttendancePage() {
     setIsViewModalOpen(true);
   };
 
+  // Helper Component for Reverse Geocoding
+  const LocationCell = ({ locationName, lat, lng }: { locationName: string, lat?: number, lng?: number }) => {
+    const [address, setAddress] = React.useState(locationName);
+    const [isFetching, setIsFetching] = React.useState(false);
+
+    // We define the fetch logic as a reusable function
+    const fetchAddress = React.useCallback(async () => {
+      if (!lat || !lng) return;
+
+      setIsFetching(true);
+      try {
+        // Nominatim requires a User-Agent, though browsers send one automatically.
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+          headers: {
+            'Accept-Language': 'en-US,en;q=0.9', // Request English results
+          }
+        });
+
+        if (!res.ok) throw new Error("Rate Limit or Network Error");
+
+        const data = await res.json();
+        if (data && data.display_name) {
+          setAddress(data.display_name);
+        }
+      } catch (error) {
+        console.warn("Geocoding failed for:", lat, lng);
+        // We keep the address as "Live Location" so the user can try again
+      } finally {
+        setIsFetching(false);
+      }
+    }, [lat, lng]);
+
+    React.useEffect(() => {
+      // Only attempt auto-fetch if it's a raw "Live Location"
+      if ((locationName === 'Live Location' || locationName === 'Live Location (GPS Only)') && lat && lng) {
+
+        // 🟢 STAGGER LOGIC: Random delay between 0ms and 3000ms
+        // This prevents hitting the API rate limit when loading 50 rows at once
+        const delay = Math.random() * 3000;
+
+        const timer = setTimeout(() => {
+          fetchAddress();
+        }, delay);
+
+        return () => clearTimeout(timer);
+      } else {
+        setAddress(locationName);
+      }
+    }, [locationName, lat, lng, fetchAddress]);
+
+    // Check if we are still showing the placeholder text
+    const isGenericAddress = address.includes('Live Location');
+
+    return (
+      <div className="flex items-center gap-2 max-w-[300px]">
+        <span className="truncate block text-xs sm:text-sm" title={address}>
+          {address}
+        </span>
+
+        {/* Show Loader while fetching */}
+        {isFetching && (
+          <Loader2 className="h-3 w-3 animate-spin text-muted-foreground shrink-0" />
+        )}
+
+        {/* Show Refresh Button ONLY if we aren't fetching AND it's still a generic address */}
+        {!isFetching && isGenericAddress && lat && lng && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-muted-foreground hover:text-primary"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click
+              fetchAddress();
+            }}
+            title="Retry fetching address"
+          >
+            <RefreshCw className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
+    );
+  };
+
   // --- NEW: Helper function to format time in IST (KEPT) ---
   const formatTimeIST = (isoString: string | null | undefined) => {
     if (!isoString) return 'N/A';
@@ -318,7 +402,13 @@ export default function SlmAttendancePage() {
     {
       accessorKey: "location",
       header: "Location",
-      cell: ({ row }) => <span className="max-w-[250px] truncate block">{row.original.location}</span>,
+      cell: ({ row }) => (
+        <LocationCell
+          locationName={row.original.location}
+          lat={row.original.inTimeLatitude}
+          lng={row.original.inTimeLongitude}
+        />
+      ),
     },
     {
       accessorKey: 'inTime',
@@ -423,6 +513,14 @@ export default function SlmAttendancePage() {
         {/* Header Section */}
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Salesman Attendance Reports</h2>
+          {/* SYNC BUTTON ADDED HERE */}
+          <SyncLocationBtn
+            data={attendanceReports}
+            onSyncComplete={() => {
+              toast.info("Refetching reports with updated addresses...");
+              fetchAttendanceReports();
+            }}
+          />
         </div>
 
         {/* --- Summary Cards Section --- */}

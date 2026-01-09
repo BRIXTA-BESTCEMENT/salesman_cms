@@ -86,12 +86,14 @@ export async function GET(request: NextRequest) {
       const salesmanName = [record.user?.firstName, record.user?.lastName]
         .filter(Boolean) // Remove any null or undefined parts
         .join(' ') || record.user.email || 'N/A'; // Use email as fallback
+      
+      let displayLocation = record.locationName;
 
       return {
         id: record.id,
         salesmanName: salesmanName,
         date: record.attendanceDate.toISOString().split('T')[0], // YYYY-MM-DD
-        location: record.locationName, // Corresponds to locationName in schema
+        location: displayLocation,
 
         // Use ISO string for inTime/outTime for consistency, or keep toLocaleTimeString if that is the strict frontend requirement
         inTime: record.inTimeTimestamp ? record.inTimeTimestamp.toISOString() : null,
