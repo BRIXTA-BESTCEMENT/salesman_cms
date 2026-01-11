@@ -54,6 +54,7 @@ export type JourneyMinAggregateOutputType = {
   startTime: Date | null
   endTime: Date | null
   totalDistance: runtime.Decimal | null
+  isSynced: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +73,7 @@ export type JourneyMaxAggregateOutputType = {
   startTime: Date | null
   endTime: Date | null
   totalDistance: runtime.Decimal | null
+  isSynced: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -90,6 +92,7 @@ export type JourneyCountAggregateOutputType = {
   startTime: number
   endTime: number
   totalDistance: number
+  isSynced: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -124,6 +127,7 @@ export type JourneyMinAggregateInputType = {
   startTime?: true
   endTime?: true
   totalDistance?: true
+  isSynced?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -142,6 +146,7 @@ export type JourneyMaxAggregateInputType = {
   startTime?: true
   endTime?: true
   totalDistance?: true
+  isSynced?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -160,6 +165,7 @@ export type JourneyCountAggregateInputType = {
   startTime?: true
   endTime?: true
   totalDistance?: true
+  isSynced?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -265,6 +271,7 @@ export type JourneyGroupByOutputType = {
   startTime: Date
   endTime: Date | null
   totalDistance: runtime.Decimal | null
+  isSynced: boolean
   createdAt: Date
   updatedAt: Date
   _count: JourneyCountAggregateOutputType | null
@@ -306,11 +313,13 @@ export type JourneyWhereInput = {
   startTime?: Prisma.DateTimeFilter<"Journey"> | Date | string
   endTime?: Prisma.DateTimeNullableFilter<"Journey"> | Date | string | null
   totalDistance?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFilter<"Journey"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   geoTrackings?: Prisma.GeoTrackingListRelationFilter
   breadcrumbs?: Prisma.JourneyBreadcrumbListRelationFilter
+  ops?: Prisma.JourneyOpListRelationFilter
 }
 
 export type JourneyOrderByWithRelationInput = {
@@ -327,11 +336,13 @@ export type JourneyOrderByWithRelationInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrderInput | Prisma.SortOrder
   totalDistance?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   geoTrackings?: Prisma.GeoTrackingOrderByRelationAggregateInput
   breadcrumbs?: Prisma.JourneyBreadcrumbOrderByRelationAggregateInput
+  ops?: Prisma.JourneyOpOrderByRelationAggregateInput
 }
 
 export type JourneyWhereUniqueInput = Prisma.AtLeast<{
@@ -351,11 +362,13 @@ export type JourneyWhereUniqueInput = Prisma.AtLeast<{
   startTime?: Prisma.DateTimeFilter<"Journey"> | Date | string
   endTime?: Prisma.DateTimeNullableFilter<"Journey"> | Date | string | null
   totalDistance?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFilter<"Journey"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   geoTrackings?: Prisma.GeoTrackingListRelationFilter
   breadcrumbs?: Prisma.JourneyBreadcrumbListRelationFilter
+  ops?: Prisma.JourneyOpListRelationFilter
 }, "id">
 
 export type JourneyOrderByWithAggregationInput = {
@@ -372,6 +385,7 @@ export type JourneyOrderByWithAggregationInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrderInput | Prisma.SortOrder
   totalDistance?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.JourneyCountOrderByAggregateInput
@@ -398,6 +412,7 @@ export type JourneyScalarWhereWithAggregatesInput = {
   startTime?: Prisma.DateTimeWithAggregatesFilter<"Journey"> | Date | string
   endTime?: Prisma.DateTimeNullableWithAggregatesFilter<"Journey"> | Date | string | null
   totalDistance?: Prisma.DecimalNullableWithAggregatesFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolWithAggregatesFilter<"Journey"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Journey"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Journey"> | Date | string
 }
@@ -415,11 +430,13 @@ export type JourneyCreateInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutJourneysInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutJourneyInput
   breadcrumbs?: Prisma.JourneyBreadcrumbCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyUncheckedCreateInput = {
@@ -436,10 +453,12 @@ export type JourneyUncheckedCreateInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutJourneyInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyUpdateInput = {
@@ -455,11 +474,13 @@ export type JourneyUpdateInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutJourneyNestedInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyUncheckedUpdateInput = {
@@ -476,10 +497,12 @@ export type JourneyUncheckedUpdateInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutJourneyNestedInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyCreateManyInput = {
@@ -496,6 +519,7 @@ export type JourneyCreateManyInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -513,6 +537,7 @@ export type JourneyUpdateManyMutationInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -531,6 +556,7 @@ export type JourneyUncheckedUpdateManyInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -550,6 +576,11 @@ export type JourneyNullableScalarRelationFilter = {
   isNot?: Prisma.JourneyWhereInput | null
 }
 
+export type JourneyScalarRelationFilter = {
+  is?: Prisma.JourneyWhereInput
+  isNot?: Prisma.JourneyWhereInput
+}
+
 export type JourneyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -564,6 +595,7 @@ export type JourneyCountOrderByAggregateInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   totalDistance?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -589,6 +621,7 @@ export type JourneyMaxOrderByAggregateInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   totalDistance?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -607,6 +640,7 @@ export type JourneyMinOrderByAggregateInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   totalDistance?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -616,11 +650,6 @@ export type JourneySumOrderByAggregateInput = {
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
   totalDistance?: Prisma.SortOrder
-}
-
-export type JourneyScalarRelationFilter = {
-  is?: Prisma.JourneyWhereInput
-  isNot?: Prisma.JourneyWhereInput
 }
 
 export type JourneyCreateNestedManyWithoutUserInput = {
@@ -681,6 +710,20 @@ export type JourneyUpdateOneWithoutGeoTrackingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.JourneyUpdateToOneWithWhereWithoutGeoTrackingsInput, Prisma.JourneyUpdateWithoutGeoTrackingsInput>, Prisma.JourneyUncheckedUpdateWithoutGeoTrackingsInput>
 }
 
+export type JourneyCreateNestedOneWithoutOpsInput = {
+  create?: Prisma.XOR<Prisma.JourneyCreateWithoutOpsInput, Prisma.JourneyUncheckedCreateWithoutOpsInput>
+  connectOrCreate?: Prisma.JourneyCreateOrConnectWithoutOpsInput
+  connect?: Prisma.JourneyWhereUniqueInput
+}
+
+export type JourneyUpdateOneRequiredWithoutOpsNestedInput = {
+  create?: Prisma.XOR<Prisma.JourneyCreateWithoutOpsInput, Prisma.JourneyUncheckedCreateWithoutOpsInput>
+  connectOrCreate?: Prisma.JourneyCreateOrConnectWithoutOpsInput
+  upsert?: Prisma.JourneyUpsertWithoutOpsInput
+  connect?: Prisma.JourneyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.JourneyUpdateToOneWithWhereWithoutOpsInput, Prisma.JourneyUpdateWithoutOpsInput>, Prisma.JourneyUncheckedUpdateWithoutOpsInput>
+}
+
 export type JourneyCreateNestedOneWithoutBreadcrumbsInput = {
   create?: Prisma.XOR<Prisma.JourneyCreateWithoutBreadcrumbsInput, Prisma.JourneyUncheckedCreateWithoutBreadcrumbsInput>
   connectOrCreate?: Prisma.JourneyCreateOrConnectWithoutBreadcrumbsInput
@@ -708,10 +751,12 @@ export type JourneyCreateWithoutUserInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutJourneyInput
   breadcrumbs?: Prisma.JourneyBreadcrumbCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyUncheckedCreateWithoutUserInput = {
@@ -727,10 +772,12 @@ export type JourneyUncheckedCreateWithoutUserInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutJourneyInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyCreateOrConnectWithoutUserInput = {
@@ -776,6 +823,7 @@ export type JourneyScalarWhereInput = {
   startTime?: Prisma.DateTimeFilter<"Journey"> | Date | string
   endTime?: Prisma.DateTimeNullableFilter<"Journey"> | Date | string | null
   totalDistance?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFilter<"Journey"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
 }
@@ -793,10 +841,12 @@ export type JourneyCreateWithoutGeoTrackingsInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutJourneysInput
   breadcrumbs?: Prisma.JourneyBreadcrumbCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyUncheckedCreateWithoutGeoTrackingsInput = {
@@ -813,9 +863,11 @@ export type JourneyUncheckedCreateWithoutGeoTrackingsInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyCreateOrConnectWithoutGeoTrackingsInput = {
@@ -847,10 +899,12 @@ export type JourneyUpdateWithoutGeoTrackingsInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyUncheckedUpdateWithoutGeoTrackingsInput = {
@@ -867,8 +921,110 @@ export type JourneyUncheckedUpdateWithoutGeoTrackingsInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUncheckedUpdateManyWithoutJourneyNestedInput
+}
+
+export type JourneyCreateWithoutOpsInput = {
+  id?: string
+  pjpId?: string | null
+  siteId?: string | null
+  dealerId?: string | null
+  siteName?: string | null
+  destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: string
+  isActive?: boolean
+  startTime?: Date | string
+  endTime?: Date | string | null
+  totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutJourneysInput
+  geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutJourneyInput
+  breadcrumbs?: Prisma.JourneyBreadcrumbCreateNestedManyWithoutJourneyInput
+}
+
+export type JourneyUncheckedCreateWithoutOpsInput = {
+  id?: string
+  userId: number
+  pjpId?: string | null
+  siteId?: string | null
+  dealerId?: string | null
+  siteName?: string | null
+  destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: string
+  isActive?: boolean
+  startTime?: Date | string
+  endTime?: Date | string | null
+  totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutJourneyInput
+  breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedCreateNestedManyWithoutJourneyInput
+}
+
+export type JourneyCreateOrConnectWithoutOpsInput = {
+  where: Prisma.JourneyWhereUniqueInput
+  create: Prisma.XOR<Prisma.JourneyCreateWithoutOpsInput, Prisma.JourneyUncheckedCreateWithoutOpsInput>
+}
+
+export type JourneyUpsertWithoutOpsInput = {
+  update: Prisma.XOR<Prisma.JourneyUpdateWithoutOpsInput, Prisma.JourneyUncheckedUpdateWithoutOpsInput>
+  create: Prisma.XOR<Prisma.JourneyCreateWithoutOpsInput, Prisma.JourneyUncheckedCreateWithoutOpsInput>
+  where?: Prisma.JourneyWhereInput
+}
+
+export type JourneyUpdateToOneWithWhereWithoutOpsInput = {
+  where?: Prisma.JourneyWhereInput
+  data: Prisma.XOR<Prisma.JourneyUpdateWithoutOpsInput, Prisma.JourneyUncheckedUpdateWithoutOpsInput>
+}
+
+export type JourneyUpdateWithoutOpsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
+  geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutJourneyNestedInput
+  breadcrumbs?: Prisma.JourneyBreadcrumbUpdateManyWithoutJourneyNestedInput
+}
+
+export type JourneyUncheckedUpdateWithoutOpsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutJourneyNestedInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -885,10 +1041,12 @@ export type JourneyCreateWithoutBreadcrumbsInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutJourneysInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyUncheckedCreateWithoutBreadcrumbsInput = {
@@ -905,9 +1063,11 @@ export type JourneyUncheckedCreateWithoutBreadcrumbsInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutJourneyInput
+  ops?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyCreateOrConnectWithoutBreadcrumbsInput = {
@@ -939,10 +1099,12 @@ export type JourneyUpdateWithoutBreadcrumbsInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyUncheckedUpdateWithoutBreadcrumbsInput = {
@@ -959,9 +1121,11 @@ export type JourneyUncheckedUpdateWithoutBreadcrumbsInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyCreateManyUserInput = {
@@ -977,6 +1141,7 @@ export type JourneyCreateManyUserInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   totalDistance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -994,10 +1159,12 @@ export type JourneyUpdateWithoutUserInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutJourneyNestedInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyUncheckedUpdateWithoutUserInput = {
@@ -1013,10 +1180,12 @@ export type JourneyUncheckedUpdateWithoutUserInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutJourneyNestedInput
   breadcrumbs?: Prisma.JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyNestedInput
+  ops?: Prisma.JourneyOpUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyUncheckedUpdateManyWithoutUserInput = {
@@ -1032,6 +1201,7 @@ export type JourneyUncheckedUpdateManyWithoutUserInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalDistance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isSynced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1044,11 +1214,13 @@ export type JourneyUncheckedUpdateManyWithoutUserInput = {
 export type JourneyCountOutputType = {
   geoTrackings: number
   breadcrumbs: number
+  ops: number
 }
 
 export type JourneyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   geoTrackings?: boolean | JourneyCountOutputTypeCountGeoTrackingsArgs
   breadcrumbs?: boolean | JourneyCountOutputTypeCountBreadcrumbsArgs
+  ops?: boolean | JourneyCountOutputTypeCountOpsArgs
 }
 
 /**
@@ -1075,6 +1247,13 @@ export type JourneyCountOutputTypeCountBreadcrumbsArgs<ExtArgs extends runtime.T
   where?: Prisma.JourneyBreadcrumbWhereInput
 }
 
+/**
+ * JourneyCountOutputType without action
+ */
+export type JourneyCountOutputTypeCountOpsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.JourneyOpWhereInput
+}
+
 
 export type JourneySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1090,11 +1269,13 @@ export type JourneySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   startTime?: boolean
   endTime?: boolean
   totalDistance?: boolean
+  isSynced?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   geoTrackings?: boolean | Prisma.Journey$geoTrackingsArgs<ExtArgs>
   breadcrumbs?: boolean | Prisma.Journey$breadcrumbsArgs<ExtArgs>
+  ops?: boolean | Prisma.Journey$opsArgs<ExtArgs>
   _count?: boolean | Prisma.JourneyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journey"]>
 
@@ -1112,6 +1293,7 @@ export type JourneySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   startTime?: boolean
   endTime?: boolean
   totalDistance?: boolean
+  isSynced?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1131,6 +1313,7 @@ export type JourneySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   startTime?: boolean
   endTime?: boolean
   totalDistance?: boolean
+  isSynced?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1150,15 +1333,17 @@ export type JourneySelectScalar = {
   startTime?: boolean
   endTime?: boolean
   totalDistance?: boolean
+  isSynced?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type JourneyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "pjpId" | "siteId" | "dealerId" | "siteName" | "destLat" | "destLng" | "status" | "isActive" | "startTime" | "endTime" | "totalDistance" | "createdAt" | "updatedAt", ExtArgs["result"]["journey"]>
+export type JourneyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "pjpId" | "siteId" | "dealerId" | "siteName" | "destLat" | "destLng" | "status" | "isActive" | "startTime" | "endTime" | "totalDistance" | "isSynced" | "createdAt" | "updatedAt", ExtArgs["result"]["journey"]>
 export type JourneyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   geoTrackings?: boolean | Prisma.Journey$geoTrackingsArgs<ExtArgs>
   breadcrumbs?: boolean | Prisma.Journey$breadcrumbsArgs<ExtArgs>
+  ops?: boolean | Prisma.Journey$opsArgs<ExtArgs>
   _count?: boolean | Prisma.JourneyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type JourneyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1174,6 +1359,7 @@ export type $JourneyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     user: Prisma.$UserPayload<ExtArgs>
     geoTrackings: Prisma.$GeoTrackingPayload<ExtArgs>[]
     breadcrumbs: Prisma.$JourneyBreadcrumbPayload<ExtArgs>[]
+    ops: Prisma.$JourneyOpPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1189,6 +1375,7 @@ export type $JourneyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     startTime: Date
     endTime: Date | null
     totalDistance: runtime.Decimal | null
+    isSynced: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["journey"]>
@@ -1588,6 +1775,7 @@ export interface Prisma__JourneyClient<T, Null = never, ExtArgs extends runtime.
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   geoTrackings<T extends Prisma.Journey$geoTrackingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$geoTrackingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeoTrackingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   breadcrumbs<T extends Prisma.Journey$breadcrumbsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$breadcrumbsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JourneyBreadcrumbPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ops<T extends Prisma.Journey$opsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$opsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JourneyOpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1630,6 +1818,7 @@ export interface JourneyFieldRefs {
   readonly startTime: Prisma.FieldRef<"Journey", 'DateTime'>
   readonly endTime: Prisma.FieldRef<"Journey", 'DateTime'>
   readonly totalDistance: Prisma.FieldRef<"Journey", 'Decimal'>
+  readonly isSynced: Prisma.FieldRef<"Journey", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Journey", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Journey", 'DateTime'>
 }
@@ -2073,6 +2262,30 @@ export type Journey$breadcrumbsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.JourneyBreadcrumbScalarFieldEnum | Prisma.JourneyBreadcrumbScalarFieldEnum[]
+}
+
+/**
+ * Journey.ops
+ */
+export type Journey$opsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the JourneyOp
+   */
+  select?: Prisma.JourneyOpSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the JourneyOp
+   */
+  omit?: Prisma.JourneyOpOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyOpInclude<ExtArgs> | null
+  where?: Prisma.JourneyOpWhereInput
+  orderBy?: Prisma.JourneyOpOrderByWithRelationInput | Prisma.JourneyOpOrderByWithRelationInput[]
+  cursor?: Prisma.JourneyOpWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.JourneyOpScalarFieldEnum | Prisma.JourneyOpScalarFieldEnum[]
 }
 
 /**

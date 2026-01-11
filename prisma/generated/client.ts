@@ -90,6 +90,11 @@ export type CompetitionReport = Prisma.CompetitionReportModel
  */
 export type GeoTracking = Prisma.GeoTrackingModel
 /**
+ * Model JourneyOp
+ * 
+ */
+export type JourneyOp = Prisma.JourneyOpModel
+/**
  * Model Journey
  * 
  */
@@ -99,6 +104,11 @@ export type Journey = Prisma.JourneyModel
  * 
  */
 export type JourneyBreadcrumb = Prisma.JourneyBreadcrumbModel
+/**
+ * Model SyncState
+ * 
+ */
+export type SyncState = Prisma.SyncStateModel
 /**
  * Model DailyTask
  * 

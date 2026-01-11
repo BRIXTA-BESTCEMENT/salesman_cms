@@ -394,8 +394,10 @@ export const ModelName = {
   SalesmanLeaveApplication: 'SalesmanLeaveApplication',
   CompetitionReport: 'CompetitionReport',
   GeoTracking: 'GeoTracking',
+  JourneyOp: 'JourneyOp',
   Journey: 'Journey',
   JourneyBreadcrumb: 'JourneyBreadcrumb',
+  SyncState: 'SyncState',
   DailyTask: 'DailyTask',
   SalesOrder: 'SalesOrder',
   DealerReportsAndScores: 'DealerReportsAndScores',
@@ -445,7 +447,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "dealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journey" | "journeyBreadcrumb" | "dailyTask" | "salesOrder" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
+    modelProps: "company" | "user" | "dealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1189,6 +1191,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    JourneyOp: {
+      payload: Prisma.$JourneyOpPayload<ExtArgs>
+      fields: Prisma.JourneyOpFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.JourneyOpFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.JourneyOpFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>
+        }
+        findFirst: {
+          args: Prisma.JourneyOpFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.JourneyOpFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>
+        }
+        findMany: {
+          args: Prisma.JourneyOpFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>[]
+        }
+        create: {
+          args: Prisma.JourneyOpCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>
+        }
+        createMany: {
+          args: Prisma.JourneyOpCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.JourneyOpCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>[]
+        }
+        delete: {
+          args: Prisma.JourneyOpDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>
+        }
+        update: {
+          args: Prisma.JourneyOpUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>
+        }
+        deleteMany: {
+          args: Prisma.JourneyOpDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.JourneyOpUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.JourneyOpUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>[]
+        }
+        upsert: {
+          args: Prisma.JourneyOpUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$JourneyOpPayload>
+        }
+        aggregate: {
+          args: Prisma.JourneyOpAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateJourneyOp>
+        }
+        groupBy: {
+          args: Prisma.JourneyOpGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.JourneyOpGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.JourneyOpCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.JourneyOpCountAggregateOutputType> | number
+        }
+      }
+    }
     Journey: {
       payload: Prisma.$JourneyPayload<ExtArgs>
       fields: Prisma.JourneyFieldRefs
@@ -1334,6 +1410,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.JourneyBreadcrumbCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.JourneyBreadcrumbCountAggregateOutputType> | number
+        }
+      }
+    }
+    SyncState: {
+      payload: Prisma.$SyncStatePayload<ExtArgs>
+      fields: Prisma.SyncStateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SyncStateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SyncStateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>
+        }
+        findFirst: {
+          args: Prisma.SyncStateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SyncStateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>
+        }
+        findMany: {
+          args: Prisma.SyncStateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>[]
+        }
+        create: {
+          args: Prisma.SyncStateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>
+        }
+        createMany: {
+          args: Prisma.SyncStateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SyncStateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>[]
+        }
+        delete: {
+          args: Prisma.SyncStateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>
+        }
+        update: {
+          args: Prisma.SyncStateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>
+        }
+        deleteMany: {
+          args: Prisma.SyncStateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SyncStateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SyncStateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>[]
+        }
+        upsert: {
+          args: Prisma.SyncStateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SyncStatePayload>
+        }
+        aggregate: {
+          args: Prisma.SyncStateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSyncState>
+        }
+        groupBy: {
+          args: Prisma.SyncStateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SyncStateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SyncStateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SyncStateCountAggregateOutputType> | number
         }
       }
     }
@@ -4193,6 +4343,19 @@ export const GeoTrackingScalarFieldEnum = {
 export type GeoTrackingScalarFieldEnum = (typeof GeoTrackingScalarFieldEnum)[keyof typeof GeoTrackingScalarFieldEnum]
 
 
+export const JourneyOpScalarFieldEnum = {
+  serverSeq: 'serverSeq',
+  opId: 'opId',
+  journeyId: 'journeyId',
+  userId: 'userId',
+  type: 'type',
+  payload: 'payload',
+  createdAt: 'createdAt'
+} as const
+
+export type JourneyOpScalarFieldEnum = (typeof JourneyOpScalarFieldEnum)[keyof typeof JourneyOpScalarFieldEnum]
+
+
 export const JourneyScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -4207,6 +4370,7 @@ export const JourneyScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   totalDistance: 'totalDistance',
+  isSynced: 'isSynced',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -4229,10 +4393,19 @@ export const JourneyBreadcrumbScalarFieldEnum = {
   isMocked: 'isMocked',
   recordedAt: 'recordedAt',
   createdAt: 'createdAt',
+  isSynced: 'isSynced',
   journeyId: 'journeyId'
 } as const
 
 export type JourneyBreadcrumbScalarFieldEnum = (typeof JourneyBreadcrumbScalarFieldEnum)[keyof typeof JourneyBreadcrumbScalarFieldEnum]
+
+
+export const SyncStateScalarFieldEnum = {
+  id: 'id',
+  lastServerSeq: 'lastServerSeq'
+} as const
+
+export type SyncStateScalarFieldEnum = (typeof SyncStateScalarFieldEnum)[keyof typeof SyncStateScalarFieldEnum]
 
 
 export const DailyTaskScalarFieldEnum = {
@@ -4965,16 +5138,16 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
- * Reference to a field of type 'Float'
+ * Reference to a field of type 'BigInt'
  */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
     
 
 
 /**
- * Reference to a field of type 'Float[]'
+ * Reference to a field of type 'BigInt[]'
  */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
     
 
 
@@ -4989,6 +5162,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -5096,8 +5283,10 @@ export type GlobalOmitConfig = {
   salesmanLeaveApplication?: Prisma.SalesmanLeaveApplicationOmit
   competitionReport?: Prisma.CompetitionReportOmit
   geoTracking?: Prisma.GeoTrackingOmit
+  journeyOp?: Prisma.JourneyOpOmit
   journey?: Prisma.JourneyOmit
   journeyBreadcrumb?: Prisma.JourneyBreadcrumbOmit
+  syncState?: Prisma.SyncStateOmit
   dailyTask?: Prisma.DailyTaskOmit
   salesOrder?: Prisma.SalesOrderOmit
   dealerReportsAndScores?: Prisma.DealerReportsAndScoresOmit

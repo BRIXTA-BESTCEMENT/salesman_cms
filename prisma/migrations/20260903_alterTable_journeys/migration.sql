@@ -1,0 +1,2 @@
+ALTER TABLE journeys 
+ADD COLUMN is_synced BOOLEAN DEFAULT false;

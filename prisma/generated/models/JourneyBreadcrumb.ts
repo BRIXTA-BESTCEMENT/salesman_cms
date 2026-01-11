@@ -61,6 +61,7 @@ export type JourneyBreadcrumbMinAggregateOutputType = {
   isMocked: boolean | null
   recordedAt: Date | null
   createdAt: Date | null
+  isSynced: boolean | null
   journeyId: string | null
 }
 
@@ -79,6 +80,7 @@ export type JourneyBreadcrumbMaxAggregateOutputType = {
   isMocked: boolean | null
   recordedAt: Date | null
   createdAt: Date | null
+  isSynced: boolean | null
   journeyId: string | null
 }
 
@@ -97,6 +99,7 @@ export type JourneyBreadcrumbCountAggregateOutputType = {
   isMocked: number
   recordedAt: number
   createdAt: number
+  isSynced: number
   journeyId: number
   _all: number
 }
@@ -137,6 +140,7 @@ export type JourneyBreadcrumbMinAggregateInputType = {
   isMocked?: true
   recordedAt?: true
   createdAt?: true
+  isSynced?: true
   journeyId?: true
 }
 
@@ -155,6 +159,7 @@ export type JourneyBreadcrumbMaxAggregateInputType = {
   isMocked?: true
   recordedAt?: true
   createdAt?: true
+  isSynced?: true
   journeyId?: true
 }
 
@@ -173,6 +178,7 @@ export type JourneyBreadcrumbCountAggregateInputType = {
   isMocked?: true
   recordedAt?: true
   createdAt?: true
+  isSynced?: true
   journeyId?: true
   _all?: true
 }
@@ -278,6 +284,7 @@ export type JourneyBreadcrumbGroupByOutputType = {
   isMocked: boolean | null
   recordedAt: Date
   createdAt: Date
+  isSynced: boolean | null
   journeyId: string
   _count: JourneyBreadcrumbCountAggregateOutputType | null
   _avg: JourneyBreadcrumbAvgAggregateOutputType | null
@@ -319,6 +326,7 @@ export type JourneyBreadcrumbWhereInput = {
   isMocked?: Prisma.BoolNullableFilter<"JourneyBreadcrumb"> | boolean | null
   recordedAt?: Prisma.DateTimeFilter<"JourneyBreadcrumb"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"JourneyBreadcrumb"> | Date | string
+  isSynced?: Prisma.BoolNullableFilter<"JourneyBreadcrumb"> | boolean | null
   journeyId?: Prisma.StringFilter<"JourneyBreadcrumb"> | string
   journey?: Prisma.XOR<Prisma.JourneyScalarRelationFilter, Prisma.JourneyWhereInput>
 }
@@ -338,6 +346,7 @@ export type JourneyBreadcrumbOrderByWithRelationInput = {
   isMocked?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrderInput | Prisma.SortOrder
   journeyId?: Prisma.SortOrder
   journey?: Prisma.JourneyOrderByWithRelationInput
 }
@@ -360,6 +369,7 @@ export type JourneyBreadcrumbWhereUniqueInput = Prisma.AtLeast<{
   isMocked?: Prisma.BoolNullableFilter<"JourneyBreadcrumb"> | boolean | null
   recordedAt?: Prisma.DateTimeFilter<"JourneyBreadcrumb"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"JourneyBreadcrumb"> | Date | string
+  isSynced?: Prisma.BoolNullableFilter<"JourneyBreadcrumb"> | boolean | null
   journeyId?: Prisma.StringFilter<"JourneyBreadcrumb"> | string
   journey?: Prisma.XOR<Prisma.JourneyScalarRelationFilter, Prisma.JourneyWhereInput>
 }, "id">
@@ -379,6 +389,7 @@ export type JourneyBreadcrumbOrderByWithAggregationInput = {
   isMocked?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrderInput | Prisma.SortOrder
   journeyId?: Prisma.SortOrder
   _count?: Prisma.JourneyBreadcrumbCountOrderByAggregateInput
   _avg?: Prisma.JourneyBreadcrumbAvgOrderByAggregateInput
@@ -405,6 +416,7 @@ export type JourneyBreadcrumbScalarWhereWithAggregatesInput = {
   isMocked?: Prisma.BoolNullableWithAggregatesFilter<"JourneyBreadcrumb"> | boolean | null
   recordedAt?: Prisma.DateTimeWithAggregatesFilter<"JourneyBreadcrumb"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"JourneyBreadcrumb"> | Date | string
+  isSynced?: Prisma.BoolNullableWithAggregatesFilter<"JourneyBreadcrumb"> | boolean | null
   journeyId?: Prisma.StringWithAggregatesFilter<"JourneyBreadcrumb"> | string
 }
 
@@ -423,6 +435,7 @@ export type JourneyBreadcrumbCreateInput = {
   isMocked?: boolean | null
   recordedAt: Date | string
   createdAt?: Date | string
+  isSynced?: boolean | null
   journey: Prisma.JourneyCreateNestedOneWithoutBreadcrumbsInput
 }
 
@@ -441,6 +454,7 @@ export type JourneyBreadcrumbUncheckedCreateInput = {
   isMocked?: boolean | null
   recordedAt: Date | string
   createdAt?: Date | string
+  isSynced?: boolean | null
   journeyId: string
 }
 
@@ -459,6 +473,7 @@ export type JourneyBreadcrumbUpdateInput = {
   isMocked?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSynced?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   journey?: Prisma.JourneyUpdateOneRequiredWithoutBreadcrumbsNestedInput
 }
 
@@ -477,6 +492,7 @@ export type JourneyBreadcrumbUncheckedUpdateInput = {
   isMocked?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSynced?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   journeyId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -495,6 +511,7 @@ export type JourneyBreadcrumbCreateManyInput = {
   isMocked?: boolean | null
   recordedAt: Date | string
   createdAt?: Date | string
+  isSynced?: boolean | null
   journeyId: string
 }
 
@@ -513,6 +530,7 @@ export type JourneyBreadcrumbUpdateManyMutationInput = {
   isMocked?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSynced?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 export type JourneyBreadcrumbUncheckedUpdateManyInput = {
@@ -530,6 +548,7 @@ export type JourneyBreadcrumbUncheckedUpdateManyInput = {
   isMocked?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSynced?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   journeyId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -558,6 +577,7 @@ export type JourneyBreadcrumbCountOrderByAggregateInput = {
   isMocked?: Prisma.SortOrder
   recordedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   journeyId?: Prisma.SortOrder
 }
 
@@ -586,6 +606,7 @@ export type JourneyBreadcrumbMaxOrderByAggregateInput = {
   isMocked?: Prisma.SortOrder
   recordedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   journeyId?: Prisma.SortOrder
 }
 
@@ -604,6 +625,7 @@ export type JourneyBreadcrumbMinOrderByAggregateInput = {
   isMocked?: Prisma.SortOrder
   recordedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  isSynced?: Prisma.SortOrder
   journeyId?: Prisma.SortOrder
 }
 
@@ -682,6 +704,7 @@ export type JourneyBreadcrumbCreateWithoutJourneyInput = {
   isMocked?: boolean | null
   recordedAt: Date | string
   createdAt?: Date | string
+  isSynced?: boolean | null
 }
 
 export type JourneyBreadcrumbUncheckedCreateWithoutJourneyInput = {
@@ -699,6 +722,7 @@ export type JourneyBreadcrumbUncheckedCreateWithoutJourneyInput = {
   isMocked?: boolean | null
   recordedAt: Date | string
   createdAt?: Date | string
+  isSynced?: boolean | null
 }
 
 export type JourneyBreadcrumbCreateOrConnectWithoutJourneyInput = {
@@ -745,6 +769,7 @@ export type JourneyBreadcrumbScalarWhereInput = {
   isMocked?: Prisma.BoolNullableFilter<"JourneyBreadcrumb"> | boolean | null
   recordedAt?: Prisma.DateTimeFilter<"JourneyBreadcrumb"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"JourneyBreadcrumb"> | Date | string
+  isSynced?: Prisma.BoolNullableFilter<"JourneyBreadcrumb"> | boolean | null
   journeyId?: Prisma.StringFilter<"JourneyBreadcrumb"> | string
 }
 
@@ -763,6 +788,7 @@ export type JourneyBreadcrumbCreateManyJourneyInput = {
   isMocked?: boolean | null
   recordedAt: Date | string
   createdAt?: Date | string
+  isSynced?: boolean | null
 }
 
 export type JourneyBreadcrumbUpdateWithoutJourneyInput = {
@@ -780,6 +806,7 @@ export type JourneyBreadcrumbUpdateWithoutJourneyInput = {
   isMocked?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSynced?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 export type JourneyBreadcrumbUncheckedUpdateWithoutJourneyInput = {
@@ -797,6 +824,7 @@ export type JourneyBreadcrumbUncheckedUpdateWithoutJourneyInput = {
   isMocked?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSynced?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 export type JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyInput = {
@@ -814,6 +842,7 @@ export type JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyInput = {
   isMocked?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSynced?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 
@@ -833,6 +862,7 @@ export type JourneyBreadcrumbSelect<ExtArgs extends runtime.Types.Extensions.Int
   isMocked?: boolean
   recordedAt?: boolean
   createdAt?: boolean
+  isSynced?: boolean
   journeyId?: boolean
   journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journeyBreadcrumb"]>
@@ -852,6 +882,7 @@ export type JourneyBreadcrumbSelectCreateManyAndReturn<ExtArgs extends runtime.T
   isMocked?: boolean
   recordedAt?: boolean
   createdAt?: boolean
+  isSynced?: boolean
   journeyId?: boolean
   journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journeyBreadcrumb"]>
@@ -871,6 +902,7 @@ export type JourneyBreadcrumbSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   isMocked?: boolean
   recordedAt?: boolean
   createdAt?: boolean
+  isSynced?: boolean
   journeyId?: boolean
   journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journeyBreadcrumb"]>
@@ -890,10 +922,11 @@ export type JourneyBreadcrumbSelectScalar = {
   isMocked?: boolean
   recordedAt?: boolean
   createdAt?: boolean
+  isSynced?: boolean
   journeyId?: boolean
 }
 
-export type JourneyBreadcrumbOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "latitude" | "longitude" | "h3Index" | "speed" | "accuracy" | "heading" | "altitude" | "batteryLevel" | "isCharging" | "networkStatus" | "isMocked" | "recordedAt" | "createdAt" | "journeyId", ExtArgs["result"]["journeyBreadcrumb"]>
+export type JourneyBreadcrumbOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "latitude" | "longitude" | "h3Index" | "speed" | "accuracy" | "heading" | "altitude" | "batteryLevel" | "isCharging" | "networkStatus" | "isMocked" | "recordedAt" | "createdAt" | "isSynced" | "journeyId", ExtArgs["result"]["journeyBreadcrumb"]>
 export type JourneyBreadcrumbInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
 }
@@ -924,6 +957,7 @@ export type $JourneyBreadcrumbPayload<ExtArgs extends runtime.Types.Extensions.I
     isMocked: boolean | null
     recordedAt: Date
     createdAt: Date
+    isSynced: boolean | null
     journeyId: string
   }, ExtArgs["result"]["journeyBreadcrumb"]>
   composites: {}
@@ -1363,6 +1397,7 @@ export interface JourneyBreadcrumbFieldRefs {
   readonly isMocked: Prisma.FieldRef<"JourneyBreadcrumb", 'Boolean'>
   readonly recordedAt: Prisma.FieldRef<"JourneyBreadcrumb", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"JourneyBreadcrumb", 'DateTime'>
+  readonly isSynced: Prisma.FieldRef<"JourneyBreadcrumb", 'Boolean'>
   readonly journeyId: Prisma.FieldRef<"JourneyBreadcrumb", 'String'>
 }
     

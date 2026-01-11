@@ -71,7 +71,6 @@ model User {
   geoTrackingRecords        GeoTracking[] @relation("UserGeoTracking") // Relationship for GeoTracking records
   assignedTasks             DailyTask[]  @relation("AssignedTasks") // Tasks assigned to this user (salesman)
   createdTasks              DailyTask[]  @relation("CreatedTasks") // Tasks created by this user (admin)
-  journeys                  Journey[]     @relation("UserJourneys")
   ratings                   Rating[]
   salesOrders               SalesOrder[]
   permanentJourneyPlansAssigned PermanentJourneyPlan[] @relation("PJP_AssignedUser")
@@ -87,7 +86,8 @@ model User {
   tsoAssignments                      TSOAssignment[] @relation("TSOAssignments")
   bagLiftApprovals                    BagLift[] @relation("BagLiftApprovals")
   additionalSites                     TechnicalSite[] @relation("SiteAssociatedUsers")
-  
+  journeys                            Journey[]     @relation("UserJourneys")
+  journeyOps                          JourneyOp[]
   notifications                       Notification[] @relation("UserNotifications")
   
   @@unique([companyId, email])
@@ -463,27 +463,54 @@ model GeoTracking {
   @@map("geo_tracking") // Table name in DB
 }
 
+model JourneyOp {
+  serverSeq BigInt @id @default(autoincrement()) @map("server_seq")
+  opId String @unique @map("op_id") @db.Uuid
+  journeyId String @map("journey_id") @db.VarChar(255)
+  userId Int @map("user_id")
+  type String @map("type")
+  payload Json @map("payload") 
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // --- RELATIONS ---
+  journey Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // --- INDEXES ---
+  @@index([journeyId], map: "idx_journey_ops_journey")
+  @@index([userId], map: "idx_journey_ops_user")
+  @@index([createdAt], map: "idx_journey_ops_created")
+  @@index([serverSeq], map: "idx_journey_ops_server_seq")
+  @@map("journey_ops")
+}
+
+// Your existing Journey Model (Updated with the relation)
 model Journey {
-  id     String @id @default(uuid()) @db.VarChar(255) // Client-side generated, but default UUID is safe
-  userId Int    @map("user_id")
-  pjpId    String? @map("pjp_id") @db.VarChar(255)
-  siteId   String? @map("site_id") @db.VarChar(255) // Optional: Add @relation if TechnicalSite model exists
-  dealerId String? @map("dealer_id") @db.VarChar(255) // Optional: Add @relation if Dealer model exists
-  siteName String? @map("site_name") @db.VarChar(255)
-  destLat Decimal? @map("dest_lat") @db.Decimal(10, 7)
-  destLng Decimal? @map("dest_lng") @db.Decimal(10, 7)
-  status   String  @default("ACTIVE") @db.VarChar(50)
-  isActive Boolean @default(true) @map("is_active")
-  startTime DateTime  @default(now()) @map("start_time") @db.Timestamptz(6)
-  endTime   DateTime? @map("end_time") @db.Timestamptz(6)
-  totalDistance Decimal? @default(0) @map("total_distance") @db.Decimal(10, 3)
+  id            String    @id @default(uuid()) @db.VarChar(255)
+  userId        Int       @map("user_id")
+  pjpId         String?   @map("pjp_id") @db.VarChar(255)
+  siteId        String?   @map("site_id") @db.VarChar(255)
+  dealerId      String?   @map("dealer_id") @db.VarChar(255)
+  siteName      String?   @map("site_name") @db.VarChar(255)
+  destLat       Decimal?  @map("dest_lat") @db.Decimal(10, 7)
+  destLng       Decimal?  @map("dest_lng") @db.Decimal(10, 7)
+  status        String    @default("ACTIVE") @db.VarChar(50)
+  isActive      Boolean   @default(true) @map("is_active")
+  startTime     DateTime  @default(now()) @map("start_time") @db.Timestamptz(6)
+  endTime       DateTime? @map("end_time") @db.Timestamptz(6)
+  totalDistance Decimal?  @default(0) @map("total_distance") @db.Decimal(10, 3)
+
+  // unused field - but keep it
+  isSynced      Boolean   @default(false) @map("is_synced")
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   // --- RELATIONS ---
-  user         User          @relation("UserJourneys", fields: [userId], references: [id], onDelete: Cascade)
-  geoTrackings GeoTracking[] @relation("JourneyGeoTracking")
-  breadcrumbs JourneyBreadcrumb[] @relation("JourneyBreadcrumbs")
+  user          User                @relation("UserJourneys", fields: [userId], references: [id], onDelete: Cascade)
+  geoTrackings  GeoTracking[]       @relation("JourneyGeoTracking")
+  breadcrumbs   JourneyBreadcrumb[] @relation("JourneyBreadcrumbs")
+  ops           JourneyOp[]
 
   @@index([userId, status], map: "idx_journeys_user_status")
   @@map("journeys")
@@ -504,6 +531,9 @@ model JourneyBreadcrumb {
   isMocked      Boolean? @default(false) @map("is_mocked")
   recordedAt DateTime @map("recorded_at") @db.Timestamptz(6)
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  // unused field - but keep it
+  isSynced      Boolean? @default(false) @map("is_synced")
 
   // LINK TO PARENT
   journeyId String  @map("journey_id") @db.VarChar(255)
@@ -512,6 +542,13 @@ model JourneyBreadcrumb {
   @@index([journeyId, recordedAt], map: "idx_breadcrumbs_journey_time")
   @@index([h3Index], map: "idx_breadcrumbs_h3")
   @@map("journey_breadcrumbs")
+}
+
+model SyncState {
+  id            Int    @id @default(1)
+  lastServerSeq BigInt @default(0) @map("last_server_seq")
+
+  @@map("sync_state")
 }
 
 // DailyTask model for admin to salesman task assignment + self assignment of tasks by salesmen

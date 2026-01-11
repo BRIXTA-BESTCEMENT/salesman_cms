@@ -389,6 +389,7 @@ export default function TechnicalVisitReportsPage() {
             <InfoField label="Service Given?" value={r.isTechService ? "YES" : "NO"} />
             {r.isTechService && (
               <>
+                <InfoField label="Type of Tech Service" value={r.serviceType} />
                 <InfoField label="Description" value={r.serviceDesc} />
               </>
             )}
@@ -546,7 +547,6 @@ export default function TechnicalVisitReportsPage() {
               <DialogDescription className="mt-1 flex items-center gap-4 text-xs sm:text-sm">
                 <span className="flex items-center gap-1"><User className="w-3 h-3" /> {selectedReport.salesmanName} ({selectedReport.role})</span>
                 <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {selectedReport.date}</span>
-                {/* Removed In-Time from here as requested */}
               </DialogDescription>
             </div>
 
@@ -578,7 +578,7 @@ export default function TechnicalVisitReportsPage() {
                   <CardContent className="grid grid-cols-2 gap-3 pt-2">
                     <InfoField label="Visit Type" value={selectedReport.visitType} />
                     <InfoField label="Visit Category" value={selectedReport.visitCategory} />
-                    <InfoField label="Purpose" value={selectedReport.purposeOfVisit} fullWidth />
+                    {/* <InfoField label="Purpose" value={selectedReport.purposeOfVisit} fullWidth /> */}
                     {/* MOVED CHECK IN TIME HERE */}
                     <InfoField label="Check In" value={formatTimeIST(selectedReport.checkInTime)} />
                     <InfoField label="Check Out" value={formatTimeIST(selectedReport.checkOutTime)} />
@@ -595,8 +595,7 @@ export default function TechnicalVisitReportsPage() {
               {/* 3. REMARKS */}
               <Card>
                 <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <InfoField label="Client's Remarks" value={selectedReport.clientsRemarks} />
-                  <InfoField label="Salesperson's Remarks" value={selectedReport.salespersonRemarks} />
+                  <InfoField label="Remarks" value={selectedReport.salespersonRemarks} />
                 </CardContent>
               </Card>
 

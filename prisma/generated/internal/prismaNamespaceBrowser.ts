@@ -61,8 +61,10 @@ export const ModelName = {
   SalesmanLeaveApplication: 'SalesmanLeaveApplication',
   CompetitionReport: 'CompetitionReport',
   GeoTracking: 'GeoTracking',
+  JourneyOp: 'JourneyOp',
   Journey: 'Journey',
   JourneyBreadcrumb: 'JourneyBreadcrumb',
+  SyncState: 'SyncState',
   DailyTask: 'DailyTask',
   SalesOrder: 'SalesOrder',
   DealerReportsAndScores: 'DealerReportsAndScores',
@@ -416,6 +418,19 @@ export const GeoTrackingScalarFieldEnum = {
 export type GeoTrackingScalarFieldEnum = (typeof GeoTrackingScalarFieldEnum)[keyof typeof GeoTrackingScalarFieldEnum]
 
 
+export const JourneyOpScalarFieldEnum = {
+  serverSeq: 'serverSeq',
+  opId: 'opId',
+  journeyId: 'journeyId',
+  userId: 'userId',
+  type: 'type',
+  payload: 'payload',
+  createdAt: 'createdAt'
+} as const
+
+export type JourneyOpScalarFieldEnum = (typeof JourneyOpScalarFieldEnum)[keyof typeof JourneyOpScalarFieldEnum]
+
+
 export const JourneyScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -430,6 +445,7 @@ export const JourneyScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   totalDistance: 'totalDistance',
+  isSynced: 'isSynced',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -452,10 +468,19 @@ export const JourneyBreadcrumbScalarFieldEnum = {
   isMocked: 'isMocked',
   recordedAt: 'recordedAt',
   createdAt: 'createdAt',
+  isSynced: 'isSynced',
   journeyId: 'journeyId'
 } as const
 
 export type JourneyBreadcrumbScalarFieldEnum = (typeof JourneyBreadcrumbScalarFieldEnum)[keyof typeof JourneyBreadcrumbScalarFieldEnum]
+
+
+export const SyncStateScalarFieldEnum = {
+  id: 'id',
+  lastServerSeq: 'lastServerSeq'
+} as const
+
+export type SyncStateScalarFieldEnum = (typeof SyncStateScalarFieldEnum)[keyof typeof SyncStateScalarFieldEnum]
 
 
 export const DailyTaskScalarFieldEnum = {
