@@ -91,6 +91,7 @@ export const ModelName = {
   MasonsOnMeetings: 'MasonsOnMeetings',
   KYCSubmission: 'KYCSubmission',
   TSOAssignment: 'TSOAssignment',
+  LogisticsGateIO: 'LogisticsGateIO',
   Aoi: 'Aoi',
   AoiGridCell: 'AoiGridCell',
   SatelliteScene: 'SatelliteScene',
@@ -931,6 +932,35 @@ export const TSOAssignmentScalarFieldEnum = {
 } as const
 
 export type TSOAssignmentScalarFieldEnum = (typeof TSOAssignmentScalarFieldEnum)[keyof typeof TSOAssignmentScalarFieldEnum]
+
+
+export const LogisticsGateIOScalarFieldEnum = {
+  id: 'id',
+  zone: 'zone',
+  district: 'district',
+  destination: 'destination',
+  doOrderDate: 'doOrderDate',
+  doOrderTime: 'doOrderTime',
+  gateInDate: 'gateInDate',
+  gateInTime: 'gateInTime',
+  processingTime: 'processingTime',
+  wbInDate: 'wbInDate',
+  wbInTime: 'wbInTime',
+  diffGateInTareWt: 'diffGateInTareWt',
+  wbOutDate: 'wbOutDate',
+  wbOutTime: 'wbOutTime',
+  diffTareWtGrossWt: 'diffTareWtGrossWt',
+  gateOutDate: 'gateOutDate',
+  gateOutTime: 'gateOutTime',
+  diffGrossWtGateOut: 'diffGrossWtGateOut',
+  diffGrossWtInvoiceDT: 'diffGrossWtInvoiceDT',
+  diffInvoiceDTGateOut: 'diffInvoiceDTGateOut',
+  diffGateInGateOut: 'diffGateInGateOut',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LogisticsGateIOScalarFieldEnum = (typeof LogisticsGateIOScalarFieldEnum)[keyof typeof LogisticsGateIOScalarFieldEnum]
 
 
 export const AoiScalarFieldEnum = {

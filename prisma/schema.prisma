@@ -1276,6 +1276,35 @@ model TSOAssignment {
   @@map("tso_assignments")
 }
 
+model LogisticsGateIO {
+  id String @id @default(uuid())
+  zone        String? @db.VarChar(255)
+  district    String? @db.VarChar(255)
+  destination String? @db.VarChar(255)
+  doOrderDate DateTime? @db.Date
+  doOrderTime String?   @db.VarChar(50)
+  gateInDate DateTime? @db.Date
+  gateInTime String?   @db.VarChar(50)
+  processingTime String? @db.VarChar(100)
+  wbInDate DateTime? @db.Date
+  wbInTime String?   @db.VarChar(50)
+  diffGateInTareWt String? @db.VarChar(100)
+  wbOutDate DateTime? @db.Date
+  wbOutTime String?   @db.VarChar(50)
+  diffTareWtGrossWt String? @db.VarChar(100)
+  gateOutDate DateTime? @db.Date
+  gateOutTime String?   @db.VarChar(50)
+  diffGrossWtGateOut String? @db.VarChar(100)
+  diffGrossWtInvoiceDT String? @db.VarChar(100)
+  diffInvoiceDTGateOut String? @db.VarChar(100)
+  diffGateInGateOut String? @db.VarChar(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("logistics_gate_io")
+}
+
 // Satellite Image Tables
 model Aoi {
   id             String   @id @default(uuid()) @db.Uuid

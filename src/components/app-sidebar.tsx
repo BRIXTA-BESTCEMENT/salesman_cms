@@ -55,6 +55,7 @@ const ITEM_PERMISSIONS = {
   "Permanent Journey Plan": 'permanentJourneyPlan.pjpList' as const,
   "Mason - Petty Contractor": 'masonpcSide.masonpc' as const,
   "Scores And Ratings": 'scoresAndRatings.salesmanRatings' as const,
+  "Logistics Gate IO": 'logisticsGateIO.gateIO' as const,
 
   "Account": 'account' as const,
   "Raise A Querry": 'raiseAQuery' as const,
@@ -145,6 +146,11 @@ const menuItems: MenuItem[] = [
         url: "/dashboard/masonpcSide",
         permission: ITEM_PERMISSIONS["Mason - Petty Contractor"]
       },
+      // {
+      //   title: "Logistics Gate IO",
+      //   url: "/dashboard/logisticsGateIO",
+      //   permission: ITEM_PERMISSIONS["Logistics Gate IO"]
+      // },
     ],
   },
   {

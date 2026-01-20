@@ -240,6 +240,11 @@ export type KYCSubmission = Prisma.KYCSubmissionModel
  */
 export type TSOAssignment = Prisma.TSOAssignmentModel
 /**
+ * Model LogisticsGateIO
+ * 
+ */
+export type LogisticsGateIO = Prisma.LogisticsGateIOModel
+/**
  * Model Aoi
  * 
  */

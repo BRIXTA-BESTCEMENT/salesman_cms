@@ -923,6 +923,32 @@ export const masonSlabAchievementSchema = z.object({
   pointsAwarded: z.number().int(),
 });
 
+export const logisticsGateIOSchema = z.object({
+  id: z.string(),
+  zone: z.string().nullable().optional(),
+  district: z.string().nullable().optional(),
+  destination: z.string().nullable().optional(),
+  doOrderDate: z.string().nullable(),
+  doOrderTime: z.string().nullable(),
+  gateInDate: z.string().nullable(),
+  gateInTime: z.string().nullable(),
+  processingTime: z.string().nullable(),
+  wbInDate: z.string().nullable(),
+  wbInTime: z.string().nullable(),
+  diffGateInTareWt: z.string().nullable(),
+  wbOutDate: z.string().nullable(),
+  wbOutTime: z.string().nullable(),
+  diffTareWtGrossWt: z.string().nullable(),
+  gateOutDate: z.string().nullable(),
+  gateOutTime: z.string().nullable(),
+  diffGrossWtGateOut: z.string().nullable(),
+  diffGrossWtInvoiceDT: z.string().nullable(),
+  diffInvoiceDTGateOut: z.string().nullable(),
+  diffGateInGateOut: z.string().nullable(),
+  createdAt: z.string(), // ISO String
+  updatedAt: z.string(), // ISO String
+});
+
 export type AssignTaskSchema = z.infer<typeof assignTaskSchema>;
 export type DailyTaskSchema = z.infer<typeof dailyTaskSchema>;
 export type BaseDealerBrandMappingSchema = z.infer<typeof baseDealerBrandMappingSchema>;
@@ -961,3 +987,5 @@ export type PointsLedgerSchema = z.infer<typeof pointsLedgerSchema>;
 export type AuthSessionSchema = z.infer<typeof authSessionSchema>;
 export type SchemeSlabsSchema = z.infer<typeof schemeSlabsSchema>;
 export type MasonSlabAchievementSchema = z.infer<typeof masonSlabAchievementSchema>;
+
+export type LogisticsGateIOSchema = z.infer<typeof logisticsGateIOSchema>;

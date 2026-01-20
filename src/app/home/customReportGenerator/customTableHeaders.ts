@@ -4,7 +4,8 @@ import {
     LucideIcon, User, Car, BadgeIndianRupeeIcon, ListTodo, ClipboardCheck, BandageIcon,
     CalendarCheck, PencilRuler, ChartNoAxesCombined, MapPin, Award, Star, Boxes,
     Construction, UsersRound, Gift, HandCoins, ScrollText, UserCheck, Users,
-    Building2, ShoppingBag
+    Building2, ShoppingBag,
+    Truck
 } from 'lucide-react';
 
 export interface TableColumn {
@@ -142,12 +143,12 @@ export const tablesMetadata: TableMeta[] = [
     //     icon: Award,
     //     columns: ['id', 'dealerScore', 'trustWorthinessScore', 'creditWorthinessScore', 'orderHistoryScore', 'visitFrequencyScore', 'lastUpdatedDate', 'dealerName', 'dealerRegion', 'dealerArea', 'createdAt'],
     // },
-    {
-        id: 'dealerBrandCapacities',
-        title: 'Dealer Brand Capacities',
-        icon: Boxes,
-        columns: ['id', 'capacityMT', 'bestCapacityMT', 'brandGrowthCapacityPercent', 'userId', 'brandName', 'dealerName', 'dealerRegion', 'dealerArea']
-    },
+    // {
+    //     id: 'dealerBrandCapacities',
+    //     title: 'Dealer Brand Capacities',
+    //     icon: Boxes,
+    //     columns: ['id', 'capacityMT', 'bestCapacityMT', 'brandGrowthCapacityPercent', 'userId', 'brandName', 'dealerName', 'dealerRegion', 'dealerArea']
+    // },
     {
         id: 'salesmanAttendance',
         title: 'Salesman Attendance',
@@ -229,6 +230,17 @@ export const tablesMetadata: TableMeta[] = [
             'memo', 'sourceDescription', 'createdAt'
         ],
     },
+    // {
+    //     id: 'logisticsGateIO',
+    //     title: 'Logistics Gate In/Out',
+    //     icon: Truck,
+    //     columns: [
+    //         'id', 'zone', 'district', 'destination', 'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime', 'processingTime',
+    //         'wbInDate', 'wbInTime', 'diffGateInTareWt', 'wbOutDate', 'wbOutTime', 
+    //         'diffTareWtGrossWt', 'gateOutDate', 'gateOutTime', 'diffGrossWtGateOut',
+    //         'diffGrossWtInvoiceDT', 'diffInvoiceDTGateOut', 'diffGateInGateOut', 'createdAt', 'updatedAt'
+    //     ],
+    // },
     // {
     //   id: 'schemesOffers',
     //   title: 'Schemes & Offers',

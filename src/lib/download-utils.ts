@@ -4,12 +4,14 @@ import { stringify } from 'csv-stringify';
 import ExcelJS from 'exceljs';
 import JSZip from "jszip";
 
-/**
- * Generates and streams a SINGLE BIG CSV file.
- * @param data The data to be written to the CSV, including headers.
- * @param filename The desired filename for the download.
- * @returns A NextResponse containing the CSV file.
- */
+export interface StylingOptions {
+  headerColor?: string;     // Hex (e.g. #336699)
+  headerTextColor?: string; // Hex (e.g. #FFFFFF)
+  stripeRows?: boolean;
+  fontFamily?: string;
+  title?: string; // Optional Title inside the sheet
+}
+
 export async function generateAndStreamCsv(data: any[][], filename: string): Promise<NextResponse> {
   const csvString = await new Promise<string>((resolve, reject) => {
     stringify(data, (err, result) => {
@@ -42,31 +44,34 @@ export async function exportTablesToCSVZip(
   return blob;
 }
 
-/**
- * Generates and streams a single-sheet XLSX using ExcelJS.
- * Accepts either array-of-objects (keys must match headers) or array-of-arrays.
- */
 export async function generateAndStreamXlsx(
   data: any[],
   headers: string[],
-  filename: string
+  filename: string,
+  options?: StylingOptions
 ): Promise<NextResponse> {
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet(safeSheetName('Report'), {
     views: [{ state: 'frozen', ySplit: 1 }],
   });
 
+  // Set defaults if user didn't pick any
+  const safeOptions = {
+    headerColor: options?.headerColor?.replace('#', '') || '1E293B', // Default Slate
+    headerTextColor: options?.headerTextColor?.replace('#', '') || 'FFFFFF',
+    stripeRows: options?.stripeRows ?? true,
+    fontFamily: options?.fontFamily || 'Calibri',
+  };
+
   // Define columns per headers
   ws.columns = headers.map((h) => ({
     header: h,
     key: h,
     width: Math.max(12, Math.min(40, h.length + 2)),
-    style: { font: { size: 11 } },
   }));
 
   appendRows(ws, data, headers);
-  styleHeaderAndFilter(ws, headers.length);
-  autoSizeColumns(ws);
+  applySheetStyling(ws, headers.length, data.length, safeOptions);
 
   const buffer = await wb.xlsx.writeBuffer();
   return new NextResponse(buffer as unknown as BodyInit, {
@@ -146,9 +151,6 @@ function styleHeaderAndFilter(ws: ExcelJS.Worksheet, colCount: number) {
   };
 }
 
-/**
- * Auto-size columns safely, guarding optional eachCell API.
- */
 function autoSizeColumns(ws: ExcelJS.Worksheet) {
   // ws.columns can be undefined in typings, guard it
   const cols = ws.columns ?? [];
@@ -199,6 +201,73 @@ function safeSheetName(name: string): string {
   const invalid = /[:\\/?*\[\]]/g;
   const sanitized = name.replace(invalid, ' ').trim();
   return sanitized.length > 31 ? sanitized.slice(0, 31) : sanitized || 'Sheet1';
+}
+
+function applySheetStyling(
+    ws: ExcelJS.Worksheet, 
+    colCount: number, 
+    rowCount: number, 
+    opts: { headerColor: string, headerTextColor: string, stripeRows: boolean, fontFamily: string }
+) {
+  if (colCount === 0) return;
+
+  // HEADER STYLING
+  const headerRow = ws.getRow(1);
+  headerRow.height = 24;
+  
+  headerRow.eachCell((cell) => {
+    cell.style = {
+      font: { 
+        bold: true, 
+        color: { argb: 'FF' + opts.headerTextColor }, // Dynamic Text Color
+        name: opts.fontFamily,
+        size: 11
+      },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF' + opts.headerColor }, // Dynamic Bg Color
+      },
+      alignment: { vertical: 'middle', horizontal: 'center' },
+      border: { bottom: { style: 'medium', color: { argb: 'FFFFFFFF' } } }
+    };
+  });
+
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: colCount } };
+
+  // DATA ROWS
+  ws.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+
+    // Dynamic Zebra Striping
+    if (opts.stripeRows && rowNumber % 2 === 0) {
+      row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        if (colNumber <= colCount) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF8FAFC' }, // Keep stripe light gray to not clash
+          };
+        }
+      });
+    }
+
+    // Font Application
+    row.eachCell({ includeEmpty: true }, (cell) => {
+        if (!cell.font) cell.font = {};
+        cell.font.name = opts.fontFamily;
+        
+        // Borders
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        };
+    });
+  });
+
+  autoSizeColumns(ws);
 }
 
 // CSV helpers

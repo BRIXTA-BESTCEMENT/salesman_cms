@@ -2097,6 +2097,84 @@ export async function getFlattenedPointsLedger(companyId: number): Promise<Flatt
   });
 }
 
+export type FlattenedLogisticsGateIO = {
+  id: string;
+  zone: string;
+  district: string;
+  destination: string;
+  doOrderDate: string | null;
+  doOrderTime: string | null;
+  gateInDate: string | null;
+  gateInTime: string | null;
+  processingTime: string | null;
+  wbInDate: string | null;
+  wbInTime: string | null;
+  diffGateInTareWt: string | null;
+  wbOutDate: string | null;
+  wbOutTime: string | null;
+  diffTareWtGrossWt: string | null;
+  gateOutDate: string | null;
+  gateOutTime: string | null;
+  diffGrossWtGateOut: string | null;
+  diffGrossWtInvoiceDT: string | null;
+  diffInvoiceDTGateOut: string | null;
+  diffGateInGateOut: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// Helper to format Date objects to YYYY-MM-DD safely
+const formatDate = (date: Date | null) => {
+  return date ? date.toISOString().split('T')[0] : null;
+};
+
+export async function getFlattenedLogisticsGateIO(
+  // Optional: Add filters here if needed (e.g., date range)
+  startDate?: Date, 
+  endDate?: Date
+): Promise<FlattenedLogisticsGateIO[]> {
+  
+  // Build dynamic where clause
+  const where: any = {};
+  if (startDate && endDate) {
+    where.createdAt = {
+      gte: startDate,
+      lte: endDate,
+    };
+  }
+
+  const rawData = await prisma.logisticsGateIO.findMany({
+    where,
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return rawData.map((r) => ({
+    id: r.id,
+    zone: r.zone ?? '',
+    district: r.district ?? '',
+    destination: r.destination ?? '',
+    doOrderDate: formatDate(r.doOrderDate),
+    doOrderTime: r.doOrderTime ?? null,
+    gateInDate: formatDate(r.gateInDate),
+    gateInTime: r.gateInTime ?? null,
+    processingTime: r.processingTime ?? null,
+    wbInDate: formatDate(r.wbInDate),
+    wbInTime: r.wbInTime ?? null,
+    diffGateInTareWt: r.diffGateInTareWt ?? null,
+    wbOutDate: formatDate(r.wbOutDate),
+    wbOutTime: r.wbOutTime ?? null,
+    diffTareWtGrossWt: r.diffTareWtGrossWt ?? null,
+    gateOutDate: formatDate(r.gateOutDate),
+    gateOutTime: r.gateOutTime ?? null,
+    diffGrossWtGateOut: r.diffGrossWtGateOut ?? null,
+    diffGrossWtInvoiceDT: r.diffGrossWtInvoiceDT ?? null,
+    diffInvoiceDTGateOut: r.diffInvoiceDTGateOut ?? null,
+    diffGateInGateOut: r.diffGateInGateOut ?? null,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
+  }));
+}
+
 export const transformerMap = {
   // Core Report Models
   users: getFlattenedUsers,
@@ -2132,4 +2210,6 @@ export const transformerMap = {
   bagLifts: getFlattenedBagLifts,
   rewardRedemptions: getFlattenedRewardRedemptions,
   pointsLedger: getFlattenedPointsLedger,
+
+  logisticsGateIO: getFlattenedLogisticsGateIO,
 };
