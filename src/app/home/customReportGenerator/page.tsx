@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Download, ListFilter, Settings2 } from 'lucide-react';
+import { Download, ListFilter, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -21,8 +21,7 @@ import { toast } from 'sonner';
 import { DataTableReusable, DragHandle } from '@/components/data-table-reusable';
 import { ColumnDef } from '@tanstack/react-table';
 import { BASE_URL } from '@/lib/Reusable-constants';
-import { StyleConfigurator, StyleConfig } from './components/StyleConfigurator';
-import { FilterBuilder, FilterRule } from './components/FilterBuilder';
+
 import {
   tablesMetadata,
   type TableColumn,
@@ -297,17 +296,9 @@ export default function CustomReportGeneratorPage() {
     });
   };
 
-  // State for Design & Filters
-  const [styleConfig, setStyleConfig] = useState<StyleConfig>({
-    headerColor: '#0f172a', // Default Slate-900
-    headerTextColor: '#ffffff',
-    stripeRows: true,
-    borderColor: '#e2e8f0',
-    fontFamily: 'Calibri'
-  });
-  const [filters, setFilters] = useState<FilterRule[]>([]);
 
   const handleDownload = async () => {
+    // ... (Download logic remains the same)
     if (reportColumns.length === 0) {
       toast.warning('Selection Required', {
         description: 'Please select columns to include in the report.',
@@ -321,8 +312,6 @@ export default function CustomReportGeneratorPage() {
       const payload = {
         columns: reportColumns,
         format: format,
-        styleOptions: styleConfig,
-        filters: filters,
       };
 
       const res = await fetch(apiURI, {
@@ -364,49 +353,6 @@ export default function CustomReportGeneratorPage() {
       setDownloading(false);
     }
   };
-
-  // --- NEW: Client-side Filtering for Preview Table ---
-  const filteredPreviewData = useMemo(() => {
-    if (!previewData || previewData.length === 0) return [];
-    if (filters.length === 0) return previewData;
-
-    return previewData.filter(row => {
-      // Logic: A row must satisfy ALL filters (AND logic)
-      return filters.every(filter => {
-        // Construct the key expected in the row data: "tableId.columnName"
-        const rowKey = `${selectedTableId}.${filter.column}`;
-        
-        // If the row doesn't contain this column (e.g. filter is for another table), skip it
-        if (row[rowKey] === undefined) return true;
-
-        const cellValue = String(row[rowKey] ?? '').toLowerCase();
-        const filterValue = (filter.value ?? '').toLowerCase();
-
-        if (!filterValue) return true; 
-
-        switch (filter.operator) {
-          case 'contains':
-            return cellValue.includes(filterValue);
-          case 'equals':
-            return cellValue === filterValue;
-          case 'gt': {
-             const numCell = parseFloat(cellValue);
-             const numFilter = parseFloat(filterValue);
-             if(!isNaN(numCell) && !isNaN(numFilter)) return numCell > numFilter;
-             return cellValue > filterValue;
-          }
-          case 'lt': {
-             const numCell = parseFloat(cellValue);
-             const numFilter = parseFloat(filterValue);
-             if(!isNaN(numCell) && !isNaN(numFilter)) return numCell < numFilter;
-             return cellValue < filterValue;
-          }
-          default:
-            return true;
-        }
-      });
-    });
-  }, [previewData, filters, selectedTableId]);
 
   return (
     <div className="flex-1 min-w-0 flex flex-col px-4 md:px-6 py-8 bg-background text-foreground">
@@ -461,156 +407,156 @@ export default function CustomReportGeneratorPage() {
             Select your data source and simply check/uncheck the desired columns to include them in the final report.
           </CardDescription>
         </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-6">
 
-        <CardContent className="grid md:grid-cols-2 gap-0 border-t border-border p-0">
-            
-            {/* LEFT: Table List */}
-            <div className="border-b md:border-b-0 md:border-r border-border p-4 bg-muted/5">
-                <h4 className="text-sm font-semibold mb-3 text-foreground/80">1. Available Tables</h4>
-                <ScrollArea className="h-[350px] w-full pr-3">
-                <div className="space-y-1">
-                    {tablesMetadata.map(table => {
-                    const Icon = table.icon;
-                    const committedCount = reportColumns.filter(c => c.table === table.id).length;
-                    
-                    return (
-                        <button
-                        key={table.id}
-                        onClick={() => handleTableChange(table.id)}
-                        className={`
-                            w-full flex items-center justify-between p-3 rounded-md text-sm transition-all
-                            border
-                            ${selectedTableId === table.id
-                            ? 'bg-primary/10 border-primary/50 text-primary font-medium shadow-sm'
-                            : 'bg-card border-transparent hover:bg-muted text-foreground hover:text-foreground'
-                            }
-                        `}
-                        >
-                        <span className='flex items-center gap-3'>
-                            <Icon className="w-4 h-4" />
-                            <span>{table.title}</span>
+          {/* 1. Table Selection */}
+          <div className="md:col-span-1 border-r border-border pr-6">
+            <h4 className="text-md font-semibold mb-3">1. Select Data Table</h4>
+            <ScrollArea className="h-[400px] w-full pr-4">
+              <div className="space-y-1">
+                {tablesMetadata.map(table => {
+                  const Icon = table.icon;
+                  // Calculate committed column count for the table
+                  const committedCount = reportColumns.filter(c => c.table === table.id).length;
+
+                  return (
+                    <div
+                      key={table.id}
+                      onClick={() => handleTableChange(table.id)}
+                      className={`
+                        flex items-center justify-between p-3 rounded-md cursor-pointer transition-colors 
+                        border border-transparent 
+                        ${selectedTableId === table.id
+                          ? 'bg-primary/20 border-primary text-primary font-semibold'
+                          : 'bg-muted/30 text-foreground hover:bg-muted/70'
+                        }
+                      `}
+                    >
+                      <span className='flex items-center space-x-3'>
+                        <Icon className="w-5 h-5" />
+                        <span>{table.title}</span>
+                      </span>
+                      {/* Display the current number of selected columns */}
+                      {committedCount > 0 && (
+                        <span className='text-xs text-primary font-semibold ml-2'>
+                          ({committedCount} cols)
                         </span>
-                        {committedCount > 0 && (
-                            <span className='bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold'>
-                            {committedCount}
-                            </span>
-                        )}
-                        </button>
-                    );
-                    })}
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </div>
+
+          {/* 2. Column Selection + Add Button (Now just a selection area) */}
+          <div className="md:col-span-1 border-r border-border pr-6">
+            <h4 className="text-md font-semibold mb-3">2. Choose Columns</h4>
+            {!selectedTable ? (
+              <p className="text-muted-foreground pt-2">Select a table to view its available columns.</p>
+            ) : (
+              <>
+                {/* --- SELECT ALL CHECKS --- */}
+                <div className="mb-2 pb-2 border-b border-border">
+                  <div className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted/50 transition-colors bg-muted/20">
+                    <Checkbox
+                      id="select-all-cols"
+                      checked={isAllColumnsSelected}
+                      onCheckedChange={handleSelectAllToggle}
+                      disabled={downloading}
+                    />
+                    <Label htmlFor="select-all-cols" className="font-semibold cursor-pointer text-foreground">
+                      Select All Columns
+                    </Label>
+                  </div>
                 </div>
-                </ScrollArea>
-            </div>
 
-            {/* RIGHT: Column Checkboxes */}
-            <div className="p-4 bg-card">
-                 <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold text-foreground/80">2. Columns</h4>
-                    {selectedTable && (
-                        <div className="flex items-center space-x-2">
-                             <Button
-                                onClick={handleSelectAllToggle}
-                                variant="ghost" size="sm"
-                                className="h-6 text-[10px] px-2"
-                             >
-                                {isAllColumnsSelected ? 'Unselect All' : 'Select All'}
-                             </Button>
-                             {currentTableCheckedCount > 0 && (
-                                <Button
-                                    onClick={handleClearTableColumns}
-                                    variant="ghost" size="sm"
-                                    className="h-6 text-[10px] px-2 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                >
-                                    Clear
-                                </Button>
-                             )}
-                        </div>
-                    )}
-                 </div>
-
-                {!selectedTable ? (
-                    <div className="h-[350px] flex items-center justify-center border-2 border-dashed border-muted rounded-md bg-muted/5">
-                        <p className="text-sm text-muted-foreground">Select a table to view columns</p>
-                    </div>
-                ) : (
-                <ScrollArea className="h-[350px] w-full pr-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <ScrollArea className="h-[300px] w-full pr-4">
+                  <div className="space-y-2">
                     {selectedTable.columns.map(column => {
-                        const isChecked = checkedColumns[selectedTableId]?.includes(column) || false;
-                        return (
-                        <div 
-                            key={column} 
-                            onClick={() => !downloading && handleColumnToggle(column)}
-                            className={`
-                                flex items-center space-x-3 p-2 rounded-md border transition-all cursor-pointer
-                                ${isChecked ? 'border-primary/40 bg-primary/5' : 'border-border bg-card hover:bg-muted/50'}
-                            `}
-                        >
-                            <Checkbox
-                                id={column}
-                                checked={isChecked}
-                                onCheckedChange={() => handleColumnToggle(column)}
-                                disabled={downloading}
-                            />
-                            <Label 
-                                htmlFor={column} 
-                                className="cursor-pointer text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                                {column.replace(/([A-Z])/g, ' $1').trim()}
-                            </Label>
+                      const isChecked = checkedColumns[selectedTableId]?.includes(column) || false;
+                      return (
+                        <div key={column} className="flex items-start space-x-3 p-1 rounded-md hover:bg-muted/50 transition-colors">
+                          <Checkbox
+                            id={column}
+                            checked={isChecked}
+                            onCheckedChange={() => handleColumnToggle(column)}
+                            disabled={downloading}
+                            className="mt-1"
+                          />
+                          <Label htmlFor={column} className={`capitalize text-sm font-normal cursor-pointer text-foreground leading-snug`}>
+                            {column.replace(/([A-Z])/g, ' $1').trim()}
+                          </Label>
                         </div>
-                        );
+                      );
                     })}
-                    </div>
+                  </div>
                 </ScrollArea>
-                )}
+
+                <div className='mt-4'>
+                  <Button
+                    onClick={handleClearTableColumns}
+                    variant="outline"
+                    disabled={currentTableCheckedCount === 0 || downloading}
+                    className="w-full text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <PlusCircle className="w-4 h-4 mr-2 rotate-45" />
+                    Clear Selection
+                  </Button>
+                </div>
+              </>
+            )}
+
+            <div className='mt-4 text-sm text-muted-foreground'>
+              Selected: {currentTableCheckedCount} columns
             </div>
-        </CardContent>
-      </Card>
+          </div>
 
-      <Separator className="my-6 bg-border" />
+          {/* 3. Review (Remains the same) */}
+          <div className="md:col-span-1">
+            <h4 className="text-md font-semibold mb-3">3. Report Summary</h4>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Apply filters</CardTitle>
-          <CardDescription className='text-muted-foreground'>
-            Apply filters to the selected table before downloading.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="xl:col-span-1 space-y-6">
-             <div className="flex items-center space-x-2 pb-2 border-b border-border">
-                <Settings2 className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold text-lg">Configuration</h3>
-             </div>
-             
-             {/* A. Styling */}
-             <StyleConfigurator
-                config={styleConfig}
-                onChange={setStyleConfig}
-             />
+            <div className="space-y-4">
 
-             {/* B. Filtering */}
-             <FilterBuilder
-                availableColumns={reportColumns}
-                filters={filters}
-                setFilters={setFilters}
-             />
-             
-             {/* Summary Stats */}
-             <div className="bg-muted/30 border border-border rounded-lg p-4 text-xs text-muted-foreground">
-                <p>
-                    <span className="font-semibold text-foreground">{totalReportColumnsCount}</span> columns selected across{' '}
-                    <span className="font-semibold text-foreground">{new Set(reportColumns.map(c => c.table)).size}</span> tables.
+              {/* Total Columns Review */}
+              <div>
+                <Label className="mb-2 block text-foreground">Total Columns in Report</Label>
+                <p className='font-bold text-2xl text-primary'>{totalReportColumnsCount}</p>
+                <p className='text-muted-foreground text-sm'>
+                  Spanning {Array.from(new Set(reportColumns.map(c => c.table))).length} tables.
                 </p>
-             </div>
-        </div>
+              </div>
+
+              <Separator className="bg-border" />
+
+              {/* Detailed Table View */}
+              <div>
+                <Label className="mb-2 block text-foreground">Tables Included</Label>
+                <ScrollArea className="h-[250px] pr-4">
+                  <div className='space-y-2'>
+                    {tablesMetadata.filter(t => reportColumns.some(c => c.table === t.id)).map(table => (
+                      <div key={table.id} className='p-2 bg-muted/30 rounded-md'>
+                        <p className='font-semibold text-sm'>{table.title}</p>
+                        <p className='text-xs text-muted-foreground'>
+                          {reportColumns.filter(c => c.table === table.id).length} columns
+                        </p>
+                      </div>
+                    ))}
+                    {totalReportColumnsCount === 0 && (
+                      <p className="text-muted-foreground text-sm pt-2">Add columns to start building your report.</p>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+          </div>
+
         </CardContent>
       </Card>
 
       <Separator className="my-6 bg-border" />
 
-      {/* Data Preview Table */}
+      {/* Data Preview Table (No change needed here) */}
       <Card className="bg-card text-foreground border-border shadow-lg">
         <CardHeader>
           <CardTitle>Data Preview ({reportColumns.length > 0 ? 'Selected Tables' : '...'})</CardTitle>
@@ -629,7 +575,7 @@ export default function CustomReportGeneratorPage() {
               <DataTableReusable
                 columns={previewColumns}
                 // @ts-ignore
-                data={filteredPreviewData}
+                data={previewData}
                 enableRowDragging={false}
               />
             ) : (

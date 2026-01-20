@@ -11,8 +11,8 @@ const allowedOrigins = [
   'https://salesmancms-dashboard.onrender.com/auth/callback',
   'https://cms.best.fix24.cloud',
   'https://cms.best.fix24.cloud/auth/callback',
-  'http://13.233.139.54',
-  'http://13.233.139.54/auth/callback',
+  'http://65.2.69.34',
+  'http://65.2.69.34/auth/callback',
 ];
 
 // The main middleware function that combines AuthKit and CORS logic.
