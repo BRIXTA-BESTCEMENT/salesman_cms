@@ -27,8 +27,9 @@ export type AggregateJourneyBreadcrumb = {
 }
 
 export type JourneyBreadcrumbAvgAggregateOutputType = {
-  latitude: runtime.Decimal | null
-  longitude: runtime.Decimal | null
+  latitude: number | null
+  longitude: number | null
+  totalDistance: number | null
   speed: number | null
   accuracy: number | null
   heading: number | null
@@ -37,8 +38,9 @@ export type JourneyBreadcrumbAvgAggregateOutputType = {
 }
 
 export type JourneyBreadcrumbSumAggregateOutputType = {
-  latitude: runtime.Decimal | null
-  longitude: runtime.Decimal | null
+  latitude: number | null
+  longitude: number | null
+  totalDistance: number | null
   speed: number | null
   accuracy: number | null
   heading: number | null
@@ -48,9 +50,10 @@ export type JourneyBreadcrumbSumAggregateOutputType = {
 
 export type JourneyBreadcrumbMinAggregateOutputType = {
   id: string | null
-  latitude: runtime.Decimal | null
-  longitude: runtime.Decimal | null
+  latitude: number | null
+  longitude: number | null
   h3Index: string | null
+  totalDistance: number | null
   speed: number | null
   accuracy: number | null
   heading: number | null
@@ -67,9 +70,10 @@ export type JourneyBreadcrumbMinAggregateOutputType = {
 
 export type JourneyBreadcrumbMaxAggregateOutputType = {
   id: string | null
-  latitude: runtime.Decimal | null
-  longitude: runtime.Decimal | null
+  latitude: number | null
+  longitude: number | null
   h3Index: string | null
+  totalDistance: number | null
   speed: number | null
   accuracy: number | null
   heading: number | null
@@ -89,6 +93,7 @@ export type JourneyBreadcrumbCountAggregateOutputType = {
   latitude: number
   longitude: number
   h3Index: number
+  totalDistance: number
   speed: number
   accuracy: number
   heading: number
@@ -108,6 +113,7 @@ export type JourneyBreadcrumbCountAggregateOutputType = {
 export type JourneyBreadcrumbAvgAggregateInputType = {
   latitude?: true
   longitude?: true
+  totalDistance?: true
   speed?: true
   accuracy?: true
   heading?: true
@@ -118,6 +124,7 @@ export type JourneyBreadcrumbAvgAggregateInputType = {
 export type JourneyBreadcrumbSumAggregateInputType = {
   latitude?: true
   longitude?: true
+  totalDistance?: true
   speed?: true
   accuracy?: true
   heading?: true
@@ -130,6 +137,7 @@ export type JourneyBreadcrumbMinAggregateInputType = {
   latitude?: true
   longitude?: true
   h3Index?: true
+  totalDistance?: true
   speed?: true
   accuracy?: true
   heading?: true
@@ -149,6 +157,7 @@ export type JourneyBreadcrumbMaxAggregateInputType = {
   latitude?: true
   longitude?: true
   h3Index?: true
+  totalDistance?: true
   speed?: true
   accuracy?: true
   heading?: true
@@ -168,6 +177,7 @@ export type JourneyBreadcrumbCountAggregateInputType = {
   latitude?: true
   longitude?: true
   h3Index?: true
+  totalDistance?: true
   speed?: true
   accuracy?: true
   heading?: true
@@ -271,9 +281,10 @@ export type JourneyBreadcrumbGroupByArgs<ExtArgs extends runtime.Types.Extension
 
 export type JourneyBreadcrumbGroupByOutputType = {
   id: string
-  latitude: runtime.Decimal
-  longitude: runtime.Decimal
+  latitude: number
+  longitude: number
   h3Index: string | null
+  totalDistance: number
   speed: number | null
   accuracy: number | null
   heading: number | null
@@ -313,9 +324,10 @@ export type JourneyBreadcrumbWhereInput = {
   OR?: Prisma.JourneyBreadcrumbWhereInput[]
   NOT?: Prisma.JourneyBreadcrumbWhereInput | Prisma.JourneyBreadcrumbWhereInput[]
   id?: Prisma.StringFilter<"JourneyBreadcrumb"> | string
-  latitude?: Prisma.DecimalFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
+  longitude?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
   h3Index?: Prisma.StringNullableFilter<"JourneyBreadcrumb"> | string | null
+  totalDistance?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
   speed?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
   accuracy?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
   heading?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
@@ -336,6 +348,7 @@ export type JourneyBreadcrumbOrderByWithRelationInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   h3Index?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalDistance?: Prisma.SortOrder
   speed?: Prisma.SortOrderInput | Prisma.SortOrder
   accuracy?: Prisma.SortOrderInput | Prisma.SortOrder
   heading?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -356,9 +369,10 @@ export type JourneyBreadcrumbWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.JourneyBreadcrumbWhereInput | Prisma.JourneyBreadcrumbWhereInput[]
   OR?: Prisma.JourneyBreadcrumbWhereInput[]
   NOT?: Prisma.JourneyBreadcrumbWhereInput | Prisma.JourneyBreadcrumbWhereInput[]
-  latitude?: Prisma.DecimalFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
+  longitude?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
   h3Index?: Prisma.StringNullableFilter<"JourneyBreadcrumb"> | string | null
+  totalDistance?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
   speed?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
   accuracy?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
   heading?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
@@ -379,6 +393,7 @@ export type JourneyBreadcrumbOrderByWithAggregationInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   h3Index?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalDistance?: Prisma.SortOrder
   speed?: Prisma.SortOrderInput | Prisma.SortOrder
   accuracy?: Prisma.SortOrderInput | Prisma.SortOrder
   heading?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -403,9 +418,10 @@ export type JourneyBreadcrumbScalarWhereWithAggregatesInput = {
   OR?: Prisma.JourneyBreadcrumbScalarWhereWithAggregatesInput[]
   NOT?: Prisma.JourneyBreadcrumbScalarWhereWithAggregatesInput | Prisma.JourneyBreadcrumbScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"JourneyBreadcrumb"> | string
-  latitude?: Prisma.DecimalWithAggregatesFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalWithAggregatesFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatWithAggregatesFilter<"JourneyBreadcrumb"> | number
+  longitude?: Prisma.FloatWithAggregatesFilter<"JourneyBreadcrumb"> | number
   h3Index?: Prisma.StringNullableWithAggregatesFilter<"JourneyBreadcrumb"> | string | null
+  totalDistance?: Prisma.FloatWithAggregatesFilter<"JourneyBreadcrumb"> | number
   speed?: Prisma.FloatNullableWithAggregatesFilter<"JourneyBreadcrumb"> | number | null
   accuracy?: Prisma.FloatNullableWithAggregatesFilter<"JourneyBreadcrumb"> | number | null
   heading?: Prisma.FloatNullableWithAggregatesFilter<"JourneyBreadcrumb"> | number | null
@@ -422,9 +438,10 @@ export type JourneyBreadcrumbScalarWhereWithAggregatesInput = {
 
 export type JourneyBreadcrumbCreateInput = {
   id?: string
-  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude: number
+  longitude: number
   h3Index?: string | null
+  totalDistance?: number
   speed?: number | null
   accuracy?: number | null
   heading?: number | null
@@ -441,9 +458,10 @@ export type JourneyBreadcrumbCreateInput = {
 
 export type JourneyBreadcrumbUncheckedCreateInput = {
   id?: string
-  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude: number
+  longitude: number
   h3Index?: string | null
+  totalDistance?: number
   speed?: number | null
   accuracy?: number | null
   heading?: number | null
@@ -460,9 +478,10 @@ export type JourneyBreadcrumbUncheckedCreateInput = {
 
 export type JourneyBreadcrumbUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   h3Index?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalDistance?: Prisma.FloatFieldUpdateOperationsInput | number
   speed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   accuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heading?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -479,9 +498,10 @@ export type JourneyBreadcrumbUpdateInput = {
 
 export type JourneyBreadcrumbUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   h3Index?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalDistance?: Prisma.FloatFieldUpdateOperationsInput | number
   speed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   accuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heading?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -498,9 +518,10 @@ export type JourneyBreadcrumbUncheckedUpdateInput = {
 
 export type JourneyBreadcrumbCreateManyInput = {
   id?: string
-  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude: number
+  longitude: number
   h3Index?: string | null
+  totalDistance?: number
   speed?: number | null
   accuracy?: number | null
   heading?: number | null
@@ -517,9 +538,10 @@ export type JourneyBreadcrumbCreateManyInput = {
 
 export type JourneyBreadcrumbUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   h3Index?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalDistance?: Prisma.FloatFieldUpdateOperationsInput | number
   speed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   accuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heading?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -535,9 +557,10 @@ export type JourneyBreadcrumbUpdateManyMutationInput = {
 
 export type JourneyBreadcrumbUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   h3Index?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalDistance?: Prisma.FloatFieldUpdateOperationsInput | number
   speed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   accuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heading?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -567,6 +590,7 @@ export type JourneyBreadcrumbCountOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   h3Index?: Prisma.SortOrder
+  totalDistance?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   accuracy?: Prisma.SortOrder
   heading?: Prisma.SortOrder
@@ -584,6 +608,7 @@ export type JourneyBreadcrumbCountOrderByAggregateInput = {
 export type JourneyBreadcrumbAvgOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
+  totalDistance?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   accuracy?: Prisma.SortOrder
   heading?: Prisma.SortOrder
@@ -596,6 +621,7 @@ export type JourneyBreadcrumbMaxOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   h3Index?: Prisma.SortOrder
+  totalDistance?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   accuracy?: Prisma.SortOrder
   heading?: Prisma.SortOrder
@@ -615,6 +641,7 @@ export type JourneyBreadcrumbMinOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   h3Index?: Prisma.SortOrder
+  totalDistance?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   accuracy?: Prisma.SortOrder
   heading?: Prisma.SortOrder
@@ -632,6 +659,7 @@ export type JourneyBreadcrumbMinOrderByAggregateInput = {
 export type JourneyBreadcrumbSumOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
+  totalDistance?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   accuracy?: Prisma.SortOrder
   heading?: Prisma.SortOrder
@@ -681,6 +709,14 @@ export type JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyNestedInput = {
   deleteMany?: Prisma.JourneyBreadcrumbScalarWhereInput | Prisma.JourneyBreadcrumbScalarWhereInput[]
 }
 
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type NullableFloatFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -691,9 +727,10 @@ export type NullableFloatFieldUpdateOperationsInput = {
 
 export type JourneyBreadcrumbCreateWithoutJourneyInput = {
   id?: string
-  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude: number
+  longitude: number
   h3Index?: string | null
+  totalDistance?: number
   speed?: number | null
   accuracy?: number | null
   heading?: number | null
@@ -709,9 +746,10 @@ export type JourneyBreadcrumbCreateWithoutJourneyInput = {
 
 export type JourneyBreadcrumbUncheckedCreateWithoutJourneyInput = {
   id?: string
-  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude: number
+  longitude: number
   h3Index?: string | null
+  totalDistance?: number
   speed?: number | null
   accuracy?: number | null
   heading?: number | null
@@ -756,9 +794,10 @@ export type JourneyBreadcrumbScalarWhereInput = {
   OR?: Prisma.JourneyBreadcrumbScalarWhereInput[]
   NOT?: Prisma.JourneyBreadcrumbScalarWhereInput | Prisma.JourneyBreadcrumbScalarWhereInput[]
   id?: Prisma.StringFilter<"JourneyBreadcrumb"> | string
-  latitude?: Prisma.DecimalFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFilter<"JourneyBreadcrumb"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
+  longitude?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
   h3Index?: Prisma.StringNullableFilter<"JourneyBreadcrumb"> | string | null
+  totalDistance?: Prisma.FloatFilter<"JourneyBreadcrumb"> | number
   speed?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
   accuracy?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
   heading?: Prisma.FloatNullableFilter<"JourneyBreadcrumb"> | number | null
@@ -775,9 +814,10 @@ export type JourneyBreadcrumbScalarWhereInput = {
 
 export type JourneyBreadcrumbCreateManyJourneyInput = {
   id?: string
-  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude: number
+  longitude: number
   h3Index?: string | null
+  totalDistance?: number
   speed?: number | null
   accuracy?: number | null
   heading?: number | null
@@ -793,9 +833,10 @@ export type JourneyBreadcrumbCreateManyJourneyInput = {
 
 export type JourneyBreadcrumbUpdateWithoutJourneyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   h3Index?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalDistance?: Prisma.FloatFieldUpdateOperationsInput | number
   speed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   accuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heading?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -811,9 +852,10 @@ export type JourneyBreadcrumbUpdateWithoutJourneyInput = {
 
 export type JourneyBreadcrumbUncheckedUpdateWithoutJourneyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   h3Index?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalDistance?: Prisma.FloatFieldUpdateOperationsInput | number
   speed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   accuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heading?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -829,9 +871,10 @@ export type JourneyBreadcrumbUncheckedUpdateWithoutJourneyInput = {
 
 export type JourneyBreadcrumbUncheckedUpdateManyWithoutJourneyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   h3Index?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalDistance?: Prisma.FloatFieldUpdateOperationsInput | number
   speed?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   accuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heading?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -852,6 +895,7 @@ export type JourneyBreadcrumbSelect<ExtArgs extends runtime.Types.Extensions.Int
   latitude?: boolean
   longitude?: boolean
   h3Index?: boolean
+  totalDistance?: boolean
   speed?: boolean
   accuracy?: boolean
   heading?: boolean
@@ -872,6 +916,7 @@ export type JourneyBreadcrumbSelectCreateManyAndReturn<ExtArgs extends runtime.T
   latitude?: boolean
   longitude?: boolean
   h3Index?: boolean
+  totalDistance?: boolean
   speed?: boolean
   accuracy?: boolean
   heading?: boolean
@@ -892,6 +937,7 @@ export type JourneyBreadcrumbSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   latitude?: boolean
   longitude?: boolean
   h3Index?: boolean
+  totalDistance?: boolean
   speed?: boolean
   accuracy?: boolean
   heading?: boolean
@@ -912,6 +958,7 @@ export type JourneyBreadcrumbSelectScalar = {
   latitude?: boolean
   longitude?: boolean
   h3Index?: boolean
+  totalDistance?: boolean
   speed?: boolean
   accuracy?: boolean
   heading?: boolean
@@ -926,7 +973,7 @@ export type JourneyBreadcrumbSelectScalar = {
   journeyId?: boolean
 }
 
-export type JourneyBreadcrumbOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "latitude" | "longitude" | "h3Index" | "speed" | "accuracy" | "heading" | "altitude" | "batteryLevel" | "isCharging" | "networkStatus" | "isMocked" | "recordedAt" | "createdAt" | "isSynced" | "journeyId", ExtArgs["result"]["journeyBreadcrumb"]>
+export type JourneyBreadcrumbOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "latitude" | "longitude" | "h3Index" | "totalDistance" | "speed" | "accuracy" | "heading" | "altitude" | "batteryLevel" | "isCharging" | "networkStatus" | "isMocked" | "recordedAt" | "createdAt" | "isSynced" | "journeyId", ExtArgs["result"]["journeyBreadcrumb"]>
 export type JourneyBreadcrumbInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
 }
@@ -944,9 +991,10 @@ export type $JourneyBreadcrumbPayload<ExtArgs extends runtime.Types.Extensions.I
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    latitude: runtime.Decimal
-    longitude: runtime.Decimal
+    latitude: number
+    longitude: number
     h3Index: string | null
+    totalDistance: number
     speed: number | null
     accuracy: number | null
     heading: number | null
@@ -1384,9 +1432,10 @@ export interface Prisma__JourneyBreadcrumbClient<T, Null = never, ExtArgs extend
  */
 export interface JourneyBreadcrumbFieldRefs {
   readonly id: Prisma.FieldRef<"JourneyBreadcrumb", 'String'>
-  readonly latitude: Prisma.FieldRef<"JourneyBreadcrumb", 'Decimal'>
-  readonly longitude: Prisma.FieldRef<"JourneyBreadcrumb", 'Decimal'>
+  readonly latitude: Prisma.FieldRef<"JourneyBreadcrumb", 'Float'>
+  readonly longitude: Prisma.FieldRef<"JourneyBreadcrumb", 'Float'>
   readonly h3Index: Prisma.FieldRef<"JourneyBreadcrumb", 'String'>
+  readonly totalDistance: Prisma.FieldRef<"JourneyBreadcrumb", 'Float'>
   readonly speed: Prisma.FieldRef<"JourneyBreadcrumb", 'Float'>
   readonly accuracy: Prisma.FieldRef<"JourneyBreadcrumb", 'Float'>
   readonly heading: Prisma.FieldRef<"JourneyBreadcrumb", 'Float'>

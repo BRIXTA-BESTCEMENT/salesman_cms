@@ -459,6 +459,7 @@ export const JourneyBreadcrumbScalarFieldEnum = {
   latitude: 'latitude',
   longitude: 'longitude',
   h3Index: 'h3Index',
+  totalDistance: 'totalDistance',
   speed: 'speed',
   accuracy: 'accuracy',
   heading: 'heading',

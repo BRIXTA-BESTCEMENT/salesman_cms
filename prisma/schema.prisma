@@ -473,7 +473,6 @@ model JourneyOp {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   // --- RELATIONS ---
-  journey Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // --- INDEXES ---
@@ -510,7 +509,6 @@ model Journey {
   user          User                @relation("UserJourneys", fields: [userId], references: [id], onDelete: Cascade)
   geoTrackings  GeoTracking[]       @relation("JourneyGeoTracking")
   breadcrumbs   JourneyBreadcrumb[] @relation("JourneyBreadcrumbs")
-  ops           JourneyOp[]
 
   @@index([userId, status], map: "idx_journeys_user_status")
   @@map("journeys")
@@ -518,9 +516,10 @@ model Journey {
 
 model JourneyBreadcrumb {
   id String @id @default(uuid()) @db.VarChar(255) // UUID generated on client
-  latitude  Decimal @db.Decimal(10, 7)
-  longitude Decimal @db.Decimal(10, 7)
+  latitude  Float 
+  longitude Float 
   h3Index String? @map("h3_index") @db.VarChar(15)
+  totalDistance Float @default(0.0) @map("total_distance")
   speed    Float? @db.Real // m/s
   accuracy Float? @db.Real // meters
   heading  Float? @db.Real // degrees

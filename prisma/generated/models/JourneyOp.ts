@@ -232,7 +232,6 @@ export type JourneyOpWhereInput = {
   type?: Prisma.StringFilter<"JourneyOp"> | string
   payload?: Prisma.JsonFilter<"JourneyOp">
   createdAt?: Prisma.DateTimeFilter<"JourneyOp"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyScalarRelationFilter, Prisma.JourneyWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -244,7 +243,6 @@ export type JourneyOpOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   payload?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  journey?: Prisma.JourneyOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -259,7 +257,6 @@ export type JourneyOpWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.StringFilter<"JourneyOp"> | string
   payload?: Prisma.JsonFilter<"JourneyOp">
   createdAt?: Prisma.DateTimeFilter<"JourneyOp"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyScalarRelationFilter, Prisma.JourneyWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "serverSeq" | "opId">
 
@@ -294,10 +291,10 @@ export type JourneyOpScalarWhereWithAggregatesInput = {
 export type JourneyOpCreateInput = {
   serverSeq?: bigint | number
   opId: string
+  journeyId: string
   type: string
   payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  journey: Prisma.JourneyCreateNestedOneWithoutOpsInput
   user: Prisma.UserCreateNestedOneWithoutJourneyOpsInput
 }
 
@@ -314,10 +311,10 @@ export type JourneyOpUncheckedCreateInput = {
 export type JourneyOpUpdateInput = {
   serverSeq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   opId?: Prisma.StringFieldUpdateOperationsInput | string
+  journeyId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneRequiredWithoutOpsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutJourneyOpsNestedInput
 }
 
@@ -344,6 +341,7 @@ export type JourneyOpCreateManyInput = {
 export type JourneyOpUpdateManyMutationInput = {
   serverSeq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   opId?: Prisma.StringFieldUpdateOperationsInput | string
+  journeyId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -457,55 +455,13 @@ export type BigIntFieldUpdateOperationsInput = {
   divide?: bigint | number
 }
 
-export type JourneyOpCreateNestedManyWithoutJourneyInput = {
-  create?: Prisma.XOR<Prisma.JourneyOpCreateWithoutJourneyInput, Prisma.JourneyOpUncheckedCreateWithoutJourneyInput> | Prisma.JourneyOpCreateWithoutJourneyInput[] | Prisma.JourneyOpUncheckedCreateWithoutJourneyInput[]
-  connectOrCreate?: Prisma.JourneyOpCreateOrConnectWithoutJourneyInput | Prisma.JourneyOpCreateOrConnectWithoutJourneyInput[]
-  createMany?: Prisma.JourneyOpCreateManyJourneyInputEnvelope
-  connect?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-}
-
-export type JourneyOpUncheckedCreateNestedManyWithoutJourneyInput = {
-  create?: Prisma.XOR<Prisma.JourneyOpCreateWithoutJourneyInput, Prisma.JourneyOpUncheckedCreateWithoutJourneyInput> | Prisma.JourneyOpCreateWithoutJourneyInput[] | Prisma.JourneyOpUncheckedCreateWithoutJourneyInput[]
-  connectOrCreate?: Prisma.JourneyOpCreateOrConnectWithoutJourneyInput | Prisma.JourneyOpCreateOrConnectWithoutJourneyInput[]
-  createMany?: Prisma.JourneyOpCreateManyJourneyInputEnvelope
-  connect?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-}
-
-export type JourneyOpUpdateManyWithoutJourneyNestedInput = {
-  create?: Prisma.XOR<Prisma.JourneyOpCreateWithoutJourneyInput, Prisma.JourneyOpUncheckedCreateWithoutJourneyInput> | Prisma.JourneyOpCreateWithoutJourneyInput[] | Prisma.JourneyOpUncheckedCreateWithoutJourneyInput[]
-  connectOrCreate?: Prisma.JourneyOpCreateOrConnectWithoutJourneyInput | Prisma.JourneyOpCreateOrConnectWithoutJourneyInput[]
-  upsert?: Prisma.JourneyOpUpsertWithWhereUniqueWithoutJourneyInput | Prisma.JourneyOpUpsertWithWhereUniqueWithoutJourneyInput[]
-  createMany?: Prisma.JourneyOpCreateManyJourneyInputEnvelope
-  set?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  disconnect?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  delete?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  connect?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  update?: Prisma.JourneyOpUpdateWithWhereUniqueWithoutJourneyInput | Prisma.JourneyOpUpdateWithWhereUniqueWithoutJourneyInput[]
-  updateMany?: Prisma.JourneyOpUpdateManyWithWhereWithoutJourneyInput | Prisma.JourneyOpUpdateManyWithWhereWithoutJourneyInput[]
-  deleteMany?: Prisma.JourneyOpScalarWhereInput | Prisma.JourneyOpScalarWhereInput[]
-}
-
-export type JourneyOpUncheckedUpdateManyWithoutJourneyNestedInput = {
-  create?: Prisma.XOR<Prisma.JourneyOpCreateWithoutJourneyInput, Prisma.JourneyOpUncheckedCreateWithoutJourneyInput> | Prisma.JourneyOpCreateWithoutJourneyInput[] | Prisma.JourneyOpUncheckedCreateWithoutJourneyInput[]
-  connectOrCreate?: Prisma.JourneyOpCreateOrConnectWithoutJourneyInput | Prisma.JourneyOpCreateOrConnectWithoutJourneyInput[]
-  upsert?: Prisma.JourneyOpUpsertWithWhereUniqueWithoutJourneyInput | Prisma.JourneyOpUpsertWithWhereUniqueWithoutJourneyInput[]
-  createMany?: Prisma.JourneyOpCreateManyJourneyInputEnvelope
-  set?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  disconnect?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  delete?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  connect?: Prisma.JourneyOpWhereUniqueInput | Prisma.JourneyOpWhereUniqueInput[]
-  update?: Prisma.JourneyOpUpdateWithWhereUniqueWithoutJourneyInput | Prisma.JourneyOpUpdateWithWhereUniqueWithoutJourneyInput[]
-  updateMany?: Prisma.JourneyOpUpdateManyWithWhereWithoutJourneyInput | Prisma.JourneyOpUpdateManyWithWhereWithoutJourneyInput[]
-  deleteMany?: Prisma.JourneyOpScalarWhereInput | Prisma.JourneyOpScalarWhereInput[]
-}
-
 export type JourneyOpCreateWithoutUserInput = {
   serverSeq?: bigint | number
   opId: string
+  journeyId: string
   type: string
   payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  journey: Prisma.JourneyCreateNestedOneWithoutOpsInput
 }
 
 export type JourneyOpUncheckedCreateWithoutUserInput = {
@@ -556,50 +512,6 @@ export type JourneyOpScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"JourneyOp"> | Date | string
 }
 
-export type JourneyOpCreateWithoutJourneyInput = {
-  serverSeq?: bigint | number
-  opId: string
-  type: string
-  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutJourneyOpsInput
-}
-
-export type JourneyOpUncheckedCreateWithoutJourneyInput = {
-  serverSeq?: bigint | number
-  opId: string
-  userId: number
-  type: string
-  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-}
-
-export type JourneyOpCreateOrConnectWithoutJourneyInput = {
-  where: Prisma.JourneyOpWhereUniqueInput
-  create: Prisma.XOR<Prisma.JourneyOpCreateWithoutJourneyInput, Prisma.JourneyOpUncheckedCreateWithoutJourneyInput>
-}
-
-export type JourneyOpCreateManyJourneyInputEnvelope = {
-  data: Prisma.JourneyOpCreateManyJourneyInput | Prisma.JourneyOpCreateManyJourneyInput[]
-  skipDuplicates?: boolean
-}
-
-export type JourneyOpUpsertWithWhereUniqueWithoutJourneyInput = {
-  where: Prisma.JourneyOpWhereUniqueInput
-  update: Prisma.XOR<Prisma.JourneyOpUpdateWithoutJourneyInput, Prisma.JourneyOpUncheckedUpdateWithoutJourneyInput>
-  create: Prisma.XOR<Prisma.JourneyOpCreateWithoutJourneyInput, Prisma.JourneyOpUncheckedCreateWithoutJourneyInput>
-}
-
-export type JourneyOpUpdateWithWhereUniqueWithoutJourneyInput = {
-  where: Prisma.JourneyOpWhereUniqueInput
-  data: Prisma.XOR<Prisma.JourneyOpUpdateWithoutJourneyInput, Prisma.JourneyOpUncheckedUpdateWithoutJourneyInput>
-}
-
-export type JourneyOpUpdateManyWithWhereWithoutJourneyInput = {
-  where: Prisma.JourneyOpScalarWhereInput
-  data: Prisma.XOR<Prisma.JourneyOpUpdateManyMutationInput, Prisma.JourneyOpUncheckedUpdateManyWithoutJourneyInput>
-}
-
 export type JourneyOpCreateManyUserInput = {
   serverSeq?: bigint | number
   opId: string
@@ -612,10 +524,10 @@ export type JourneyOpCreateManyUserInput = {
 export type JourneyOpUpdateWithoutUserInput = {
   serverSeq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   opId?: Prisma.StringFieldUpdateOperationsInput | string
+  journeyId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneRequiredWithoutOpsNestedInput
 }
 
 export type JourneyOpUncheckedUpdateWithoutUserInput = {
@@ -636,42 +548,6 @@ export type JourneyOpUncheckedUpdateManyWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type JourneyOpCreateManyJourneyInput = {
-  serverSeq?: bigint | number
-  opId: string
-  userId: number
-  type: string
-  payload: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-}
-
-export type JourneyOpUpdateWithoutJourneyInput = {
-  serverSeq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  opId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutJourneyOpsNestedInput
-}
-
-export type JourneyOpUncheckedUpdateWithoutJourneyInput = {
-  serverSeq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  opId?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type JourneyOpUncheckedUpdateManyWithoutJourneyInput = {
-  serverSeq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  opId?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 
 
 export type JourneyOpSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -682,7 +558,6 @@ export type JourneyOpSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   type?: boolean
   payload?: boolean
   createdAt?: boolean
-  journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journeyOp"]>
 
@@ -694,7 +569,6 @@ export type JourneyOpSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   type?: boolean
   payload?: boolean
   createdAt?: boolean
-  journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journeyOp"]>
 
@@ -706,7 +580,6 @@ export type JourneyOpSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   type?: boolean
   payload?: boolean
   createdAt?: boolean
-  journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journeyOp"]>
 
@@ -722,22 +595,18 @@ export type JourneyOpSelectScalar = {
 
 export type JourneyOpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"serverSeq" | "opId" | "journeyId" | "userId" | "type" | "payload" | "createdAt", ExtArgs["result"]["journeyOp"]>
 export type JourneyOpInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type JourneyOpIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type JourneyOpIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.JourneyDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $JourneyOpPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "JourneyOp"
   objects: {
-    journey: Prisma.$JourneyPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1142,7 +1011,6 @@ readonly fields: JourneyOpFieldRefs;
  */
 export interface Prisma__JourneyOpClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  journey<T extends Prisma.JourneyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JourneyDefaultArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

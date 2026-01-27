@@ -351,6 +351,7 @@ export default function TechnicalVisitReportsPage() {
           <InfoField label="Est. Requirement" value={r.estRequirement ? `${r.estRequirement} Bags` : '0'} />
           <InfoField label="Brands In Use" value={r.siteVisitBrandInUse?.join(', ')} fullWidth />
           <InfoField label="Current Price" value={r.currentBrandPrice ? `₹${r.currentBrandPrice}` : 'N/A'} />
+          <InfoField label="Market Name" value={r.marketName} />
           <InfoField label="Supplying Dealer" value={r.supplyingDealerName} fullWidth />
         </CardContent>
       </Card>

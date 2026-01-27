@@ -490,14 +490,6 @@ export type AoiScalarRelationFilter = {
   isNot?: Prisma.AoiWhereInput
 }
 
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type AoiCreateNestedOneWithoutGridCellsInput = {
   create?: Prisma.XOR<Prisma.AoiCreateWithoutGridCellsInput, Prisma.AoiUncheckedCreateWithoutGridCellsInput>
   connectOrCreate?: Prisma.AoiCreateOrConnectWithoutGridCellsInput
