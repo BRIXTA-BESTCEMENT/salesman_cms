@@ -829,25 +829,42 @@ model TechnicalVisitReport {
 
 // Meeting: Stores records of Head Mason Meets, Engineer Meets, etc.
 model TSOMeeting {
-  id                    String    @id @default(uuid()) @db.VarChar(255)
-  type                  String    @db.VarChar(100) // e.g., "Head Mason Meet", "Counter Meet"
-  date                  DateTime  @db.Date
-  location              String    @db.VarChar(500)
-  budgetAllocated       Decimal?  @map("budget_allocated") @db.Decimal(12, 2) // Budget for the event/month
-  participantsCount     Int?      @map("participants_count") // Total number of attendees
-  // If the meeting was recorded on a TVR, link back
-  technicalVisitReports TechnicalVisitReport[] @relation("TVRMeeting")
-  
-  // The user who created/organized the meeting
-  createdByUserId       Int       @map("created_by_user_id")
-  createdBy             User      @relation("UserCreatedMeetings", fields: [createdByUserId], references: [id])
-  participants          MasonsOnMeetings[]
+  id                    String   @id @default(uuid()) @db.VarChar(255)
 
-  siteId String? @map("site_id") @db.Uuid // FK to TechnicalSite
-  site TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  // --- Existing Fields (Mapped) ---
+  type                  String?  @db.VarChar(100) // "Meet Type"
+  date                  DateTime? @db.Date        // "Date"
+  participantsCount     Int?     @map("participants_count") // "No of Heads"
+
+  // --- New Fields from Excel ---
+  zone                  String?  @db.VarChar(100)
+  market                String?  @db.VarChar(100)
   
-  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Split "Name of Dealer And Address" into two fields
+  dealerName            String?  @map("dealer_name") @db.VarChar(255)
+  dealerAddress         String?  @map("dealer_address") @db.VarChar(500)
+
+  conductedBy           String?  @map("conducted_by") @db.VarChar(255)
+  giftType              String?  @map("gift_type") @db.VarChar(255)
+  accountJsbJud         String?  @map("account_jsb_jud") @db.VarChar(100)
+  totalExpenses         Decimal? @map("total_expenses") @db.Decimal(12, 2)
+  billSubmitted         Boolean? @default(false) @map("bill_submitted")
+
+  // --- Relations & Metadata ---
+  technicalVisitReports TechnicalVisitReport[] @relation("TVRMeeting")
+
+  // The user who created/organized the meeting (Required)
+  createdByUserId       Int      @map("created_by_user_id")
+  createdBy             User     @relation("UserCreatedMeetings", fields: [createdByUserId], references: [id])
+
+  siteId                String?  @map("site_id") @db.Uuid
+  site                  TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  // This field allows MasonsOnMeetings to connect back to this model 
+  participants          MasonsOnMeetings[]
+  
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   
   @@index([createdByUserId])
   @@index([siteId], map: "idx_meeting_site_id")

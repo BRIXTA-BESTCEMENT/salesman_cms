@@ -677,14 +677,22 @@ export const updateLeaveApplicationSchema = z.object({
 
 export const tsoMeetingSchema = z.object({
   id: z.string(),
-  type: z.string(),
-  date: z.string(), // ISO String
-  location: z.string(),
-  budgetAllocated: z.number().nullable(),
-  participantsCount: z.number().int().nullable(),
   createdByUserId: z.number().int(),
   createdAt: z.string(), // ISO String
   updatedAt: z.string(), // ISO String
+  type: z.string().optional().nullable(),
+  date: z.string().optional().nullable(), // ISO String
+  participantsCount: z.number().int().optional().nullable(),
+  zone: z.string().optional().nullable(),
+  market: z.string().optional().nullable(),
+  dealerName: z.string().optional().nullable(),
+  dealerAddress: z.string().optional().nullable(),
+  conductedBy: z.string().optional().nullable(),
+  giftType: z.string().optional().nullable(),
+  accountJsbJud: z.string().optional().nullable(),
+  totalExpenses: z.number().optional().nullable(), 
+  billSubmitted: z.boolean().optional().nullable().default(false),
+
   siteId: z.string().optional().nullable(),
 });
 
