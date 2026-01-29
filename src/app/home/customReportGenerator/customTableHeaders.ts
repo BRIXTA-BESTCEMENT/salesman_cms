@@ -172,15 +172,15 @@ export const tablesMetadata: TableMeta[] = [
     //     icon: Star,
     //     columns: ['id', 'area', 'region', 'rating', 'salesmanName', 'salesmanEmail'],
     // },
-    // {
-    //     id: 'tsoMeetings',
-    //     title: 'TSO Meetings',
-    //     icon: UsersRound,
-    //     columns: [
-    //         'id', 'type', 'date', 'location', 'budgetAllocated', 'participantsCount',
-    //         'createdByUserName', 'createdByUserEmail', 'createdAt', 'updatedAt'
-    //     ],
-    // },
+    {
+        id: 'tsoMeetings',
+        title: 'TSO Meetings',
+        icon: UsersRound,
+        columns: [
+            'id', 'creatorName', 'role', 'type', 'date', 'market', 'zone', 'dealerName', 'conductedBy', 
+            'participantsCount', 'giftType', 'accountJsbJud', 'totalExpenses', 'billSubmitted', 'createdAt', 'updatedAt'
+        ],
+    },
     {
         id: 'rewards',
         title: 'Rewards Inventory',

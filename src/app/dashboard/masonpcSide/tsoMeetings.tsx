@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, Badge, XCircle, CheckCircle2 } from 'lucide-react';
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
@@ -253,31 +253,49 @@ export default function TsoMeetingsPage() {
   // --- Define Columns for TSO Meeting DataTable (unchanged) ---
   const tsoMeetingColumns: ColumnDef<TsoMeeting>[] = [
     { accessorKey: "creatorName", header: "Creator" },
-    { accessorKey: "role", header: "Creator Role" },
-    { accessorKey: "type", header: "Meeting Type" },
-    { 
-      accessorKey: "location", 
-      header: "Location",
-      cell: ({ row }) => <span className="max-w-[200px] truncate block">{row.original.location}</span>,
-    },
+    { accessorKey: "role", header: "Role" },
+    { accessorKey: "type", header: "Type" },
     { 
       accessorKey: "date", 
-      header: "Meeting Date",
+      header: "Date",
       cell: ({ row }) => formatDate(row.original.date) 
     },
+    { accessorKey: "market", header: "Market" },
+    { accessorKey: "zone", header: "Zone" },
+    { 
+      accessorKey: "dealerName", 
+      header: "Dealer",
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="font-medium">{row.original.dealerName || '—'}</span>
+          <span className="text-xs text-muted-foreground truncate max-w-[150px]">{row.original.dealerAddress}</span>
+        </div>
+      )
+    },
+    { accessorKey: "conductedBy", header: "Conducted By" },
     { accessorKey: "participantsCount", header: "Participants" },
+    { accessorKey: "giftType", header: "Gift" },
+    { accessorKey: "accountJsbJud", header: "Account (JSB/JUD)" },
     { 
-      accessorKey: "budgetAllocated", 
-      header: "Budget",
-      cell: ({ row }) => formatCurrency(row.original.budgetAllocated)
+      accessorKey: "totalExpenses", 
+      header: "Expenses",
+      cell: ({ row }) => <span className="font-semibold text-right block">{formatCurrency(row.original.totalExpenses)}</span>
     },
-    { accessorKey: "area", header: "Area" },
-    { accessorKey: "region", header: "Region(Zone)" },
-    { 
-      accessorKey: "createdAt", 
-      header: "Reported At",
-      cell: ({ row }) => formatDate(row.original.createdAt) 
-    },
+    // {
+    //   accessorKey: "billSubmitted",
+    //   header: "Bill Submitted",
+    //   cell: ({ row }) => (
+    //     row.original.billSubmitted ? (
+    //       <Badge className="bg-green-50 text-green-700 border-green-200 gap-1">
+    //         <CheckCircle2 size={12} /> Yes
+    //       </Badge>
+    //     ) : (
+    //       <Badge className="bg-red-50 text-red-700 border-red-200 gap-1">
+    //         <XCircle size={12} /> No
+    //       </Badge>
+    //     )
+    //   )
+    // },
   ];
 
   const handleTsoMeetingOrderChange = (newOrder: TsoMeeting[]) => {
