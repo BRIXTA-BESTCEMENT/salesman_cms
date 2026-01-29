@@ -16,6 +16,9 @@ import { Badge } from '@/components/ui/badge'; // For status badges
 import { Input } from '@/components/ui/input'; // For search input
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Search, Loader2 } from 'lucide-react';
 import { IconCalendar } from '@tabler/icons-react';
@@ -97,6 +100,14 @@ export default function SlmLeavesPage() {
   const [locationError, setLocationError] = React.useState<string | null>(null);
   const [roleError, setRoleError] = React.useState<string | null>(null);
 
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [currentAction, setCurrentAction] = React.useState<{
+    id: UniqueIdentifier;
+    type: "Approved" | "Rejected";
+    salesmanName: string;
+  } | null>(null);
+  const [actionRemarks, setActionRemarks] = React.useState("");
+  const [isSubmittingAction, setIsSubmittingAction] = React.useState(false);
 
   // --- Filter Options Fetching ---
   const fetchLocations = React.useCallback(async () => {
@@ -173,7 +184,7 @@ export default function SlmLeavesPage() {
         try {
           // Use id as UniqueIdentifier for DataTableReusable
           const validated = salesmanLeaveApplicationSchema.parse(item);
-          return { ...validated, id: validated.id.toString() } as SalesmanLeaveApplication; 
+          return { ...validated, id: validated.id.toString() } as SalesmanLeaveApplication;
         } catch (e) {
           console.error("Validation error for item:", item, e);
           return null;
@@ -229,7 +240,27 @@ export default function SlmLeavesPage() {
     } catch (e: any) {
       console.error("Failed to update leave application:", e);
       toast.error(e.message || "Failed to update leave application.");
-    } 
+    }
+  };
+
+  const openActionDialog = (app: SalesmanLeaveApplication, type: "Approved" | "Rejected") => {
+    setCurrentAction({
+      id: app.id,
+      type: type,
+      salesmanName: app.salesmanName
+    });
+    setActionRemarks(""); // Reset remarks
+    setIsDialogOpen(true);
+  };
+
+  const submitActionDialog = async () => {
+    if (!currentAction) return;
+
+    setIsSubmittingAction(true);
+    await handleLeaveAction(currentAction.id, currentAction.type, actionRemarks);
+    setIsSubmittingAction(false);
+    setIsDialogOpen(false);
+    setCurrentAction(null);
   };
 
   // --- Filtering Logic
@@ -301,7 +332,7 @@ export default function SlmLeavesPage() {
         );
       },
     },
-    {
+{
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
@@ -312,22 +343,21 @@ export default function SlmLeavesPage() {
           return <span className="text-sm text-muted-foreground">{app.adminRemarks ? `Remark: ${app.adminRemarks}` : '—'}</span>;
         }
 
-        const onAccept = async () => {
-          await handleLeaveAction(app.id, 'Approved');
-        };
-
-        const onReject = async () => {
-          const remark = window.prompt(`Reason for rejecting ${app.salesmanName}'s leave (optional):`, '');
-          // Pass null if user cancels the prompt (remark === null), otherwise pass the string (which might be empty)
-          await handleLeaveAction(app.id, 'Rejected', remark === null ? null : remark);
-        };
-
         return (
           <div className="flex gap-2">
-            <Button size="sm" onClick={onAccept} className="bg-green-600 hover:bg-green-700 text-white">
+            <Button 
+              size="sm" 
+              onClick={() => openActionDialog(app, 'Approved')} 
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
               Accept
             </Button>
-            <Button size="sm" variant="outline" onClick={onReject} className="border-red-500 text-red-600 hover:bg-red-50">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={() => openActionDialog(app, 'Rejected')} 
+              className="border-red-500 text-red-600 hover:bg-red-50"
+            >
               Reject
             </Button>
           </div>
@@ -484,7 +514,7 @@ export default function SlmLeavesPage() {
             <>
               <DataTableReusable
                 columns={salesmanLeaveColumns}
-                data={filteredData} 
+                data={filteredData}
                 enableRowDragging={false}
                 onRowOrderChange={handleSalesmanLeaveOrderChange}
               />
@@ -492,6 +522,42 @@ export default function SlmLeavesPage() {
           )}
         </div>
       </div>
+  
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{currentAction?.type === 'Approved' ? 'Approve Leave' : 'Reject Leave'}</DialogTitle>
+            <DialogDescription>
+              Add optional remarks for {currentAction?.salesmanName}'s leave application.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="remarks">Remarks (Optional)</Label>
+              <Textarea
+                id="remarks"
+                placeholder="Enter remarks here..."
+                value={actionRemarks}
+                onChange={(e) => setActionRemarks(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSubmittingAction}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              onClick={submitActionDialog}
+              disabled={isSubmittingAction}
+              className={currentAction?.type === 'Approved' ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
+            >
+              {isSubmittingAction && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Confirm {currentAction?.type === 'Approved' ? 'Approval' : 'Rejection'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
