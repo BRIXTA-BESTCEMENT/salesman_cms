@@ -265,8 +265,8 @@ export default function TechnicalVisitReportsPage() {
       header: "Site / Party Name",
       cell: ({ row }) => (
         <div className="flex flex-col max-w-[180px]">
-          <span className="font-semibold text-sm truncate" title={row.original.siteNameConcernedPerson}>
-            {row.original.siteNameConcernedPerson}
+          <span className="font-semibold text-sm truncate" title={row.original.siteNameConcernedPerson || row.original.associatedPartyName}>
+            {row.original.siteNameConcernedPerson || row.original.associatedPartyName}
           </span>
           <span className="text-xs text-muted-foreground">{row.original.phoneNo}</span>
         </div>
@@ -565,7 +565,7 @@ export default function TechnicalVisitReportsPage() {
                     <InfoField label="Region" value={selectedReport.region} />
                     <InfoField label="Area" value={selectedReport.area} />
                     <InfoField label="Site Address" value={selectedReport.siteAddress} fullWidth />
-                    <InfoField label="Contact Person" value={selectedReport.siteNameConcernedPerson} />
+                    <InfoField label="Contact Person" value={selectedReport.siteNameConcernedPerson || selectedReport.associatedPartyName} />
                     <InfoField label="Phone" value={selectedReport.phoneNo} />
                   </CardContent>
                 </Card>
