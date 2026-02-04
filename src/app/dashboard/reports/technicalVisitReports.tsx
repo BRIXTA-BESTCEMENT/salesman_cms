@@ -565,8 +565,8 @@ export default function TechnicalVisitReportsPage() {
                     <InfoField label="Region" value={selectedReport.region} />
                     <InfoField label="Area" value={selectedReport.area} />
                     <InfoField label="Site Address" value={selectedReport.siteAddress} fullWidth />
-                    <InfoField label="Contact Person" value={selectedReport.siteNameConcernedPerson || selectedReport.associatedPartyName} />
-                    <InfoField label="Phone" value={selectedReport.phoneNo} />
+                    <InfoField label="Contact Person" value={selectedReport.siteNameConcernedPerson || selectedReport.associatedPartyName || selectedReport.influencerName} />
+                    <InfoField label="Phone" value={selectedReport.phoneNo || selectedReport.influencerPhone} />
                   </CardContent>
                 </Card>
 
