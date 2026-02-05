@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Download, ListFilter, Settings2 } from 'lucide-react';
+import { Download, ListFilter, Settings2, CheckSquare, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -22,7 +22,7 @@ import { DataTableReusable, DragHandle } from '@/components/data-table-reusable'
 import { ColumnDef } from '@tanstack/react-table';
 import { BASE_URL } from '@/lib/Reusable-constants';
 import { StyleConfigurator, StyleConfig } from './components/StyleConfigurator';
-import { FilterBuilder, FilterRule } from './components/FilterBuilder';
+import { DataFilter, FilterRule } from './components/DataFilters';
 import {
   tablesMetadata,
   type TableColumn,
@@ -504,23 +504,26 @@ export default function CustomReportGeneratorPage() {
 
             {/* RIGHT: Column Checkboxes */}
             <div className="p-4 bg-card">
-                 <div className="flex items-center justify-between mb-3">
+                 <div className="flex items-center justify-between mb-4">
                     <h4 className="text-sm font-semibold text-foreground/80">2. Columns</h4>
                     {selectedTable && (
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-3">
                              <Button
                                 onClick={handleSelectAllToggle}
-                                variant="ghost" size="sm"
-                                className="h-6 text-[10px] px-2"
+                                variant="outline" size="sm"
+                                className="h-9 px-3 text-xs flex items-center gap-1.5 border-primary/20 hover:bg-primary/5 text-primary"
                              >
+                                <CheckSquare className="w-3.5 h-3.5" />
                                 {isAllColumnsSelected ? 'Unselect All' : 'Select All'}
                              </Button>
+                             
                              {currentTableCheckedCount > 0 && (
                                 <Button
                                     onClick={handleClearTableColumns}
-                                    variant="ghost" size="sm"
-                                    className="h-6 text-[10px] px-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                    variant="outline" size="sm"
+                                    className="h-9 px-3 text-xs flex items-center gap-1.5 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
                                 >
+                                    <XCircle className="w-3.5 h-3.5" />
                                     Clear
                                 </Button>
                              )}
@@ -585,13 +588,13 @@ export default function CustomReportGeneratorPage() {
              </div>
              
              {/* A. Styling */}
-             <StyleConfigurator
+             {/* <StyleConfigurator
                 config={styleConfig}
                 onChange={setStyleConfig}
-             />
+             /> */}
 
              {/* B. Filtering */}
-             <FilterBuilder
+             <DataFilter
                 availableColumns={reportColumns}
                 filters={filters}
                 setFilters={setFilters}

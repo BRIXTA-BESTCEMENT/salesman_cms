@@ -8,6 +8,9 @@ import { ColumnDef } from '@tanstack/react-table';
 import { 
   Search, 
   MapPin, 
+  ArrowRightCircle,
+  Clock,
+  Timer
 } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -110,110 +113,135 @@ export default function LogisticsGateIOList() {
   }, [records, searchQuery]);
 
   // --- Helper: Formatters ---
-  const formatTime = (dateStr?: string | null, timeStr?: string | null) => {
-    if (!dateStr) return '-';
-    const d = new Date(dateStr).toLocaleDateString(undefined, { day: '2-digit', month: 'short' });
-    const t = timeStr || '';
+  const FormatDateCell = ({ date, time, label }: { date?: string | null, time?: string | null, label?: string }) => {
+    if (!date) return <span className="text-slate-500">-</span>;
+    
+    const d = new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const t = time || '';
+
     return (
-      <div className="flex flex-col text-xs">
-        <span className="font-medium">{d}</span>
-        <span className="text-muted-foreground text-[10px]">{t}</span>
+      <div className="flex flex-col justify-center h-full">
+         {label && <span className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">{label}</span>}
+         <div className="flex items-center gap-2">
+            <span className="font-medium text-slate-200 text-sm">{d}</span>
+         </div>
+         <span className="text-xs text-slate-400 font-mono mt-0.5">{t}</span>
       </div>
     );
   };
 
   // --- Columns Definition ---
   const columns: ColumnDef<LogisticsRecord>[] = [
-    // 1. Location Info
+    // 1. Zone & District
     {
       header: 'Location / Zone',
       accessorKey: 'zone',
       cell: ({ row }) => (
-        <div className="flex flex-col min-w-[120px] text-xs">
-          <div className="flex items-center gap-1 font-semibold">
-            <MapPin className="h-3 w-3 text-blue-500" />
-            <span>{row.original.zone}</span>
+        <div className="flex flex-col min-w-40 py-2">
+          <div className="flex items-center gap-2 mb-1">
+            {/* Icon Box */}
+            <div className="p-1.5 bg-blue-900/50 rounded-md border border-blue-800">
+              <MapPin className="h-4 w-4 text-blue-400" />
+            </div>
+            <span className="font-semibold text-white">{row.original.zone || 'Unknown Zone'}</span>
           </div>
-          <span className="text-muted-foreground">{row.original.district}</span>
-          <span className="text-gray-500 italic">{row.original.destination}</span>
+          <div className="pl-9 flex flex-col">
+            <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wide">District</span>
+            <span className="text-sm text-slate-300">{row.original.district || '-'}</span>
+          </div>
         </div>
       )
     },
 
-    // 2. DO Order
+    // 2. Destination
     {
-      header: 'DO Order',
-      accessorKey: 'doOrderDate',
-      cell: ({ row }) => formatTime(row.original.doOrderDate, row.original.doOrderTime)
+      header: 'Destination',
+      accessorKey: 'destination',
+      cell: ({ row }) => (
+        <div className="min-w-[140px] flex items-center gap-2">
+          <ArrowRightCircle className="h-4 w-4 text-slate-500" />
+          <span className="text-sm font-medium text-slate-300 truncate max-w-[180px]" title={row.original.destination || ''}>
+            {row.original.destination || '-'}
+          </span>
+        </div>
+      )
     },
 
-    // 3. Gate In
+    // 3. DO Order
+    // {
+    //   header: 'DO Order',
+    //   accessorKey: 'doOrderDate',
+    //   cell: ({ row }) => (
+    //     <div className="min-w-[130px]">
+    //       <FormatDateCell 
+    //         date={row.original.doOrderDate} 
+    //         time={row.original.doOrderTime} 
+    //       />
+    //     </div>
+    //   )
+    // },
+
+    // 4. Gate In
     {
       header: 'Gate In',
       accessorKey: 'gateInDate',
-      cell: ({ row }) => formatTime(row.original.gateInDate, row.original.gateInTime)
+      cell: ({ row }) => (
+        // Darker green background for contrast
+        <div className="min-w-[130px] p-2 bg-emerald-950/30 rounded-md border border-emerald-900/50">
+          <FormatDateCell 
+            date={row.original.gateInDate} 
+            time={row.original.gateInTime} 
+          />
+        </div>
+      )
     },
 
-    // 4. Weighbridge In
-    {
-      header: 'WB In',
-      accessorKey: 'wbInDate',
-      cell: ({ row }) => formatTime(row.original.wbInDate, row.original.wbInTime)
-    },
-
-    // 5. Weighbridge Out
-    {
-      header: 'WB Out',
-      accessorKey: 'wbOutDate',
-      cell: ({ row }) => formatTime(row.original.wbOutDate, row.original.wbOutTime)
-    },
-
-    // 6. Gate Out
+    // 5. Gate Out (Status Based)
     {
       header: 'Gate Out',
       accessorKey: 'gateOutDate',
-      cell: ({ row }) => formatTime(row.original.gateOutDate, row.original.gateOutTime)
+      cell: ({ row }) => {
+        const isCompleted = !!row.original.gateOutDate;
+        
+        if (!isCompleted) {
+          return (
+             <div className="min-w-[130px] flex items-center">
+               <Badge variant="outline" className="bg-amber-900/20 text-amber-500 border-amber-800 hover:bg-amber-900/30">
+                 <Clock className="w-3 h-3 mr-1" />
+                 In Yard
+               </Badge>
+             </div>
+          );
+        }
+
+        return (
+          <div className="min-w-[130px] p-2 bg-slate-800/50 rounded-md border border-slate-700">
+             <FormatDateCell 
+                date={row.original.gateOutDate} 
+                time={row.original.gateOutTime} 
+             />
+          </div>
+        );
+      }
     },
 
-    // 7. TAT Metrics (Processing Time & Total)
-    {
-      header: 'Turnaround Time',
-      accessorKey: 'processingTime',
-      cell: ({ row }) => (
-        <div className="flex flex-col gap-1 min-w-[140px]">
-          <div className="flex justify-between text-xs">
-            <span className="text-muted-foreground">Process:</span>
-            <Badge variant="outline" className="h-5 px-1">{row.original.processingTime || '-'}</Badge>
-          </div>
-          <div className="flex justify-between text-xs mt-1 border-t pt-1">
-            <span className="font-semibold text-gray-700">Total TAT:</span>
-            <span className="font-bold text-blue-700">{row.original.diffGateInGateOut || '-'}</span>
-          </div>
-        </div>
-      )
-    },
-    
-    // 8. Weight Differences (Optional / Advanced View)
-    {
-      header: 'Weight Diffs',
-      id: 'weightDiffs',
-      cell: ({ row }) => (
-        <div className="flex flex-col gap-1 text-[10px] text-muted-foreground min-w-[150px]">
-           <div className="flex justify-between">
-             <span>GateIn-Tare:</span>
-             <span>{row.original.diffGateInTareWt || '-'}</span>
-           </div>
-           <div className="flex justify-between">
-             <span>Tare-Gross:</span>
-             <span>{row.original.diffTareWtGrossWt || '-'}</span>
-           </div>
-           <div className="flex justify-between">
-             <span>Gross-GateOut:</span>
-             <span>{row.original.diffGrossWtGateOut || '-'}</span>
-           </div>
-        </div>
-      )
-    }
+    // 6. Turnaround Time (TAT)
+    // {
+    //   header: 'Turnaround Time',
+    //   accessorKey: 'diffGateInGateOut', 
+    //   cell: ({ row }) => {
+    //     const tat = row.original.diffGateInGateOut; 
+        
+    //     if (!tat) return <span className="text-slate-600 text-xs min-w-[100px] block">-</span>;
+
+    //     return (
+    //       <div className="min-w-[120px] flex items-center gap-2">
+    //         <Timer className="h-4 w-4 text-purple-400" />
+    //         <span className="font-bold text-slate-200 font-mono text-sm">{tat}</span>
+    //       </div>
+    //     )
+    //   }
+    // },
   ];
 
   if (error) {

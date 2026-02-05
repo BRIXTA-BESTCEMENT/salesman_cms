@@ -3,7 +3,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LogisticsGateIOList from './gateIO';
-import { Truck } from 'lucide-react';
 
 interface LogisticsTabsProps {
   canView: boolean;
@@ -26,7 +25,6 @@ export function LogisticsTabsLoader({
       <TabsList>
         {canView && (
           <TabsTrigger value="gateIO" className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
             Gate I/O List
           </TabsTrigger>
         )}
