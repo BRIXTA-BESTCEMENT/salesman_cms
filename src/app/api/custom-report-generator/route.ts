@@ -11,6 +11,13 @@ interface TableColumn {
     column: string;
 }
 
+interface FilterRule {
+    id: string;
+    column: string;
+    operator: 'contains' | 'equals' | 'gt' | 'lt';
+    value: string;
+}
+
 type ReportTableId = keyof typeof transformerMap;
 
 // --- Auth Check ---
@@ -19,7 +26,6 @@ async function getAuthClaims() {
     if (!claims || !claims.sub || !claims.org_id) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
-    // Fetch user and company ID (essential for scoping data)
     const currentUser = await prisma.user.findUnique({
         where: { workosUserId: claims.sub },
         select: { companyId: true, role: true },
@@ -28,8 +34,52 @@ async function getAuthClaims() {
     if (!currentUser) {
         return new NextResponse('User not found', { status: 404 });
     }
-    // Note: Returning companyId is essential for data scoping
     return { claims, currentUser };
+}
+
+// --- Filtering Logic ---
+function applyFilters(rows: any[], filters: FilterRule[]): any[] {
+    if (!filters || filters.length === 0) return rows;
+
+    return rows.filter(row => {
+        // A row must satisfy ALL applicable filters (AND logic)
+        return filters.every(filter => {
+            // 1. If the row does not contain the column being filtered, ignore this filter for this row.
+            //    (e.g., filtering 'attendanceDate' shouldn't remove rows from the 'Users' table)
+            if (!Object.prototype.hasOwnProperty.call(row, filter.column)) {
+                return true; 
+            }
+
+            const cellValue = String(row[filter.column] ?? '').toLowerCase();
+            const filterValue = (filter.value ?? '').toLowerCase();
+
+            // 2. If filter value is empty, it passes
+            if (!filterValue) return true;
+
+            // 3. Apply operator
+            switch (filter.operator) {
+                case 'contains':
+                    return cellValue.includes(filterValue);
+                case 'equals':
+                    return cellValue === filterValue;
+                case 'gt': {
+                    const numCell = parseFloat(cellValue);
+                    const numFilter = parseFloat(filterValue);
+                    // Compare as numbers if possible, otherwise string comparison
+                    if (!isNaN(numCell) && !isNaN(numFilter)) return numCell > numFilter;
+                    return cellValue > filterValue;
+                }
+                case 'lt': {
+                    const numCell = parseFloat(cellValue);
+                    const numFilter = parseFloat(filterValue);
+                    if (!isNaN(numCell) && !isNaN(numFilter)) return numCell < numFilter;
+                    return cellValue < filterValue;
+                }
+                default:
+                    return true;
+            }
+        });
+    });
 }
 
 /**
@@ -64,11 +114,13 @@ export async function POST(req: NextRequest) {
     const { currentUser } = authResult;
 
     try {
-        // 2. Parse Payload from the frontend component (page.tsx)
-        const { columns, format, limit } = await req.json() as {
+        // 2. Parse Payload
+        // ADDED: filters destructuring
+        const { columns, format, limit, filters } = await req.json() as {
             columns: TableColumn[];
             format: 'xlsx' | 'csv' | 'json'; 
             limit?: number;
+            filters?: FilterRule[];
         };
 
         if (!columns || columns.length === 0) {
@@ -96,8 +148,12 @@ export async function POST(req: NextRequest) {
             const fetcher = transformerMap[previewTableId as ReportTableId];
             
             // Fetch full data using the transformer
-            const rows = await (fetcher as any)(currentUser.companyId); 
+            let rows = await (fetcher as any)(currentUser.companyId); 
             
+            // ADDED: Apply filters to preview data server-side (optional but good for consistency)
+            // Note: In your current UI, you filter preview client-side, but this ensures API correctness.
+            rows = applyFilters(rows, filters || []);
+
             // Select only requested columns and limit the rows for preview
             const previewCols = grouped[previewTableId];
             const previewData = (rows as any[])
@@ -110,18 +166,19 @@ export async function POST(req: NextRequest) {
                     return obj;
                 });
             
-            // Success: Returns JSON to the client for the DataTablePreview
             return NextResponse.json({ data: previewData });
         }
 
         // --- 5. Handle DOWNLOAD Request (format: 'xlsx' or 'csv') ---
         
-        // Fetch ALL data for ALL selected tables
         const dataPerTable: Record<string, any[]> = {};
         for (const table of tableIds) {
             if (table in transformerMap) {
                 const fn = transformerMap[table as ReportTableId];
-                dataPerTable[table] = await (fn as any)(currentUser.companyId);
+                // A. Fetch Raw Data
+                const rawRows = await (fn as any)(currentUser.companyId);
+                // B. Apply Filters
+                dataPerTable[table] = applyFilters(rawRows, filters || []);
             }
         }
 
