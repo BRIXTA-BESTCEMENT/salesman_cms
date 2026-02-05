@@ -27,14 +27,14 @@ export type AggregateTSOMeeting = {
 }
 
 export type TSOMeetingAvgAggregateOutputType = {
-  budgetAllocated: runtime.Decimal | null
   participantsCount: number | null
+  totalExpenses: runtime.Decimal | null
   createdByUserId: number | null
 }
 
 export type TSOMeetingSumAggregateOutputType = {
-  budgetAllocated: runtime.Decimal | null
   participantsCount: number | null
+  totalExpenses: runtime.Decimal | null
   createdByUserId: number | null
 }
 
@@ -42,9 +42,16 @@ export type TSOMeetingMinAggregateOutputType = {
   id: string | null
   type: string | null
   date: Date | null
-  location: string | null
-  budgetAllocated: runtime.Decimal | null
   participantsCount: number | null
+  zone: string | null
+  market: string | null
+  dealerName: string | null
+  dealerAddress: string | null
+  conductedBy: string | null
+  giftType: string | null
+  accountJsbJud: string | null
+  totalExpenses: runtime.Decimal | null
+  billSubmitted: boolean | null
   createdByUserId: number | null
   siteId: string | null
   createdAt: Date | null
@@ -55,9 +62,16 @@ export type TSOMeetingMaxAggregateOutputType = {
   id: string | null
   type: string | null
   date: Date | null
-  location: string | null
-  budgetAllocated: runtime.Decimal | null
   participantsCount: number | null
+  zone: string | null
+  market: string | null
+  dealerName: string | null
+  dealerAddress: string | null
+  conductedBy: string | null
+  giftType: string | null
+  accountJsbJud: string | null
+  totalExpenses: runtime.Decimal | null
+  billSubmitted: boolean | null
   createdByUserId: number | null
   siteId: string | null
   createdAt: Date | null
@@ -68,9 +82,16 @@ export type TSOMeetingCountAggregateOutputType = {
   id: number
   type: number
   date: number
-  location: number
-  budgetAllocated: number
   participantsCount: number
+  zone: number
+  market: number
+  dealerName: number
+  dealerAddress: number
+  conductedBy: number
+  giftType: number
+  accountJsbJud: number
+  totalExpenses: number
+  billSubmitted: number
   createdByUserId: number
   siteId: number
   createdAt: number
@@ -80,14 +101,14 @@ export type TSOMeetingCountAggregateOutputType = {
 
 
 export type TSOMeetingAvgAggregateInputType = {
-  budgetAllocated?: true
   participantsCount?: true
+  totalExpenses?: true
   createdByUserId?: true
 }
 
 export type TSOMeetingSumAggregateInputType = {
-  budgetAllocated?: true
   participantsCount?: true
+  totalExpenses?: true
   createdByUserId?: true
 }
 
@@ -95,9 +116,16 @@ export type TSOMeetingMinAggregateInputType = {
   id?: true
   type?: true
   date?: true
-  location?: true
-  budgetAllocated?: true
   participantsCount?: true
+  zone?: true
+  market?: true
+  dealerName?: true
+  dealerAddress?: true
+  conductedBy?: true
+  giftType?: true
+  accountJsbJud?: true
+  totalExpenses?: true
+  billSubmitted?: true
   createdByUserId?: true
   siteId?: true
   createdAt?: true
@@ -108,9 +136,16 @@ export type TSOMeetingMaxAggregateInputType = {
   id?: true
   type?: true
   date?: true
-  location?: true
-  budgetAllocated?: true
   participantsCount?: true
+  zone?: true
+  market?: true
+  dealerName?: true
+  dealerAddress?: true
+  conductedBy?: true
+  giftType?: true
+  accountJsbJud?: true
+  totalExpenses?: true
+  billSubmitted?: true
   createdByUserId?: true
   siteId?: true
   createdAt?: true
@@ -121,9 +156,16 @@ export type TSOMeetingCountAggregateInputType = {
   id?: true
   type?: true
   date?: true
-  location?: true
-  budgetAllocated?: true
   participantsCount?: true
+  zone?: true
+  market?: true
+  dealerName?: true
+  dealerAddress?: true
+  conductedBy?: true
+  giftType?: true
+  accountJsbJud?: true
+  totalExpenses?: true
+  billSubmitted?: true
   createdByUserId?: true
   siteId?: true
   createdAt?: true
@@ -219,11 +261,18 @@ export type TSOMeetingGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type TSOMeetingGroupByOutputType = {
   id: string
-  type: string
-  date: Date
-  location: string
-  budgetAllocated: runtime.Decimal | null
+  type: string | null
+  date: Date | null
   participantsCount: number | null
+  zone: string | null
+  market: string | null
+  dealerName: string | null
+  dealerAddress: string | null
+  conductedBy: string | null
+  giftType: string | null
+  accountJsbJud: string | null
+  totalExpenses: runtime.Decimal | null
+  billSubmitted: boolean | null
   createdByUserId: number
   siteId: string | null
   createdAt: Date
@@ -255,36 +304,50 @@ export type TSOMeetingWhereInput = {
   OR?: Prisma.TSOMeetingWhereInput[]
   NOT?: Prisma.TSOMeetingWhereInput | Prisma.TSOMeetingWhereInput[]
   id?: Prisma.StringFilter<"TSOMeeting"> | string
-  type?: Prisma.StringFilter<"TSOMeeting"> | string
-  date?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
-  location?: Prisma.StringFilter<"TSOMeeting"> | string
-  budgetAllocated?: Prisma.DecimalNullableFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  date?: Prisma.DateTimeNullableFilter<"TSOMeeting"> | Date | string | null
   participantsCount?: Prisma.IntNullableFilter<"TSOMeeting"> | number | null
+  zone?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  market?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  dealerName?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  dealerAddress?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  conductedBy?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  giftType?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  accountJsbJud?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  totalExpenses?: Prisma.DecimalNullableFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.BoolNullableFilter<"TSOMeeting"> | boolean | null
   createdByUserId?: Prisma.IntFilter<"TSOMeeting"> | number
   siteId?: Prisma.UuidNullableFilter<"TSOMeeting"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportListRelationFilter
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  participants?: Prisma.MasonsOnMeetingsListRelationFilter
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
+  participants?: Prisma.MasonsOnMeetingsListRelationFilter
 }
 
 export type TSOMeetingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  type?: Prisma.SortOrder
-  date?: Prisma.SortOrder
-  location?: Prisma.SortOrder
-  budgetAllocated?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrderInput | Prisma.SortOrder
+  date?: Prisma.SortOrderInput | Prisma.SortOrder
   participantsCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  zone?: Prisma.SortOrderInput | Prisma.SortOrder
+  market?: Prisma.SortOrderInput | Prisma.SortOrder
+  dealerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  dealerAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  conductedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  giftType?: Prisma.SortOrderInput | Prisma.SortOrder
+  accountJsbJud?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrderInput | Prisma.SortOrder
+  billSubmitted?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   technicalVisitReports?: Prisma.TechnicalVisitReportOrderByRelationAggregateInput
   createdBy?: Prisma.UserOrderByWithRelationInput
-  participants?: Prisma.MasonsOnMeetingsOrderByRelationAggregateInput
   site?: Prisma.TechnicalSiteOrderByWithRelationInput
+  participants?: Prisma.MasonsOnMeetingsOrderByRelationAggregateInput
 }
 
 export type TSOMeetingWhereUniqueInput = Prisma.AtLeast<{
@@ -292,28 +355,42 @@ export type TSOMeetingWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TSOMeetingWhereInput | Prisma.TSOMeetingWhereInput[]
   OR?: Prisma.TSOMeetingWhereInput[]
   NOT?: Prisma.TSOMeetingWhereInput | Prisma.TSOMeetingWhereInput[]
-  type?: Prisma.StringFilter<"TSOMeeting"> | string
-  date?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
-  location?: Prisma.StringFilter<"TSOMeeting"> | string
-  budgetAllocated?: Prisma.DecimalNullableFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  date?: Prisma.DateTimeNullableFilter<"TSOMeeting"> | Date | string | null
   participantsCount?: Prisma.IntNullableFilter<"TSOMeeting"> | number | null
+  zone?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  market?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  dealerName?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  dealerAddress?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  conductedBy?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  giftType?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  accountJsbJud?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  totalExpenses?: Prisma.DecimalNullableFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.BoolNullableFilter<"TSOMeeting"> | boolean | null
   createdByUserId?: Prisma.IntFilter<"TSOMeeting"> | number
   siteId?: Prisma.UuidNullableFilter<"TSOMeeting"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportListRelationFilter
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  participants?: Prisma.MasonsOnMeetingsListRelationFilter
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
+  participants?: Prisma.MasonsOnMeetingsListRelationFilter
 }, "id">
 
 export type TSOMeetingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  type?: Prisma.SortOrder
-  date?: Prisma.SortOrder
-  location?: Prisma.SortOrder
-  budgetAllocated?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrderInput | Prisma.SortOrder
+  date?: Prisma.SortOrderInput | Prisma.SortOrder
   participantsCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  zone?: Prisma.SortOrderInput | Prisma.SortOrder
+  market?: Prisma.SortOrderInput | Prisma.SortOrder
+  dealerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  dealerAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  conductedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  giftType?: Prisma.SortOrderInput | Prisma.SortOrder
+  accountJsbJud?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrderInput | Prisma.SortOrder
+  billSubmitted?: Prisma.SortOrderInput | Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -330,11 +407,18 @@ export type TSOMeetingScalarWhereWithAggregatesInput = {
   OR?: Prisma.TSOMeetingScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TSOMeetingScalarWhereWithAggregatesInput | Prisma.TSOMeetingScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TSOMeeting"> | string
-  type?: Prisma.StringWithAggregatesFilter<"TSOMeeting"> | string
-  date?: Prisma.DateTimeWithAggregatesFilter<"TSOMeeting"> | Date | string
-  location?: Prisma.StringWithAggregatesFilter<"TSOMeeting"> | string
-  budgetAllocated?: Prisma.DecimalNullableWithAggregatesFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  date?: Prisma.DateTimeNullableWithAggregatesFilter<"TSOMeeting"> | Date | string | null
   participantsCount?: Prisma.IntNullableWithAggregatesFilter<"TSOMeeting"> | number | null
+  zone?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  market?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  dealerName?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  dealerAddress?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  conductedBy?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  giftType?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  accountJsbJud?: Prisma.StringNullableWithAggregatesFilter<"TSOMeeting"> | string | null
+  totalExpenses?: Prisma.DecimalNullableWithAggregatesFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.BoolNullableWithAggregatesFilter<"TSOMeeting"> | boolean | null
   createdByUserId?: Prisma.IntWithAggregatesFilter<"TSOMeeting"> | number
   siteId?: Prisma.UuidNullableWithAggregatesFilter<"TSOMeeting"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TSOMeeting"> | Date | string
@@ -343,26 +427,40 @@ export type TSOMeetingScalarWhereWithAggregatesInput = {
 
 export type TSOMeetingCreateInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMeetingInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedMeetingsInput
-  participants?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMeetingInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutMeetingsInput
+  participants?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMeetingInput
 }
 
 export type TSOMeetingUncheckedCreateInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdByUserId: number
   siteId?: string | null
   createdAt?: Date | string
@@ -373,26 +471,40 @@ export type TSOMeetingUncheckedCreateInput = {
 
 export type TSOMeetingUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMeetingNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMeetingsNestedInput
-  participants?: Prisma.MasonsOnMeetingsUpdateManyWithoutMeetingNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutMeetingsNestedInput
+  participants?: Prisma.MasonsOnMeetingsUpdateManyWithoutMeetingNestedInput
 }
 
 export type TSOMeetingUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,11 +515,18 @@ export type TSOMeetingUncheckedUpdateInput = {
 
 export type TSOMeetingCreateManyInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdByUserId: number
   siteId?: string | null
   createdAt?: Date | string
@@ -416,22 +535,36 @@ export type TSOMeetingCreateManyInput = {
 
 export type TSOMeetingUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TSOMeetingUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -457,9 +590,16 @@ export type TSOMeetingCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
   date?: Prisma.SortOrder
-  location?: Prisma.SortOrder
-  budgetAllocated?: Prisma.SortOrder
   participantsCount?: Prisma.SortOrder
+  zone?: Prisma.SortOrder
+  market?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrder
+  dealerAddress?: Prisma.SortOrder
+  conductedBy?: Prisma.SortOrder
+  giftType?: Prisma.SortOrder
+  accountJsbJud?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  billSubmitted?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -467,8 +607,8 @@ export type TSOMeetingCountOrderByAggregateInput = {
 }
 
 export type TSOMeetingAvgOrderByAggregateInput = {
-  budgetAllocated?: Prisma.SortOrder
   participantsCount?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
 }
 
@@ -476,9 +616,16 @@ export type TSOMeetingMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
   date?: Prisma.SortOrder
-  location?: Prisma.SortOrder
-  budgetAllocated?: Prisma.SortOrder
   participantsCount?: Prisma.SortOrder
+  zone?: Prisma.SortOrder
+  market?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrder
+  dealerAddress?: Prisma.SortOrder
+  conductedBy?: Prisma.SortOrder
+  giftType?: Prisma.SortOrder
+  accountJsbJud?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  billSubmitted?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -489,9 +636,16 @@ export type TSOMeetingMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
   date?: Prisma.SortOrder
-  location?: Prisma.SortOrder
-  budgetAllocated?: Prisma.SortOrder
   participantsCount?: Prisma.SortOrder
+  zone?: Prisma.SortOrder
+  market?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrder
+  dealerAddress?: Prisma.SortOrder
+  conductedBy?: Prisma.SortOrder
+  giftType?: Prisma.SortOrder
+  accountJsbJud?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  billSubmitted?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -499,8 +653,8 @@ export type TSOMeetingMinOrderByAggregateInput = {
 }
 
 export type TSOMeetingSumOrderByAggregateInput = {
-  budgetAllocated?: Prisma.SortOrder
   participantsCount?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
 }
 
@@ -625,25 +779,39 @@ export type TSOMeetingUpdateOneRequiredWithoutParticipantsNestedInput = {
 
 export type TSOMeetingCreateWithoutCreatedByInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMeetingInput
-  participants?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMeetingInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutMeetingsInput
+  participants?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMeetingInput
 }
 
 export type TSOMeetingUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   siteId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -682,11 +850,18 @@ export type TSOMeetingScalarWhereInput = {
   OR?: Prisma.TSOMeetingScalarWhereInput[]
   NOT?: Prisma.TSOMeetingScalarWhereInput | Prisma.TSOMeetingScalarWhereInput[]
   id?: Prisma.StringFilter<"TSOMeeting"> | string
-  type?: Prisma.StringFilter<"TSOMeeting"> | string
-  date?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
-  location?: Prisma.StringFilter<"TSOMeeting"> | string
-  budgetAllocated?: Prisma.DecimalNullableFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  date?: Prisma.DateTimeNullableFilter<"TSOMeeting"> | Date | string | null
   participantsCount?: Prisma.IntNullableFilter<"TSOMeeting"> | number | null
+  zone?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  market?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  dealerName?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  dealerAddress?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  conductedBy?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  giftType?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  accountJsbJud?: Prisma.StringNullableFilter<"TSOMeeting"> | string | null
+  totalExpenses?: Prisma.DecimalNullableFilter<"TSOMeeting"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.BoolNullableFilter<"TSOMeeting"> | boolean | null
   createdByUserId?: Prisma.IntFilter<"TSOMeeting"> | number
   siteId?: Prisma.UuidNullableFilter<"TSOMeeting"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TSOMeeting"> | Date | string
@@ -695,25 +870,39 @@ export type TSOMeetingScalarWhereInput = {
 
 export type TSOMeetingCreateWithoutTechnicalVisitReportsInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedMeetingsInput
-  participants?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMeetingInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutMeetingsInput
+  participants?: Prisma.MasonsOnMeetingsCreateNestedManyWithoutMeetingInput
 }
 
 export type TSOMeetingUncheckedCreateWithoutTechnicalVisitReportsInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdByUserId: number
   siteId?: string | null
   createdAt?: Date | string
@@ -739,25 +928,39 @@ export type TSOMeetingUpdateToOneWithWhereWithoutTechnicalVisitReportsInput = {
 
 export type TSOMeetingUpdateWithoutTechnicalVisitReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMeetingsNestedInput
-  participants?: Prisma.MasonsOnMeetingsUpdateManyWithoutMeetingNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutMeetingsNestedInput
+  participants?: Prisma.MasonsOnMeetingsUpdateManyWithoutMeetingNestedInput
 }
 
 export type TSOMeetingUncheckedUpdateWithoutTechnicalVisitReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -767,11 +970,18 @@ export type TSOMeetingUncheckedUpdateWithoutTechnicalVisitReportsInput = {
 
 export type TSOMeetingCreateWithoutSiteInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMeetingInput
@@ -781,11 +991,18 @@ export type TSOMeetingCreateWithoutSiteInput = {
 
 export type TSOMeetingUncheckedCreateWithoutSiteInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdByUserId: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -821,11 +1038,18 @@ export type TSOMeetingUpdateManyWithWhereWithoutSiteInput = {
 
 export type TSOMeetingCreateWithoutParticipantsInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutMeetingInput
@@ -835,11 +1059,18 @@ export type TSOMeetingCreateWithoutParticipantsInput = {
 
 export type TSOMeetingUncheckedCreateWithoutParticipantsInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdByUserId: number
   siteId?: string | null
   createdAt?: Date | string
@@ -865,11 +1096,18 @@ export type TSOMeetingUpdateToOneWithWhereWithoutParticipantsInput = {
 
 export type TSOMeetingUpdateWithoutParticipantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMeetingNestedInput
@@ -879,11 +1117,18 @@ export type TSOMeetingUpdateWithoutParticipantsInput = {
 
 export type TSOMeetingUncheckedUpdateWithoutParticipantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -893,11 +1138,18 @@ export type TSOMeetingUncheckedUpdateWithoutParticipantsInput = {
 
 export type TSOMeetingCreateManyCreatedByInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   siteId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -905,25 +1157,39 @@ export type TSOMeetingCreateManyCreatedByInput = {
 
 export type TSOMeetingUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMeetingNestedInput
-  participants?: Prisma.MasonsOnMeetingsUpdateManyWithoutMeetingNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutMeetingsNestedInput
+  participants?: Prisma.MasonsOnMeetingsUpdateManyWithoutMeetingNestedInput
 }
 
 export type TSOMeetingUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -933,11 +1199,18 @@ export type TSOMeetingUncheckedUpdateWithoutCreatedByInput = {
 
 export type TSOMeetingUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -945,11 +1218,18 @@ export type TSOMeetingUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type TSOMeetingCreateManySiteInput = {
   id?: string
-  type: string
-  date: Date | string
-  location: string
-  budgetAllocated?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: string | null
+  date?: Date | string | null
   participantsCount?: number | null
+  zone?: string | null
+  market?: string | null
+  dealerName?: string | null
+  dealerAddress?: string | null
+  conductedBy?: string | null
+  giftType?: string | null
+  accountJsbJud?: string | null
+  totalExpenses?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: boolean | null
   createdByUserId: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -957,11 +1237,18 @@ export type TSOMeetingCreateManySiteInput = {
 
 export type TSOMeetingUpdateWithoutSiteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutMeetingNestedInput
@@ -971,11 +1258,18 @@ export type TSOMeetingUpdateWithoutSiteInput = {
 
 export type TSOMeetingUncheckedUpdateWithoutSiteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -985,11 +1279,18 @@ export type TSOMeetingUncheckedUpdateWithoutSiteInput = {
 
 export type TSOMeetingUncheckedUpdateManyWithoutSiteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  location?: Prisma.StringFieldUpdateOperationsInput | string
-  budgetAllocated?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   participantsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  market?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conductedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountJsbJud?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalExpenses?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  billSubmitted?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1039,17 +1340,24 @@ export type TSOMeetingSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   type?: boolean
   date?: boolean
-  location?: boolean
-  budgetAllocated?: boolean
   participantsCount?: boolean
+  zone?: boolean
+  market?: boolean
+  dealerName?: boolean
+  dealerAddress?: boolean
+  conductedBy?: boolean
+  giftType?: boolean
+  accountJsbJud?: boolean
+  totalExpenses?: boolean
+  billSubmitted?: boolean
   createdByUserId?: boolean
   siteId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   technicalVisitReports?: boolean | Prisma.TSOMeeting$technicalVisitReportsArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  participants?: boolean | Prisma.TSOMeeting$participantsArgs<ExtArgs>
   site?: boolean | Prisma.TSOMeeting$siteArgs<ExtArgs>
+  participants?: boolean | Prisma.TSOMeeting$participantsArgs<ExtArgs>
   _count?: boolean | Prisma.TSOMeetingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tSOMeeting"]>
 
@@ -1057,9 +1365,16 @@ export type TSOMeetingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   type?: boolean
   date?: boolean
-  location?: boolean
-  budgetAllocated?: boolean
   participantsCount?: boolean
+  zone?: boolean
+  market?: boolean
+  dealerName?: boolean
+  dealerAddress?: boolean
+  conductedBy?: boolean
+  giftType?: boolean
+  accountJsbJud?: boolean
+  totalExpenses?: boolean
+  billSubmitted?: boolean
   createdByUserId?: boolean
   siteId?: boolean
   createdAt?: boolean
@@ -1072,9 +1387,16 @@ export type TSOMeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   type?: boolean
   date?: boolean
-  location?: boolean
-  budgetAllocated?: boolean
   participantsCount?: boolean
+  zone?: boolean
+  market?: boolean
+  dealerName?: boolean
+  dealerAddress?: boolean
+  conductedBy?: boolean
+  giftType?: boolean
+  accountJsbJud?: boolean
+  totalExpenses?: boolean
+  billSubmitted?: boolean
   createdByUserId?: boolean
   siteId?: boolean
   createdAt?: boolean
@@ -1087,21 +1409,28 @@ export type TSOMeetingSelectScalar = {
   id?: boolean
   type?: boolean
   date?: boolean
-  location?: boolean
-  budgetAllocated?: boolean
   participantsCount?: boolean
+  zone?: boolean
+  market?: boolean
+  dealerName?: boolean
+  dealerAddress?: boolean
+  conductedBy?: boolean
+  giftType?: boolean
+  accountJsbJud?: boolean
+  totalExpenses?: boolean
+  billSubmitted?: boolean
   createdByUserId?: boolean
   siteId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TSOMeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "date" | "location" | "budgetAllocated" | "participantsCount" | "createdByUserId" | "siteId" | "createdAt" | "updatedAt", ExtArgs["result"]["tSOMeeting"]>
+export type TSOMeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "date" | "participantsCount" | "zone" | "market" | "dealerName" | "dealerAddress" | "conductedBy" | "giftType" | "accountJsbJud" | "totalExpenses" | "billSubmitted" | "createdByUserId" | "siteId" | "createdAt" | "updatedAt", ExtArgs["result"]["tSOMeeting"]>
 export type TSOMeetingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   technicalVisitReports?: boolean | Prisma.TSOMeeting$technicalVisitReportsArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  participants?: boolean | Prisma.TSOMeeting$participantsArgs<ExtArgs>
   site?: boolean | Prisma.TSOMeeting$siteArgs<ExtArgs>
+  participants?: boolean | Prisma.TSOMeeting$participantsArgs<ExtArgs>
   _count?: boolean | Prisma.TSOMeetingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TSOMeetingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1118,16 +1447,23 @@ export type $TSOMeetingPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     technicalVisitReports: Prisma.$TechnicalVisitReportPayload<ExtArgs>[]
     createdBy: Prisma.$UserPayload<ExtArgs>
-    participants: Prisma.$MasonsOnMeetingsPayload<ExtArgs>[]
     site: Prisma.$TechnicalSitePayload<ExtArgs> | null
+    participants: Prisma.$MasonsOnMeetingsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    type: string
-    date: Date
-    location: string
-    budgetAllocated: runtime.Decimal | null
+    type: string | null
+    date: Date | null
     participantsCount: number | null
+    zone: string | null
+    market: string | null
+    dealerName: string | null
+    dealerAddress: string | null
+    conductedBy: string | null
+    giftType: string | null
+    accountJsbJud: string | null
+    totalExpenses: runtime.Decimal | null
+    billSubmitted: boolean | null
     createdByUserId: number
     siteId: string | null
     createdAt: Date
@@ -1528,8 +1864,8 @@ export interface Prisma__TSOMeetingClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   technicalVisitReports<T extends Prisma.TSOMeeting$technicalVisitReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TSOMeeting$technicalVisitReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechnicalVisitReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  participants<T extends Prisma.TSOMeeting$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TSOMeeting$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MasonsOnMeetingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   site<T extends Prisma.TSOMeeting$siteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TSOMeeting$siteArgs<ExtArgs>>): Prisma.Prisma__TechnicalSiteClient<runtime.Types.Result.GetResult<Prisma.$TechnicalSitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  participants<T extends Prisma.TSOMeeting$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TSOMeeting$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MasonsOnMeetingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1562,9 +1898,16 @@ export interface TSOMeetingFieldRefs {
   readonly id: Prisma.FieldRef<"TSOMeeting", 'String'>
   readonly type: Prisma.FieldRef<"TSOMeeting", 'String'>
   readonly date: Prisma.FieldRef<"TSOMeeting", 'DateTime'>
-  readonly location: Prisma.FieldRef<"TSOMeeting", 'String'>
-  readonly budgetAllocated: Prisma.FieldRef<"TSOMeeting", 'Decimal'>
   readonly participantsCount: Prisma.FieldRef<"TSOMeeting", 'Int'>
+  readonly zone: Prisma.FieldRef<"TSOMeeting", 'String'>
+  readonly market: Prisma.FieldRef<"TSOMeeting", 'String'>
+  readonly dealerName: Prisma.FieldRef<"TSOMeeting", 'String'>
+  readonly dealerAddress: Prisma.FieldRef<"TSOMeeting", 'String'>
+  readonly conductedBy: Prisma.FieldRef<"TSOMeeting", 'String'>
+  readonly giftType: Prisma.FieldRef<"TSOMeeting", 'String'>
+  readonly accountJsbJud: Prisma.FieldRef<"TSOMeeting", 'String'>
+  readonly totalExpenses: Prisma.FieldRef<"TSOMeeting", 'Decimal'>
+  readonly billSubmitted: Prisma.FieldRef<"TSOMeeting", 'Boolean'>
   readonly createdByUserId: Prisma.FieldRef<"TSOMeeting", 'Int'>
   readonly siteId: Prisma.FieldRef<"TSOMeeting", 'String'>
   readonly createdAt: Prisma.FieldRef<"TSOMeeting", 'DateTime'>
@@ -1989,6 +2332,25 @@ export type TSOMeeting$technicalVisitReportsArgs<ExtArgs extends runtime.Types.E
 }
 
 /**
+ * TSOMeeting.site
+ */
+export type TSOMeeting$siteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TechnicalSite
+   */
+  select?: Prisma.TechnicalSiteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TechnicalSite
+   */
+  omit?: Prisma.TechnicalSiteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TechnicalSiteInclude<ExtArgs> | null
+  where?: Prisma.TechnicalSiteWhereInput
+}
+
+/**
  * TSOMeeting.participants
  */
 export type TSOMeeting$participantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2010,25 +2372,6 @@ export type TSOMeeting$participantsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.MasonsOnMeetingsScalarFieldEnum | Prisma.MasonsOnMeetingsScalarFieldEnum[]
-}
-
-/**
- * TSOMeeting.site
- */
-export type TSOMeeting$siteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TechnicalSite
-   */
-  select?: Prisma.TechnicalSiteSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TechnicalSite
-   */
-  omit?: Prisma.TechnicalSiteOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TechnicalSiteInclude<ExtArgs> | null
-  where?: Prisma.TechnicalSiteWhereInput
 }
 
 /**

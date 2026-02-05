@@ -265,8 +265,8 @@ export default function TechnicalVisitReportsPage() {
       header: "Site / Party Name",
       cell: ({ row }) => (
         <div className="flex flex-col max-w-[180px]">
-          <span className="font-semibold text-sm truncate" title={row.original.siteNameConcernedPerson}>
-            {row.original.siteNameConcernedPerson}
+          <span className="font-semibold text-sm truncate" title={row.original.siteNameConcernedPerson || row.original.associatedPartyName}>
+            {row.original.siteNameConcernedPerson || row.original.associatedPartyName}
           </span>
           <span className="text-xs text-muted-foreground">{row.original.phoneNo}</span>
         </div>
@@ -351,6 +351,7 @@ export default function TechnicalVisitReportsPage() {
           <InfoField label="Est. Requirement" value={r.estRequirement ? `${r.estRequirement} Bags` : '0'} />
           <InfoField label="Brands In Use" value={r.siteVisitBrandInUse?.join(', ')} fullWidth />
           <InfoField label="Current Price" value={r.currentBrandPrice ? `₹${r.currentBrandPrice}` : 'N/A'} />
+          <InfoField label="Market Name" value={r.marketName} />
           <InfoField label="Supplying Dealer" value={r.supplyingDealerName} fullWidth />
         </CardContent>
       </Card>
@@ -564,8 +565,8 @@ export default function TechnicalVisitReportsPage() {
                     <InfoField label="Region" value={selectedReport.region} />
                     <InfoField label="Area" value={selectedReport.area} />
                     <InfoField label="Site Address" value={selectedReport.siteAddress} fullWidth />
-                    <InfoField label="Contact Person" value={selectedReport.siteNameConcernedPerson} />
-                    <InfoField label="Phone" value={selectedReport.phoneNo} />
+                    <InfoField label="Contact Person" value={selectedReport.siteNameConcernedPerson || selectedReport.associatedPartyName || selectedReport.influencerName} />
+                    <InfoField label="Phone" value={selectedReport.phoneNo || selectedReport.influencerPhone} />
                   </CardContent>
                 </Card>
 

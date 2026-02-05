@@ -9,10 +9,10 @@ const allowedOrigins = [
   'http://localhost:3000/auth/callback',
   'https://salesmancms-dashboard.onrender.com',
   'https://salesmancms-dashboard.onrender.com/auth/callback',
-  'https://cms.best.fix24.cloud',
-  'https://cms.best.fix24.cloud/auth/callback',
-  'http://13.233.139.54',
-  'http://13.233.139.54/auth/callback',
+  'http://65.2.69.34',
+  'http://65.2.69.34/auth/callback',
+  'http://salesforce.bestcement.co.in',
+  'http://salesforce.bestcement.co.in/auth/callback',
 ];
 
 // The main middleware function that combines AuthKit and CORS logic.

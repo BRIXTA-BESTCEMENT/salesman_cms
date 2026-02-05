@@ -66,19 +66,18 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Technical Visit Reports',
         icon: PencilRuler,
         columns: [
-            'id', 'reportDate', 'visitType', 'salesmanName', 'salesmanEmail','siteNameConcernedPerson', 'phoneNo',
-            'marketName', 'siteAddress', 'region', 'area', 'latitude',
-            'longitude', 'visitCategory', 'customerType', 'purposeOfVisit', 'siteVisitStage',
-            'constAreaSqFt', 'siteVisitBrandInUse', 'currentBrandPrice', 'siteStock', 'estRequirement',
+            'id', 'reportDate', 'customerType', 'visitType', 'siteVisitType', 'visitCategory',
+            'salesmanName', 'salesmanEmail','siteNameConcernedPerson', 'phoneNo',
+            'marketName', 'siteAddress', 'region', 'area', 'latitude', 'longitude', 
+            'siteVisitStage', 'constAreaSqFt', 'siteVisitBrandInUse', 'currentBrandPrice', 
+            'siteStock', 'estRequirement',
             'supplyingDealerName', 'nearbyDealerName', 'associatedPartyName', 'isConverted',
-            'conversionType', 'conversionFromBrand', 'conversionQuantityValue', 'conversionQuantityUnit', 'isTechService',
-            'serviceDesc', 'qualityComplaint',
+            'conversionType', 'conversionFromBrand', 'conversionQuantityValue', 'conversionQuantityUnit', 
+            'isTechService', 'serviceType', 'serviceDesc', 'qualityComplaint',
             'influencerName', 'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity', 'influencerType',
-            'masonId', 'clientsRemarks', 'salespersonRemarks', 'promotionalActivity', 'siteVisitType',
-            'sitePhotoUrl', 'inTimeImageUrl', 'outTimeImageUrl', 'checkInTime', 'checkOutTime',
-            'timeSpentinLoc', 'createdAt', 'updatedAt', 'firstVisitTime', 'lastVisitTime',
-            'firstVisitDay', 'lastVisitDay', 'siteVisitsCount', 'otherVisitsCount', 'totalVisitsCount',
-            'pjpId', 'meetingId', 'siteId'
+            'masonId', 'salespersonRemarks', 'promotionalActivity', 
+            'checkInTime', 'checkOutTime',
+            'pjpId', 'siteId'
         ],
     },
     {
@@ -173,15 +172,15 @@ export const tablesMetadata: TableMeta[] = [
     //     icon: Star,
     //     columns: ['id', 'area', 'region', 'rating', 'salesmanName', 'salesmanEmail'],
     // },
-    // {
-    //     id: 'tsoMeetings',
-    //     title: 'TSO Meetings',
-    //     icon: UsersRound,
-    //     columns: [
-    //         'id', 'type', 'date', 'location', 'budgetAllocated', 'participantsCount',
-    //         'createdByUserName', 'createdByUserEmail', 'createdAt', 'updatedAt'
-    //     ],
-    // },
+    {
+        id: 'tsoMeetings',
+        title: 'TSO Meetings',
+        icon: UsersRound,
+        columns: [
+            'id', 'creatorName', 'role', 'type', 'date', 'market', 'zone', 'dealerName', 'conductedBy', 
+            'participantsCount', 'giftType', 'accountJsbJud', 'totalExpenses', 'billSubmitted', 'createdAt', 'updatedAt'
+        ],
+    },
     {
         id: 'rewards',
         title: 'Rewards Inventory',

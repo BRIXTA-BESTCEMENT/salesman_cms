@@ -121,11 +121,11 @@ const menuItems: MenuItem[] = [
         url: "/dashboard/permanentJourneyPlan",
         permission: ITEM_PERMISSIONS["Permanent Journey Plan"]
       },
-      // {
-      //   title: "Salesman Leaves",
-      //   url: "/dashboard/slmLeaves",
-      //   permission: ITEM_PERMISSIONS["Salesman Leaves"]
-      // },
+      {
+        title: "Salesman Leaves",
+        url: "/dashboard/slmLeaves",
+        permission: ITEM_PERMISSIONS["Salesman Leaves"]
+      },
       {
         title: "Salesman Attendance",
         url: "/dashboard/slmAttendance",

@@ -48,16 +48,29 @@ export async function GET() {
     });
 
     // 5. Format the data to match the Zod schema
-    const formattedMeetings = meetings.map(meeting => ({
+    const formattedMeetings = meetings.map((meeting: any) => ({
       id: meeting.id,
-      type: meeting.type,
-      date: meeting.date.toISOString(), // Convert DateTime to ISO string
-      location: meeting.location,
-      budgetAllocated: meeting.budgetAllocated?.toNumber() ?? null, // Convert Decimal to number or null
-      participantsCount: meeting.participantsCount,
       createdByUserId: meeting.createdByUserId,
-      createdAt: meeting.createdAt.toISOString(), // Convert DateTime to ISO string
-      updatedAt: meeting.updatedAt.toISOString(), // Convert DateTime to ISO string
+      createdAt: meeting.createdAt.toISOString(),
+      updatedAt: meeting.updatedAt.toISOString(),
+      date: meeting.date?.toISOString() ?? null,
+      type: meeting.type,
+      participantsCount: meeting.participantsCount,
+      zone: meeting.zone,
+      market: meeting.market,
+      dealerName: meeting.dealerName,
+      dealerAddress: meeting.dealerAddress,
+      conductedBy: meeting.conductedBy,
+      giftType: meeting.giftType,
+      accountJsbJud: meeting.accountJsbJud,
+      billSubmitted: meeting.billSubmitted ?? false,
+      siteId: meeting.siteId,
+      totalExpenses: meeting.totalExpenses?.toNumber() ?? null,
+
+      creatorName: `${meeting.createdBy?.firstName ?? ''} ${meeting.createdBy?.lastName ?? ''}`.trim(),
+      role: meeting.createdBy?.role ?? '',
+      area: meeting.createdBy?.area ?? '',
+      region: meeting.createdBy?.region ?? '',
     }));
 
     // 6. Validate the data against the Zod schema

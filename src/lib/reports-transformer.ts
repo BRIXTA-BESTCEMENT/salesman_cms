@@ -1398,16 +1398,23 @@ export async function getFlattenedDealerBrandCapacities(
   }));
 }
 
-// TSO Meeting (No change needed, but included for context)
 export type FlattenedTSOMeeting = {
   id: string;
-  type: string;
-  date: string;
-  location: string;
-  budgetAllocated: number | null;
+  type: string | null;
+  date: string | null;
+  totalExpenses: number | null; 
   participantsCount: number | null;
+  market: string | null; 
+  zone: string | null; 
+  dealerName: string | null; 
+  dealerAddress: string | null; 
+  conductedBy: string | null; 
+  giftType: string | null; 
+  accountJsbJud: string | null; 
+  billSubmitted: boolean; 
   createdByUserName: string;
   createdByUserEmail: string;
+  creatorRole: string; 
   createdAt: string;
   updatedAt: string;
 };
@@ -1419,13 +1426,25 @@ export async function getFlattenedTSOMeeetings(companyId: number): Promise<Flatt
       id: true,
       type: true,
       date: true,
-      location: true,
-      budgetAllocated: true,
       participantsCount: true,
+      market: true,
+      zone: true,
+      dealerName: true,
+      dealerAddress: true,
+      conductedBy: true,
+      giftType: true,
+      accountJsbJud: true,
+      totalExpenses: true,
+      billSubmitted: true,
       createdAt: true,
       updatedAt: true,
       createdBy: {
-        select: { firstName: true, lastName: true, email: true },
+        select: { 
+          firstName: true, 
+          lastName: true, 
+          email: true,
+          role: true 
+        },
       },
     },
     orderBy: { date: 'desc' },
@@ -1434,13 +1453,21 @@ export async function getFlattenedTSOMeeetings(companyId: number): Promise<Flatt
   return raw.map((r: any) => ({
     id: r.id,
     type: r.type,
-    date: r.date.toISOString().slice(0, 10),
-    location: r.location,
-    // Ensure all BigInts are converted safely (assuming 'budgetAllocated' is BigInt)
-    budgetAllocated: r.budgetAllocated ? Number(r.budgetAllocated) : null,
+    date: r.date ? r.date.toISOString().slice(0, 10) : null,
+    totalExpenses: r.totalExpenses ? Number(r.totalExpenses) : null,
     participantsCount: r.participantsCount ?? null,
+    market: r.market,
+    zone: r.zone,
+    dealerName: r.dealerName,
+    dealerAddress: r.dealerAddress,
+    conductedBy: r.conductedBy,
+    giftType: r.giftType,
+    accountJsbJud: r.accountJsbJud,
+    billSubmitted: r.billSubmitted ?? false,
     createdByUserName: `${r.createdBy.firstName ?? ''} ${r.createdBy.lastName ?? ''}`.trim() || r.createdBy.email,
     createdByUserEmail: r.createdBy.email,
+    creatorRole: r.createdBy.role ?? '',
+
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
   }));
