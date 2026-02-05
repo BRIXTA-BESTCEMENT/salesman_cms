@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Download, ListFilter, PlusCircle } from 'lucide-react';
+import { Download, ListFilter, Settings2, CheckSquare, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -21,7 +21,8 @@ import { toast } from 'sonner';
 import { DataTableReusable, DragHandle } from '@/components/data-table-reusable';
 import { ColumnDef } from '@tanstack/react-table';
 import { BASE_URL } from '@/lib/Reusable-constants';
-
+import { StyleConfigurator, StyleConfig } from './components/StyleConfigurator';
+import { DataFilter, FilterRule } from './components/DataFilters';
 import {
   tablesMetadata,
   type TableColumn,
@@ -449,27 +450,34 @@ export default function CustomReportGeneratorPage() {
             </ScrollArea>
           </div>
 
-          {/* 2. Column Selection + Add Button (Now just a selection area) */}
-          <div className="md:col-span-1 border-r border-border pr-6">
-            <h4 className="text-md font-semibold mb-3">2. Choose Columns</h4>
-            {!selectedTable ? (
-              <p className="text-muted-foreground pt-2">Select a table to view its available columns.</p>
-            ) : (
-              <>
-                {/* --- SELECT ALL CHECKS --- */}
-                <div className="mb-2 pb-2 border-b border-border">
-                  <div className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted/50 transition-colors bg-muted/20">
-                    <Checkbox
-                      id="select-all-cols"
-                      checked={isAllColumnsSelected}
-                      onCheckedChange={handleSelectAllToggle}
-                      disabled={downloading}
-                    />
-                    <Label htmlFor="select-all-cols" className="font-semibold cursor-pointer text-foreground">
-                      Select All Columns
-                    </Label>
-                  </div>
-                </div>
+            {/* RIGHT: Column Checkboxes */}
+            <div className="p-4 bg-card">
+                 <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-sm font-semibold text-foreground/80">2. Columns</h4>
+                    {selectedTable && (
+                        <div className="flex items-center space-x-3">
+                             <Button
+                                onClick={handleSelectAllToggle}
+                                variant="outline" size="sm"
+                                className="h-9 px-3 text-xs flex items-center gap-1.5 border-primary/20 hover:bg-primary/5 text-primary"
+                             >
+                                <CheckSquare className="w-3.5 h-3.5" />
+                                {isAllColumnsSelected ? 'Unselect All' : 'Select All'}
+                             </Button>
+                             
+                             {currentTableCheckedCount > 0 && (
+                                <Button
+                                    onClick={handleClearTableColumns}
+                                    variant="outline" size="sm"
+                                    className="h-9 px-3 text-xs flex items-center gap-1.5 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                                >
+                                    <XCircle className="w-3.5 h-3.5" />
+                                    Clear
+                                </Button>
+                             )}
+                        </div>
+                    )}
+                 </div>
 
                 <ScrollArea className="h-[300px] w-full pr-4">
                   <div className="space-y-2">
@@ -516,14 +524,38 @@ export default function CustomReportGeneratorPage() {
           <div className="md:col-span-1">
             <h4 className="text-md font-semibold mb-3">3. Report Summary</h4>
 
-            <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Apply filters</CardTitle>
+          <CardDescription className='text-muted-foreground'>
+            Apply filters to the selected table before downloading.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="xl:col-span-1 space-y-6">
+             <div className="flex items-center space-x-2 pb-2 border-b border-border">
+                <Settings2 className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold text-lg">Configuration</h3>
+             </div>
+             
+             {/* A. Styling */}
+             {/* <StyleConfigurator
+                config={styleConfig}
+                onChange={setStyleConfig}
+             /> */}
 
-              {/* Total Columns Review */}
-              <div>
-                <Label className="mb-2 block text-foreground">Total Columns in Report</Label>
-                <p className='font-bold text-2xl text-primary'>{totalReportColumnsCount}</p>
-                <p className='text-muted-foreground text-sm'>
-                  Spanning {Array.from(new Set(reportColumns.map(c => c.table))).length} tables.
+             {/* B. Filtering */}
+             <DataFilter
+                availableColumns={reportColumns}
+                filters={filters}
+                setFilters={setFilters}
+             />
+             
+             {/* Summary Stats */}
+             <div className="bg-muted/30 border border-border rounded-lg p-4 text-xs text-muted-foreground">
+                <p>
+                    <span className="font-semibold text-foreground">{totalReportColumnsCount}</span> columns selected across{' '}
+                    <span className="font-semibold text-foreground">{new Set(reportColumns.map(c => c.table)).size}</span> tables.
                 </p>
               </div>
 
