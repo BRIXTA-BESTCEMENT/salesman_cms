@@ -425,6 +425,7 @@ export const ModelName = {
   KYCSubmission: 'KYCSubmission',
   TSOAssignment: 'TSOAssignment',
   LogisticsGateIO: 'LogisticsGateIO',
+  EmailReport: 'EmailReport',
   Aoi: 'Aoi',
   AoiGridCell: 'AoiGridCell',
   SatelliteScene: 'SatelliteScene',
@@ -448,7 +449,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "dealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsGateIO" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
+    modelProps: "company" | "user" | "dealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsGateIO" | "emailReport" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3486,6 +3487,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EmailReport: {
+      payload: Prisma.$EmailReportPayload<ExtArgs>
+      fields: Prisma.EmailReportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmailReportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmailReportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>
+        }
+        findFirst: {
+          args: Prisma.EmailReportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmailReportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>
+        }
+        findMany: {
+          args: Prisma.EmailReportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>[]
+        }
+        create: {
+          args: Prisma.EmailReportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>
+        }
+        createMany: {
+          args: Prisma.EmailReportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmailReportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>[]
+        }
+        delete: {
+          args: Prisma.EmailReportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>
+        }
+        update: {
+          args: Prisma.EmailReportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmailReportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmailReportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmailReportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>[]
+        }
+        upsert: {
+          args: Prisma.EmailReportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmailReportPayload>
+        }
+        aggregate: {
+          args: Prisma.EmailReportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmailReport>
+        }
+        groupBy: {
+          args: Prisma.EmailReportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailReportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmailReportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmailReportCountAggregateOutputType> | number
+        }
+      }
+    }
     Aoi: {
       payload: Prisma.$AoiPayload<ExtArgs>
       fields: Prisma.AoiFieldRefs
@@ -4494,6 +4569,9 @@ export const DailyTaskScalarFieldEnum = {
   siteName: 'siteName',
   description: 'description',
   status: 'status',
+  dealerName: 'dealerName',
+  dealerCategory: 'dealerCategory',
+  pjpCycle: 'pjpCycle',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   pjpId: 'pjpId',
@@ -4970,6 +5048,20 @@ export const LogisticsGateIOScalarFieldEnum = {
 export type LogisticsGateIOScalarFieldEnum = (typeof LogisticsGateIOScalarFieldEnum)[keyof typeof LogisticsGateIOScalarFieldEnum]
 
 
+export const EmailReportScalarFieldEnum = {
+  id: 'id',
+  messageId: 'messageId',
+  subject: 'subject',
+  sender: 'sender',
+  fileName: 'fileName',
+  payload: 'payload',
+  processed: 'processed',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailReportScalarFieldEnum = (typeof EmailReportScalarFieldEnum)[keyof typeof EmailReportScalarFieldEnum]
+
+
 export const AoiScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -5426,6 +5518,7 @@ export type GlobalOmitConfig = {
   kYCSubmission?: Prisma.KYCSubmissionOmit
   tSOAssignment?: Prisma.TSOAssignmentOmit
   logisticsGateIO?: Prisma.LogisticsGateIOOmit
+  emailReport?: Prisma.EmailReportOmit
   aoi?: Prisma.AoiOmit
   aoiGridCell?: Prisma.AoiGridCellOmit
   satelliteScene?: Prisma.SatelliteSceneOmit

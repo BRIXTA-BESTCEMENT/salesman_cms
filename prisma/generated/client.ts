@@ -245,6 +245,11 @@ export type TSOAssignment = Prisma.TSOAssignmentModel
  */
 export type LogisticsGateIO = Prisma.LogisticsGateIOModel
 /**
+ * Model EmailReport
+ * 
+ */
+export type EmailReport = Prisma.EmailReportModel
+/**
  * Model Aoi
  * 
  */

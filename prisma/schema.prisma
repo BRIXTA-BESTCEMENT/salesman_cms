@@ -552,27 +552,31 @@ model SyncState {
 
 // DailyTask model for admin to salesman task assignment + self assignment of tasks by salesmen
 model DailyTask {
-  id                String    @id @default(uuid()) @db.VarChar(255)
-  userId            Int       @map("user_id") // Salesman to whom the task is assigned
-  assignedByUserId  Int       @map("assigned_by_user_id") // Admin/Manager who assigned the task
-  taskDate          DateTime  @map("task_date") @db.Date
-  visitType         String    @map("visit_type") @db.VarChar(50) // "Client Visit", "Technical Visit"
-  relatedDealerId   String?   @map("related_dealer_id") @db.VarChar(255) // Optional: For Client Visits (FK to Dealer.id)
-  siteName          String?   @map("site_name") @db.VarChar(255) // Optional: For Technical Visits
-  description       String?   @db.VarChar(500)
-  status            String    @default("Assigned") @db.VarChar(50) // "Assigned", "Accepted", "Completed", "Rejected", "In Progress"
-  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id               String    @id @default(uuid()) @db.VarChar(255)
+  userId           Int       @map("user_id") // Salesman to whom the task is assigned
+  assignedByUserId Int       @map("assigned_by_user_id") // Admin/Manager who assigned the task
+  taskDate         DateTime  @map("task_date") @db.Date
+  visitType        String    @map("visit_type") @db.VarChar(50) 
+  relatedDealerId  String?   @map("related_dealer_id") @db.VarChar(255) // Optional: For Client Visits (FK to Dealer.id)
+  siteName         String?   @map("site_name") @db.VarChar(255) // Optional: For Technical Visits
+  description      String?   @db.VarChar(500)
+  status           String    @default("Assigned") @db.VarChar(50) // "Assigned", "Accepted", "Completed", "Rejected", "In Progress"
+  dealerName       String?   @map("dealer_name") @db.VarChar(255)     // Snapshot of "Party/Dealer Name"
+  dealerCategory   String?   @map("dealer_category") @db.VarChar(50)  // Snapshot of "Category Dealer" (e.g., A, B, C)
+  pjpCycle         String?   @map("pjp_cycle") @db.VarChar(50)        // Snapshot of "PJP Cycle" (e.g., 10 days, 15 days)
 
-  pjpId             String?   @map("pjp_id") @db.VarChar(255) // Foreign Key to PermanentJourneyPlan
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user              User      @relation("AssignedTasks", fields: [userId], references: [id], onDelete: Cascade)
-  assignedBy        User      @relation("CreatedTasks", fields: [assignedByUserId], references: [id], onDelete: NoAction) // NoAction to keep admin record if deleted
-  relatedDealer     Dealer?   @relation("DealerDailyTasks", fields: [relatedDealerId], references: [id], onDelete: SetNull) // Named relation
-  permanentJourneyPlan PermanentJourneyPlan? @relation("PJPTasks", fields: [pjpId], references: [id], onDelete: SetNull) // Named relation
+  pjpId            String?   @map("pjp_id") @db.VarChar(255) // Foreign Key to PermanentJourneyPlan
 
-  siteId String? @map("site_id") @db.Uuid // FK to TechnicalSite
-  site TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  user             User      @relation("AssignedTasks", fields: [userId], references: [id], onDelete: Cascade)
+  assignedBy       User      @relation("CreatedTasks", fields: [assignedByUserId], references: [id], onDelete: NoAction)
+  relatedDealer    Dealer?   @relation("DealerDailyTasks", fields: [relatedDealerId], references: [id], onDelete: SetNull)
+  permanentJourneyPlan PermanentJourneyPlan? @relation("PJPTasks", fields: [pjpId], references: [id], onDelete: SetNull)
+
+  siteId           String?   @map("site_id") @db.Uuid // FK to TechnicalSite
+  site             TechnicalSite? @relation(fields: [siteId], references: [id], onDelete: SetNull)
 
   @@index([userId], map: "idx_daily_tasks_user_id")
   @@index([assignedByUserId], map: "idx_daily_tasks_assigned_by_user_id")
@@ -1319,6 +1323,20 @@ model LogisticsGateIO {
   updatedAt DateTime @updatedAt
 
   @@map("logistics_gate_io")
+}
+
+model EmailReport {
+  id        String   @id @default(uuid()) @db.Uuid
+  messageId String   @map("message_id")
+  subject   String?
+  sender    String?
+  fileName  String?  @map("file_name")
+  payload   Json     @db.JsonB
+  processed Boolean? @default(false)   
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("email_reports")
+  @@index([messageId], map: "idx_email_reports_message")
 }
 
 // Satellite Image Tables

@@ -5,54 +5,44 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
-import { assignTaskSchema, dailyTaskSchema } from '@/lib/shared-zod-schema';
+import { dailyTaskSchema } from '@/lib/shared-zod-schema';
 
-// Roles allowed to assign tasks
+// --- Roles Configuration ---
 const allowedAssignerRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager'];
 
-// Roles that can be assigned tasks by a manager
-const allowedAssigneeRoles = [
-  'senior-executive',
-  'junior-executive',
-  'executive',
-];
+const allowedAssigneeRoles = ['senior-executive', 'junior-executive', 'executive'];
+
+// --- Local Validation Schema for the New Simplified Logic ---
+const simplifiedAssignSchema = z.object({
+  salesmanId: z.number().int(),
+  dateRange: z.object({
+    from: z.string().datetime().or(z.string()), // Accept ISO strings
+    to: z.string().datetime().or(z.string()),
+  }),
+  dealerIds: z.array(z.string()).min(1, "Select at least one dealer"),
+});
 
 export async function GET() {
   try {
     const claims = await getTokenClaims();
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // 1. Authentication Check
-    if (!claims || !claims.sub) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // 2. Fetch Current User to check role, companyId, area, and region
     const currentUser = await prisma.user.findUnique({
       where: { workosUserId: claims.sub },
-      select: {
-        id: true,
-        role: true,
-        companyId: true,
-        area: true,
-        region: true,
-        company: true, // Select the entire company object here
-      },
+      select: { id: true, role: true, companyId: true, area: true, region: true },
     });
 
-    // 3. Role-based Authorization: Check if user's role is in the allowedAssignerRoles array
     if (!currentUser || !allowedAssignerRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Only the following roles can assign tasks: ${allowedAssignerRoles.join(', ')}` }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // 4. Fetch the users that can be assigned tasks (junior/executives) within the same company
-    // and matching the assigner's area and region.
+    // 1. Fetch Assignable Salesmen (with their Area/Region for filtering)
     const assignableSalesmen = await prisma.user.findMany({
       where: {
         companyId: currentUser.companyId,
-        role: { in: allowedAssigneeRoles }, // Only junior-executive and executive roles
-        // Filter by the current user's area and region if they exist
+        role: { in: allowedAssigneeRoles },
         ...(currentUser.area && { area: currentUser.area }),
         ...(currentUser.region && { region: currentUser.region }),
       },
@@ -61,189 +51,148 @@ export async function GET() {
         firstName: true,
         lastName: true,
         email: true,
-        salesmanLoginId: true, // Include employee ID
+        salesmanLoginId: true,
+        area: true,   // Needed for frontend filtering
+        region: true, // Needed for frontend filtering
       },
-      orderBy: {
-        firstName: 'asc',
-      },
+      orderBy: { firstName: 'asc' },
     });
 
-    // 5. Fetch Dealers within the same company
+    // 2. Fetch Dealers (Include Region/Area for frontend filtering)
     const dealers = await prisma.dealer.findMany({
-      where: {
-        user: { // Filter dealers by the company of the user who created them (assuming this link)
-          companyId: currentUser.companyId,
-        },
-      },
+      where: { user: { companyId: currentUser.companyId } },
       select: {
         id: true,
         name: true,
-        type: true, // "Dealer" or "Sub Dealer"
+        type: true,
+        area: true,   // Needed for matching
+        region: true, // Needed for matching
       },
-      orderBy: {
-        name: 'asc',
-      },
+      orderBy: { name: 'asc' },
     });
 
-    // 6. Fetch Daily Tasks for the current user's company and area/region
+    // 3. Fetch Recent Tasks
     const dailyTasks = await prisma.dailyTask.findMany({
       where: {
-        user: { // Filter tasks by the company and the user's area/region
+        user: {
           companyId: currentUser.companyId,
           ...(currentUser.area && { area: currentUser.area }),
           ...(currentUser.region && { region: currentUser.region }),
         },
       },
       include: {
-        user: { // Salesman assigned
-          select: { firstName: true, lastName: true, email: true },
-        },
-        assignedBy: { // Admin/Manager who assigned
-          select: { firstName: true, lastName: true, email: true },
-        },
-        relatedDealer: { // Related dealer for Client Visits
-          select: { name: true },
-        },
+        user: { select: { firstName: true, lastName: true, email: true } },
+        assignedBy: { select: { firstName: true, lastName: true, email: true } },
+        relatedDealer: { select: { name: true } },
       },
-      orderBy: {
-        createdAt: 'desc', // Order by latest assigned tasks
-      },
-      take: 200, // Limit for dashboard view
+      orderBy: { createdAt: 'desc' },
+      take: 200,
     });
 
-    // 7. Format the tasks data for the frontend table display
-    const formattedTasks = dailyTasks.map((task:any) => {
-      const salesmanName = `${task.user.firstName || ''} ${task.user.lastName || ''}`.trim() || task.user.email;
-      const assignedByUserName = `${task.assignedBy.firstName || ''} ${task.assignedBy.lastName || ''}`.trim() || task.assignedBy.email;
+    // Format tasks
+    const formattedTasks = dailyTasks.map((task: any) => ({
+      id: task.id,
+      salesmanName: `${task.user.firstName || ''} ${task.user.lastName || ''}`.trim() || task.user.email,
+      assignedByUserName: `${task.assignedBy.firstName || ''} ${task.assignedBy.lastName || ''}`.trim() || task.assignedBy.email,
+      taskDate: task.taskDate.toISOString().split('T')[0],
+      visitType: task.visitType,
+      relatedDealerName: task.relatedDealer?.name || task.dealerName || 'N/A',
+      siteName: task.siteName || null,
+      description: task.description,
+      status: task.status,
+      createdAt: task.createdAt.toISOString(),
+    }));
 
-      return {
-        id: task.id,
-        salesmanName: salesmanName,
-        assignedByUserName: assignedByUserName,
-        taskDate: task.taskDate.toISOString().split('T')[0], // YYYY-MM-DD
-        visitType: task.visitType,
-        relatedDealerName: task.relatedDealer?.name || null,
-        siteName: task.siteName || null,
-        description: task.description,
-        status: task.status,
-        createdAt: task.createdAt.toISOString(),
-      };
-    });
+    // Use safeParse to avoid crashing if DB data is slightly off schema
+    const validatedTasks = z.array(dailyTaskSchema).safeParse(formattedTasks);
+    const finalTasks = validatedTasks.success ? validatedTasks.data : [];
 
-    // Validate formatted tasks against the schema
-    const validatedTasks = z.array(dailyTaskSchema).parse(formattedTasks);
-
-    return NextResponse.json({ salesmen: assignableSalesmen, dealers, tasks: validatedTasks }, { status: 200 });
+    return NextResponse.json({ salesmen: assignableSalesmen, dealers, tasks: finalTasks }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching data for assign tasks form/table:', error);
-    return NextResponse.json({ error: 'Failed to fetch form data or tasks' }, { status: 500 });
+    console.error('Error fetching data:', error);
+    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const claims = await getTokenClaims();
-    if (!claims || !claims.sub) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const currentUser = await prisma.user.findUnique({
       where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true, area: true, region: true }
+      select: { id: true, role: true, companyId: true }
     });
 
     if (!currentUser || !allowedAssignerRoles.includes(currentUser.role)) {
-      return NextResponse.json(
-        { error: `Forbidden: Only the following roles can assign tasks: ${allowedAssignerRoles.join(', ')}` },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await request.json();
-    const parsedBody = assignTaskSchema.safeParse(body);
+    const parsedBody = simplifiedAssignSchema.safeParse(body);
+
     if (!parsedBody.success) {
-      return NextResponse.json(
-        { message: 'Invalid request body', errors: parsedBody.error.format() },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Invalid Input', errors: parsedBody.error.format() }, { status: 400 });
     }
 
-    const { salesmanUserIds, taskDate, visitType, relatedDealerIds, siteName, description } = parsedBody.data;
+    const { salesmanId, dateRange, dealerIds } = parsedBody.data;
 
-    // Extra validation
-    if (visitType === "Client Visit" && (!relatedDealerIds || relatedDealerIds.length === 0)) {
-      return NextResponse.json({ message: 'At least one relatedDealerId is required for Client Visit.' }, { status: 400 });
-    }
-    if (visitType === "Technical Visit" && !siteName) {
-      return NextResponse.json({ message: 'siteName is required for Technical Visit.' }, { status: 400 });
-    }
-    if (visitType === "Client Visit" && siteName) {
-      return NextResponse.json({ message: 'Site name should not be provided for Client Visit.' }, { status: 400 });
-    }
-    if (visitType === "Technical Visit" && relatedDealerIds && relatedDealerIds.length > 0) {
-      return NextResponse.json({ message: 'Related dealers should not be provided for Technical Visit.' }, { status: 400 });
+    // --- Date Loop Logic ---
+    const startDate = new Date(dateRange.from);
+    const endDate = new Date(dateRange.to);
+    const datesToAssign: Date[] = [];
+
+    // Normalize time to midnight to avoid issues
+    startDate.setUTCHours(0,0,0,0);
+    endDate.setUTCHours(0,0,0,0);
+
+    // Populate array of dates
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      datesToAssign.push(new Date(d));
     }
 
-    // Validate salesman IDs
-    const assignedUsers = await prisma.user.findMany({
-      where: {
-        id: { in: salesmanUserIds },
-        role: { in: allowedAssigneeRoles },
-        companyId: currentUser.companyId,
-        ...(currentUser.area && { area: currentUser.area }),
-        ...(currentUser.region && { region: currentUser.region }),
-      },
-      select: { id: true },
+    if (datesToAssign.length === 0) {
+      return NextResponse.json({ message: "Invalid date range" }, { status: 400 });
+    }
+
+    // --- Pre-fetch Dealer Info for Snapshots ---
+    const dealerInfos = await prisma.dealer.findMany({
+      where: { id: { in: dealerIds } },
+      select: { id: true, name: true, type: true } // Add category/pjpCycle here if they exist in Dealer
     });
+    
+    const dealerMap = new Map(dealerInfos.map(d => [d.id, d]));
 
-    if (assignedUsers.length !== salesmanUserIds.length) {
-      const assignedUserIdsSet = new Set(assignedUsers.map((u: any) => u.id));
-      const invalidUserIds = salesmanUserIds.filter(id => !assignedUserIdsSet.has(id));
-      return NextResponse.json(
-        { error: `Forbidden: Invalid user IDs: ${invalidUserIds.join(', ')}` },
-        { status: 403 }
-      );
-    }
-
-    const parsedTaskDate = new Date(taskDate);
-    parsedTaskDate.setUTCHours(0, 0, 0, 0);
-
-    // Create tasks for each salesman × dealer (or single tech visit)
-    const createdTasks = await prisma.$transaction(
-      salesmanUserIds.flatMap(userId =>
-        (visitType === "Client Visit"
-          ? relatedDealerIds!.map(dealerId =>
-              prisma.dailyTask.create({
-                data: {
-                  userId,
-                  assignedByUserId: currentUser.id,
-                  taskDate: parsedTaskDate,
-                  visitType,
-                  relatedDealerId: dealerId,
-                  siteName: null,
-                  description,
-                  status: "Assigned",
-                },
-              })
-            )
-          : [
-              prisma.dailyTask.create({
-                data: {
-                  userId,
-                  assignedByUserId: currentUser.id,
-                  taskDate: parsedTaskDate,
-                  visitType,
-                  relatedDealerId: null,
-                  siteName,
-                  description,
-                  status: "Assigned",
-                },
-              }),
-            ])
-      )
+    // --- Bulk Create Transaction ---
+    // Prepare the data array in memory
+    const tasksToCreate = datesToAssign.flatMap(date => 
+      dealerIds.map(dealerId => {
+        const dealerData = dealerMap.get(dealerId);
+        return {
+          userId: salesmanId,
+          assignedByUserId: currentUser.id,
+          taskDate: date,
+          visitType: "Dealer Visit",
+          relatedDealerId: dealerId,
+          dealerName: dealerData?.name || null,
+          status: "Assigned",
+          description: "Bulk assigned via PJP planner",
+          // Note: id is handled by @default(uuid()) in schema
+        };
+      })
     );
 
-    return NextResponse.json({ message: 'Tasks assigned successfully!', tasks: createdTasks }, { status: 201 });
+    // Execute single batch insert
+    const result = await prisma.dailyTask.createMany({
+      data: tasksToCreate,
+      skipDuplicates: true, // Optional: safer for re-runs
+    });
+
+    return NextResponse.json({ 
+      message: `Successfully assigned ${result.count} tasks.`, 
+      count: result.count 
+    }, { status: 201 });
+
   } catch (error) {
     console.error('Error assigning tasks:', error);
     return NextResponse.json({ error: 'Failed to assign tasks', details: (error as Error).message }, { status: 500 });

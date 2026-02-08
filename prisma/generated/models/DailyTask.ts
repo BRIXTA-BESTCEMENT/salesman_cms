@@ -46,6 +46,9 @@ export type DailyTaskMinAggregateOutputType = {
   siteName: string | null
   description: string | null
   status: string | null
+  dealerName: string | null
+  dealerCategory: string | null
+  pjpCycle: string | null
   createdAt: Date | null
   updatedAt: Date | null
   pjpId: string | null
@@ -62,6 +65,9 @@ export type DailyTaskMaxAggregateOutputType = {
   siteName: string | null
   description: string | null
   status: string | null
+  dealerName: string | null
+  dealerCategory: string | null
+  pjpCycle: string | null
   createdAt: Date | null
   updatedAt: Date | null
   pjpId: string | null
@@ -78,6 +84,9 @@ export type DailyTaskCountAggregateOutputType = {
   siteName: number
   description: number
   status: number
+  dealerName: number
+  dealerCategory: number
+  pjpCycle: number
   createdAt: number
   updatedAt: number
   pjpId: number
@@ -106,6 +115,9 @@ export type DailyTaskMinAggregateInputType = {
   siteName?: true
   description?: true
   status?: true
+  dealerName?: true
+  dealerCategory?: true
+  pjpCycle?: true
   createdAt?: true
   updatedAt?: true
   pjpId?: true
@@ -122,6 +134,9 @@ export type DailyTaskMaxAggregateInputType = {
   siteName?: true
   description?: true
   status?: true
+  dealerName?: true
+  dealerCategory?: true
+  pjpCycle?: true
   createdAt?: true
   updatedAt?: true
   pjpId?: true
@@ -138,6 +153,9 @@ export type DailyTaskCountAggregateInputType = {
   siteName?: true
   description?: true
   status?: true
+  dealerName?: true
+  dealerCategory?: true
+  pjpCycle?: true
   createdAt?: true
   updatedAt?: true
   pjpId?: true
@@ -241,6 +259,9 @@ export type DailyTaskGroupByOutputType = {
   siteName: string | null
   description: string | null
   status: string
+  dealerName: string | null
+  dealerCategory: string | null
+  pjpCycle: string | null
   createdAt: Date
   updatedAt: Date
   pjpId: string | null
@@ -280,6 +301,9 @@ export type DailyTaskWhereInput = {
   siteName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   status?: Prisma.StringFilter<"DailyTask"> | string
+  dealerName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  dealerCategory?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  pjpCycle?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   pjpId?: Prisma.StringNullableFilter<"DailyTask"> | string | null
@@ -301,6 +325,9 @@ export type DailyTaskOrderByWithRelationInput = {
   siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  dealerCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  pjpCycle?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   pjpId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -325,6 +352,9 @@ export type DailyTaskWhereUniqueInput = Prisma.AtLeast<{
   siteName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   status?: Prisma.StringFilter<"DailyTask"> | string
+  dealerName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  dealerCategory?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  pjpCycle?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   pjpId?: Prisma.StringNullableFilter<"DailyTask"> | string | null
@@ -346,6 +376,9 @@ export type DailyTaskOrderByWithAggregationInput = {
   siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrderInput | Prisma.SortOrder
+  dealerCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  pjpCycle?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   pjpId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -370,6 +403,9 @@ export type DailyTaskScalarWhereWithAggregatesInput = {
   siteName?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"DailyTask"> | string
+  dealerName?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
+  dealerCategory?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
+  pjpCycle?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DailyTask"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"DailyTask"> | Date | string
   pjpId?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
@@ -383,6 +419,9 @@ export type DailyTaskCreateInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
@@ -402,6 +441,9 @@ export type DailyTaskUncheckedCreateInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -415,6 +457,9 @@ export type DailyTaskUpdateInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -434,6 +479,9 @@ export type DailyTaskUncheckedUpdateInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -450,6 +498,9 @@ export type DailyTaskCreateManyInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -463,6 +514,9 @@ export type DailyTaskUpdateManyMutationInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -477,6 +531,9 @@ export type DailyTaskUncheckedUpdateManyInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -503,6 +560,9 @@ export type DailyTaskCountOrderByAggregateInput = {
   siteName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrder
+  dealerCategory?: Prisma.SortOrder
+  pjpCycle?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   pjpId?: Prisma.SortOrder
@@ -524,6 +584,9 @@ export type DailyTaskMaxOrderByAggregateInput = {
   siteName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrder
+  dealerCategory?: Prisma.SortOrder
+  pjpCycle?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   pjpId?: Prisma.SortOrder
@@ -540,6 +603,9 @@ export type DailyTaskMinOrderByAggregateInput = {
   siteName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dealerName?: Prisma.SortOrder
+  dealerCategory?: Prisma.SortOrder
+  pjpCycle?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   pjpId?: Prisma.SortOrder
@@ -768,6 +834,9 @@ export type DailyTaskCreateWithoutUserInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   assignedBy: Prisma.UserCreateNestedOneWithoutCreatedTasksInput
@@ -785,6 +854,9 @@ export type DailyTaskUncheckedCreateWithoutUserInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -808,6 +880,9 @@ export type DailyTaskCreateWithoutAssignedByInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
@@ -825,6 +900,9 @@ export type DailyTaskUncheckedCreateWithoutAssignedByInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -870,6 +948,9 @@ export type DailyTaskScalarWhereInput = {
   siteName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   status?: Prisma.StringFilter<"DailyTask"> | string
+  dealerName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  dealerCategory?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  pjpCycle?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   pjpId?: Prisma.StringNullableFilter<"DailyTask"> | string | null
@@ -899,6 +980,9 @@ export type DailyTaskCreateWithoutRelatedDealerInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
@@ -916,6 +1000,9 @@ export type DailyTaskUncheckedCreateWithoutRelatedDealerInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -955,6 +1042,9 @@ export type DailyTaskCreateWithoutPermanentJourneyPlanInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
@@ -973,6 +1063,9 @@ export type DailyTaskUncheckedCreateWithoutPermanentJourneyPlanInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   siteId?: string | null
@@ -1011,6 +1104,9 @@ export type DailyTaskCreateWithoutSiteInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
@@ -1029,6 +1125,9 @@ export type DailyTaskUncheckedCreateWithoutSiteInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -1069,6 +1168,9 @@ export type DailyTaskCreateManyUserInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -1084,6 +1186,9 @@ export type DailyTaskCreateManyAssignedByInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -1097,6 +1202,9 @@ export type DailyTaskUpdateWithoutUserInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTasksNestedInput
@@ -1114,6 +1222,9 @@ export type DailyTaskUncheckedUpdateWithoutUserInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1129,6 +1240,9 @@ export type DailyTaskUncheckedUpdateManyWithoutUserInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1142,6 +1256,9 @@ export type DailyTaskUpdateWithoutAssignedByInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -1159,6 +1276,9 @@ export type DailyTaskUncheckedUpdateWithoutAssignedByInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1174,6 +1294,9 @@ export type DailyTaskUncheckedUpdateManyWithoutAssignedByInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1189,6 +1312,9 @@ export type DailyTaskCreateManyRelatedDealerInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -1202,6 +1328,9 @@ export type DailyTaskUpdateWithoutRelatedDealerInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -1219,6 +1348,9 @@ export type DailyTaskUncheckedUpdateWithoutRelatedDealerInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1234,6 +1366,9 @@ export type DailyTaskUncheckedUpdateManyWithoutRelatedDealerInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1250,6 +1385,9 @@ export type DailyTaskCreateManyPermanentJourneyPlanInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   siteId?: string | null
@@ -1262,6 +1400,9 @@ export type DailyTaskUpdateWithoutPermanentJourneyPlanInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -1280,6 +1421,9 @@ export type DailyTaskUncheckedUpdateWithoutPermanentJourneyPlanInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1295,6 +1439,9 @@ export type DailyTaskUncheckedUpdateManyWithoutPermanentJourneyPlanInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1310,6 +1457,9 @@ export type DailyTaskCreateManySiteInput = {
   siteName?: string | null
   description?: string | null
   status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pjpId?: string | null
@@ -1322,6 +1472,9 @@ export type DailyTaskUpdateWithoutSiteInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -1340,6 +1493,9 @@ export type DailyTaskUncheckedUpdateWithoutSiteInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1355,6 +1511,9 @@ export type DailyTaskUncheckedUpdateManyWithoutSiteInput = {
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1372,6 +1531,9 @@ export type DailyTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   siteName?: boolean
   description?: boolean
   status?: boolean
+  dealerName?: boolean
+  dealerCategory?: boolean
+  pjpCycle?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   pjpId?: boolean
@@ -1393,6 +1555,9 @@ export type DailyTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   siteName?: boolean
   description?: boolean
   status?: boolean
+  dealerName?: boolean
+  dealerCategory?: boolean
+  pjpCycle?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   pjpId?: boolean
@@ -1414,6 +1579,9 @@ export type DailyTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   siteName?: boolean
   description?: boolean
   status?: boolean
+  dealerName?: boolean
+  dealerCategory?: boolean
+  pjpCycle?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   pjpId?: boolean
@@ -1435,13 +1603,16 @@ export type DailyTaskSelectScalar = {
   siteName?: boolean
   description?: boolean
   status?: boolean
+  dealerName?: boolean
+  dealerCategory?: boolean
+  pjpCycle?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   pjpId?: boolean
   siteId?: boolean
 }
 
-export type DailyTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "assignedByUserId" | "taskDate" | "visitType" | "relatedDealerId" | "siteName" | "description" | "status" | "createdAt" | "updatedAt" | "pjpId" | "siteId", ExtArgs["result"]["dailyTask"]>
+export type DailyTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "assignedByUserId" | "taskDate" | "visitType" | "relatedDealerId" | "siteName" | "description" | "status" | "dealerName" | "dealerCategory" | "pjpCycle" | "createdAt" | "updatedAt" | "pjpId" | "siteId", ExtArgs["result"]["dailyTask"]>
 export type DailyTaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assignedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1483,6 +1654,9 @@ export type $DailyTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     siteName: string | null
     description: string | null
     status: string
+    dealerName: string | null
+    dealerCategory: string | null
+    pjpCycle: string | null
     createdAt: Date
     updatedAt: Date
     pjpId: string | null
@@ -1924,6 +2098,9 @@ export interface DailyTaskFieldRefs {
   readonly siteName: Prisma.FieldRef<"DailyTask", 'String'>
   readonly description: Prisma.FieldRef<"DailyTask", 'String'>
   readonly status: Prisma.FieldRef<"DailyTask", 'String'>
+  readonly dealerName: Prisma.FieldRef<"DailyTask", 'String'>
+  readonly dealerCategory: Prisma.FieldRef<"DailyTask", 'String'>
+  readonly pjpCycle: Prisma.FieldRef<"DailyTask", 'String'>
   readonly createdAt: Prisma.FieldRef<"DailyTask", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"DailyTask", 'DateTime'>
   readonly pjpId: Prisma.FieldRef<"DailyTask", 'String'>

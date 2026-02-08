@@ -92,6 +92,7 @@ export const ModelName = {
   KYCSubmission: 'KYCSubmission',
   TSOAssignment: 'TSOAssignment',
   LogisticsGateIO: 'LogisticsGateIO',
+  EmailReport: 'EmailReport',
   Aoi: 'Aoi',
   AoiGridCell: 'AoiGridCell',
   SatelliteScene: 'SatelliteScene',
@@ -495,6 +496,9 @@ export const DailyTaskScalarFieldEnum = {
   siteName: 'siteName',
   description: 'description',
   status: 'status',
+  dealerName: 'dealerName',
+  dealerCategory: 'dealerCategory',
+  pjpCycle: 'pjpCycle',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   pjpId: 'pjpId',
@@ -969,6 +973,20 @@ export const LogisticsGateIOScalarFieldEnum = {
 } as const
 
 export type LogisticsGateIOScalarFieldEnum = (typeof LogisticsGateIOScalarFieldEnum)[keyof typeof LogisticsGateIOScalarFieldEnum]
+
+
+export const EmailReportScalarFieldEnum = {
+  id: 'id',
+  messageId: 'messageId',
+  subject: 'subject',
+  sender: 'sender',
+  fileName: 'fileName',
+  payload: 'payload',
+  processed: 'processed',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailReportScalarFieldEnum = (typeof EmailReportScalarFieldEnum)[keyof typeof EmailReportScalarFieldEnum]
 
 
 export const AoiScalarFieldEnum = {
