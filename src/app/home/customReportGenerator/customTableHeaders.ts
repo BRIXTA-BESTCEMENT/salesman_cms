@@ -67,15 +67,15 @@ export const tablesMetadata: TableMeta[] = [
         icon: PencilRuler,
         columns: [
             'id', 'reportDate', 'customerType', 'visitType', 'siteVisitType', 'visitCategory',
-            'salesmanName', 'salesmanEmail','siteNameConcernedPerson', 'phoneNo',
-            'marketName', 'siteAddress', 'region', 'area', 'latitude', 'longitude', 
-            'siteVisitStage', 'constAreaSqFt', 'siteVisitBrandInUse', 'currentBrandPrice', 
+            'salesmanName', 'salesmanEmail', 'siteNameConcernedPerson', 'phoneNo',
+            'marketName', 'siteAddress', 'region', 'area', 'latitude', 'longitude',
+            'siteVisitStage', 'constAreaSqFt', 'siteVisitBrandInUse', 'currentBrandPrice',
             'siteStock', 'estRequirement',
             'supplyingDealerName', 'nearbyDealerName', 'associatedPartyName', 'isConverted',
-            'conversionType', 'conversionFromBrand', 'conversionQuantityValue', 'conversionQuantityUnit', 
+            'conversionType', 'conversionFromBrand', 'conversionQuantityValue', 'conversionQuantityUnit',
             'isTechService', 'serviceType', 'serviceDesc', 'qualityComplaint',
             'influencerName', 'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity', 'influencerType',
-            'masonId', 'salespersonRemarks', 'promotionalActivity', 
+            'masonId', 'salespersonRemarks', 'promotionalActivity',
             'checkInTime', 'checkOutTime',
             'pjpId', 'siteId'
         ],
@@ -164,7 +164,11 @@ export const tablesMetadata: TableMeta[] = [
         id: 'geoTracking',
         title: 'Salesman GeoTracking',
         icon: MapPin,
-        columns: ['id', 'latitude', 'longitude', 'recordedAt', 'accuracy', 'speed', 'activityType', 'appState', 'batteryLevel', 'salesmanName', 'salesmanEmail', 'journeyId', 'createdAt'],
+        columns: [
+            'id', 'salesmanName', 'salesmanEmail',
+            'journeyId', 'recordedAt', 'createdAt', 'latitude', 'longitude', 'totalDistanceTravelled',             
+            'siteName', 'checkInTime', 'checkOutTime', 'isActive', 'destLat', 'destLng'
+        ],
     },
     // {
     //     id: 'salesmanRating',
@@ -177,7 +181,7 @@ export const tablesMetadata: TableMeta[] = [
         title: 'TSO Meetings',
         icon: UsersRound,
         columns: [
-            'id', 'creatorName', 'role', 'type', 'date', 'market', 'zone', 'dealerName', 'conductedBy', 
+            'id', 'creatorName', 'role', 'type', 'date', 'market', 'zone', 'dealerName', 'conductedBy',
             'participantsCount', 'giftType', 'accountJsbJud', 'totalExpenses', 'billSubmitted', 'createdAt', 'updatedAt'
         ],
     },
@@ -204,7 +208,7 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Masons & Contractors',
         icon: Construction,
         columns: [
-            'id', 'name', 'phoneNumber', 'kycDocumentName', 'kycDocumentIdNum', 'kycStatus',  'kycSubmittedAt',
+            'id', 'name', 'phoneNumber', 'kycDocumentName', 'kycDocumentIdNum', 'kycStatus', 'kycSubmittedAt',
             'bagsLifted', 'pointsBalance', 'isReferred',
             'referredByUser', 'referredToUser', 'dealerName', 'associatedSalesman'
         ],
@@ -217,7 +221,7 @@ export const tablesMetadata: TableMeta[] = [
             'id', 'masonId', 'masonName', 'phoneNumber', 'dealerId', 'dealerName',
             'siteId', 'siteName', 'siteAddress', 'siteKeyPersonName', 'siteKeyPersonPhone',
             'purchaseDate', 'bagCount', 'pointsCredited', 'status',
-            'imageUrl', 'verificationSiteImageUrl', 'verificationProofImageUrl', 'approvedByUserId', 'approverName', 'associatedSalesmanName','approvedAt', 'createdAt',
+            'imageUrl', 'verificationSiteImageUrl', 'verificationProofImageUrl', 'approvedByUserId', 'approverName', 'associatedSalesmanName', 'approvedAt', 'createdAt',
         ],
     },
     {
