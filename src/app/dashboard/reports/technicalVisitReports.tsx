@@ -35,8 +35,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 // --- CONSTANTS AND TYPES ---
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`;
-const ROLES_API_ENDPOINT = `/api/users/user-roles`;
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
 interface LocationsResponse {
   areas: string[];

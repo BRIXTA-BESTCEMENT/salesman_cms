@@ -53,8 +53,8 @@ import {
 const MASON_PC_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/mason-pc`;
 const MASON_PC_ACTION_API_BASE = `/api/dashboardPagesAPI/masonpc-side/mason-pc`;
 const MASON_PC_FORM_OPTIONS = `/api/dashboardPagesAPI/masonpc-side/mason-pc/form-options`;
-const ROLES_API_ENDPOINT = `/api/users/user-roles`;
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`;
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
 
 export type KycStatus = 'none' | 'pending' | 'verified' | 'rejected';
 export type KycVerificationStatus = 'PENDING' | 'VERIFIED' | 'REJECTED' | 'NONE';

@@ -24,8 +24,8 @@ type DailyVisitReport = z.infer<typeof dailyVisitReportSchema> & {
 const columnHelper = createColumnHelper<DailyVisitReport>();
 
 // API Endpoints for filter options
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`;
-const ROLES_API_ENDPOINT = `/api/users/user-roles`;
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
 // Type definitions for API responses
 interface LocationsResponse {

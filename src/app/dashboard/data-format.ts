@@ -2,14 +2,14 @@
 import { z } from 'zod';
 
 // zod imports from routes
-import { geoTrackingSchema, dailyVisitReportSchema, technicalVisitReportSchema,
+import { journeyOpTrackingSchema, dailyVisitReportSchema, technicalVisitReportSchema,
   salesOrderSchema, competitionReportSchema } from '@/lib/shared-zod-schema';
 
 // ---------------------------------------------------------------------
 // 1. Exporting Raw Schemas
 // ---------------------------------------------------------------------
 export const rawDailyVisitReportSchema = dailyVisitReportSchema;
-export const rawGeoTrackingSchema = geoTrackingSchema;
+export const rawGeoTrackingSchema = journeyOpTrackingSchema;
 export const rawSalesOrderSchema = salesOrderSchema;
 export const rawTechnicalVisitReportSchema = technicalVisitReportSchema;
 export const rawCompetitionReportSchema = competitionReportSchema;

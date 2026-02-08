@@ -1153,30 +1153,30 @@ export async function getFlattenedSalesOrders(companyId: number): Promise<Flatte
 // Geo-tracking
 export type FlattenedGeoTracking = {
   id: string;
-  latitude: number; // Converted from Decimal
-  longitude: number; // Converted from Decimal
-  recordedAt: string; // Converted from Timestamp
-  accuracy: number | null; // Converted from Decimal
-  speed: number | null; // Converted from Decimal
-  heading: number | null; // Converted from Decimal
-  altitude: number | null; // Converted from Decimal
+  latitude: number; 
+  longitude: number; 
+  recordedAt: string; 
+  accuracy: number | null; 
+  speed: number | null; 
+  heading: number | null; 
+  altitude: number | null; 
   locationType: string | null;
   activityType: string | null;
   appState: string | null;
-  batteryLevel: number | null; // Converted from Decimal
+  batteryLevel: number | null; 
   isCharging: boolean | null;
   networkStatus: string | null;
   ipAddress: string | null;
   siteName: string | null;
-  checkInTime: string | null; // Converted from Timestamp
-  checkOutTime: string | null; // Converted from Timestamp
-  totalDistanceTravelled: number | null; // Converted from Decimal
+  checkInTime: string | null; 
+  checkOutTime: string | null; 
+  totalDistanceTravelled: number | null; 
   journeyId: string | null;
   isActive: boolean;
-  destLat: number | null; // Converted from Decimal
-  destLng: number | null; // Converted from Decimal
-  createdAt: string; // Converted from Timestamp
-  updatedAt: string; // Converted from Timestamp
+  destLat: number | null; 
+  destLng: number | null; 
+  createdAt: string; 
+  updatedAt: string; 
 
   // Flattened User
   salesmanName: string;
@@ -1184,58 +1184,59 @@ export type FlattenedGeoTracking = {
 };
 
 export async function getFlattenedGeoTracking(companyId: number): Promise<FlattenedGeoTracking[]> {
-  const rawReports = await prisma.geoTracking.findMany({
-    where: { user: { companyId } },
-    select: {
-      // All scalar fields
-      id: true, latitude: true, longitude: true, recordedAt: true, accuracy: true, speed: true,
-      heading: true, altitude: true, locationType: true, activityType: true, appState: true,
-      batteryLevel: true, isCharging: true, networkStatus: true, ipAddress: true, siteName: true,
-      checkInTime: true, checkOutTime: true, totalDistanceTravelled: true, journeyId: true,
-      isActive: true, destLat: true, destLng: true, createdAt: true, updatedAt: true,
-
-      // Relation
-      user: { select: { firstName: true, lastName: true, email: true } },
+  const rawReports = await prisma.journeyOp.findMany({
+    where: { 
+      user: { companyId } 
     },
-    orderBy: { recordedAt: 'desc' },
+    select: {
+      opId: true,
+      journeyId: true,
+      createdAt: true,
+      payload: true,   // Contains all the tracking data
+      user: { 
+        select: { firstName: true, lastName: true, email: true } 
+      },
+    },
+    orderBy: { createdAt: 'desc' },
   });
 
-  return rawReports.map((r: any) => ({
-    // Map scalar fields (String, Boolean)
-    id: r.id,
-    locationType: r.locationType ?? null,
-    activityType: r.activityType ?? null,
-    appState: r.appState ?? null,
-    isCharging: r.isCharging ?? null,
-    networkStatus: r.networkStatus ?? null,
-    ipAddress: r.ipAddress ?? null,
-    siteName: r.siteName ?? null,
-    journeyId: r.journeyId ?? null,
-    isActive: r.isActive,
+  // 2. Map and Extract JSON fields
+  return rawReports.map((op: any) => {
+    const p = (op.payload && typeof op.payload === 'object') ? op.payload : {};
 
-    // DateTime Conversions
-    recordedAt: r.recordedAt.toISOString(),
-    checkInTime: r.checkInTime?.toISOString() ?? null,
-    checkOutTime: r.checkOutTime?.toISOString() ?? null,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    return {
+      id: op.opId,
+      journeyId: op.journeyId,
+      salesmanName: `${op.user.firstName || ''} ${op.user.lastName || ''}`.trim(),
+      salesmanEmail: op.user.email,
 
-    // Decimal Conversions (all are nullable or required)
-    latitude: r.latitude.toNumber(),
-    longitude: r.longitude.toNumber(),
-    accuracy: r.accuracy?.toNumber() ?? null,
-    speed: r.speed?.toNumber() ?? null,
-    heading: r.heading?.toNumber() ?? null,
-    altitude: r.altitude?.toNumber() ?? null,
-    batteryLevel: r.batteryLevel?.toNumber() ?? null,
-    totalDistanceTravelled: r.totalDistanceTravelled?.toNumber() ?? null,
-    destLat: r.destLat?.toNumber() ?? null,
-    destLng: r.destLng?.toNumber() ?? null,
+      // JSON Payload Extractions (Manual Casting)
+      latitude: Number(p.latitude) || 0,
+      longitude: Number(p.longitude) || 0,
+      recordedAt: p.endedAt || op.createdAt.toISOString(),
+      accuracy: p.accuracy ? Number(p.accuracy) : null,
+      speed: p.speed ? Number(p.speed) : null,
+      heading: p.heading ? Number(p.heading) : null,
+      altitude: p.altitude ? Number(p.altitude) : null,
+      locationType: p.locationType || null,
+      activityType: p.activityType || null,
+      appState: p.appState || null,
+      batteryLevel: p.batteryLevel ? Number(p.batteryLevel) : null,
+      isCharging: Boolean(p.isCharging),
+      networkStatus: p.networkStatus || null,
+      ipAddress: p.ipAddress || null,
+      siteName: p.siteName || null,
+      checkInTime: p.checkInTime || null,
+      checkOutTime: p.checkOutTime || null,
+      totalDistanceTravelled: p.totalDistance !== undefined ? Number(p.totalDistance) : null,
+      isActive: Boolean(p.isActive),
+      destLat: p.destLat ? Number(p.destLat) : null,
+      destLng: p.destLng ? Number(p.destLng) : null,
 
-    // Flattened Relation
-    salesmanName: `${r.user.firstName} ${r.user.lastName}`,
-    salesmanEmail: r.user.email,
-  }));
+      createdAt: op.createdAt.toISOString(),
+      updatedAt: op.createdAt.toISOString(),
+    };
+  });
 }
 
 // Dealer Scores

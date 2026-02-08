@@ -43,15 +43,14 @@ const ITEM_PERMISSIONS = {
   "Custom Report Generator": 'customReportGenerator' as const,
 
   "Business Dashboard": 'dashboard' as const,
-  "Team Overview": 'teamOverview.teamTabContent' as const,
-  "Users": 'users' as const,
+  "Users & Team": 'usersAndTeam.userManagement' as const,
   "Assign Tasks": 'assignTasks' as const,
   "Dealers": 'dealerManagement.listDealers' as const,
   "Technical Sites": 'technicalSites.listSites' as const,
   "Reports": 'reports.dailyVisitReports' as const,
+  "Salesman Geotracking": 'salesmanGeotracking.slmGeotracking' as const,
   "Salesman Attendance": 'salesmanAttendance' as const,
   "Salesman Leaves": 'salesmanLeaves' as const,
-  "Salesman Geotracking": 'salesmanGeotracking' as const,
   "Permanent Journey Plan": 'permanentJourneyPlan.pjpList' as const,
   "Mason - Petty Contractor": 'masonpcSide.masonpc' as const,
   "Scores And Ratings": 'scoresAndRatings.salesmanRatings' as const,
@@ -87,14 +86,9 @@ const menuItems: MenuItem[] = [
     permission: ITEM_PERMISSIONS["Business Dashboard"],
     items: [
       {
-        title: "Team Overview",
-        url: "/dashboard/teamOverview",
-        permission: ITEM_PERMISSIONS["Team Overview"]
-      },
-      {
-        title: "Users",
-        url: "/dashboard/users",
-        permission: ITEM_PERMISSIONS["Users"]
+        title: "Users & Team",
+        url: "/dashboard/usersAndTeam",
+        permission: ITEM_PERMISSIONS["Users & Team"]
       },
       // {
       //   title: "Assign Tasks",
@@ -122,6 +116,11 @@ const menuItems: MenuItem[] = [
         permission: ITEM_PERMISSIONS["Permanent Journey Plan"]
       },
       {
+        title: "Salesman Geotracking",
+        url: "/dashboard/slmGeotracking",
+        permission: ITEM_PERMISSIONS["Salesman Geotracking"]
+      },
+      {
         title: "Salesman Leaves",
         url: "/dashboard/slmLeaves",
         permission: ITEM_PERMISSIONS["Salesman Leaves"]
@@ -130,11 +129,6 @@ const menuItems: MenuItem[] = [
         title: "Salesman Attendance",
         url: "/dashboard/slmAttendance",
         permission: ITEM_PERMISSIONS["Salesman Attendance"]
-      },
-      {
-        title: "Salesman Geotracking",
-        url: "/dashboard/slmGeotracking",
-        permission: ITEM_PERMISSIONS["Salesman Geotracking"]
       },
       // {
       //   title: "Scores & Ratings",

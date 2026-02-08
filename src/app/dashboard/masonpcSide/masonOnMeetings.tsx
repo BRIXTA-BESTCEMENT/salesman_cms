@@ -20,8 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 // API Endpoints
 const MASON_ON_MEETINGS_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/masonOnMeetings`;
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`; 
-const ROLES_API_ENDPOINT = `/api/users/user-roles`; 
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`; 
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`; 
 
 interface LocationsResponse {
   areas: string[];

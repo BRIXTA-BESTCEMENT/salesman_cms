@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
 import { Input } from '@/components/ui/input';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Search, Check } from 'lucide-react';
 // Shadcn UI Components
 import { Button } from '@/components/ui/button';
 import {
@@ -72,11 +72,15 @@ export default function VerifyDealersPage() {
     const [selectedFirmNameFilter, setSelectedFirmNameFilter] = useState<string>('all');
     const [selectedRegionFilter, setSelectedRegionFilter] = useState<string>('all');
 
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [isBulkVerifying, setIsBulkVerifying] = useState(false);
+
     // --- Delete loading state ---
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const apiURI = `/api/dashboardPagesAPI/dealerManagement/dealer-verify`;
     const deleteApiURI = `/api/dashboardPagesAPI/dealerManagement`;
+    const bulkVerifyURI = `/api/dashboardPagesAPI/dealerManagement/dealer-verify/bulk-verify`;
 
     // --- Fetch Pending Dealers ---
     const fetchPendingDealers = useCallback(async () => {
@@ -165,6 +169,52 @@ export default function VerifyDealersPage() {
         }
     };
 
+    // --- Bulk Verification Logic ---
+    const toggleSelect = (id: string) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const selectAll = () => {
+        if (selectedIds.size === filteredDealers.length && filteredDealers.length > 0) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(filteredDealers.map(p => p.id)));
+        }
+    };
+
+    const handleBulkVerify = async () => {
+        const idsToVerify = Array.from(selectedIds);
+        if (idsToVerify.length === 0) return;
+
+        setIsBulkVerifying(true);
+        toast.loading(`Verifying ${idsToVerify.length} dealers...`, { id: 'bulk-verify' });
+
+        try {
+            const res = await fetch(bulkVerifyURI, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: idsToVerify }),
+            });
+
+            if (!res.ok) throw new Error("Bulk verification failed");
+            
+            const data = await res.json();
+            toast.success(`Successfully verified ${data.count} dealers!`, { id: 'bulk-verify' });
+            
+            setSelectedIds(new Set());
+            fetchPendingDealers();
+        } catch (error: any) {
+            toast.error("Bulk verification failed", { id: 'bulk-verify' });
+        } finally {
+            setIsBulkVerifying(false);
+        }
+    };
+
     // --- NEW: Derived lists for filter dropdowns ---
     const nameOptions = React.useMemo(() => {
         const names = new Set<string>();
@@ -246,29 +296,53 @@ export default function VerifyDealersPage() {
         {
             id: 'verificationActions',
             header: 'Actions',
-            minSize: 220,
+            minSize: 180,
             cell: ({ row }) => (
                 <div className="flex gap-2">
                     <Button
                         variant="default"
                         size="sm"
-                        className='bg-green-500 hover:bg-green-700'
+                        className='bg-green-500 hover:bg-green-700 h-8'
                         onClick={() => handleVerificationAction(row.original.id, 'VERIFIED')}
                         disabled={deletingId === row.original.id}
                     >
                         Verify
                     </Button>
                     <Button
-                        className="bg-red-800 hover:bg-red-900 text-white"
+                        className="bg-red-800 hover:bg-red-900 text-white h-8"
                         size="sm"
-                        // --- MODIFIED: onClick, disabled, and text ---
                         onClick={() => handleDeleteDealer(row.original.id)}
                         disabled={deletingId === row.original.id}
                     >
-                        {deletingId === row.original.id ? 'Rejecting...' : 'Reject'}
+                        Reject
                     </Button>
                 </div>
             ),
+        },
+        {
+            id: 'select',
+            header: () => (
+                <div className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        onChange={selectAll}
+                        checked={selectedIds.size === filteredDealers.length && filteredDealers.length > 0}
+                        className="h-4 w-4 rounded border-slate-700 text-primary focus:ring-primary cursor-pointer"
+                    />
+                </div>
+            ),
+            cell: ({ row }) => (
+                <div className="flex justify-center">
+                    <input
+                        type="checkbox"
+                        checked={selectedIds.has(row.original.id)}
+                        onChange={() => toggleSelect(row.original.id)}
+                        className="h-4 w-4 rounded border-slate-700 text-primary focus:ring-primary cursor-pointer"
+                    />
+                </div>
+            ),
+            size: 40,
+            enableSorting: false,
         },
     ];
 
@@ -281,6 +355,39 @@ export default function VerifyDealersPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className='p-6'>
+
+                {/* --- Bulk Action Bar --- */}
+                {selectedIds.size > 0 && (
+                    <div className="flex items-center justify-between p-4 mb-6 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center gap-4">
+                            <div className="h-8 w-8 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-sm">
+                                {selectedIds.size}
+                            </div>
+                            <div>
+                                <p className="text-amber-900 font-medium">Dealers Selected</p>
+                                <p className="text-xs text-amber-700">These dealers will be marked as verified immediately.</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-3">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedIds(new Set())}
+                                className="text-amber-800 hover:bg-amber-100"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleBulkVerify}
+                                disabled={isBulkVerifying}
+                                className="bg-amber-600 hover:bg-amber-700 text-white font-bold"
+                            >
+                                {isBulkVerifying ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
+                                Verify {selectedIds.size} Dealers
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
                 {/* --- Filter Controls --- */}
                 <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6">

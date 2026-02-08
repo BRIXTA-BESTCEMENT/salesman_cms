@@ -55,10 +55,10 @@ Every single API route in this folder follows a critical, multi-tenant security 
     4.  **Database Fetch:** It uses the `claims.sub` to query the database: `prisma.user.findUnique({ where: { workosUserId: claims.sub } })`. This links the WorkOS-authenticated user to your internal database user.
     5.  **Return Data:** It returns the found `currentUser` object (id, email, role, companyId) as JSON. This is what the main `dashboardShell.tsx` component calls to get all its data.
 
-#### `src/app/api/users/`
+#### `src/app/api/dashboardPagesAPI/users-and-team/users/`
 
 * **Purpose:** Provides the full CRUD (Create, Read, Update, Delete) API for the User Management page, handling both local database records (Prisma) and WorkOS identity management. It also manages specific credential generation for the mobile apps (Salesman & Technical).
-* **`route.ts` (`/api/users`):**
+* **`route.ts` (`/api/dashboardPagesAPI/users`):**
 * **`GET`:**
 * Fetches all users for the admin's company after validating the session and checking `allowedAdminRoles`.
 * Supports a `?current=true` query param to fetch only the logged-in user's profile.
@@ -73,7 +73,7 @@ Every single API route in this folder follows a critical, multi-tenant security 
 4. **Email:** Sends a custom HTML invitation email via **Resend** containing the Invite URL (pointing to Magic Auth) and any generated mobile app credentials.
 5. **Database:** Creates or updates the user in Prisma with `status: 'pending'`, storing the `inviteToken` and the generated login IDs.
 
-* **`[userId]/route.ts` (`/api/users/:userId`):**
+* **`[userId]/route.ts` (`/api/dashboardPagesAPI/users-and-team/users/:userId`):**
 * **`GET`:** Fetches a single user by ID, ensuring they belong to the admin's company/route.ts].
 * **`PUT`:** Updates an existing user.
 1. **Validation:** Uses **Zod** (`updateUserSchema`) to validate fields like `firstName`, `role`, `isTechnical`, etc/route.ts].
@@ -104,117 +104,66 @@ Every single API route in this folder follows a critical, multi-tenant security 
 
 This folder is a key architectural pattern. It doesn't contain generic CRUD logic. Instead, it holds **specialized `GET`, `POST`, `PATCH`, `PUT` and `DELETE` handlers** tailored for specific dashboard pages. This keeps the frontend components "dumb" and fast, as the server handles complex, multi-step logic.
 
-* **`.../reports/` (Folder):**
-* Contains a `route.ts` for each report: `competition-reports`, `daily-visit-reports`, `sales-orders`, `technical-visit-reports`.
-* **Logic:** Each file defines a `GET` handler that fetches all records for the `currentUser.companyId`. It performs an `include` on the `user` relation to add salesman details (name, role, area, region) to the response, which is then validated against a Zod schema.
+* **`.../users-and-team/` (Folder):**
+* **`users/route.ts`:**
+* **`GET`:** Lists all users for the `currentUser.companyId`, restricted to admin roles.
+* **`POST`:** Handles User Creation + Invitation.
+* **WorkOS Integration:** Creates a WorkOS user/invitation and generates a Magic Auth link.
+* **Credential Generation:** Automatically generates a `salesmanLoginId` (prefix "EMP-") for mobile access. If `isTechnicalRole` is true, it also generates a `techLoginId` (prefix "TSE-").
+* **Email:** Sends a custom HTML invitation via **Resend**.
 
-* **`.../team-overview/` (Folder):**
-* **`dataFetch/route.ts`:** `GET` handler that fetches all users for the team table within the `currentUser.companyId`, supporting an optional `role` filter. It formats the data to include `managedBy` and `manages` strings/arrays.
+* **`team-overview/` (Sub-folder):**
+* **`dataFetch/route.ts`:** `GET` handler that fetches all users for the team table. It supports a `role` filter and formats relationships (`managedBy`, `manages`) and includes the `isTechnicalRole` flag.
 * **`editRole/route.ts`:** A critical `POST` mutation route.
 1. Gets `userId` and `newRole` from the body.
-2. Gets the *admin's* role (`currentUserRole`) from `getTokenClaims()`.
-3. **RBAC Check:** Performs the most important security check: `if (!canAssignRole(currentUserRole, newRole))`. If this fails, it returns a 403 Forbidden error.
-4. **Transaction:** Runs a `prisma.$transaction` to ensure both WorkOS and the local DB are updated.
-5. Calls `workos.userManagement.updateOrganizationMembership(...)` and `prisma.user.update(...)` to synchronize the role.
+2. **RBAC Check:** Verifies `canAssignRole(currentUserRole, newRole)`.
+3. **Transaction:** Updates both WorkOS organization membership and the local Prisma database atomically.
 
+* **`editMapping/route.ts`:** `POST` handler to update `reportsToId` (manager) and `managesIds` (direct reports).
+* **`editDealerMapping/route.ts`:** Fetches/Updates the dealers assigned to a specific user.
+* **`editMasonMapping/route.ts`:** Fetches/Updates the masons assigned to a specific user.
+
+* **`.../slm-geotracking/` (Folder):**
 * **`slmLiveLocation/route.ts`:** `GET` handler for the "Live Location" map.
-1. Fetches all active `PermanentJourneyPlan` records to identify active salesmen.
-2. Makes parallel `axios.get` calls to an *external server* (`process.env.NEXT_PUBLIC_SALESMAN_APP_SERVER_URL`) for each salesman's latest location.
-3. Aggregates the results and returns a validated list.
+1. **Identify Active Users:** Fetches users with `PermanentJourneyPlan` status `'IN_PROGRESS'`.
+2. **Radar.io Integration:** Queries the **Radar API** (`https://api.radar.io/v1/users`) using the users' IDs to get real-time coordinates, battery level, and speed.
+3. **Merge:** Combines the DB metadata (Name, Role, Region) with the live Radar telemetry.
 
-* **`editMapping/route.ts`:** `POST` handler that allows an admin to update a user's `reportsToId` (manager) and `managesIds` (direct reports). It runs a transaction to atomically update all affected user records.
-* **`editDealerMapping/route.ts`:**
-* **`GET`:** Fetches *all* dealers for the admin's company (with optional `area`/`region` filters) *and* a list of `assignedDealerIds` already mapped to a specific `userId`.
-* **`POST`:** Takes a `userId` and a list of `dealerIds`. It un-assigns all dealers from that user and then re-assigns only the dealers in the provided list.
-
-* **`editMasonMapping/route.ts`:**
-* **`GET`:** Fetches *all* masons for the company (optionally filtered by area/region via their dealer) and a list of `assignedMasonIds` for a specific user.
-* **`POST`:** Similar to dealer mapping, it un-assigns all masons from the user and re-assigns the new list.
+* **`route.ts`:** Fetches historical `GeoTracking` records for the company.
 
 * **`.../dealerManagement/` (Folder):**
-* **`route.ts`:**
-* **`GET`:** Lists all dealers for the `currentUser.companyId` that have `verificationStatus: 'VERIFIED'`.
-* **`POST`:** Creates a new dealer, associating it with the `currentUser.id`. It attempts to geocode the address using `OPENCAGE_GEO_API`.
-* **`DELETE`:** Removes a dealer based on the `id` query parameter.
+* **`route.ts`:** `GET` (Verified Dealers), `POST` (Create Dealer with Geocoding), `DELETE` (Remove Dealer).
+* **`dealer-verify/`:**
+* **`route.ts`:** `GET` (Pending Dealers), `PUT` (Approve/Reject single dealer).
+* **`bulk-verify/route.ts`:** **(New)** A `PATCH` handler that accepts an array of dealer IDs. It validates they belong to the company and are currently 'PENDING', then updates them all to 'VERIFIED' in a single batch operation.
 
-* **`dealer-verify/route.ts`:**
-* **`GET`:** Lists all dealers for the `currentUser.companyId` that have `verificationStatus: 'PENDING'`.
-* **`PUT`:** Takes a `dealerId` from the query param and a `verificationStatus` ("VERIFIED" or "REJECTED") from the body to approve or reject a new dealer.
+* **`dealer-brand-mapping/route.ts`:** Aggregates brand data per dealer.
+* **`dealer-locations/route.ts` & `dealer-types/route.ts`:** Helper routes for UI filter dropdowns.
 
-* **`dealer-brand-mapping/route.ts`:** `GET` handler that fetches all `DealerBrandMapping` records and aggregates them by dealer, creating dynamic keys for each brand name (e.g., `"BrandA": 100`).
-* **`dealer-locations/route.ts` & `dealer-types/route.ts`:** `GET` helpers that query the `Dealer` table for `distinct` region, area, and type values to populate UI filter dropdowns.
+* **`.../reports/` (Folder):**
+* Contains `route.ts` for: `competition-reports`, `daily-visit-reports`, `sales-orders`, `technical-visit-reports`.
+* **Logic:** Fetches records for `currentUser.companyId`, including salesman details via relations.
 
 * **`.../technical-sites/` (Folder):**
-* **`route.ts`:** `GET` handler that lists all `TechnicalSite` records linked to the `currentUser.companyId` via the users relationship.
+* **`route.ts`:** Lists all `TechnicalSite` records linked to the company.
 
 * **`.../masonpc-side/` (Folder):**
-* **Purpose:** Provides data for the "Mason/PC Side" of the dashboard, handling data related to Masons, their activities (meetings, schemes), and rewards.
-* **`mason-pc/`:**
-* **`route.ts` (`GET`):** Fetches all `Mason_PC_Side` records where the associated user belongs to the `currentUser.companyId`.
-* **Features:** filters by `kycStatus` (e.g., pending, verified), joins the latest `KYCSubmission`, and normalizes JSONB documents into a usable format for the frontend.
-
-* **`[id]/route.ts` (`PATCH`):** Updates a specific Mason/PC record/route.ts].
-* **Logic:** Handles updating assignments (Salesman/Dealer/Site) and KYC Status.
-* **Bonus:** If status changes to `VERIFIED`, it triggers `calculateJoiningBonusPoints()` and atomically updates the Mason's point balance and the Points Ledger.
-
-* **`form-options/route.ts` (`GET`):** A helper route that fetches lists of Technical Users, Dealers, and Technical Sites to populate dropdown menus in the Mason edit forms.
-
-* **`bags-lift/`:**
-* **`route.ts` (`GET`):** Fetches `BagLift` records.
-* **Filter:** Uses a specific `OR` condition to return lifts assigned to the current company **OR** unassigned lifts (where `mason.userId` is null), ensuring no data is lost.
-* **Data:** Joins and flattens `masonName`, `dealerName`, and `approverName`.
-
-* **`[id]/route.ts` (`PATCH`):** Handles the Approval or Rejection of a Bag Lift/route.ts].
-* **Transaction:** Uses a database transaction to update the status, credit/debit the Mason's balance, and create a `PointsLedger` entry.
-* **Calculations:** Triggers `calculateExtraBonusPoints` (for slab milestones) and `checkReferralBonusTrigger` (for referrer rewards) upon approval.
-
-* **`tso-meetings/route.ts` (`GET`):** Lists all `TSOMeeting` records where the `createdBy` user belongs to the `currentUser.companyId`.
-* **`schemes-offers/route.ts` (`GET`):** Lists all `SchemesOffers` records. This returns global schemes and is *not* company-filtered.
-* **`masonOnMeetings/route.ts` (`GET`):** Lists all `MasonsOnMeetings` (attendance) records where the `mason`'s associated user belongs to the `currentUser.companyId`.
-* **`masonOnSchemes/route.ts` (`GET`):** Lists all `MasonOnScheme` (enrollment) records where the `mason`'s associated user belongs to the `currentUser.companyId`.
-* **`points-ledger/route.ts` (`GET`):** Lists all `PointsLedger` records filtered by the Mason's company. It flattens the data to include `masonName` for display.
-* **`rewards/route.ts` (`GET`):** Lists all `Rewards` records from the master list (not company-filtered) to allow global catalog viewing. Flattens `categoryName`.
-* **`reward-categories/route.ts` (`GET`):** Lists all `RewardCategory` records (master list) to populate UI filters.
-* **`rewards-redemption/`:**
-* **`route.ts` (`GET`):** Lists all `RewardRedemption` records for the `currentUser.companyId` by filtering via the associated mason. Joins and flattens `masonName` and `rewardName`.
-* **`[id]/route.ts` (`PATCH`):** Handles the status update of a reward redemption request (e.g., approving, rejecting, shipping)/route.ts].
-* **Stock Management:** Automatically deducts stock from `Rewards` when status changes to `approved`. Restores stock if an `approved` order is subsequently `rejected`.
-* **Points Management:** Automatically refunds points to the Mason's ledger and balance if a request is `rejected` (whether it was previously approved or just placed).
-* **Validation:** Prevents modifying already 'delivered' or 'rejected' orders and checks for insufficient stock before approval.
-
+* **`mason-pc/`:** CRUD for `Mason_PC_Side` records, handling KYC status and joining bonuses.
+* **`bags-lift/`:** logic for approving bag lifts, calculating slab bonuses, and referral rewards.
+* **`rewards-redemption/`:** Handles stock deduction and point refunds for reward orders.
+* **`points-ledger/`, `rewards/`, `schemes-offers/`:** Data fetchers for their respective entities.
 
 * **`.../permanent-journey-plan/` (Folder):**
-* **`route.ts`:**
-* **`GET`:** Lists PJPs with an optional `verificationStatus` filter.
-* **`DELETE`:** Deletes a PJP.
+* **`route.ts`:** CRUD for PJPs.
+* **`pjp-verification/`:** Logic for approving/rejecting journey plans.
 
-* **`pjp-verification/route.ts`:** `GET` handler that lists *only* PJPs with `status: 'PENDING'` or `verificationStatus: 'PENDING'`.
-* **`pjp-verification/[id]/route.ts`:**
-* **`PUT`:** Updates only the status/verificationStatus (e.g., to 'VERIFIED')/route.ts].
-* **`PATCH`:** Allows modification of PJP fields (planDate, area, dealerId/siteId, remarks) and *simultaneously* sets status to 'VERIFIED'.
+* **`.../slm-leaves/route.ts`:** Fetches and updates leave application status.
+* **`.../assign-tasks/route.ts`:** Manages `DailyTask` creation and assignment.
+* **`.../slm-attendance/route.ts`:** Fetches `SalesmanAttendance` history.
+* **`.../update-location/route.ts`:** Admin-only route to manually update a specific attendance record's address string.
+* **`.../scores-ratings/route.ts`:** Fetches performance ratings for salesmen or dealers.
+* **`.../logistics-gate-io/route.ts`:** Fetches logistics entry/exit data.
 
-
-* **`.../slm-geotracking/route.ts`:**
-* **`GET`:** Fetches `GeoTracking` records for the company, including user details.
-
-* **`.../slm-leaves/route.ts`:**
-* **`GET`:** Fetches leave applications.
-* **`PATCH`:** Updates leave status (Approved/Rejected) and admin remarks.
-
-* **`.../assign-tasks/route.ts`:**
-* **`GET`:** Fetches assignable salesmen, dealers, and existing `dailyTasks`.
-* **`POST`:** Creates new `DailyTask` records.
-
-* **`.../slm-attendance/route.ts`:**
-* **`GET`:** Fetches `SalesmanAttendance` records.
-
-* **`.../update-location/route.ts`:**
-* **`POST`:** Updates the `locationName` (address text) of a specific `SalesmanAttendance` record.
-* **Security:** Enforces strict role-based access control, allowing only specific roles (e.g., `president`, `general-manager`) to perform this update.
-* **Logic:** Validates the input `id` and `address` via Zod and directly updates the database record.
-
-* **`.../scores-ratings/route.ts`:**
-* **`GET`:** Fetches `Rating` (for salesmen) or `DealerReportsAndScores` (for dealers) based on the `type` query param.
 #### `src/app/api/custom-report-generator/route.ts`
 
 * **`GET`:** The backend for the custom report builder.
@@ -287,7 +236,7 @@ This folder contains all the frontend UI pages and components that are only acce
 * **`dashboardGraphs.tsx`:**
     * **Purpose:** The interactive client component that displays the graphs and stats on the main dashboard page.
     * **Logic:** This is a Client Component (`'use client'`).
-    * **Data Fetching**: It contains its own `fetchData` function, which is called in a `useEffect` hook. This function makes parallel, client-side `fetch` calls to multiple API endpoints (`/api/dashboardPagesAPI/slm-geotracking`, `/api/dashboardPagesAPI/reports/daily-visit-reports`, `/api/dashboardPagesAPI/reports/sales-orders`, `/api/users`) to get all the raw data for the dashboard.
+    * **Data Fetching**: It contains its own `fetchData` function, which is called in a `useEffect` hook. This function makes parallel, client-side `fetch` calls to multiple API endpoints (`/api/dashboardPagesAPI/slm-geotracking`, `/api/dashboardPagesAPI/reports/daily-visit-reports`, `/api/dashboardPagesAPI/reports/sales-orders`, `/api/dashboardPagesAPI/users`) to get all the raw data for the dashboard.
     * **State**: It uses `useState` to manage all raw data, loading/error states, and filters (e.g., `selectedRole`, `selectedSalesman`).
     * **Calculation**: It uses `useMemo` to filter and aggregate the raw data based on the selected filters, preparing it for the graphs (e.g., `geoGraphData`, `collectionGraphData`).
     * **Rendering**: It renders `ChartAreaInteractive` components for the graphs and `DataTableReusable` for the tables, passing them the client-side filtered and aggregated data.
@@ -357,7 +306,7 @@ This folder contains all the frontend UI pages and components that are only acce
         * **Purpose**: These are the client components for each respective tab.
         * **Logic**: They all follow a standard report pattern:
         * **Data Fetching**: `useEffect` calls a data-fetching function (e.g., `fetchMasonPcRecords`, `fetchBagLiftRecords`) that hits its specific API endpoint (e.g., `/api/dashboardPagesAPI/masonpc-side/mason-pc`, `/api/dashboardPagesAPI/masonpc-side/bags-lift`).
-        * **Filter Data**: Most also fetch options for filters, like roles and locations (from `/api/users/user-locations` and `/api/users/user-roles`), or categories (from `/api/dashboardPagesAPI/masonpc-side/reward-categories`).
+        * **Filter Data**: Most also fetch options for filters, like roles and locations (from `/api/dashboardPagesAPI/users-and-team/users/user-locations` and `/api/dashboardPagesAPI/users-and-team/users/user-roles`), or categories (from `/api/dashboardPagesAPI/masonpc-side/reward-categories`).
         * **Filtering**: Filters (e.g., search, role, area, region, status, category) are applied client-side using `useMemo`.
         * **Rendering**: They render `DataTableReusable` with paginated data.
 
@@ -427,7 +376,7 @@ This folder contains all the frontend UI pages and components that are only acce
     * **`salesmanRatings.tsx`**:
         * **Purpose**: Client component to view salesman ratings.
         * **Logic**: A Client Component (`'use client'`).
-        * **Data Fetching**: Fetches from `/api/dashboardPagesAPI/scores-ratings?type=salesman`. Also fetches filter options from `/api/users/user-locations` and `/api/users/user-roles`.
+        * **Data Fetching**: Fetches from `/api/dashboardPagesAPI/scores-ratings?type=salesman`. Also fetches filter options from `/api/dashboardPagesAPI/users-and-team/users/user-locations` and `/api/dashboardPagesAPI/users-and-team/users/user-roles`.
         * **Filtering**: Applies filters for search, role, area, and region client-side via `useMemo`.
     * **`dealerScores.tsx`**:
         * **Purpose**: A client component to display dealer scores.
@@ -456,36 +405,67 @@ This folder contains all the frontend UI pages and components that are only acce
     * **`page.tsx`**:
         * **Purpose**: The "Salesman Leave" approval page.
         * **Logic**: A Client Component (`'use client'`).
-        * **Data Fetching**: Fetches from `/api/dashboardPagesAPI/slm-leaves` with date range. Also fetches filter options from location (`/api/users/user-locations`) and role (`/api/users/user-roles`) endpoints.
+        * **Data Fetching**: Fetches from `/api/dashboardPagesAPI/slm-leaves` with date range. Also fetches filter options from location (`/api/dashboardPagesAPI/users-and-team/users/user-locations`) and role (`/api/dashboardPagesAPI/users-and-team/users/user-roles`) endpoints.
         * **Filtering**: Filters (search, date, role, area, region) are applied client-side using `useMemo`.
         * **Mutation**: The `DataTableReusable` has "Accept" and "Reject" buttons for pending leaves.
         * The `handleLeaveAction` function makes a `PATCH` request to `/api/dashboardPagesAPI/slm-leaves`, sending the `id`, new `status`, and `adminRemarks`. It updates the local state on success.
 
-* **`src/app/dashboard/teamOverview/`**
-    * **`page.tsx`**:
-        * **Purpose**: The server-side entry point for the "Team Overview" section.
-        * **Logic**: A Server Component that performs RBAC checks.
-        * It fetches the user's role and uses `hasPermission()` to check for `teamOverview.teamTabContent` and `teamOverview.salesmanLiveLocation`.
-        * It passes these boolean permissions as props to the `<TeamOverviewTabs />` client component.
-        * If the user has no permissions, it renders an "Access Denied" message.
-    * **`tabsLoader.tsx`**:
-        * **Purpose**: The client-side container for the "Team Overview" tabs.
-        * **Logic**: This is a Client Component (`'use client'`).
-        * **Props**: Receives `canSeeTeamView` and `canSeeLiveLocation` as boolean props from `page.tsx`.
-        * **Rendering**: It renders the `<Tabs>` component and conditionally renders the "Team View" and "Salesman Live Location" triggers and content based on the received props.
-    * **`teamTabContent.tsx`**:
-        * **Purpose**: The client component for the main "Team" tab, showing hierarchy and allowing edits.
-        * **Logic**: A Client Component.
-        * **Data Fetching**: Fetches data from `/api/dashboardPagesAPI/team-overview/dataFetch` (with role filter) and the current user's role from `/api/me`.
-        * **Mutation (Edit Role)**: The "Edit Role" button opens a popover, checking `canAssignRole` from `roleHierarchy.ts` to determine which roles are assignable. `handleSaveRole` makes a `POST` request to `/api/dashboardPagesAPI/team-overview/editRole`.
-        * **Mutation (Edit Mapping)**: The "Edit Mapping" button opens a popover to set `managedBy` and `manages` fields, based on role hierarchy. `handleSaveMapping` makes a `POST` request to `/api/dashboardPagesAPI/team-overview/editMapping`.
-        * **Mutation (Edit Dealer Mapping)**: The "Edit Dealer Mapping" button opens a popover that fetches all dealers (with filters) and assigned dealers via a `GET` to `/api/dashboardPagesAPI/team-overview/editDealerMapping`. `handleSaveDealerMapping` makes a `POST` request to the same endpoint.
-    * **`salesmanLiveLocation.tsx`**:
-        * **Purpose**: The client component for the "Live Location" tab.
-        * **Logic**: A Client Component (`'use client'`).
-        * **Data Fetching**: `useEffect` fetches from `/api/dashboardPagesAPI/team-overview/slmLiveLocation` on a 30-second interval to get the last known location of all users. It also uses `useUserLocations` to get filters.
-        * **Dynamic Import**: It uses `dynamic(() => import('react-leaflet'), { ssr: false })` to load the Leaflet map.
-        * **Rendering**: It renders the `<MapContainer>` and then maps over the filtered locations to render a `<Marker>` for each user's last known location.
+* **`src/app/dashboard/usersAndTeam/`**
+
+    * **`page.tsx`:**
+    * **Purpose:** The Server Component wrapper that acts as the secure entry point for the unified Users & Team Management page.
+    * **Logic:**
+    * **Authentication:** Uses `withAuth` to ensure the user is signed in and `getTokenClaims` to retrieve roles.
+    * **Data Fetching (Admin):** Fetches the full `adminUser` profile (including `company` details) from Prisma using the WorkOS User ID. This object is *critical* for the User Management tab.
+    * **Permissions (RBAC):** Performs a dual-check:
+    1. **Strict Admin Check:** Verifies the user belongs to `allowedAdminRoles` (e.g., President, GM, Manager) to access the page at all.
+    2. **Feature Flags:** Uses `hasPermission()` to determine access to specific tabs: `teamOverview.teamTabContent` (Hierarchy) and `teamOverview.salesmanLiveLocation` (Live Map).
+
+    * **Rendering:** Passes the fetched `adminUser` object and the boolean permission flags to the `<UsersPageTabs />` client component.
+
+    * **`tabsLoader.tsx`:**
+    * **Purpose:** The main Client Component container that orchestrates the tabbed interface.
+    * **Logic:**
+    * **Role:** Acts as the "Traffic Controller," conditionally rendering tabs based on the props received from `page.tsx`.
+    * **Tab 1: Users:** Always renders `<UsersManagement />`, passing the required `adminUser` prop.
+    * **Tab 2: Hierarchy:** Conditionally renders `<TeamTabContent />` if `canSeeTeamView` is true.
+    * **Tab 3: Live Map:** Conditionally renders `<SalesmanLiveLocation />` if `canSeeLiveLocation` is true.
+
+    * **`userManagement.tsx`:**
+    * **Purpose:** The interactive Client Component for viewing, creating, and editing users (formerly the main Users page).
+    * **Logic:**
+    * **State & Hooks:** Manages local state for the `users` list, loading status, and filters (Search, Role, Region). Uses the `useUserLocations` hook to populate dynamic "Region" and "Area" dropdowns.
+    * **CRUD Operations:**
+    * **Read:** Fetches users via `GET /api/dashboardPagesAPI/users-and-team/users`.
+    * **Create (`handleCreateUser`):** Sends a `POST` request to create a standard dashboard user. Displays a success message with generated IDs.
+    * **Update (`handleUpdateUser`):** Handles profile updates via `PUT`. Includes logic to upgrade an "App-Only" user to a "Dashboard User" (triggering email invites).
+    * **Device Management:** Includes a "Clear Device ID" action to reset a user's mobile device binding, allowing them to log in on a new phone.
+    * **Delete (`handleDeleteUser`):** Implements a **Dual-Deletion** strategy: first removing the record from the local database via `DELETE /api/dashboardPagesAPI/users-and-team/users/[id]`, then syncing the deletion with WorkOS.
+
+    * **UI:** Renders a `DataTableReusable` with custom columns, distinguishing between **Active**, **Pending** (invited but not accepted), and **App-Only** (no WorkOS account, mobile access only).
+
+    * **`teamTabContent.tsx`:**
+    * **Purpose:** The Client Component for the "Hierarchy" tab, visualizing and editing team structures.
+    * **Logic:**
+    * **Data Fetching:** Fetches hierarchical data from `/api/dashboardPagesAPI/team-overview/dataFetch`.
+    * **Role Mutation:** The "Edit Role" button allows authorized admins to change a user's role via `POST /api/dashboardPagesAPI/users-and-team/team-overview/editRole`, checking `canAssignRole` to ensure hierarchy rules are respected.
+    * **Reporting Mutation:** The "Edit Mapping" button allows setting `managedBy` and `manages` relationships via `POST /api/dashboardPagesAPI/users-and-team/team-overview/editMapping`.
+    * **Dealer Mapping:** The "Edit Dealer Mapping" button provides a UI to assign/unassign dealers to specific users via `POST /api/dashboardPagesAPI/users-and-team/team-overview/editDealerMapping`.
+
+    * **`salesmanLiveLocation.tsx`:**
+    * **Purpose:** The Client Component for the "Live Map" tab.
+    * **Logic:**
+    * **Real-time Tracking:** Uses `useEffect` to poll `/api/dashboardPagesAPI/users-and-team/team-overview/slmLiveLocation` every 30 seconds for the last known location of all users.
+    * **Map Integration:** Uses `dynamic(() => import('react-leaflet'), { ssr: false })` to load the interactive Leaflet map.
+    * **Visualization:** Maps filtered user locations to map markers, allowing admins to see the real-time geographic distribution of their sales force.
+
+    * **`appOnlyInvite.tsx`:**
+    * **Purpose:** A specialized Dialog for creating "App-Only" users (mobile access only, no dashboard).
+    * **Logic:** Submits details to `POST /api/dashboardPagesAPI/users-and-team/users/app-only`. Upon success, it immediately displays the generated **Salesman ID** (and Technical ID) for manual sharing, bypassing email invites.
+
+    * **`bulkInvite.tsx`:**
+    * **Purpose:** A utility Dialog for bulk user creation via CSV/TXT upload.
+    * **Logic:** Performs client-side parsing to validate headers (`email`, `role`, `region`, etc.) and role types against a hardcoded allowlist before sending the array of objects to `POST /api/dashboardPagesAPI/users-and-team/users/bulk-invite`.
 
 * **`src/app/dashboard/technicalSites/`**
     * **`page.tsx`**:
@@ -507,50 +487,6 @@ This folder contains all the frontend UI pages and components that are only acce
         * **Data Fetching**: `useEffect` calls `fetchSites`, which retrieves data from `/api/dashboardPagesAPI/technical-sites`. It also derives available regions and stages for filter dropdowns from the fetched data.
         * **Filtering**: Filters are applied client-side using `useMemo` based on search text and selected dropdown values.
         * **Rendering**: It renders a `DataTableReusable` component with columns for site details (Name, Contact, Phone, Region, Area, Type, Stage, Created On).
-
-#### `src/app/dashboard/users/`
-
-* **`page.tsx`:**
-* **Purpose:** The Server Component wrapper that acts as the secure entry point for the User Management page.
-* **Logic:**
-* **Authentication:** Uses `withAuth` to ensure the user is signed in and `getTokenClaims` to retrieve roles.
-* **Data Fetching:** Fetches the full `adminUser` profile (including `company` details) from Prisma using the WorkOS User ID.
-* **RBAC (Security):** Strict check against `allowedAdminRoles`. If the user's role is not authorized, they are immediately redirected to `/dashboard`.
-* **Rendering:** Passes the fetched `adminUser` object as a prop to the `<UsersManagement />` client component.
-
-* **`userManagement.tsx`:**
-* **Purpose:** The main interactive Client Component for viewing and managing users.
-* **State & Hooks:**
-* Manages local state for `users` list, loading status, filters (Search, Role, Region), and form visibility.
-* **`useUserLocations` Hook:** Dynamically fetches available "Regions" and "Areas" to populate dropdowns, ensuring data consistency.
-
-* **CRUD Operations:**
-* **Read:** Fetches users via `GET /api/users`.
-* **Create (`handleCreateUser`):** Sends a `POST` request to create a standard dashboard user. Displays a success message with generated IDs.
-* **Update (`handleUpdateUser`):** Sends a `PUT` request.
-* **Dashboard Access:** Includes a specific flow to upgrade an "App-Only" user to a "Dashboard User" (`isDashboardUser: true`), which triggers an invitation email.
-* **Device Management:** Includes a "Clear Device ID" action to reset a user's mobile device binding, allowing them to log in on a new phone.
-
-* **Delete (`handleDeleteUser`):** Implements a **Dual-Deletion** strategy:
-1. Calls `DELETE /api/users/[id]` to remove the record from the local database.
-2. If successful, calls `POST /api/delete-user` to remove the user from WorkOS, ensuring the two systems remain in sync.
-
-* **UI:** Renders `DataTableReusable` with custom columns.
-* **Status Logic:** Distinguishes between **Active**, **Pending** (invited but not accepted), and **App-Only** (no WorkOS account, mobile access only).
-
-* **`appOnlyInvite.tsx`:**
-* **Purpose:** A specialized Dialog component for creating users who *only* need mobile app access and not the web dashboard.
-* **Logic:**
-* **Submission:** Sends user details to `POST /api/users/app-only`.
-* **Credential Generation:** Unlike the standard invite, this does *not* send an email. Instead, upon success, it immediately displays the generated **Salesman ID** (and Technical ID) in the UI so the admin can manually share it with the employee.
-
-* **`bulkInvite.tsx`:**
-* **Purpose:** A Client Component (Dialog) that facilitates bulk user creation via file upload (CSV/TXT) or direct text paste.
-* **Validation Logic:**
-* **Header Check:** Mandates specific headers: `email`, `firstName`, `lastName`, `phoneNumber`, `role`, `region`, `area`, and `isTechnical`.
-* **Role Validation:** Validates every row's role against a hardcoded list of allowed `ROLES`.
-
-* **Execution:** Parses input client-side to catch errors early, then sends the array of objects to `POST /api/users/bulk-invite`. Provides a summary of successful and failed creations.
 
 * **`src/app/dashboard/welcome/`**
     * **`page.tsx`**:
@@ -666,7 +602,7 @@ This folder contains your custom, reusable React components, built using the pri
 * **`reusable-user-locations.tsx`:**
 * **Purpose:** A custom React Hook (`useUserLocations`) for location data.
 * **Logic:**
-* **Data Fetching:** On mount, it fetches unique "Regions" and "Areas" from `/api/users/user-locations`.
+* **Data Fetching:** On mount, it fetches unique "Regions" and "Areas" from `/api/dashboardPagesAPI/users-and-team/users/user-locations`.
 * **Caching:** Manages `loading` and `error` states, providing a clean API `{ locations, loading, error }` for dropdown menus in forms (like "User Management" or "Assign Tasks").
 
 * **`reusable-dealer-locations.tsx`:**
@@ -682,7 +618,7 @@ This folder contains your custom, reusable React components, built using the pri
 * **`InvitationEmail.tsx`:**
 * **Purpose:** A React Email template component.
 * **Logic:**
-* **Usage:** Not rendered directly in the dashboard UI. Instead, it is imported by server-side API routes (like `/api/users`) to generate the HTML for email invitations sent via Resend/Nodemailer.
+* **Usage:** Not rendered directly in the dashboard UI. Instead, it is imported by server-side API routes (like `/api/dashboardPagesAPI/users`) to generate the HTML for email invitations sent via Resend/Nodemailer.
 * **Props:** Accepts dynamic data like `companyName`, `inviteUrl`, and `userRole`.
 
 * **`add-schemes-rewards.tsx`:**
@@ -727,7 +663,7 @@ This folder contains your custom, reusable React components, built using the pri
 * **Files:** `src/components/reusable-user-locations.tsx`, `src/components/reusable-dealer-locations.tsx`
 * **Purpose:** Custom React hooks (`useUserLocations`, `useDealerLocations`) for fetching filter data.
 * **Logic:**
-    * They abstract the `fetch` logic to specific API endpoints (`/api/users/user-locations`, etc.).
+    * They abstract the `fetch` logic to specific API endpoints (`/api/dashboardPagesAPI/users-and-team/users/user-locations`, etc.).
     * They return standardized objects (e.g., `{ regions: [], areas: [] }`) used to populate dropdown filters across the application, ensuring consistent data without code duplication.
 
 ### `src/components/multi-select.tsx`
@@ -754,7 +690,7 @@ This folder contains your custom, reusable React components, built using the pri
 * **Purpose:** A context-aware wrapper that decides *which* sidebar configuration to show based on the user's location.
 * **Logic:**
     * **Context Switching:** It checks `usePathname()`. If the user is in `/home` or `/auth`, it might hide the sidebar entirely.
-    * **Role Fetching:** For the main dashboard context, it fetches the *current user's* specific role from `/api/users?current=true` to ensure the `AppSidebar` renders the correct permission-gated links.
+    * **Role Fetching:** For the main dashboard context, it fetches the *current user's* specific role from `/api/dashboardPagesAPI/users?current=true` to ensure the `AppSidebar` renders the correct permission-gated links.
 
 ### `src/components/section-cards.tsx`
 

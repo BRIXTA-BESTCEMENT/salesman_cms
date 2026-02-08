@@ -20,11 +20,10 @@ export interface DashboardPermissions {
 
   // Business Dashboard section
   dashboard: boolean;
-  teamOverview: {
-    teamTabContent: boolean;
-    salesmanLiveLocation: boolean;
+  usersAndTeam: {
+    userManagement: boolean;
+    teamOverview: boolean;
   };
-  users: boolean;
   assignTasks: boolean;
   dealerManagement: {
     addAndListDealers: boolean,
@@ -50,7 +49,10 @@ export interface DashboardPermissions {
   };
   salesmanAttendance: boolean;
   salesmanLeaves: boolean;
-  salesmanGeotracking: boolean;
+  salesmanGeotracking: {
+    slmGeotracking: boolean;
+    salesmanLiveLocation: boolean;
+  };
   masonpcSide: {
     masonpc: boolean;
     tsoMeetings: boolean;
@@ -81,11 +83,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -111,7 +112,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -137,11 +141,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -167,7 +170,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -193,11 +199,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -223,7 +228,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -251,11 +259,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -281,7 +288,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -307,11 +317,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -337,7 +346,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -363,11 +375,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -393,7 +404,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -419,11 +433,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -449,7 +462,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -475,11 +491,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: true,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: true,
-      salesmanLiveLocation: true,
+    usersAndTeam: {
+      userManagement: true,
+      teamOverview: true,
     },
-    users: true,
     assignTasks: true,
     dealerManagement: {
       addAndListDealers: false,
@@ -505,7 +520,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: true,
-    salesmanGeotracking: true,
+    salesmanGeotracking: {
+      slmGeotracking: true,
+      salesmanLiveLocation: true,
+    },
     masonpcSide: {
       masonpc: true,
       tsoMeetings: true,
@@ -533,11 +551,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: false,
     customReportGenerator: true,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: false,
-      salesmanLiveLocation: false,
+    usersAndTeam: {
+      userManagement: false,
+      teamOverview: false,
     },
-    users: false,
     assignTasks: false,
     dealerManagement: {
       addAndListDealers: false,
@@ -563,7 +580,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: false,
     salesmanLeaves: false,
-    salesmanGeotracking: false,
+    salesmanGeotracking: {
+      slmGeotracking: false,
+      salesmanLiveLocation: false,
+    },
     masonpcSide: {
       masonpc: false,
       tsoMeetings: false,
@@ -589,11 +609,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: false,
     customReportGenerator: false,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: false,
-      salesmanLiveLocation: false,
+    usersAndTeam: {
+      userManagement: false,
+      teamOverview: false,
     },
-    users: false,
     assignTasks: false,
     dealerManagement: {
       addAndListDealers: false,
@@ -619,7 +638,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: false,
     salesmanLeaves: false,
-    salesmanGeotracking: false,
+    salesmanGeotracking: {
+      slmGeotracking: false,
+      salesmanLiveLocation: false,
+    },
     masonpcSide: {
       masonpc: false,
       tsoMeetings: false,
@@ -645,11 +667,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     cemtemChat: false,
     customReportGenerator: false,
     dashboard: true,
-    teamOverview: {
-      teamTabContent: false,
-      salesmanLiveLocation: false,
+    usersAndTeam: {
+      userManagement: false,
+      teamOverview: false,
     },
-    users: false,
     assignTasks: false,
     dealerManagement: {
       addAndListDealers: false,
@@ -675,7 +696,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     salesmanAttendance: true,
     salesmanLeaves: false,
-    salesmanGeotracking: false,
+    salesmanGeotracking: {
+      slmGeotracking: false,
+      salesmanLiveLocation: false,
+    },
     masonpcSide: {
       masonpc: false,
       tsoMeetings: false,

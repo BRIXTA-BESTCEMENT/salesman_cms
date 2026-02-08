@@ -23,7 +23,7 @@ export function useUserLocations() {
     const fetchLocations = async () => {
       try {
         // Change the API endpoint to the new route
-        const response = await fetch(`/api/users/user-locations`);
+        const response = await fetch(`/api/dashboardPagesAPI/users-and-team/users/user-locations`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

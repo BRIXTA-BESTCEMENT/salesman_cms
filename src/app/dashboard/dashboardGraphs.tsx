@@ -60,13 +60,10 @@ const geoTrackingColumns: ColumnDef<RawGeoTrackingRecord>[] = [
   {
     accessorKey: 'totalDistanceTravelled',
     header: 'Distance (km)',
-    cell: ({ row }) => `${row.original.totalDistanceTravelled?.toFixed(2) ?? 'N/A'} km`,
+    cell: ({ row }) => `${row.original.totalDistanceTravelled?.toFixed(2) ?? '0.00'} km`,
   },
   { accessorKey: 'employeeId', header: 'Employee ID' },
-  { accessorKey: 'latitude', header: 'Latitude' },
-  { accessorKey: 'longitude', header: 'Longitude' },
   { accessorKey: 'locationType', header: 'Location Type' },
-  { accessorKey: 'appState', header: 'App State' },
 ];
 
 const dailyReportsColumns: ColumnDef<RawDailyVisitReportRecord>[] = [
@@ -187,7 +184,7 @@ export default function DashboardGraphs() {
         fetch(`/api/dashboardPagesAPI/slm-geotracking`, { cache: 'no-store' }),
         fetch(`/api/dashboardPagesAPI/reports/daily-visit-reports`, { cache: 'no-store' }),
         fetch(`/api/dashboardPagesAPI/reports/sales-orders`, { cache: 'no-store' }),
-        fetch(`/api/users`, { cache: 'no-store' }),
+        fetch(`/api/dashboardPagesAPI/users-and-team/users`, { cache: 'no-store' }),
       ]);
 
       if (!geoRes.ok) throw new Error(`Geo API: ${geoRes.status}`);
@@ -226,14 +223,6 @@ export default function DashboardGraphs() {
     fetchData();
   }, [fetchData]);
 
-  const journeyEndRecords = useMemo(
-    () =>
-      rawGeoTrackingRecords.filter(
-        r => r.appState === 'foreground' || r.locationType === 'JOURNEY_END'
-      ),
-    [rawGeoTrackingRecords]
-  );
-
   const salesmenList = useMemo(() => {
     const pool = users.filter(u =>
       selectedRole === 'all'
@@ -267,15 +256,18 @@ export default function DashboardGraphs() {
   }, [rawDailyReports, selectedRole]);
 
   const geoGraphData: GeoTrackingData[] = useMemo(() => {
-    let filtered = journeyEndRecords;
+    // --- CHANGED: Use raw records directly ---
+    let filtered = rawGeoTrackingRecords;
     if (selectedSalesman !== 'all') filtered = filtered.filter(r => r.salesmanName === selectedSalesman);
+    
     const agg: Record<string, number> = {};
     filtered.forEach(item => {
+      // Aggregate total distance per day
       const key = new Date(item.recordedAt).toISOString().slice(0, 10);
       agg[key] = (agg[key] || 0) + (item.totalDistanceTravelled ?? 0);
     });
     return Object.keys(agg).sort().map(k => ({ name: k, distance: agg[k] }));
-  }, [journeyEndRecords, selectedSalesman]);
+  }, [rawGeoTrackingRecords, selectedSalesman]);
 
   const collectionGraphData: DailyCollectionData[] = useMemo(() => {
     let filtered = roleFilteredDailyReports;
@@ -358,28 +350,6 @@ export default function DashboardGraphs() {
 
       {/* Graphs */}
       <TabsContent value="graphs" className="space-y-4">
-        {/* Daily Collection */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Daily Collection Reports</CardTitle>
-            <CardDescription>Total collection (₹) per day.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartAreaInteractive data={collectionGraphData} dataKey="collection" title="Daily Collection (₹)" />
-          </CardContent>
-        </Card>
-
-        {/* Sales Quantity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Sales Order Quantity</CardTitle>
-            <CardDescription>Total quantity ordered per day.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartAreaInteractive data={salesQuantityGraphData} dataKey="quantity" title="Sales Order Quantity" />
-          </CardContent>
-        </Card>
-
         {/* Geo-Tracking */}
         <Card>
           <CardHeader>
@@ -392,6 +362,28 @@ export default function DashboardGraphs() {
         </Card>
       </TabsContent>
 
+      {/* Daily Collection */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Daily Collection Reports</CardTitle>
+          <CardDescription>Total collection (₹) per day.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartAreaInteractive data={collectionGraphData} dataKey="collection" title="Daily Collection (₹)" />
+        </CardContent>
+      </Card>
+
+      {/* Sales Quantity */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Sales Order Quantity</CardTitle>
+          <CardDescription>Total quantity ordered per day.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartAreaInteractive data={salesQuantityGraphData} dataKey="quantity" title="Sales Order Quantity" />
+        </CardContent>
+      </Card>
+
       {/* Tables */}
       <TabsContent value="geo-table">
         <Card>
@@ -400,7 +392,7 @@ export default function DashboardGraphs() {
             <CardDescription>Most recent geo-tracking data.</CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTableReusable columns={geoTrackingColumns} data={journeyEndRecords} />
+            <DataTableReusable columns={geoTrackingColumns} data={rawGeoTrackingRecords} />
           </CardContent>
         </Card>
       </TabsContent>

@@ -17,8 +17,8 @@ import { Search, Loader2 } from 'lucide-react';
 //import { BASE_URL } from '@/lib/Reusable-constants';
 
 // --- CONSTANTS AND TYPES ---
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`;
-const ROLES_API_ENDPOINT = `/api/users/user-roles`;
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
 interface LocationsResponse {
   areas: string[];

@@ -650,6 +650,45 @@ export const geoTrackingSchema = z.object({
   dealerId: z.string().optional().nullable(),
 });
 
+export const journeyOpTrackingSchema = z.object({
+  id: z.string(),
+  journeyId: z.string().nullable().optional(),
+  salesmanName: z.string().nullable().optional(),
+  employeeId: z.string().nullable().optional(),
+  workosOrganizationId: z.string().nullable().optional(),
+  salesmanRole: z.string().nullable().optional(),
+  area: z.string().nullable().optional(),
+  region: z.string().nullable().optional(),
+
+  // Core Tracking Data
+  latitude: z.union([z.number(), z.string()]).transform(val => Number(val)).optional(),
+  longitude: z.union([z.number(), z.string()]).transform(val => Number(val)).optional(),
+  recordedAt: z.string(), 
+  totalDistanceTravelled: z.number().nullable().optional(), 
+  locationType: z.string().nullable().optional(),
+  activityType: z.string().nullable().optional(),
+  appState: z.string().nullable().optional(),
+  accuracy: z.number().nullable().optional(),
+  speed: z.number().nullable().optional(),
+  heading: z.number().nullable().optional(),
+  altitude: z.number().nullable().optional(),
+  batteryLevel: z.number().nullable().optional(),
+  isCharging: z.boolean().nullable().optional(),
+  networkStatus: z.string().nullable().optional(),
+  ipAddress: z.string().nullable().optional(),
+  siteName: z.string().nullable().optional(),
+  checkInTime: z.string().nullable().optional(),
+  checkOutTime: z.string().nullable().optional(),
+  
+  isActive: z.boolean().nullable().optional(),
+  destLat: z.number().nullable().optional(),
+  destLng: z.number().nullable().optional(),
+
+  // Timestamps
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
 // leave application
 export const salesmanLeaveApplicationSchema = z.object({
   id: z.string(),
@@ -974,6 +1013,7 @@ export type TechnicalVisitReportSchema = z.infer<typeof technicalVisitReportSche
 export type SalesOrderSchema = z.infer<typeof salesOrderSchema>;
 export type SalesmanAttendanceSchema = z.infer<typeof salesmanAttendanceSchema>;
 export type GeoTrackingSchema = z.infer<typeof geoTrackingSchema>;
+export type JourneyOpTracking = z.infer<typeof journeyOpTrackingSchema>;
 export type SalesmanLeaveApplicationSchema = z.infer<typeof salesmanLeaveApplicationSchema>;
 export type UpdateLeaveApplicationSchema = z.infer<typeof updateLeaveApplicationSchema>;
 

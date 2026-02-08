@@ -19,8 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 // API Endpoints
 const TSO_MEETINGS_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/tso-meetings`;
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`; 
-const ROLES_API_ENDPOINT = `/api/users/user-roles`; 
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`; 
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`; 
 
 interface LocationsResponse {
   areas: string[];

@@ -50,8 +50,8 @@ import {
 // --- CONSTANTS AND TYPES ---
 const BAG_LIFT_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/bags-lift`;
 const BAG_LIFT_ACTION_API_BASE = `/api/dashboardPagesAPI/masonpc-side/bags-lift`;
-const LOCATION_API_ENDPOINT = `/api/users/user-locations`;
-const ROLES_API_ENDPOINT = `/api/users/user-roles`;
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
 interface LocationsResponse {
   areas: string[];
