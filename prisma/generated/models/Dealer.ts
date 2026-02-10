@@ -775,6 +775,8 @@ export type DealerWhereInput = {
   associatedMasons?: Prisma.Mason_PC_SideListRelationFilter
   associatedSites?: Prisma.TechnicalSiteListRelationFilter
   geoTrackings?: Prisma.GeoTrackingListRelationFilter
+  collectionReports?: Prisma.CollectionReportListRelationFilter
+  projectionReports?: Prisma.ProjectionReportListRelationFilter
 }
 
 export type DealerOrderByWithRelationInput = {
@@ -861,6 +863,8 @@ export type DealerOrderByWithRelationInput = {
   associatedMasons?: Prisma.Mason_PC_SideOrderByRelationAggregateInput
   associatedSites?: Prisma.TechnicalSiteOrderByRelationAggregateInput
   geoTrackings?: Prisma.GeoTrackingOrderByRelationAggregateInput
+  collectionReports?: Prisma.CollectionReportOrderByRelationAggregateInput
+  projectionReports?: Prisma.ProjectionReportOrderByRelationAggregateInput
 }
 
 export type DealerWhereUniqueInput = Prisma.AtLeast<{
@@ -950,6 +954,8 @@ export type DealerWhereUniqueInput = Prisma.AtLeast<{
   associatedMasons?: Prisma.Mason_PC_SideListRelationFilter
   associatedSites?: Prisma.TechnicalSiteListRelationFilter
   geoTrackings?: Prisma.GeoTrackingListRelationFilter
+  collectionReports?: Prisma.CollectionReportListRelationFilter
+  projectionReports?: Prisma.ProjectionReportListRelationFilter
 }, "id" | "gstinNo">
 
 export type DealerOrderByWithAggregationInput = {
@@ -1184,6 +1190,8 @@ export type DealerCreateInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateInput = {
@@ -1268,6 +1276,8 @@ export type DealerUncheckedCreateInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUpdateInput = {
@@ -1352,6 +1362,8 @@ export type DealerUpdateInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateInput = {
@@ -1436,6 +1448,8 @@ export type DealerUncheckedUpdateInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateManyInput = {
@@ -2143,6 +2157,38 @@ export type DealerUpdateOneWithoutSalesOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DealerUpdateToOneWithWhereWithoutSalesOrdersInput, Prisma.DealerUpdateWithoutSalesOrdersInput>, Prisma.DealerUncheckedUpdateWithoutSalesOrdersInput>
 }
 
+export type DealerCreateNestedOneWithoutCollectionReportsInput = {
+  create?: Prisma.XOR<Prisma.DealerCreateWithoutCollectionReportsInput, Prisma.DealerUncheckedCreateWithoutCollectionReportsInput>
+  connectOrCreate?: Prisma.DealerCreateOrConnectWithoutCollectionReportsInput
+  connect?: Prisma.DealerWhereUniqueInput
+}
+
+export type DealerUpdateOneWithoutCollectionReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.DealerCreateWithoutCollectionReportsInput, Prisma.DealerUncheckedCreateWithoutCollectionReportsInput>
+  connectOrCreate?: Prisma.DealerCreateOrConnectWithoutCollectionReportsInput
+  upsert?: Prisma.DealerUpsertWithoutCollectionReportsInput
+  disconnect?: Prisma.DealerWhereInput | boolean
+  delete?: Prisma.DealerWhereInput | boolean
+  connect?: Prisma.DealerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DealerUpdateToOneWithWhereWithoutCollectionReportsInput, Prisma.DealerUpdateWithoutCollectionReportsInput>, Prisma.DealerUncheckedUpdateWithoutCollectionReportsInput>
+}
+
+export type DealerCreateNestedOneWithoutProjectionReportsInput = {
+  create?: Prisma.XOR<Prisma.DealerCreateWithoutProjectionReportsInput, Prisma.DealerUncheckedCreateWithoutProjectionReportsInput>
+  connectOrCreate?: Prisma.DealerCreateOrConnectWithoutProjectionReportsInput
+  connect?: Prisma.DealerWhereUniqueInput
+}
+
+export type DealerUpdateOneWithoutProjectionReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.DealerCreateWithoutProjectionReportsInput, Prisma.DealerUncheckedCreateWithoutProjectionReportsInput>
+  connectOrCreate?: Prisma.DealerCreateOrConnectWithoutProjectionReportsInput
+  upsert?: Prisma.DealerUpsertWithoutProjectionReportsInput
+  disconnect?: Prisma.DealerWhereInput | boolean
+  delete?: Prisma.DealerWhereInput | boolean
+  connect?: Prisma.DealerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DealerUpdateToOneWithWhereWithoutProjectionReportsInput, Prisma.DealerUpdateWithoutProjectionReportsInput>, Prisma.DealerUncheckedUpdateWithoutProjectionReportsInput>
+}
+
 export type DealerCreateNestedOneWithoutReportsAndScoresInput = {
   create?: Prisma.XOR<Prisma.DealerCreateWithoutReportsAndScoresInput, Prisma.DealerUncheckedCreateWithoutReportsAndScoresInput>
   connectOrCreate?: Prisma.DealerCreateOrConnectWithoutReportsAndScoresInput
@@ -2360,6 +2406,8 @@ export type DealerCreateWithoutUserInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutUserInput = {
@@ -2443,6 +2491,8 @@ export type DealerUncheckedCreateWithoutUserInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutUserInput = {
@@ -2626,6 +2676,8 @@ export type DealerCreateWithoutSubDealersInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutSubDealersInput = {
@@ -2709,6 +2761,8 @@ export type DealerUncheckedCreateWithoutSubDealersInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutSubDealersInput = {
@@ -2797,6 +2851,8 @@ export type DealerCreateWithoutParentDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutParentDealerInput = {
@@ -2880,6 +2936,8 @@ export type DealerUncheckedCreateWithoutParentDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutParentDealerInput = {
@@ -2984,6 +3042,8 @@ export type DealerUpdateWithoutSubDealersInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutSubDealersInput = {
@@ -3067,6 +3127,8 @@ export type DealerUncheckedUpdateWithoutSubDealersInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUpsertWithWhereUniqueWithoutParentDealerInput = {
@@ -3166,6 +3228,8 @@ export type DealerCreateWithoutDailyVisitReportsAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutDailyVisitReportsAsDealerInput = {
@@ -3249,6 +3313,8 @@ export type DealerUncheckedCreateWithoutDailyVisitReportsAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutDailyVisitReportsAsDealerInput = {
@@ -3337,6 +3403,8 @@ export type DealerCreateWithoutDailyVisitReportsAsSubDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutDailyVisitReportsAsSubDealerInput = {
@@ -3420,6 +3488,8 @@ export type DealerUncheckedCreateWithoutDailyVisitReportsAsSubDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutDailyVisitReportsAsSubDealerInput = {
@@ -3519,6 +3589,8 @@ export type DealerUpdateWithoutDailyVisitReportsAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutDailyVisitReportsAsDealerInput = {
@@ -3602,6 +3674,8 @@ export type DealerUncheckedUpdateWithoutDailyVisitReportsAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUpsertWithoutDailyVisitReportsAsSubDealerInput = {
@@ -3696,6 +3770,8 @@ export type DealerUpdateWithoutDailyVisitReportsAsSubDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutDailyVisitReportsAsSubDealerInput = {
@@ -3779,6 +3855,8 @@ export type DealerUncheckedUpdateWithoutDailyVisitReportsAsSubDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateWithoutPermanentJourneyPlansAsDealerInput = {
@@ -3862,6 +3940,8 @@ export type DealerCreateWithoutPermanentJourneyPlansAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutPermanentJourneyPlansAsDealerInput = {
@@ -3945,6 +4025,8 @@ export type DealerUncheckedCreateWithoutPermanentJourneyPlansAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutPermanentJourneyPlansAsDealerInput = {
@@ -4044,6 +4126,8 @@ export type DealerUpdateWithoutPermanentJourneyPlansAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutPermanentJourneyPlansAsDealerInput = {
@@ -4127,6 +4211,8 @@ export type DealerUncheckedUpdateWithoutPermanentJourneyPlansAsDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateWithoutGeoTrackingsInput = {
@@ -4210,6 +4296,8 @@ export type DealerCreateWithoutGeoTrackingsInput = {
   bagLifts?: Prisma.BagLiftCreateNestedManyWithoutDealerInput
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutGeoTrackingsInput = {
@@ -4293,6 +4381,8 @@ export type DealerUncheckedCreateWithoutGeoTrackingsInput = {
   bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutDealerInput
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutGeoTrackingsInput = {
@@ -4392,6 +4482,8 @@ export type DealerUpdateWithoutGeoTrackingsInput = {
   bagLifts?: Prisma.BagLiftUpdateManyWithoutDealerNestedInput
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutGeoTrackingsInput = {
@@ -4475,6 +4567,8 @@ export type DealerUncheckedUpdateWithoutGeoTrackingsInput = {
   bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutDealerNestedInput
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateWithoutDailyTasksInput = {
@@ -4558,6 +4652,8 @@ export type DealerCreateWithoutDailyTasksInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutDailyTasksInput = {
@@ -4641,6 +4737,8 @@ export type DealerUncheckedCreateWithoutDailyTasksInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutDailyTasksInput = {
@@ -4740,6 +4838,8 @@ export type DealerUpdateWithoutDailyTasksInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutDailyTasksInput = {
@@ -4823,6 +4923,8 @@ export type DealerUncheckedUpdateWithoutDailyTasksInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateWithoutSalesOrdersInput = {
@@ -4906,6 +5008,8 @@ export type DealerCreateWithoutSalesOrdersInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutSalesOrdersInput = {
@@ -4989,6 +5093,8 @@ export type DealerUncheckedCreateWithoutSalesOrdersInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutSalesOrdersInput = {
@@ -5088,6 +5194,8 @@ export type DealerUpdateWithoutSalesOrdersInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutSalesOrdersInput = {
@@ -5171,6 +5279,720 @@ export type DealerUncheckedUpdateWithoutSalesOrdersInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
+}
+
+export type DealerCreateWithoutCollectionReportsInput = {
+  id?: string
+  type: string
+  name: string
+  region: string
+  area: string
+  phoneNo: string
+  address: string
+  pinCode?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Date | string | null
+  anniversaryDate?: Date | string | null
+  totalPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerCreatebrandSellingInput | string[]
+  feedbacks: string
+  remarks?: string | null
+  dealerDevelopmentStatus?: string | null
+  dealerDevelopmentObstacle?: string | null
+  verificationStatus?: string
+  whatsappNo?: string | null
+  emailId?: string | null
+  businessType?: string | null
+  gstinNo?: string | null
+  panNo?: string | null
+  tradeLicNo?: string | null
+  aadharNo?: string | null
+  godownSizeSqFt?: number | null
+  godownCapacityMTBags?: string | null
+  godownAddressLine?: string | null
+  godownLandMark?: string | null
+  godownDistrict?: string | null
+  godownArea?: string | null
+  godownRegion?: string | null
+  godownPinCode?: string | null
+  residentialAddressLine?: string | null
+  residentialLandMark?: string | null
+  residentialDistrict?: string | null
+  residentialArea?: string | null
+  residentialRegion?: string | null
+  residentialPinCode?: string | null
+  bankAccountName?: string | null
+  bankName?: string | null
+  bankBranchAddress?: string | null
+  bankAccountNumber?: string | null
+  bankIfscCode?: string | null
+  brandName?: string | null
+  monthlySaleMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: number | null
+  areaCovered?: string | null
+  projectedMonthlySalesBestCementMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: number | null
+  declarationName?: string | null
+  declarationPlace?: string | null
+  declarationDate?: Date | string | null
+  tradeLicencePicUrl?: string | null
+  shopPicUrl?: string | null
+  dealerPicUrl?: string | null
+  blankChequePicUrl?: string | null
+  partnershipDeedPicUrl?: string | null
+  salesGrowthPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: string | null
+  underSalesPromoterName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  noOfPJP?: number | null
+  user?: Prisma.UserCreateNestedOneWithoutDealersInput
+  parentDealer?: Prisma.DealerCreateNestedOneWithoutSubDealersInput
+  subDealers?: Prisma.DealerCreateNestedManyWithoutParentDealerInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedDealerInput
+  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDealerInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresCreateNestedOneWithoutDealerInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportCreateNestedManyWithoutSubDealerInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutDealerInput
+  masons?: Prisma.Mason_PC_SideCreateNestedManyWithoutDealerInput
+  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutDealerInput
+  associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
+  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
+  geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
+}
+
+export type DealerUncheckedCreateWithoutCollectionReportsInput = {
+  id?: string
+  userId?: number | null
+  type: string
+  parentDealerId?: string | null
+  name: string
+  region: string
+  area: string
+  phoneNo: string
+  address: string
+  pinCode?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Date | string | null
+  anniversaryDate?: Date | string | null
+  totalPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerCreatebrandSellingInput | string[]
+  feedbacks: string
+  remarks?: string | null
+  dealerDevelopmentStatus?: string | null
+  dealerDevelopmentObstacle?: string | null
+  verificationStatus?: string
+  whatsappNo?: string | null
+  emailId?: string | null
+  businessType?: string | null
+  gstinNo?: string | null
+  panNo?: string | null
+  tradeLicNo?: string | null
+  aadharNo?: string | null
+  godownSizeSqFt?: number | null
+  godownCapacityMTBags?: string | null
+  godownAddressLine?: string | null
+  godownLandMark?: string | null
+  godownDistrict?: string | null
+  godownArea?: string | null
+  godownRegion?: string | null
+  godownPinCode?: string | null
+  residentialAddressLine?: string | null
+  residentialLandMark?: string | null
+  residentialDistrict?: string | null
+  residentialArea?: string | null
+  residentialRegion?: string | null
+  residentialPinCode?: string | null
+  bankAccountName?: string | null
+  bankName?: string | null
+  bankBranchAddress?: string | null
+  bankAccountNumber?: string | null
+  bankIfscCode?: string | null
+  brandName?: string | null
+  monthlySaleMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: number | null
+  areaCovered?: string | null
+  projectedMonthlySalesBestCementMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: number | null
+  declarationName?: string | null
+  declarationPlace?: string | null
+  declarationDate?: Date | string | null
+  tradeLicencePicUrl?: string | null
+  shopPicUrl?: string | null
+  dealerPicUrl?: string | null
+  blankChequePicUrl?: string | null
+  partnershipDeedPicUrl?: string | null
+  salesGrowthPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: string | null
+  underSalesPromoterName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  noOfPJP?: number | null
+  subDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutParentDealerInput
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedDealerInput
+  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDealerInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresUncheckedCreateNestedOneWithoutDealerInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutSubDealerInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutDealerInput
+  masons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutDealerInput
+  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutDealerInput
+  associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
+  geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
+}
+
+export type DealerCreateOrConnectWithoutCollectionReportsInput = {
+  where: Prisma.DealerWhereUniqueInput
+  create: Prisma.XOR<Prisma.DealerCreateWithoutCollectionReportsInput, Prisma.DealerUncheckedCreateWithoutCollectionReportsInput>
+}
+
+export type DealerUpsertWithoutCollectionReportsInput = {
+  update: Prisma.XOR<Prisma.DealerUpdateWithoutCollectionReportsInput, Prisma.DealerUncheckedUpdateWithoutCollectionReportsInput>
+  create: Prisma.XOR<Prisma.DealerCreateWithoutCollectionReportsInput, Prisma.DealerUncheckedCreateWithoutCollectionReportsInput>
+  where?: Prisma.DealerWhereInput
+}
+
+export type DealerUpdateToOneWithWhereWithoutCollectionReportsInput = {
+  where?: Prisma.DealerWhereInput
+  data: Prisma.XOR<Prisma.DealerUpdateWithoutCollectionReportsInput, Prisma.DealerUncheckedUpdateWithoutCollectionReportsInput>
+}
+
+export type DealerUpdateWithoutCollectionReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.StringFieldUpdateOperationsInput | string
+  area?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerUpdatebrandSellingInput | string[]
+  feedbacks?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentObstacle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  whatsappNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstinNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tradeLicNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownSizeSqFt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  godownCapacityMTBags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankBranchAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIfscCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  monthlySaleMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  areaCovered?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  projectedMonthlySalesBestCementMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  declarationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeLicencePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  blankChequePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnershipDeedPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesGrowthPercentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  underSalesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneWithoutDealersNestedInput
+  parentDealer?: Prisma.DealerUpdateOneWithoutSubDealersNestedInput
+  subDealers?: Prisma.DealerUpdateManyWithoutParentDealerNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedDealerNestedInput
+  salesOrders?: Prisma.SalesOrderUpdateManyWithoutDealerNestedInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresUpdateOneWithoutDealerNestedInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportUpdateManyWithoutSubDealerNestedInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanUpdateManyWithoutDealerNestedInput
+  masons?: Prisma.Mason_PC_SideUpdateManyWithoutDealerNestedInput
+  bagLifts?: Prisma.BagLiftUpdateManyWithoutDealerNestedInput
+  associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
+  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
+  geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
+}
+
+export type DealerUncheckedUpdateWithoutCollectionReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  parentDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.StringFieldUpdateOperationsInput | string
+  area?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerUpdatebrandSellingInput | string[]
+  feedbacks?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentObstacle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  whatsappNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstinNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tradeLicNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownSizeSqFt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  godownCapacityMTBags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankBranchAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIfscCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  monthlySaleMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  areaCovered?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  projectedMonthlySalesBestCementMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  declarationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeLicencePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  blankChequePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnershipDeedPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesGrowthPercentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  underSalesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  subDealers?: Prisma.DealerUncheckedUpdateManyWithoutParentDealerNestedInput
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedDealerNestedInput
+  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDealerNestedInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresUncheckedUpdateOneWithoutDealerNestedInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutSubDealerNestedInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutDealerNestedInput
+  masons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutDealerNestedInput
+  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutDealerNestedInput
+  associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
+  geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
+}
+
+export type DealerCreateWithoutProjectionReportsInput = {
+  id?: string
+  type: string
+  name: string
+  region: string
+  area: string
+  phoneNo: string
+  address: string
+  pinCode?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Date | string | null
+  anniversaryDate?: Date | string | null
+  totalPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerCreatebrandSellingInput | string[]
+  feedbacks: string
+  remarks?: string | null
+  dealerDevelopmentStatus?: string | null
+  dealerDevelopmentObstacle?: string | null
+  verificationStatus?: string
+  whatsappNo?: string | null
+  emailId?: string | null
+  businessType?: string | null
+  gstinNo?: string | null
+  panNo?: string | null
+  tradeLicNo?: string | null
+  aadharNo?: string | null
+  godownSizeSqFt?: number | null
+  godownCapacityMTBags?: string | null
+  godownAddressLine?: string | null
+  godownLandMark?: string | null
+  godownDistrict?: string | null
+  godownArea?: string | null
+  godownRegion?: string | null
+  godownPinCode?: string | null
+  residentialAddressLine?: string | null
+  residentialLandMark?: string | null
+  residentialDistrict?: string | null
+  residentialArea?: string | null
+  residentialRegion?: string | null
+  residentialPinCode?: string | null
+  bankAccountName?: string | null
+  bankName?: string | null
+  bankBranchAddress?: string | null
+  bankAccountNumber?: string | null
+  bankIfscCode?: string | null
+  brandName?: string | null
+  monthlySaleMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: number | null
+  areaCovered?: string | null
+  projectedMonthlySalesBestCementMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: number | null
+  declarationName?: string | null
+  declarationPlace?: string | null
+  declarationDate?: Date | string | null
+  tradeLicencePicUrl?: string | null
+  shopPicUrl?: string | null
+  dealerPicUrl?: string | null
+  blankChequePicUrl?: string | null
+  partnershipDeedPicUrl?: string | null
+  salesGrowthPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: string | null
+  underSalesPromoterName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  noOfPJP?: number | null
+  user?: Prisma.UserCreateNestedOneWithoutDealersInput
+  parentDealer?: Prisma.DealerCreateNestedOneWithoutSubDealersInput
+  subDealers?: Prisma.DealerCreateNestedManyWithoutParentDealerInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedDealerInput
+  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDealerInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresCreateNestedOneWithoutDealerInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportCreateNestedManyWithoutSubDealerInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutDealerInput
+  masons?: Prisma.Mason_PC_SideCreateNestedManyWithoutDealerInput
+  bagLifts?: Prisma.BagLiftCreateNestedManyWithoutDealerInput
+  associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
+  associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
+  geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+}
+
+export type DealerUncheckedCreateWithoutProjectionReportsInput = {
+  id?: string
+  userId?: number | null
+  type: string
+  parentDealerId?: string | null
+  name: string
+  region: string
+  area: string
+  phoneNo: string
+  address: string
+  pinCode?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Date | string | null
+  anniversaryDate?: Date | string | null
+  totalPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerCreatebrandSellingInput | string[]
+  feedbacks: string
+  remarks?: string | null
+  dealerDevelopmentStatus?: string | null
+  dealerDevelopmentObstacle?: string | null
+  verificationStatus?: string
+  whatsappNo?: string | null
+  emailId?: string | null
+  businessType?: string | null
+  gstinNo?: string | null
+  panNo?: string | null
+  tradeLicNo?: string | null
+  aadharNo?: string | null
+  godownSizeSqFt?: number | null
+  godownCapacityMTBags?: string | null
+  godownAddressLine?: string | null
+  godownLandMark?: string | null
+  godownDistrict?: string | null
+  godownArea?: string | null
+  godownRegion?: string | null
+  godownPinCode?: string | null
+  residentialAddressLine?: string | null
+  residentialLandMark?: string | null
+  residentialDistrict?: string | null
+  residentialArea?: string | null
+  residentialRegion?: string | null
+  residentialPinCode?: string | null
+  bankAccountName?: string | null
+  bankName?: string | null
+  bankBranchAddress?: string | null
+  bankAccountNumber?: string | null
+  bankIfscCode?: string | null
+  brandName?: string | null
+  monthlySaleMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: number | null
+  areaCovered?: string | null
+  projectedMonthlySalesBestCementMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: number | null
+  declarationName?: string | null
+  declarationPlace?: string | null
+  declarationDate?: Date | string | null
+  tradeLicencePicUrl?: string | null
+  shopPicUrl?: string | null
+  dealerPicUrl?: string | null
+  blankChequePicUrl?: string | null
+  partnershipDeedPicUrl?: string | null
+  salesGrowthPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: string | null
+  underSalesPromoterName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  noOfPJP?: number | null
+  subDealers?: Prisma.DealerUncheckedCreateNestedManyWithoutParentDealerInput
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedDealerInput
+  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDealerInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresUncheckedCreateNestedOneWithoutDealerInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutDealerInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutSubDealerInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutDealerInput
+  masons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutDealerInput
+  bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutDealerInput
+  associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
+  geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+}
+
+export type DealerCreateOrConnectWithoutProjectionReportsInput = {
+  where: Prisma.DealerWhereUniqueInput
+  create: Prisma.XOR<Prisma.DealerCreateWithoutProjectionReportsInput, Prisma.DealerUncheckedCreateWithoutProjectionReportsInput>
+}
+
+export type DealerUpsertWithoutProjectionReportsInput = {
+  update: Prisma.XOR<Prisma.DealerUpdateWithoutProjectionReportsInput, Prisma.DealerUncheckedUpdateWithoutProjectionReportsInput>
+  create: Prisma.XOR<Prisma.DealerCreateWithoutProjectionReportsInput, Prisma.DealerUncheckedCreateWithoutProjectionReportsInput>
+  where?: Prisma.DealerWhereInput
+}
+
+export type DealerUpdateToOneWithWhereWithoutProjectionReportsInput = {
+  where?: Prisma.DealerWhereInput
+  data: Prisma.XOR<Prisma.DealerUpdateWithoutProjectionReportsInput, Prisma.DealerUncheckedUpdateWithoutProjectionReportsInput>
+}
+
+export type DealerUpdateWithoutProjectionReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.StringFieldUpdateOperationsInput | string
+  area?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerUpdatebrandSellingInput | string[]
+  feedbacks?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentObstacle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  whatsappNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstinNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tradeLicNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownSizeSqFt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  godownCapacityMTBags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankBranchAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIfscCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  monthlySaleMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  areaCovered?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  projectedMonthlySalesBestCementMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  declarationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeLicencePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  blankChequePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnershipDeedPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesGrowthPercentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  underSalesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneWithoutDealersNestedInput
+  parentDealer?: Prisma.DealerUpdateOneWithoutSubDealersNestedInput
+  subDealers?: Prisma.DealerUpdateManyWithoutParentDealerNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedDealerNestedInput
+  salesOrders?: Prisma.SalesOrderUpdateManyWithoutDealerNestedInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresUpdateOneWithoutDealerNestedInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportUpdateManyWithoutSubDealerNestedInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanUpdateManyWithoutDealerNestedInput
+  masons?: Prisma.Mason_PC_SideUpdateManyWithoutDealerNestedInput
+  bagLifts?: Prisma.BagLiftUpdateManyWithoutDealerNestedInput
+  associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
+  associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
+  geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+}
+
+export type DealerUncheckedUpdateWithoutProjectionReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  parentDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.StringFieldUpdateOperationsInput | string
+  area?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNo?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  anniversaryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DealerUpdatebrandSellingInput | string[]
+  feedbacks?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerDevelopmentObstacle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  whatsappNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  businessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstinNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tradeLicNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownSizeSqFt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  godownCapacityMTBags?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  godownPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialAddressLine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialLandMark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialArea?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialRegion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentialPinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankBranchAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIfscCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  monthlySaleMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfDealers?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  areaCovered?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  projectedMonthlySalesBestCementMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  noOfEmployeesInSales?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  declarationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  declarationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tradeLicencePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  blankChequePicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partnershipDeedPicUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesGrowthPercentage?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  nameOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  underSalesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  subDealers?: Prisma.DealerUncheckedUpdateManyWithoutParentDealerNestedInput
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedDealerNestedInput
+  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDealerNestedInput
+  reportsAndScores?: Prisma.DealerReportsAndScoresUncheckedUpdateOneWithoutDealerNestedInput
+  dealerBrandCapacities?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsDealer?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutDealerNestedInput
+  dailyVisitReportsAsSubDealer?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutSubDealerNestedInput
+  permanentJourneyPlansAsDealer?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutDealerNestedInput
+  masons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutDealerNestedInput
+  bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutDealerNestedInput
+  associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
+  associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
+  geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateWithoutReportsAndScoresInput = {
@@ -5254,6 +6076,8 @@ export type DealerCreateWithoutReportsAndScoresInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutReportsAndScoresInput = {
@@ -5337,6 +6161,8 @@ export type DealerUncheckedCreateWithoutReportsAndScoresInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutReportsAndScoresInput = {
@@ -5436,6 +6262,8 @@ export type DealerUpdateWithoutReportsAndScoresInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutReportsAndScoresInput = {
@@ -5519,6 +6347,8 @@ export type DealerUncheckedUpdateWithoutReportsAndScoresInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateWithoutDealerBrandCapacitiesInput = {
@@ -5602,6 +6432,8 @@ export type DealerCreateWithoutDealerBrandCapacitiesInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutDealerBrandCapacitiesInput = {
@@ -5685,6 +6517,8 @@ export type DealerUncheckedCreateWithoutDealerBrandCapacitiesInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutDealerBrandCapacitiesInput = {
@@ -5784,6 +6618,8 @@ export type DealerUpdateWithoutDealerBrandCapacitiesInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutDealerBrandCapacitiesInput = {
@@ -5867,6 +6703,8 @@ export type DealerUncheckedUpdateWithoutDealerBrandCapacitiesInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateWithoutAssociatedSitesInput = {
@@ -5950,6 +6788,8 @@ export type DealerCreateWithoutAssociatedSitesInput = {
   bagLifts?: Prisma.BagLiftCreateNestedManyWithoutDealerInput
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutAssociatedSitesInput = {
@@ -6033,6 +6873,8 @@ export type DealerUncheckedCreateWithoutAssociatedSitesInput = {
   bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutDealerInput
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutAssociatedSitesInput = {
@@ -6137,6 +6979,8 @@ export type DealerCreateWithoutMasonsInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutMasonsInput = {
@@ -6220,6 +7064,8 @@ export type DealerUncheckedCreateWithoutMasonsInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutMasonsInput = {
@@ -6308,6 +7154,8 @@ export type DealerCreateWithoutAssociatedMasonsInput = {
   bagLifts?: Prisma.BagLiftCreateNestedManyWithoutDealerInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutAssociatedMasonsInput = {
@@ -6391,6 +7239,8 @@ export type DealerUncheckedCreateWithoutAssociatedMasonsInput = {
   bagLifts?: Prisma.BagLiftUncheckedCreateNestedManyWithoutDealerInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutAssociatedMasonsInput = {
@@ -6490,6 +7340,8 @@ export type DealerUpdateWithoutMasonsInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutMasonsInput = {
@@ -6573,6 +7425,8 @@ export type DealerUncheckedUpdateWithoutMasonsInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUpsertWithWhereUniqueWithoutAssociatedMasonsInput = {
@@ -6672,6 +7526,8 @@ export type DealerCreateWithoutBagLiftsInput = {
   associatedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutDealerInput
 }
 
 export type DealerUncheckedCreateWithoutBagLiftsInput = {
@@ -6755,6 +7611,8 @@ export type DealerUncheckedCreateWithoutBagLiftsInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutAssociatedDealersInput
   associatedSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedDealersInput
   geoTrackings?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutDealerInput
 }
 
 export type DealerCreateOrConnectWithoutBagLiftsInput = {
@@ -6854,6 +7712,8 @@ export type DealerUpdateWithoutBagLiftsInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutBagLiftsInput = {
@@ -6937,6 +7797,8 @@ export type DealerUncheckedUpdateWithoutBagLiftsInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerCreateManyUserInput = {
@@ -7090,6 +7952,8 @@ export type DealerUpdateWithoutUserInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutUserInput = {
@@ -7173,6 +8037,8 @@ export type DealerUncheckedUpdateWithoutUserInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateManyWithoutUserInput = {
@@ -7396,6 +8262,8 @@ export type DealerUpdateWithoutParentDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutParentDealerInput = {
@@ -7479,6 +8347,8 @@ export type DealerUncheckedUpdateWithoutParentDealerInput = {
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateManyWithoutParentDealerInput = {
@@ -7632,6 +8502,8 @@ export type DealerUpdateWithoutAssociatedSitesInput = {
   bagLifts?: Prisma.BagLiftUpdateManyWithoutDealerNestedInput
   associatedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutAssociatedSitesInput = {
@@ -7715,6 +8587,8 @@ export type DealerUncheckedUpdateWithoutAssociatedSitesInput = {
   bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutDealerNestedInput
   associatedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateManyWithoutAssociatedSitesInput = {
@@ -7869,6 +8743,8 @@ export type DealerUpdateWithoutAssociatedMasonsInput = {
   bagLifts?: Prisma.BagLiftUpdateManyWithoutDealerNestedInput
   associatedSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateWithoutAssociatedMasonsInput = {
@@ -7952,6 +8828,8 @@ export type DealerUncheckedUpdateWithoutAssociatedMasonsInput = {
   bagLifts?: Prisma.BagLiftUncheckedUpdateManyWithoutDealerNestedInput
   associatedSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedDealersNestedInput
   geoTrackings?: Prisma.GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput
 }
 
 export type DealerUncheckedUpdateManyWithoutAssociatedMasonsInput = {
@@ -8043,6 +8921,8 @@ export type DealerCountOutputType = {
   associatedMasons: number
   associatedSites: number
   geoTrackings: number
+  collectionReports: number
+  projectionReports: number
 }
 
 export type DealerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -8058,6 +8938,8 @@ export type DealerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   associatedMasons?: boolean | DealerCountOutputTypeCountAssociatedMasonsArgs
   associatedSites?: boolean | DealerCountOutputTypeCountAssociatedSitesArgs
   geoTrackings?: boolean | DealerCountOutputTypeCountGeoTrackingsArgs
+  collectionReports?: boolean | DealerCountOutputTypeCountCollectionReportsArgs
+  projectionReports?: boolean | DealerCountOutputTypeCountProjectionReportsArgs
 }
 
 /**
@@ -8154,6 +9036,20 @@ export type DealerCountOutputTypeCountGeoTrackingsArgs<ExtArgs extends runtime.T
   where?: Prisma.GeoTrackingWhereInput
 }
 
+/**
+ * DealerCountOutputType without action
+ */
+export type DealerCountOutputTypeCountCollectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CollectionReportWhereInput
+}
+
+/**
+ * DealerCountOutputType without action
+ */
+export type DealerCountOutputTypeCountProjectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectionReportWhereInput
+}
+
 
 export type DealerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -8239,6 +9135,8 @@ export type DealerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   associatedMasons?: boolean | Prisma.Dealer$associatedMasonsArgs<ExtArgs>
   associatedSites?: boolean | Prisma.Dealer$associatedSitesArgs<ExtArgs>
   geoTrackings?: boolean | Prisma.Dealer$geoTrackingsArgs<ExtArgs>
+  collectionReports?: boolean | Prisma.Dealer$collectionReportsArgs<ExtArgs>
+  projectionReports?: boolean | Prisma.Dealer$projectionReportsArgs<ExtArgs>
   _count?: boolean | Prisma.DealerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["dealer"]>
 
@@ -8476,6 +9374,8 @@ export type DealerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   associatedMasons?: boolean | Prisma.Dealer$associatedMasonsArgs<ExtArgs>
   associatedSites?: boolean | Prisma.Dealer$associatedSitesArgs<ExtArgs>
   geoTrackings?: boolean | Prisma.Dealer$geoTrackingsArgs<ExtArgs>
+  collectionReports?: boolean | Prisma.Dealer$collectionReportsArgs<ExtArgs>
+  projectionReports?: boolean | Prisma.Dealer$projectionReportsArgs<ExtArgs>
   _count?: boolean | Prisma.DealerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DealerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -8505,6 +9405,8 @@ export type $DealerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     associatedMasons: Prisma.$Mason_PC_SidePayload<ExtArgs>[]
     associatedSites: Prisma.$TechnicalSitePayload<ExtArgs>[]
     geoTrackings: Prisma.$GeoTrackingPayload<ExtArgs>[]
+    collectionReports: Prisma.$CollectionReportPayload<ExtArgs>[]
+    projectionReports: Prisma.$ProjectionReportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -8984,6 +9886,8 @@ export interface Prisma__DealerClient<T, Null = never, ExtArgs extends runtime.T
   associatedMasons<T extends Prisma.Dealer$associatedMasonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Dealer$associatedMasonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$Mason_PC_SidePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   associatedSites<T extends Prisma.Dealer$associatedSitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Dealer$associatedSitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechnicalSitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   geoTrackings<T extends Prisma.Dealer$geoTrackingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Dealer$geoTrackingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeoTrackingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  collectionReports<T extends Prisma.Dealer$collectionReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Dealer$collectionReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CollectionReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectionReports<T extends Prisma.Dealer$projectionReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Dealer$projectionReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectionReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9819,6 +10723,54 @@ export type Dealer$geoTrackingsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.GeoTrackingScalarFieldEnum | Prisma.GeoTrackingScalarFieldEnum[]
+}
+
+/**
+ * Dealer.collectionReports
+ */
+export type Dealer$collectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CollectionReport
+   */
+  select?: Prisma.CollectionReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CollectionReport
+   */
+  omit?: Prisma.CollectionReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CollectionReportInclude<ExtArgs> | null
+  where?: Prisma.CollectionReportWhereInput
+  orderBy?: Prisma.CollectionReportOrderByWithRelationInput | Prisma.CollectionReportOrderByWithRelationInput[]
+  cursor?: Prisma.CollectionReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CollectionReportScalarFieldEnum | Prisma.CollectionReportScalarFieldEnum[]
+}
+
+/**
+ * Dealer.projectionReports
+ */
+export type Dealer$projectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectionReport
+   */
+  select?: Prisma.ProjectionReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectionReport
+   */
+  omit?: Prisma.ProjectionReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionReportInclude<ExtArgs> | null
+  where?: Prisma.ProjectionReportWhereInput
+  orderBy?: Prisma.ProjectionReportOrderByWithRelationInput | Prisma.ProjectionReportOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectionReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectionReportScalarFieldEnum | Prisma.ProjectionReportScalarFieldEnum[]
 }
 
 /**

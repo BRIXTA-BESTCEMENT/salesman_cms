@@ -67,6 +67,9 @@ export const ModelName = {
   SyncState: 'SyncState',
   DailyTask: 'DailyTask',
   SalesOrder: 'SalesOrder',
+  CollectionReport: 'CollectionReport',
+  ProjectionVsActualReport: 'ProjectionVsActualReport',
+  ProjectionReport: 'ProjectionReport',
   DealerReportsAndScores: 'DealerReportsAndScores',
   Rating: 'Rating',
   Brand: 'Brand',
@@ -156,6 +159,9 @@ export const UserScalarFieldEnum = {
   isTechnicalRole: 'isTechnicalRole',
   techLoginId: 'techLoginId',
   techHashedPassword: 'techHashedPassword',
+  isAdminAppUser: 'isAdminAppUser',
+  adminAppLoginId: 'adminAppLoginId',
+  adminAppHashedPassword: 'adminAppHashedPassword',
   reportsToId: 'reportsToId',
   deviceId: 'deviceId',
   fcmToken: 'fcmToken',
@@ -544,6 +550,70 @@ export const SalesOrderScalarFieldEnum = {
 } as const
 
 export type SalesOrderScalarFieldEnum = (typeof SalesOrderScalarFieldEnum)[keyof typeof SalesOrderScalarFieldEnum]
+
+
+export const CollectionReportScalarFieldEnum = {
+  id: 'id',
+  institution: 'institution',
+  voucherNo: 'voucherNo',
+  voucherDate: 'voucherDate',
+  amount: 'amount',
+  bankAccount: 'bankAccount',
+  remarks: 'remarks',
+  partyName: 'partyName',
+  salesPromoterName: 'salesPromoterName',
+  zone: 'zone',
+  district: 'district',
+  salesPromoterUserId: 'salesPromoterUserId',
+  sourceMessageId: 'sourceMessageId',
+  sourceFileName: 'sourceFileName',
+  dealerId: 'dealerId',
+  createdAt: 'createdAt'
+} as const
+
+export type CollectionReportScalarFieldEnum = (typeof CollectionReportScalarFieldEnum)[keyof typeof CollectionReportScalarFieldEnum]
+
+
+export const ProjectionVsActualReportScalarFieldEnum = {
+  id: 'id',
+  reportDate: 'reportDate',
+  institution: 'institution',
+  zone: 'zone',
+  dealerName: 'dealerName',
+  orderProjectionMt: 'orderProjectionMt',
+  actualOrderReceivedMt: 'actualOrderReceivedMt',
+  doDoneMt: 'doDoneMt',
+  projectionVsActualOrderMt: 'projectionVsActualOrderMt',
+  actualOrderVsDoMt: 'actualOrderVsDoMt',
+  collectionProjection: 'collectionProjection',
+  actualCollection: 'actualCollection',
+  shortFall: 'shortFall',
+  percent: 'percent',
+  sourceMessageId: 'sourceMessageId',
+  sourceFileName: 'sourceFileName',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectionVsActualReportScalarFieldEnum = (typeof ProjectionVsActualReportScalarFieldEnum)[keyof typeof ProjectionVsActualReportScalarFieldEnum]
+
+
+export const ProjectionReportScalarFieldEnum = {
+  id: 'id',
+  institution: 'institution',
+  reportDate: 'reportDate',
+  zone: 'zone',
+  orderDealerName: 'orderDealerName',
+  orderQtyMt: 'orderQtyMt',
+  collectionDealerName: 'collectionDealerName',
+  collectionAmount: 'collectionAmount',
+  salesPromoterUserId: 'salesPromoterUserId',
+  sourceMessageId: 'sourceMessageId',
+  sourceFileName: 'sourceFileName',
+  dealerId: 'dealerId',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectionReportScalarFieldEnum = (typeof ProjectionReportScalarFieldEnum)[keyof typeof ProjectionReportScalarFieldEnum]
 
 
 export const DealerReportsAndScoresScalarFieldEnum = {

@@ -120,6 +120,21 @@ export type DailyTask = Prisma.DailyTaskModel
  */
 export type SalesOrder = Prisma.SalesOrderModel
 /**
+ * Model CollectionReport
+ * 
+ */
+export type CollectionReport = Prisma.CollectionReportModel
+/**
+ * Model ProjectionVsActualReport
+ * 
+ */
+export type ProjectionVsActualReport = Prisma.ProjectionVsActualReportModel
+/**
+ * Model ProjectionReport
+ * 
+ */
+export type ProjectionReport = Prisma.ProjectionReportModel
+/**
  * Model DealerReportsAndScores
  * 
  */

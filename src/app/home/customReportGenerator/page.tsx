@@ -26,6 +26,7 @@ import {
   type TableColumn,
   type ReportFormat
 } from './customTableHeaders';
+import { format as formatDate } from 'date-fns';
 
 // Helper to generate column definitions dynamically for the preview table
 function generateColumns(columns: TableColumn[]): ColumnDef<any, any>[] {
@@ -169,7 +170,7 @@ export default function CustomReportGeneratorPage() {
       }
       const columnsForCurrent = reportColumns.filter(rc => rc.table === selectedTableId);
       if (columnsForCurrent.length === 0) {
-        setPreviewData([]); 
+        setPreviewData([]);
         return;
       }
       // Pass filters to the fetch function
@@ -246,13 +247,15 @@ export default function CustomReportGeneratorPage() {
       });
       return;
     }
+
     setDownloading(true);
     try {
       const payload = {
         columns: reportColumns,
-        format: format,
+        format: format, // This refers to your 'xlsx' | 'csv' state
         filters: filters,
       };
+
       const res = await fetch(apiURI, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -264,10 +267,20 @@ export default function CustomReportGeneratorPage() {
         throw new Error(`Download failed: ${errorText}`);
       }
 
+      // --- Dynamic Filename Logic ---
+      // 1. Get Table Title
+      const tableTitle = selectedTable?.title.replace(/\s+/g, '_') || 'Report';
+
+      // 2. Use 'formatDate' (the renamed import) to avoid the TS error
+      const dateStr = formatDate(new Date(), "d-MMM-yyyy");
+
+      // 3. Determine Extension
+      const extension = format === 'csv' ? 'zip' : 'xlsx';
+      const dynamicFilename = `${tableTitle}_${dateStr}.${extension}`;
+
       const contentDisposition = res.headers.get('Content-Disposition');
       const filenameMatch = contentDisposition ? contentDisposition.match(/filename="(.+?)"/) : null;
-      const defaultFilename = `custom_report_${Date.now()}.${format === 'csv' ? 'zip' : 'xlsx'}`;
-      const filename = filenameMatch ? filenameMatch[1] : defaultFilename;
+      const filename = filenameMatch ? filenameMatch[1] : dynamicFilename;
 
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
@@ -278,6 +291,7 @@ export default function CustomReportGeneratorPage() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+
       toast.success('Download Complete', {
         description: `${filename} has been downloaded successfully.`,
       });
@@ -290,45 +304,6 @@ export default function CustomReportGeneratorPage() {
       setDownloading(false);
     }
   };
-
-  // --- Client-side Filtering for Preview ---
-  const filteredPreviewData = useMemo(() => {
-    if (!previewData || previewData.length === 0) return [];
-    if (filters.length === 0) return previewData;
-
-    return previewData.filter(row => {
-      return filters.every(filter => {
-        const rowKey = `${selectedTableId}.${filter.column}`;
-        if (row[rowKey] === undefined) return true;
-
-        const cellValue = String(row[rowKey] ?? '').toLowerCase();
-        const filterValue = (filter.value ?? '').toLowerCase();
-
-        if (!filterValue) return true; 
-
-        switch (filter.operator) {
-          case 'contains':
-            return cellValue.includes(filterValue);
-          case 'equals':
-            return cellValue === filterValue;
-          case 'gt': {
-             const numCell = parseFloat(cellValue);
-             const numFilter = parseFloat(filterValue);
-             if(!isNaN(numCell) && !isNaN(numFilter)) return numCell > numFilter;
-             return cellValue > filterValue;
-          }
-          case 'lt': {
-             const numCell = parseFloat(cellValue);
-             const numFilter = parseFloat(filterValue);
-             if(!isNaN(numCell) && !isNaN(numFilter)) return numCell < numFilter;
-             return cellValue < filterValue;
-          }
-          default:
-            return true;
-        }
-      });
-    });
-  }, [previewData, filters, selectedTableId]);
 
   return (
     <div className="flex-1 min-w-0 flex flex-col px-4 md:px-6 py-8 bg-background text-foreground">
@@ -380,9 +355,9 @@ export default function CustomReportGeneratorPage() {
             Select your data source and simply check/uncheck the desired columns to include them in the final report.
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="grid md:grid-cols-2 gap-0 border-t border-border p-0">
-          
+
           {/* LEFT: Table List */}
           <div className="border-b md:border-b-0 md:border-r border-border p-4 bg-muted/5">
             <h4 className="text-sm font-semibold mb-3 text-foreground/80">1. Available Tables</h4>
@@ -391,7 +366,7 @@ export default function CustomReportGeneratorPage() {
                 {tablesMetadata.map(table => {
                   const Icon = table.icon;
                   const committedCount = reportColumns.filter(c => c.table === table.id).length;
-                  
+
                   return (
                     <button
                       key={table.id}
@@ -435,7 +410,7 @@ export default function CustomReportGeneratorPage() {
                     <CheckSquare className="w-3.5 h-3.5" />
                     {isAllColumnsSelected ? 'Unselect All' : 'Select All'}
                   </Button>
-                  
+
                   {currentTableCheckedCount > 0 && (
                     <Button
                       onClick={handleClearTableColumns}
@@ -460,8 +435,8 @@ export default function CustomReportGeneratorPage() {
                   {selectedTable.columns.map(column => {
                     const isChecked = checkedColumns[selectedTableId]?.includes(column) || false;
                     return (
-                      <div 
-                        key={column} 
+                      <div
+                        key={column}
                         onClick={() => !downloading && handleColumnToggle(column)}
                         className={`
                           flex items-center space-x-3 p-2 rounded-md border transition-all cursor-pointer
@@ -474,8 +449,8 @@ export default function CustomReportGeneratorPage() {
                           onCheckedChange={() => handleColumnToggle(column)}
                           disabled={downloading}
                         />
-                        <Label 
-                          htmlFor={column} 
+                        <Label
+                          htmlFor={column}
                           className="cursor-pointer text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           {column.replace(/([A-Z])/g, ' $1').trim()}
@@ -502,25 +477,25 @@ export default function CustomReportGeneratorPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-             <div className="flex items-center space-x-2 pb-2 border-b border-border">
-                <Settings2 className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold text-lg">Configuration</h3>
-             </div>
-             
-             {/* B. Filtering */}
-             <DataFilter
-                availableColumns={reportColumns}
-                filters={filters}
-                setFilters={setFilters}
-             />
-             
-             {/* Summary Stats */}
-             <div className="bg-muted/30 border border-border rounded-lg p-4 text-xs text-muted-foreground">
-                <p>
-                    <span className="font-semibold text-foreground">{totalReportColumnsCount}</span> columns selected across{' '}
-                    <span className="font-semibold text-foreground">{new Set(reportColumns.map(c => c.table)).size}</span> tables.
-                </p>
-             </div>
+            <div className="flex items-center space-x-2 pb-2 border-b border-border">
+              <Settings2 className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold text-lg">Configuration</h3>
+            </div>
+
+            {/* B. Filtering */}
+            <DataFilter
+              availableColumns={reportColumns}
+              filters={filters}
+              setFilters={setFilters}
+            />
+
+            {/* Summary Stats */}
+            <div className="bg-muted/30 border border-border rounded-lg p-4 text-xs text-muted-foreground">
+              <p>
+                <span className="font-semibold text-foreground">{totalReportColumnsCount}</span> columns selected across{' '}
+                <span className="font-semibold text-foreground">{new Set(reportColumns.map(c => c.table)).size}</span> tables.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -546,7 +521,7 @@ export default function CustomReportGeneratorPage() {
               <DataTableReusable
                 columns={previewColumns}
                 // @ts-ignore
-                data={filteredPreviewData}
+                data={previewData}
                 enableRowDragging={false}
               />
             ) : (

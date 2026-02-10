@@ -400,6 +400,9 @@ export const ModelName = {
   SyncState: 'SyncState',
   DailyTask: 'DailyTask',
   SalesOrder: 'SalesOrder',
+  CollectionReport: 'CollectionReport',
+  ProjectionVsActualReport: 'ProjectionVsActualReport',
+  ProjectionReport: 'ProjectionReport',
   DealerReportsAndScores: 'DealerReportsAndScores',
   Rating: 'Rating',
   Brand: 'Brand',
@@ -449,7 +452,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "dealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsGateIO" | "emailReport" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
+    modelProps: "company" | "user" | "dealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "collectionReport" | "projectionVsActualReport" | "projectionReport" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsGateIO" | "emailReport" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1634,6 +1637,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SalesOrderCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SalesOrderCountAggregateOutputType> | number
+        }
+      }
+    }
+    CollectionReport: {
+      payload: Prisma.$CollectionReportPayload<ExtArgs>
+      fields: Prisma.CollectionReportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CollectionReportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CollectionReportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>
+        }
+        findFirst: {
+          args: Prisma.CollectionReportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CollectionReportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>
+        }
+        findMany: {
+          args: Prisma.CollectionReportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>[]
+        }
+        create: {
+          args: Prisma.CollectionReportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>
+        }
+        createMany: {
+          args: Prisma.CollectionReportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CollectionReportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>[]
+        }
+        delete: {
+          args: Prisma.CollectionReportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>
+        }
+        update: {
+          args: Prisma.CollectionReportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>
+        }
+        deleteMany: {
+          args: Prisma.CollectionReportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CollectionReportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CollectionReportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>[]
+        }
+        upsert: {
+          args: Prisma.CollectionReportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionReportPayload>
+        }
+        aggregate: {
+          args: Prisma.CollectionReportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCollectionReport>
+        }
+        groupBy: {
+          args: Prisma.CollectionReportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollectionReportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CollectionReportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CollectionReportCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProjectionVsActualReport: {
+      payload: Prisma.$ProjectionVsActualReportPayload<ExtArgs>
+      fields: Prisma.ProjectionVsActualReportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectionVsActualReportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectionVsActualReportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectionVsActualReportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectionVsActualReportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectionVsActualReportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectionVsActualReportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectionVsActualReportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectionVsActualReportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectionVsActualReportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>
+        }
+        update: {
+          args: Prisma.ProjectionVsActualReportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectionVsActualReportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectionVsActualReportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectionVsActualReportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectionVsActualReportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionVsActualReportPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectionVsActualReportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectionVsActualReport>
+        }
+        groupBy: {
+          args: Prisma.ProjectionVsActualReportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectionVsActualReportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectionVsActualReportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectionVsActualReportCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProjectionReport: {
+      payload: Prisma.$ProjectionReportPayload<ExtArgs>
+      fields: Prisma.ProjectionReportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectionReportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectionReportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectionReportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectionReportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectionReportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectionReportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectionReportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectionReportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectionReportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>
+        }
+        update: {
+          args: Prisma.ProjectionReportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectionReportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectionReportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectionReportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectionReportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectionReportPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectionReportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectionReport>
+        }
+        groupBy: {
+          args: Prisma.ProjectionReportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectionReportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectionReportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectionReportCountAggregateOutputType> | number
         }
       }
     }
@@ -4229,6 +4454,9 @@ export const UserScalarFieldEnum = {
   isTechnicalRole: 'isTechnicalRole',
   techLoginId: 'techLoginId',
   techHashedPassword: 'techHashedPassword',
+  isAdminAppUser: 'isAdminAppUser',
+  adminAppLoginId: 'adminAppLoginId',
+  adminAppHashedPassword: 'adminAppHashedPassword',
   reportsToId: 'reportsToId',
   deviceId: 'deviceId',
   fcmToken: 'fcmToken',
@@ -4617,6 +4845,70 @@ export const SalesOrderScalarFieldEnum = {
 } as const
 
 export type SalesOrderScalarFieldEnum = (typeof SalesOrderScalarFieldEnum)[keyof typeof SalesOrderScalarFieldEnum]
+
+
+export const CollectionReportScalarFieldEnum = {
+  id: 'id',
+  institution: 'institution',
+  voucherNo: 'voucherNo',
+  voucherDate: 'voucherDate',
+  amount: 'amount',
+  bankAccount: 'bankAccount',
+  remarks: 'remarks',
+  partyName: 'partyName',
+  salesPromoterName: 'salesPromoterName',
+  zone: 'zone',
+  district: 'district',
+  salesPromoterUserId: 'salesPromoterUserId',
+  sourceMessageId: 'sourceMessageId',
+  sourceFileName: 'sourceFileName',
+  dealerId: 'dealerId',
+  createdAt: 'createdAt'
+} as const
+
+export type CollectionReportScalarFieldEnum = (typeof CollectionReportScalarFieldEnum)[keyof typeof CollectionReportScalarFieldEnum]
+
+
+export const ProjectionVsActualReportScalarFieldEnum = {
+  id: 'id',
+  reportDate: 'reportDate',
+  institution: 'institution',
+  zone: 'zone',
+  dealerName: 'dealerName',
+  orderProjectionMt: 'orderProjectionMt',
+  actualOrderReceivedMt: 'actualOrderReceivedMt',
+  doDoneMt: 'doDoneMt',
+  projectionVsActualOrderMt: 'projectionVsActualOrderMt',
+  actualOrderVsDoMt: 'actualOrderVsDoMt',
+  collectionProjection: 'collectionProjection',
+  actualCollection: 'actualCollection',
+  shortFall: 'shortFall',
+  percent: 'percent',
+  sourceMessageId: 'sourceMessageId',
+  sourceFileName: 'sourceFileName',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectionVsActualReportScalarFieldEnum = (typeof ProjectionVsActualReportScalarFieldEnum)[keyof typeof ProjectionVsActualReportScalarFieldEnum]
+
+
+export const ProjectionReportScalarFieldEnum = {
+  id: 'id',
+  institution: 'institution',
+  reportDate: 'reportDate',
+  zone: 'zone',
+  orderDealerName: 'orderDealerName',
+  orderQtyMt: 'orderQtyMt',
+  collectionDealerName: 'collectionDealerName',
+  collectionAmount: 'collectionAmount',
+  salesPromoterUserId: 'salesPromoterUserId',
+  sourceMessageId: 'sourceMessageId',
+  sourceFileName: 'sourceFileName',
+  dealerId: 'dealerId',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectionReportScalarFieldEnum = (typeof ProjectionReportScalarFieldEnum)[keyof typeof ProjectionReportScalarFieldEnum]
 
 
 export const DealerReportsAndScoresScalarFieldEnum = {
@@ -5493,6 +5785,9 @@ export type GlobalOmitConfig = {
   syncState?: Prisma.SyncStateOmit
   dailyTask?: Prisma.DailyTaskOmit
   salesOrder?: Prisma.SalesOrderOmit
+  collectionReport?: Prisma.CollectionReportOmit
+  projectionVsActualReport?: Prisma.ProjectionVsActualReportOmit
+  projectionReport?: Prisma.ProjectionReportOmit
   dealerReportsAndScores?: Prisma.DealerReportsAndScoresOmit
   rating?: Prisma.RatingOmit
   brand?: Prisma.BrandOmit

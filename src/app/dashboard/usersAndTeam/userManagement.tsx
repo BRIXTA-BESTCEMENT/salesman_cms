@@ -55,6 +55,7 @@ interface User {
   updatedAt: string;
   salesmanLoginId?: string | null;
   isTechnicalRole?: boolean | null;
+  isAdminAppUser?: boolean | null;
   deviceId?: string | null;
   isDashboardUser?: boolean | null;
 }
@@ -171,6 +172,7 @@ export default function UsersManagement({ adminUser }: Props) {
     region: '',
     area: '',
     isTechnical: false,
+    isAdminAppUser: false,
   });
 
   useEffect(() => {
@@ -360,6 +362,7 @@ export default function UsersManagement({ adminUser }: Props) {
       region: user.region || '',
       area: user.area || '',
       isTechnical: user.isTechnicalRole || false,
+      isAdminAppUser: user.isAdminAppUser || false,
     });
   };
 
@@ -373,6 +376,7 @@ export default function UsersManagement({ adminUser }: Props) {
       region: '',
       area: '',
       isTechnical: false,
+      isAdminAppUser: false,
     });
     setEditingUser(null);
     setError('');
@@ -485,7 +489,7 @@ export default function UsersManagement({ adminUser }: Props) {
 
         if (isAppOnly) {
           return (
-             <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
               <Smartphone className="w-4 h-4 text-blue-500" />
               <span className="text-blue-600 text-sm font-medium">App-Only</span>
             </div>
@@ -799,6 +803,18 @@ export default function UsersManagement({ adminUser }: Props) {
                     />
                     <Label htmlFor="isTechnical-edit" className="text-sm font-medium">
                       Check if Technical Role
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="isAdminAppUser-edit"
+                      checked={formData.isAdminAppUser}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, isAdminAppUser: !!checked })
+                      }
+                    />
+                    <Label htmlFor="isAdminAppUser-edit" className="text-sm font-medium">
+                      Admin App User
                     </Label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">

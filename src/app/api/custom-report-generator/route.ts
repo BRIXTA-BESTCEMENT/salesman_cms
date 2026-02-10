@@ -30,7 +30,7 @@ async function getAuthClaims() {
         where: { workosUserId: claims.sub },
         select: { companyId: true, role: true },
     });
-    
+
     if (!currentUser) {
         return new NextResponse('User not found', { status: 404 });
     }
@@ -44,37 +44,85 @@ function applyFilters(rows: any[], filters: FilterRule[]): any[] {
     return rows.filter(row => {
         // A row must satisfy ALL applicable filters (AND logic)
         return filters.every(filter => {
-            // 1. If the row does not contain the column being filtered, ignore this filter for this row.
-            //    (e.g., filtering 'attendanceDate' shouldn't remove rows from the 'Users' table)
+            // 1. If the row does not contain the column being filtered, ignore this filter.
             if (!Object.prototype.hasOwnProperty.call(row, filter.column)) {
-                return true; 
+                return true;
             }
 
-            const cellValue = String(row[filter.column] ?? '').toLowerCase();
-            const filterValue = (filter.value ?? '').toLowerCase();
+            const rawValue = row[filter.column];
+            const cellValueStr = String(rawValue ?? '').toLowerCase();
+            const filterValueStr = (filter.value ?? '').toLowerCase();
 
             // 2. If filter value is empty, it passes
-            if (!filterValue) return true;
+            if (!filterValueStr) return true;
 
-            // 3. Apply operator
+            // --- 3. Handle Date Ranges (Comma Separated) ---
+            // If the filter value comes from the new Range Picker, it looks like "start,end"
+            if (filterValueStr.includes(',')) {
+                const [startStr, endStr] = filterValueStr.split(',');
+
+                // Attempt to parse dates
+                const cellDate = new Date(rawValue); // Use raw value for better date parsing
+                const startDate = new Date(startStr);
+                // If end is missing (open-ended range), use max date
+                const endDate = endStr ? new Date(endStr) : new Date(8640000000000000);
+
+                // If valid dates, perform inclusive "Between" check
+                if (!isNaN(cellDate.getTime()) && !isNaN(startDate.getTime())) {
+                    // Set times to ensure inclusive boundaries work intuitively
+                    // (Optional: standardizing to midnight removes time-of-day issues)
+                    return cellDate >= startDate && cellDate <= endDate;
+                }
+            }
+
+            // --- 4. Standard Operators ---
             switch (filter.operator) {
                 case 'contains':
-                    return cellValue.includes(filterValue);
+                    return cellValueStr.includes(filterValueStr);
+
                 case 'equals':
-                    return cellValue === filterValue;
+                    return cellValueStr === filterValueStr;
+
                 case 'gt': {
-                    const numCell = parseFloat(cellValue);
-                    const numFilter = parseFloat(filterValue);
-                    // Compare as numbers if possible, otherwise string comparison
-                    if (!isNaN(numCell) && !isNaN(numFilter)) return numCell > numFilter;
-                    return cellValue > filterValue;
+                    // A. Try Date Comparison first
+                    const cellDate = new Date(rawValue);
+                    const filterDate = new Date(filterValueStr);
+                    // Check if both are valid dates AND the string actually looks like a date (has hyphens)
+                    // to prevent "2023" (number) being treated as a date (Jan 1 2023).
+                    if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime()) && filterValueStr.includes('-')) {
+                        return cellDate > filterDate;
+                    }
+
+                    // B. Try Number Comparison
+                    const numCell = parseFloat(cellValueStr);
+                    const numFilter = parseFloat(filterValueStr);
+                    if (!isNaN(numCell) && !isNaN(numFilter)) {
+                        return numCell > numFilter;
+                    }
+
+                    // C. String Comparison Fallback
+                    return cellValueStr > filterValueStr;
                 }
+
                 case 'lt': {
-                    const numCell = parseFloat(cellValue);
-                    const numFilter = parseFloat(filterValue);
-                    if (!isNaN(numCell) && !isNaN(numFilter)) return numCell < numFilter;
-                    return cellValue < filterValue;
+                    // A. Try Date Comparison
+                    const cellDate = new Date(rawValue);
+                    const filterDate = new Date(filterValueStr);
+                    if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime()) && filterValueStr.includes('-')) {
+                        return cellDate < filterDate;
+                    }
+
+                    // B. Try Number Comparison
+                    const numCell = parseFloat(cellValueStr);
+                    const numFilter = parseFloat(filterValueStr);
+                    if (!isNaN(numCell) && !isNaN(numFilter)) {
+                        return numCell < numFilter;
+                    }
+
+                    // C. String Comparison Fallback
+                    return cellValueStr < filterValueStr;
                 }
+
                 default:
                     return true;
             }
@@ -86,19 +134,19 @@ function applyFilters(rows: any[], filters: FilterRule[]): any[] {
  * Helper to structure data for generateAndStreamXlsxMulti.
  */
 function buildSheetsPayload(
-    groupedColumns: Record<string, string[]>, 
+    groupedColumns: Record<string, string[]>,
     dataPerTable: Record<string, any[]>
 ): Record<string, { headers: string[]; rows: any[] }> {
     const sheets: Record<string, { headers: string[]; rows: any[] }> = {};
-    
+
     for (const [tableId, columns] of Object.entries(groupedColumns)) {
         const rows = dataPerTable[tableId] ?? [];
-        
-        sheets[tableId] = { 
+
+        sheets[tableId] = {
             headers: columns,
             rows: rows.map(row => {
                 const obj: Record<string, any> = {};
-                for (const c of columns) obj[c] = (row as any)[c] ?? null; 
+                for (const c of columns) obj[c] = (row as any)[c] ?? null;
                 return obj;
             }),
         };
@@ -118,7 +166,7 @@ export async function POST(req: NextRequest) {
         // ADDED: filters destructuring
         const { columns, format, limit, filters } = await req.json() as {
             columns: TableColumn[];
-            format: 'xlsx' | 'csv' | 'json'; 
+            format: 'xlsx' | 'csv' | 'json';
             limit?: number;
             filters?: FilterRule[];
         };
@@ -135,21 +183,21 @@ export async function POST(req: NextRequest) {
             }
             return acc;
         }, {} as Record<string, string[]>);
-        
+
         const tableIds = Object.keys(grouped);
-        
+
         // --- 4. Handle PREVIEW Request (format: 'json') ---
         if (format === 'json' && tableIds.length > 0) {
             const previewTableId = tableIds[0];
-            
+
             if (!(previewTableId in transformerMap)) {
                 return NextResponse.json({ error: `Fetcher not found for table: ${previewTableId}` }, { status: 400 });
             }
             const fetcher = transformerMap[previewTableId as ReportTableId];
-            
+
             // Fetch full data using the transformer
-            let rows = await (fetcher as any)(currentUser.companyId); 
-            
+            let rows = await (fetcher as any)(currentUser.companyId);
+
             // ADDED: Apply filters to preview data server-side (optional but good for consistency)
             // Note: In your current UI, you filter preview client-side, but this ensures API correctness.
             rows = applyFilters(rows, filters || []);
@@ -159,18 +207,18 @@ export async function POST(req: NextRequest) {
             const previewData = (rows as any[])
                 .slice(0, limit || 10)
                 .map(r => {
-                    const obj: Record<string, any> = { id: (r as any).id }; 
+                    const obj: Record<string, any> = { id: (r as any).id };
                     for (const c of previewCols) {
-                        obj[c] = (r as any)[c] ?? null; 
+                        obj[c] = (r as any)[c] ?? null;
                     }
                     return obj;
                 });
-            
+
             return NextResponse.json({ data: previewData });
         }
 
         // --- 5. Handle DOWNLOAD Request (format: 'xlsx' or 'csv') ---
-        
+
         const dataPerTable: Record<string, any[]> = {};
         for (const table of tableIds) {
             if (table in transformerMap) {
@@ -182,7 +230,14 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        const filenameBase = `custom-report-${Date.now()}`;
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        }).replace(/ /g, '-'); // Result: "10-Feb-2026"
+
+        const filenameBase = `report_${dateStr}`;
 
         if (format === 'csv') {
             const dataByTable = tableIds.map((table) => {
@@ -202,16 +257,15 @@ export async function POST(req: NextRequest) {
                 status: 200,
                 headers: {
                     "Content-Type": "application/zip",
-                    "Content-Disposition": `attachment; filename="${filenameBase}.zip"`,
                 },
             });
         }
-        
+
         if (format === 'xlsx') {
             const sheets = buildSheetsPayload(grouped, dataPerTable);
             return generateAndStreamXlsxMulti(sheets, `${filenameBase}.xlsx`);
         }
-        
+
         return NextResponse.json({ error: 'Invalid format specified' }, { status: 400 });
 
     } catch (e) {

@@ -53,6 +53,11 @@ model User {
   techLoginId             String?   @unique @map("tech_login_id")
   techHashedPassword      String?   @map("tech_hash_password")
 
+  // ADMIN USER ROLE
+  isAdminAppUser            Boolean   @default(false) @map("is_admin_app_user")
+  adminAppLoginId           String?   @unique @map("admin_app_login_id")
+  adminAppHashedPassword    String?   @map("admin_app_hashed_password")
+
   // --- HIERARCHY FIELDS ---
   reportsToId               Int?      @map("reports_to_id")
   reportsTo                 User?     @relation("ReportsToManager", fields: [reportsToId], references: [id], onDelete: SetNull)
@@ -202,6 +207,8 @@ model Dealer {
   associatedMasons      Mason_PC_Side[] @relation("DealerAssociatedMasons")
   associatedSites       TechnicalSite[] @relation("SiteAssociatedDealers")
   geoTrackings          GeoTracking[]
+  collectionReports CollectionReport[]
+  projectionReports ProjectionReport[]
 
   @@index([userId], map: "idx_dealers_user_id")
   @@index([parentDealerId], map: "idx_dealers_parent_dealer_id")
@@ -652,6 +659,89 @@ model SalesOrder {
   @@index([pjpId], map: "idx_sales_orders_pjp_id")
   @@index([orderDate], map: "idx_sales_orders_order_date")
   @@map("sales_orders")
+}
+
+// Excel Reports on collections, orders, sales, due, overdue etc..
+model CollectionReport {
+  id                  String   @id @default(uuid()) @db.Uuid
+  institution         String   @db.VarChar(10)
+  voucherNo           String   @map("voucher_no") @db.VarChar(100)
+  voucherDate         DateTime @map("voucher_date") @db.Date
+  amount              Decimal  @db.Decimal(14, 2)
+  bankAccount         String?  @map("bank_account") @db.VarChar(255)
+  remarks             String?  @db.VarChar(500)
+  partyName           String   @map("party_name") @db.VarChar(255)
+  salesPromoterName   String?  @map("sales_promoter_name") @db.VarChar(255)
+  zone                String?  @db.VarChar(100)
+  district            String?  @db.VarChar(100)
+  salesPromoterUserId Int?     @map("sales_promoter_user_id")
+  sourceMessageId     String?  @map("source_message_id")
+  sourceFileName      String?  @map("source_file_name")
+  
+  // Relations
+  dealerId            String?  @map("dealer_id") @db.VarChar(255)
+  dealer              Dealer?  @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+  
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([institution], map: "idx_collection_institution")
+  @@index([voucherDate], map: "idx_collection_date")
+  @@index([dealerId], map: "idx_collection_dealer")
+  @@index([voucherNo], map: "idx_collection_voucher")
+  @@map("collection_reports")
+}
+
+model ProjectionVsActualReport {
+  id                        String   @id @default(uuid()) @db.Uuid
+  reportDate                DateTime @map("report_date") @db.Date
+  institution               String   @db.VarChar(10)
+  zone                      String   @db.VarChar(120)
+  dealerName                String   @map("dealer_name") @db.VarChar(255)
+  orderProjectionMt         Decimal? @map("order_projection_mt") @db.Decimal(12, 2)
+  actualOrderReceivedMt     Decimal? @map("actual_order_received_mt") @db.Decimal(12, 2)
+  doDoneMt                  Decimal? @map("do_done_mt") @db.Decimal(12, 2)
+  projectionVsActualOrderMt Decimal? @map("projection_vs_actual_order_mt") @db.Decimal(12, 2)
+  actualOrderVsDoMt         Decimal? @map("actual_order_vs_do_mt") @db.Decimal(12, 2)
+  collectionProjection      Decimal? @map("collection_projection") @db.Decimal(14, 2)
+  actualCollection          Decimal? @map("actual_collection") @db.Decimal(14, 2)
+  shortFall                 Decimal? @map("short_fall") @db.Decimal(14, 2)
+  percent                   Decimal? @db.Decimal(6, 2)
+  sourceMessageId           String?  @map("source_message_id") @db.Text
+  sourceFileName            String?  @map("source_file_name") @db.Text
+  createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([reportDate, dealerName, institution], map: "uniq_proj_actual_snapshot")
+  @@index([reportDate], map: "idx_proj_actual_date")
+  @@index([zone], map: "idx_proj_actual_zone")
+  @@index([dealerName], map: "idx_proj_actual_dealer")
+  @@index([institution], map: "idx_proj_actual_institution")
+  @@map("projection_vs_actual_reports")
+}
+
+model ProjectionReport {
+  id                   String   @id @default(uuid()) @db.Uuid
+  institution          String   @db.VarChar(10)
+  reportDate           DateTime @map("report_date") @db.Date
+  zone                 String   @db.VarChar(100)
+  orderDealerName      String?  @map("order_dealer_name") @db.VarChar(255)
+  orderQtyMt           Decimal? @map("order_qty_mt") @db.Decimal(10, 2)
+  collectionDealerName String?  @map("collection_dealer_name") @db.VarChar(255)
+  collectionAmount     Decimal? @map("collection_amount") @db.Decimal(14, 2)
+  salesPromoterUserId  Int?     @map("sales_promoter_user_id")
+  sourceMessageId      String?  @map("source_message_id") @db.Text
+  sourceFileName       String?  @map("source_file_name") @db.Text
+
+  // Relations
+  dealerId             String?  @map("dealer_id") @db.VarChar(255)
+  dealer               Dealer?  @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([reportDate], map: "idx_projection_date")
+  @@index([zone], map: "idx_projection_zone")
+  @@index([institution], map: "idx_projection_institution")
+  @@index([dealerId], map: "idx_projection_dealer")
+  @@map("projection_reports")
 }
 
 // Dealer Reports and Scores

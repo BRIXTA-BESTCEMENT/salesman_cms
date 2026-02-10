@@ -26,6 +26,8 @@ interface InvitationEmailProps {
   tempPassword?: string | null;
   techLoginId?: string | null;
   techTempPassword?: string | null;
+  adminAppLoginId?: string | null;      
+  adminAppTempPassword?: string | null; 
 }
 
 interface MagicAuthEmailProps {
@@ -45,6 +47,8 @@ export const InvitationEmail = ({
   tempPassword,
   techLoginId,
   techTempPassword,
+  adminAppLoginId,     
+  adminAppTempPassword,
 }: InvitationEmailProps) => {
   const previewText = `You're invited to join ${companyName}`;
 
@@ -111,6 +115,23 @@ export const InvitationEmail = ({
                   </Text>
                   <Text className="m-0 text-sm text-gray-600 mt-1">
                     Password: <span className="font-mono bg-green-100 px-1 rounded text-black">{techTempPassword}</span>
+                  </Text>
+                </div>
+              </Section>
+            )}
+
+            {/* Admin App Credentials (Conditional) */}
+            {adminAppLoginId && (
+              <Section className="bg-indigo-50 rounded p-4 mb-4 border-l-4 border-indigo-600">
+                <Text className="m-0 font-bold text-indigo-800 text-sm">
+                  🛡️ Admin App Login
+                </Text>
+                <div className="mt-2">
+                  <Text className="m-0 text-sm text-gray-600">
+                    Login ID: <span className="font-mono bg-indigo-100 px-1 rounded text-black">{adminAppLoginId}</span>
+                  </Text>
+                  <Text className="m-0 text-sm text-gray-600 mt-1">
+                    Password: <span className="font-mono bg-indigo-100 px-1 rounded text-black">{adminAppTempPassword}</span>
                   </Text>
                 </div>
               </Section>

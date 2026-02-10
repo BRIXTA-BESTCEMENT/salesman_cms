@@ -5,13 +5,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { WorkOS } from '@workos-inc/node';
-//import * as nodemailer from 'nodemailer';
-//import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { Resend } from 'resend';
 import { InvitationEmail } from '@/components/InvitationEmail';
 import { RESEND_API_KEY } from '@/lib/Reusable-constants';
-//import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique IDs
-//import bcrypt from 'bcryptjs'; // Import bcryptjs
 
 // Define the roles that have admin-level access
 const allowedAdminRoles = [
@@ -24,33 +20,6 @@ const allowedAdminRoles = [
     'manager',
     'assistant-manager'
 ];
-
-// ---------- Email setup ----------
-// const EMAIL_TIMEOUT_MS = 45000; 
-
-// const transportOptions: SMTPTransport.Options = {
-//     host: 'smtp.gmail.com',
-//     port: 465,
-//     secure: true,
-//     auth: { user: process.env.GMAIL_USER!, pass: process.env.GMAIL_APP_PASSWORD! },
-//     // --- FIX 3: ENABLE DEBUG LOGS ---
-//     // This will print the SMTP chatter to your Render logs so we can see WHERE it hangs.
-//     logger: true,
-//     debug: true, 
-//     // Increase socket timeouts
-//     connectionTimeout: 30000,
-//     greetingTimeout: 30000,
-//     socketTimeout: 45000,
-// };
-
-// const transporter = nodemailer.createTransport(transportOptions);
-
-// async function withTimeout<T>(p: Promise<T>, ms = EMAIL_TIMEOUT_MS): Promise<T> {
-//     return await Promise.race([
-//         p,
-//         new Promise<never>((_, reject) => setTimeout(() => reject(new Error('EMAIL_TIMEOUT')), ms)),
-//     ]);
-// }
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -67,6 +36,8 @@ export async function sendInvitationEmailResend({
     tempPassword,
     techLoginId,
     techTempPassword,
+    adminAppLoginId,
+    adminAppTempPassword
 }: any) {
 
     try {
@@ -88,7 +59,9 @@ export async function sendInvitationEmailResend({
                 salesmanLoginId,
                 tempPassword,
                 techLoginId,
-                techTempPassword
+                techTempPassword,
+                adminAppLoginId,
+                adminAppTempPassword
             }),
         });
 
@@ -142,8 +115,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        // Updated to include `region`, `area`, and `isTechnical`
-        const { email, firstName, lastName, phoneNumber, role, region, area, isTechnical } = body;
+        const { email, firstName, lastName, phoneNumber, role, region, area, isTechnical, isAdminAppUser } = body;
 
         // Validate required fields
         if (!email || !firstName || !lastName || !role) {
@@ -152,7 +124,8 @@ export async function POST(request: NextRequest) {
 
         // The WorkOS role slug is the same as the user role
         const workosRole = role.toLowerCase();
-        const isTechnicalRole = !!isTechnical; // Ensure it's a boolean
+        const isTechnicalRole = !!isTechnical;
+        const isAdminAppUserRole = !!isAdminAppUser;
 
         const existingUser = await prisma.user.findUnique({
             where: {
@@ -184,50 +157,58 @@ export async function POST(request: NextRequest) {
         let techTempPasswordPlaintext: string | null = null;
         let techHashedPassword = null;
 
+        // --- Admin App Login ---
+        let adminAppLoginId: string | null = null;
+        let adminAppTempPasswordPlaintext: string | null = null;
+        let adminAppHashedPassword = null;
 
-        // Generate salesmanLoginId and temporary password ONLY for executive roles
-        if (['senior-executive', 'executive', 'junior-executive'].includes(workosRole)) {
+
+        // 1. Generate salesmanLoginId for executive roles
+        if (['general-manager', 'regional-sales-manager', 'area-sales-manager',
+            'senior-manager', 'manager', 'assistant-manager',
+            'senior-executive', 'executive', 'junior-executive',].includes(workosRole)) {
             let isUnique = false;
             while (!isUnique) {
                 const generatedId = `EMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
                 const existingSalesman = await prisma.user.findUnique({ where: { salesmanLoginId: generatedId } });
-                if (existingSalesman) {
-                    // Collision, generate again
-                } else {
+                if (!existingSalesman) {
                     salesmanLoginId = generatedId;
                     isUnique = true;
                 }
             }
             tempPasswordPlaintext = generateRandomPassword();
-            // In a production environment, uncomment the bcrypt lines below
-            // const salt = await bcrypt.genSalt(10);
-            // hashedPassword = await bcrypt.hash(tempPasswordPlaintext, salt);
             hashedPassword = tempPasswordPlaintext;
         }
 
-        // --- START: NEW TECHNICAL LOGIN LOGIC ---
-        // Generate techLoginId if the 'isTechnical' flag is true
+        // 2. Generate techLoginId if 'isTechnical' is true
         if (isTechnicalRole) {
             let isUnique = false;
             while (!isUnique) {
-                // --- MODIFIED PREFIX ---
                 const generatedId = `TSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-                // --- END MODIFICATION ---
                 const existingTechUser = await prisma.user.findUnique({ where: { techLoginId: generatedId } });
-                if (existingTechUser) {
-                    // Collision, generate again
-                } else {
+                if (!existingTechUser) {
                     techLoginId = generatedId;
                     isUnique = true;
                 }
             }
             techTempPasswordPlaintext = generateRandomPassword();
-            // In a production environment, you would hash this
-            // const salt = await bcrypt.genSalt(10);
-            // techHashedPassword = await bcrypt.hash(techTempPasswordPlaintext, salt);
-            techHashedPassword = techTempPasswordPlaintext; // Storing plaintext for now, as per existing pattern
+            techHashedPassword = techTempPasswordPlaintext;
         }
-        // --- END: NEW TECHNICAL LOGIN LOGIC ---
+
+        // 3. Generate Admin App Credentials if 'isAdminAppUser' is true  <-- ADDED BLOCK
+        if (isAdminAppUserRole) {
+            let isUnique = false;
+            while (!isUnique) {
+                const generatedId = `ADM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+                const existingAdminUser = await prisma.user.findUnique({ where: { adminAppLoginId: generatedId } });
+                if (!existingAdminUser) {
+                    adminAppLoginId = generatedId;
+                    isUnique = true;
+                }
+            }
+            adminAppTempPasswordPlaintext = generateRandomPassword();
+            adminAppHashedPassword = adminAppTempPasswordPlaintext;
+        }
 
 
         // --- CORE LOGIC: Create WorkOS invitation and get the URL ---
@@ -288,9 +269,13 @@ export async function POST(request: NextRequest) {
                     salesmanLoginId,
                     hashedPassword,
                     // Technical fields
-                    isTechnicalRole, // <-- ADDED
-                    techLoginId, // <-- ADDED
-                    techHashedPassword, // <-- ADDED
+                    isTechnicalRole,
+                    techLoginId,
+                    techHashedPassword,
+                    // Admin App fields 
+                    isAdminAppUser: isAdminAppUserRole,
+                    adminAppLoginId,
+                    adminAppHashedPassword,
                 },
             });
         } else {
@@ -312,9 +297,13 @@ export async function POST(request: NextRequest) {
                     salesmanLoginId,
                     hashedPassword,
                     // Technical fields
-                    isTechnicalRole, // <-- ADDED
-                    techLoginId, // <-- ADDED
-                    techHashedPassword, // <-- ADDED
+                    isTechnicalRole,
+                    techLoginId,
+                    techHashedPassword,
+                    // Admin App  
+                    isAdminAppUser: isAdminAppUserRole,
+                    adminAppLoginId,
+                    adminAppHashedPassword,
                 },
             });
         }
@@ -335,7 +324,9 @@ export async function POST(request: NextRequest) {
                 salesmanLoginId: salesmanLoginId,
                 tempPassword: tempPasswordPlaintext,
                 techLoginId: techLoginId,
-                techTempPassword: techTempPasswordPlaintext
+                techTempPassword: techTempPasswordPlaintext,
+                adminAppLoginId: adminAppLoginId,
+                adminAppTempPassword: adminAppTempPasswordPlaintext
             });
             console.log(`✅ Invitation email sent to ${email} via Resend`);
         } catch (emailError) {
@@ -352,6 +343,7 @@ export async function POST(request: NextRequest) {
                 role: newUser.role,
                 salesmanLoginId: newUser.salesmanLoginId,
                 techLoginId: newUser.techLoginId,
+                adminAppLoginId: newUser.adminAppLoginId
             },
             workosInvitation: workosInvitation
         }, { status: 201 });
@@ -390,6 +382,7 @@ export async function GET(request: NextRequest) {
                     region: currentUser.region,
                     area: currentUser.area,
                     isTechnical: currentUser.isTechnicalRole,
+                    isAdminAppUser: currentUser.isAdminAppUser,
                     deviceId: currentUser.deviceId,
                 }
             });
@@ -412,6 +405,7 @@ export async function GET(request: NextRequest) {
                 region: currentUser.region,
                 area: currentUser.area,
                 isTechnical: currentUser.isTechnicalRole,
+                isAdminAppUser: currentUser.isAdminAppUser,
                 deviceId: currentUser.deviceId,
             }
         });

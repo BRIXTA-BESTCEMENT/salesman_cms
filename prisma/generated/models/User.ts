@@ -60,6 +60,9 @@ export type UserMinAggregateOutputType = {
   isTechnicalRole: boolean | null
   techLoginId: string | null
   techHashedPassword: string | null
+  isAdminAppUser: boolean | null
+  adminAppLoginId: string | null
+  adminAppHashedPassword: string | null
   reportsToId: number | null
   deviceId: string | null
   fcmToken: string | null
@@ -86,6 +89,9 @@ export type UserMaxAggregateOutputType = {
   isTechnicalRole: boolean | null
   techLoginId: string | null
   techHashedPassword: string | null
+  isAdminAppUser: boolean | null
+  adminAppLoginId: string | null
+  adminAppHashedPassword: string | null
   reportsToId: number | null
   deviceId: string | null
   fcmToken: string | null
@@ -112,6 +118,9 @@ export type UserCountAggregateOutputType = {
   isTechnicalRole: number
   techLoginId: number
   techHashedPassword: number
+  isAdminAppUser: number
+  adminAppLoginId: number
+  adminAppHashedPassword: number
   reportsToId: number
   deviceId: number
   fcmToken: number
@@ -154,6 +163,9 @@ export type UserMinAggregateInputType = {
   isTechnicalRole?: true
   techLoginId?: true
   techHashedPassword?: true
+  isAdminAppUser?: true
+  adminAppLoginId?: true
+  adminAppHashedPassword?: true
   reportsToId?: true
   deviceId?: true
   fcmToken?: true
@@ -180,6 +192,9 @@ export type UserMaxAggregateInputType = {
   isTechnicalRole?: true
   techLoginId?: true
   techHashedPassword?: true
+  isAdminAppUser?: true
+  adminAppLoginId?: true
+  adminAppHashedPassword?: true
   reportsToId?: true
   deviceId?: true
   fcmToken?: true
@@ -206,6 +221,9 @@ export type UserCountAggregateInputType = {
   isTechnicalRole?: true
   techLoginId?: true
   techHashedPassword?: true
+  isAdminAppUser?: true
+  adminAppLoginId?: true
+  adminAppHashedPassword?: true
   reportsToId?: true
   deviceId?: true
   fcmToken?: true
@@ -319,6 +337,9 @@ export type UserGroupByOutputType = {
   isTechnicalRole: boolean
   techLoginId: string | null
   techHashedPassword: string | null
+  isAdminAppUser: boolean
+  adminAppLoginId: string | null
+  adminAppHashedPassword: string | null
   reportsToId: number | null
   deviceId: string | null
   fcmToken: string | null
@@ -368,6 +389,9 @@ export type UserWhereInput = {
   isTechnicalRole?: Prisma.BoolFilter<"User"> | boolean
   techLoginId?: Prisma.StringNullableFilter<"User"> | string | null
   techHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
+  isAdminAppUser?: Prisma.BoolFilter<"User"> | boolean
+  adminAppLoginId?: Prisma.StringNullableFilter<"User"> | string | null
+  adminAppHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableFilter<"User"> | number | null
   deviceId?: Prisma.StringNullableFilter<"User"> | string | null
   fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
@@ -422,6 +446,9 @@ export type UserOrderByWithRelationInput = {
   isTechnicalRole?: Prisma.SortOrder
   techLoginId?: Prisma.SortOrderInput | Prisma.SortOrder
   techHashedPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  isAdminAppUser?: Prisma.SortOrder
+  adminAppLoginId?: Prisma.SortOrderInput | Prisma.SortOrder
+  adminAppHashedPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   reportsToId?: Prisma.SortOrderInput | Prisma.SortOrder
   deviceId?: Prisma.SortOrderInput | Prisma.SortOrder
   fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -462,6 +489,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   inviteToken?: string
   salesmanLoginId?: string
   techLoginId?: string
+  adminAppLoginId?: string
   deviceId?: string
   companyId_email?: Prisma.UserCompanyIdEmailCompoundUniqueInput
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -481,6 +509,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   hashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
   isTechnicalRole?: Prisma.BoolFilter<"User"> | boolean
   techHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
+  isAdminAppUser?: Prisma.BoolFilter<"User"> | boolean
+  adminAppHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableFilter<"User"> | number | null
   fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
   noOfPJP?: Prisma.IntNullableFilter<"User"> | number | null
@@ -512,7 +542,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   journeys?: Prisma.JourneyListRelationFilter
   journeyOps?: Prisma.JourneyOpListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
-}, "id" | "workosUserId" | "inviteToken" | "salesmanLoginId" | "techLoginId" | "deviceId" | "companyId_email">
+}, "id" | "workosUserId" | "inviteToken" | "salesmanLoginId" | "techLoginId" | "adminAppLoginId" | "deviceId" | "companyId_email">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -534,6 +564,9 @@ export type UserOrderByWithAggregationInput = {
   isTechnicalRole?: Prisma.SortOrder
   techLoginId?: Prisma.SortOrderInput | Prisma.SortOrder
   techHashedPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  isAdminAppUser?: Prisma.SortOrder
+  adminAppLoginId?: Prisma.SortOrderInput | Prisma.SortOrder
+  adminAppHashedPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   reportsToId?: Prisma.SortOrderInput | Prisma.SortOrder
   deviceId?: Prisma.SortOrderInput | Prisma.SortOrder
   fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -568,6 +601,9 @@ export type UserScalarWhereWithAggregatesInput = {
   isTechnicalRole?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   techLoginId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   techHashedPassword?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  isAdminAppUser?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  adminAppLoginId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  adminAppHashedPassword?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
   deviceId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   fcmToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -592,6 +628,9 @@ export type UserCreateInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -645,6 +684,9 @@ export type UserUncheckedCreateInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -695,6 +737,9 @@ export type UserUpdateInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -748,6 +793,9 @@ export type UserUncheckedUpdateInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -800,6 +848,9 @@ export type UserCreateManyInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -824,6 +875,9 @@ export type UserUpdateManyMutationInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -849,6 +903,9 @@ export type UserUncheckedUpdateManyInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -895,6 +952,9 @@ export type UserCountOrderByAggregateInput = {
   isTechnicalRole?: Prisma.SortOrder
   techLoginId?: Prisma.SortOrder
   techHashedPassword?: Prisma.SortOrder
+  isAdminAppUser?: Prisma.SortOrder
+  adminAppLoginId?: Prisma.SortOrder
+  adminAppHashedPassword?: Prisma.SortOrder
   reportsToId?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   fcmToken?: Prisma.SortOrder
@@ -928,6 +988,9 @@ export type UserMaxOrderByAggregateInput = {
   isTechnicalRole?: Prisma.SortOrder
   techLoginId?: Prisma.SortOrder
   techHashedPassword?: Prisma.SortOrder
+  isAdminAppUser?: Prisma.SortOrder
+  adminAppLoginId?: Prisma.SortOrder
+  adminAppHashedPassword?: Prisma.SortOrder
   reportsToId?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   fcmToken?: Prisma.SortOrder
@@ -954,6 +1017,9 @@ export type UserMinOrderByAggregateInput = {
   isTechnicalRole?: Prisma.SortOrder
   techLoginId?: Prisma.SortOrder
   techHashedPassword?: Prisma.SortOrder
+  isAdminAppUser?: Prisma.SortOrder
+  adminAppLoginId?: Prisma.SortOrder
+  adminAppHashedPassword?: Prisma.SortOrder
   reportsToId?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   fcmToken?: Prisma.SortOrder
@@ -1486,6 +1552,9 @@ export type UserCreateWithoutCompanyInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -1537,6 +1606,9 @@ export type UserUncheckedCreateWithoutCompanyInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -1618,6 +1690,9 @@ export type UserScalarWhereInput = {
   isTechnicalRole?: Prisma.BoolFilter<"User"> | boolean
   techLoginId?: Prisma.StringNullableFilter<"User"> | string | null
   techHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
+  isAdminAppUser?: Prisma.BoolFilter<"User"> | boolean
+  adminAppLoginId?: Prisma.StringNullableFilter<"User"> | string | null
+  adminAppHashedPassword?: Prisma.StringNullableFilter<"User"> | string | null
   reportsToId?: Prisma.IntNullableFilter<"User"> | number | null
   deviceId?: Prisma.StringNullableFilter<"User"> | string | null
   fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
@@ -1642,6 +1717,9 @@ export type UserCreateWithoutReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -1694,6 +1772,9 @@ export type UserUncheckedCreateWithoutReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -1748,6 +1829,9 @@ export type UserCreateWithoutReportsToInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -1800,6 +1884,9 @@ export type UserUncheckedCreateWithoutReportsToInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -1870,6 +1957,9 @@ export type UserUpdateWithoutReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1922,6 +2012,9 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1987,6 +2080,9 @@ export type UserCreateWithoutDealersInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -2039,6 +2135,9 @@ export type UserUncheckedCreateWithoutDealersInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -2104,6 +2203,9 @@ export type UserUpdateWithoutDealersInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2156,6 +2258,9 @@ export type UserUncheckedUpdateWithoutDealersInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2205,6 +2310,9 @@ export type UserCreateWithoutNotificationsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -2257,6 +2365,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -2322,6 +2433,9 @@ export type UserUpdateWithoutNotificationsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2374,6 +2488,9 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2423,6 +2540,9 @@ export type UserCreateWithoutDailyVisitReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -2475,6 +2595,9 @@ export type UserUncheckedCreateWithoutDailyVisitReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -2540,6 +2663,9 @@ export type UserUpdateWithoutDailyVisitReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2592,6 +2718,9 @@ export type UserUncheckedUpdateWithoutDailyVisitReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2641,6 +2770,9 @@ export type UserCreateWithoutPermanentJourneyPlansAssignedInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -2693,6 +2825,9 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansAssignedInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -2747,6 +2882,9 @@ export type UserCreateWithoutPermanentJourneyPlansCreatedInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -2799,6 +2937,9 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansCreatedInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -2864,6 +3005,9 @@ export type UserUpdateWithoutPermanentJourneyPlansAssignedInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2916,6 +3060,9 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansAssignedInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2976,6 +3123,9 @@ export type UserUpdateWithoutPermanentJourneyPlansCreatedInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3028,6 +3178,9 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansCreatedInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3077,6 +3230,9 @@ export type UserCreateWithoutSalesmanAttendanceInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -3129,6 +3285,9 @@ export type UserUncheckedCreateWithoutSalesmanAttendanceInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -3194,6 +3353,9 @@ export type UserUpdateWithoutSalesmanAttendanceInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3246,6 +3408,9 @@ export type UserUncheckedUpdateWithoutSalesmanAttendanceInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3295,6 +3460,9 @@ export type UserCreateWithoutSalesmanLeaveApplicationsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -3347,6 +3515,9 @@ export type UserUncheckedCreateWithoutSalesmanLeaveApplicationsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -3412,6 +3583,9 @@ export type UserUpdateWithoutSalesmanLeaveApplicationsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3464,6 +3638,9 @@ export type UserUncheckedUpdateWithoutSalesmanLeaveApplicationsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3513,6 +3690,9 @@ export type UserCreateWithoutCompetitionReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -3565,6 +3745,9 @@ export type UserUncheckedCreateWithoutCompetitionReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -3630,6 +3813,9 @@ export type UserUpdateWithoutCompetitionReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3682,6 +3868,9 @@ export type UserUncheckedUpdateWithoutCompetitionReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3731,6 +3920,9 @@ export type UserCreateWithoutGeoTrackingRecordsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -3783,6 +3975,9 @@ export type UserUncheckedCreateWithoutGeoTrackingRecordsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -3848,6 +4043,9 @@ export type UserUpdateWithoutGeoTrackingRecordsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3900,6 +4098,9 @@ export type UserUncheckedUpdateWithoutGeoTrackingRecordsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3949,6 +4150,9 @@ export type UserCreateWithoutJourneyOpsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -4001,6 +4205,9 @@ export type UserUncheckedCreateWithoutJourneyOpsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -4066,6 +4273,9 @@ export type UserUpdateWithoutJourneyOpsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4118,6 +4328,9 @@ export type UserUncheckedUpdateWithoutJourneyOpsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4167,6 +4380,9 @@ export type UserCreateWithoutJourneysInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -4219,6 +4435,9 @@ export type UserUncheckedCreateWithoutJourneysInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -4284,6 +4503,9 @@ export type UserUpdateWithoutJourneysInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4336,6 +4558,9 @@ export type UserUncheckedUpdateWithoutJourneysInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4385,6 +4610,9 @@ export type UserCreateWithoutAssignedTasksInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -4437,6 +4665,9 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -4491,6 +4722,9 @@ export type UserCreateWithoutCreatedTasksInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -4543,6 +4777,9 @@ export type UserUncheckedCreateWithoutCreatedTasksInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -4608,6 +4845,9 @@ export type UserUpdateWithoutAssignedTasksInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4660,6 +4900,9 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4720,6 +4963,9 @@ export type UserUpdateWithoutCreatedTasksInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4772,6 +5018,9 @@ export type UserUncheckedUpdateWithoutCreatedTasksInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4821,6 +5070,9 @@ export type UserCreateWithoutSalesOrdersInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -4873,6 +5125,9 @@ export type UserUncheckedCreateWithoutSalesOrdersInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -4938,6 +5193,9 @@ export type UserUpdateWithoutSalesOrdersInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -4990,6 +5248,9 @@ export type UserUncheckedUpdateWithoutSalesOrdersInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5039,6 +5300,9 @@ export type UserCreateWithoutRatingsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -5091,6 +5355,9 @@ export type UserUncheckedCreateWithoutRatingsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -5156,6 +5423,9 @@ export type UserUpdateWithoutRatingsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -5208,6 +5478,9 @@ export type UserUncheckedUpdateWithoutRatingsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5257,6 +5530,9 @@ export type UserCreateWithoutDealerBrandMappingsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -5309,6 +5585,9 @@ export type UserUncheckedCreateWithoutDealerBrandMappingsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -5374,6 +5653,9 @@ export type UserUpdateWithoutDealerBrandMappingsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -5426,6 +5708,9 @@ export type UserUncheckedUpdateWithoutDealerBrandMappingsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5475,6 +5760,9 @@ export type UserCreateWithoutTechnicalVisitReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -5527,6 +5815,9 @@ export type UserUncheckedCreateWithoutTechnicalVisitReportsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -5592,6 +5883,9 @@ export type UserUpdateWithoutTechnicalVisitReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -5644,6 +5938,9 @@ export type UserUncheckedUpdateWithoutTechnicalVisitReportsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5693,6 +5990,9 @@ export type UserCreateWithoutCreatedMeetingsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -5745,6 +6045,9 @@ export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -5810,6 +6113,9 @@ export type UserUpdateWithoutCreatedMeetingsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -5862,6 +6168,9 @@ export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5911,6 +6220,9 @@ export type UserCreateWithoutAdditionalSitesInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -5963,6 +6275,9 @@ export type UserUncheckedCreateWithoutAdditionalSitesInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -6033,6 +6348,9 @@ export type UserCreateWithoutAssignedMasonsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -6085,6 +6403,9 @@ export type UserUncheckedCreateWithoutAssignedMasonsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -6150,6 +6471,9 @@ export type UserUpdateWithoutAssignedMasonsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -6202,6 +6526,9 @@ export type UserUncheckedUpdateWithoutAssignedMasonsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6251,6 +6578,9 @@ export type UserCreateWithoutGiftLogsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -6303,6 +6633,9 @@ export type UserUncheckedCreateWithoutGiftLogsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -6357,6 +6690,9 @@ export type UserCreateWithoutGiftTransfersSentInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -6409,6 +6745,9 @@ export type UserUncheckedCreateWithoutGiftTransfersSentInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -6463,6 +6802,9 @@ export type UserCreateWithoutGiftTransfersReceivedInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -6515,6 +6857,9 @@ export type UserUncheckedCreateWithoutGiftTransfersReceivedInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -6580,6 +6925,9 @@ export type UserUpdateWithoutGiftLogsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -6632,6 +6980,9 @@ export type UserUncheckedUpdateWithoutGiftLogsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6692,6 +7043,9 @@ export type UserUpdateWithoutGiftTransfersSentInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -6744,6 +7098,9 @@ export type UserUncheckedUpdateWithoutGiftTransfersSentInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6804,6 +7161,9 @@ export type UserUpdateWithoutGiftTransfersReceivedInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -6856,6 +7216,9 @@ export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6905,6 +7268,9 @@ export type UserCreateWithoutBagLiftApprovalsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -6957,6 +7323,9 @@ export type UserUncheckedCreateWithoutBagLiftApprovalsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -7022,6 +7391,9 @@ export type UserUpdateWithoutBagLiftApprovalsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -7074,6 +7446,9 @@ export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7123,6 +7498,9 @@ export type UserCreateWithoutTsoAssignmentsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -7175,6 +7553,9 @@ export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -7240,6 +7621,9 @@ export type UserUpdateWithoutTsoAssignmentsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -7292,6 +7676,9 @@ export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7342,6 +7729,9 @@ export type UserCreateManyCompanyInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   reportsToId?: number | null
   deviceId?: string | null
   fcmToken?: string | null
@@ -7366,6 +7756,9 @@ export type UserUpdateWithoutCompanyInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -7417,6 +7810,9 @@ export type UserUncheckedUpdateWithoutCompanyInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7468,6 +7864,9 @@ export type UserUncheckedUpdateManyWithoutCompanyInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7494,6 +7893,9 @@ export type UserCreateManyReportsToInput = {
   isTechnicalRole?: boolean
   techLoginId?: string | null
   techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
   deviceId?: string | null
   fcmToken?: string | null
   noOfPJP?: number | null
@@ -7517,6 +7919,9 @@ export type UserUpdateWithoutReportsToInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -7569,6 +7974,9 @@ export type UserUncheckedUpdateWithoutReportsToInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -7620,6 +8028,9 @@ export type UserUncheckedUpdateManyWithoutReportsToInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -7643,6 +8054,9 @@ export type UserUpdateWithoutAdditionalSitesInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -7695,6 +8109,9 @@ export type UserUncheckedUpdateWithoutAdditionalSitesInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7746,6 +8163,9 @@ export type UserUncheckedUpdateManyWithoutAdditionalSitesInput = {
   isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8028,6 +8448,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   isTechnicalRole?: boolean
   techLoginId?: boolean
   techHashedPassword?: boolean
+  isAdminAppUser?: boolean
+  adminAppLoginId?: boolean
+  adminAppHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
   fcmToken?: boolean
@@ -8083,6 +8506,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isTechnicalRole?: boolean
   techLoginId?: boolean
   techHashedPassword?: boolean
+  isAdminAppUser?: boolean
+  adminAppLoginId?: boolean
+  adminAppHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
   fcmToken?: boolean
@@ -8111,6 +8537,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isTechnicalRole?: boolean
   techLoginId?: boolean
   techHashedPassword?: boolean
+  isAdminAppUser?: boolean
+  adminAppLoginId?: boolean
+  adminAppHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
   fcmToken?: boolean
@@ -8139,13 +8568,16 @@ export type UserSelectScalar = {
   isTechnicalRole?: boolean
   techLoginId?: boolean
   techHashedPassword?: boolean
+  isAdminAppUser?: boolean
+  adminAppLoginId?: boolean
+  adminAppHashedPassword?: boolean
   reportsToId?: boolean
   deviceId?: boolean
   fcmToken?: boolean
   noOfPJP?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workosUserId" | "companyId" | "email" | "firstName" | "lastName" | "role" | "createdAt" | "updatedAt" | "phoneNumber" | "inviteToken" | "status" | "region" | "area" | "salesmanLoginId" | "hashedPassword" | "isTechnicalRole" | "techLoginId" | "techHashedPassword" | "reportsToId" | "deviceId" | "fcmToken" | "noOfPJP", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workosUserId" | "companyId" | "email" | "firstName" | "lastName" | "role" | "createdAt" | "updatedAt" | "phoneNumber" | "inviteToken" | "status" | "region" | "area" | "salesmanLoginId" | "hashedPassword" | "isTechnicalRole" | "techLoginId" | "techHashedPassword" | "isAdminAppUser" | "adminAppLoginId" | "adminAppHashedPassword" | "reportsToId" | "deviceId" | "fcmToken" | "noOfPJP", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   reportsTo?: boolean | Prisma.User$reportsToArgs<ExtArgs>
@@ -8238,6 +8670,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     isTechnicalRole: boolean
     techLoginId: string | null
     techHashedPassword: string | null
+    isAdminAppUser: boolean
+    adminAppLoginId: string | null
+    adminAppHashedPassword: string | null
     reportsToId: number | null
     deviceId: string | null
     fcmToken: string | null
@@ -8712,6 +9147,9 @@ export interface UserFieldRefs {
   readonly isTechnicalRole: Prisma.FieldRef<"User", 'Boolean'>
   readonly techLoginId: Prisma.FieldRef<"User", 'String'>
   readonly techHashedPassword: Prisma.FieldRef<"User", 'String'>
+  readonly isAdminAppUser: Prisma.FieldRef<"User", 'Boolean'>
+  readonly adminAppLoginId: Prisma.FieldRef<"User", 'String'>
+  readonly adminAppHashedPassword: Prisma.FieldRef<"User", 'String'>
   readonly reportsToId: Prisma.FieldRef<"User", 'Int'>
   readonly deviceId: Prisma.FieldRef<"User", 'String'>
   readonly fcmToken: Prisma.FieldRef<"User", 'String'>
