@@ -237,7 +237,7 @@ export type ProjectionReportGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type ProjectionReportGroupByOutputType = {
   id: string
-  institution: string
+  institution: string | null
   reportDate: Date
   zone: string
   orderDealerName: string | null
@@ -276,7 +276,7 @@ export type ProjectionReportWhereInput = {
   OR?: Prisma.ProjectionReportWhereInput[]
   NOT?: Prisma.ProjectionReportWhereInput | Prisma.ProjectionReportWhereInput[]
   id?: Prisma.UuidFilter<"ProjectionReport"> | string
-  institution?: Prisma.StringFilter<"ProjectionReport"> | string
+  institution?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
   reportDate?: Prisma.DateTimeFilter<"ProjectionReport"> | Date | string
   zone?: Prisma.StringFilter<"ProjectionReport"> | string
   orderDealerName?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
@@ -293,7 +293,7 @@ export type ProjectionReportWhereInput = {
 
 export type ProjectionReportOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  institution?: Prisma.SortOrder
+  institution?: Prisma.SortOrderInput | Prisma.SortOrder
   reportDate?: Prisma.SortOrder
   zone?: Prisma.SortOrder
   orderDealerName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -313,7 +313,7 @@ export type ProjectionReportWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProjectionReportWhereInput | Prisma.ProjectionReportWhereInput[]
   OR?: Prisma.ProjectionReportWhereInput[]
   NOT?: Prisma.ProjectionReportWhereInput | Prisma.ProjectionReportWhereInput[]
-  institution?: Prisma.StringFilter<"ProjectionReport"> | string
+  institution?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
   reportDate?: Prisma.DateTimeFilter<"ProjectionReport"> | Date | string
   zone?: Prisma.StringFilter<"ProjectionReport"> | string
   orderDealerName?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
@@ -330,7 +330,7 @@ export type ProjectionReportWhereUniqueInput = Prisma.AtLeast<{
 
 export type ProjectionReportOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  institution?: Prisma.SortOrder
+  institution?: Prisma.SortOrderInput | Prisma.SortOrder
   reportDate?: Prisma.SortOrder
   zone?: Prisma.SortOrder
   orderDealerName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -354,7 +354,7 @@ export type ProjectionReportScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProjectionReportScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProjectionReportScalarWhereWithAggregatesInput | Prisma.ProjectionReportScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ProjectionReport"> | string
-  institution?: Prisma.StringWithAggregatesFilter<"ProjectionReport"> | string
+  institution?: Prisma.StringNullableWithAggregatesFilter<"ProjectionReport"> | string | null
   reportDate?: Prisma.DateTimeWithAggregatesFilter<"ProjectionReport"> | Date | string
   zone?: Prisma.StringWithAggregatesFilter<"ProjectionReport"> | string
   orderDealerName?: Prisma.StringNullableWithAggregatesFilter<"ProjectionReport"> | string | null
@@ -370,7 +370,7 @@ export type ProjectionReportScalarWhereWithAggregatesInput = {
 
 export type ProjectionReportCreateInput = {
   id?: string
-  institution: string
+  institution?: string | null
   reportDate: Date | string
   zone: string
   orderDealerName?: string | null
@@ -386,7 +386,7 @@ export type ProjectionReportCreateInput = {
 
 export type ProjectionReportUncheckedCreateInput = {
   id?: string
-  institution: string
+  institution?: string | null
   reportDate: Date | string
   zone: string
   orderDealerName?: string | null
@@ -402,7 +402,7 @@ export type ProjectionReportUncheckedCreateInput = {
 
 export type ProjectionReportUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -418,7 +418,7 @@ export type ProjectionReportUpdateInput = {
 
 export type ProjectionReportUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -434,7 +434,7 @@ export type ProjectionReportUncheckedUpdateInput = {
 
 export type ProjectionReportCreateManyInput = {
   id?: string
-  institution: string
+  institution?: string | null
   reportDate: Date | string
   zone: string
   orderDealerName?: string | null
@@ -450,7 +450,7 @@ export type ProjectionReportCreateManyInput = {
 
 export type ProjectionReportUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -465,7 +465,7 @@ export type ProjectionReportUpdateManyMutationInput = {
 
 export type ProjectionReportUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -593,7 +593,7 @@ export type ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput = {
 
 export type ProjectionReportCreateWithoutDealerInput = {
   id?: string
-  institution: string
+  institution?: string | null
   reportDate: Date | string
   zone: string
   orderDealerName?: string | null
@@ -608,7 +608,7 @@ export type ProjectionReportCreateWithoutDealerInput = {
 
 export type ProjectionReportUncheckedCreateWithoutDealerInput = {
   id?: string
-  institution: string
+  institution?: string | null
   reportDate: Date | string
   zone: string
   orderDealerName?: string | null
@@ -652,7 +652,7 @@ export type ProjectionReportScalarWhereInput = {
   OR?: Prisma.ProjectionReportScalarWhereInput[]
   NOT?: Prisma.ProjectionReportScalarWhereInput | Prisma.ProjectionReportScalarWhereInput[]
   id?: Prisma.UuidFilter<"ProjectionReport"> | string
-  institution?: Prisma.StringFilter<"ProjectionReport"> | string
+  institution?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
   reportDate?: Prisma.DateTimeFilter<"ProjectionReport"> | Date | string
   zone?: Prisma.StringFilter<"ProjectionReport"> | string
   orderDealerName?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
@@ -668,7 +668,7 @@ export type ProjectionReportScalarWhereInput = {
 
 export type ProjectionReportCreateManyDealerInput = {
   id?: string
-  institution: string
+  institution?: string | null
   reportDate: Date | string
   zone: string
   orderDealerName?: string | null
@@ -683,7 +683,7 @@ export type ProjectionReportCreateManyDealerInput = {
 
 export type ProjectionReportUpdateWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -698,7 +698,7 @@ export type ProjectionReportUpdateWithoutDealerInput = {
 
 export type ProjectionReportUncheckedUpdateWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -713,7 +713,7 @@ export type ProjectionReportUncheckedUpdateWithoutDealerInput = {
 
 export type ProjectionReportUncheckedUpdateManyWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -813,7 +813,7 @@ export type $ProjectionReportPayload<ExtArgs extends runtime.Types.Extensions.In
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    institution: string
+    institution: string | null
     reportDate: Date
     zone: string
     orderDealerName: string | null

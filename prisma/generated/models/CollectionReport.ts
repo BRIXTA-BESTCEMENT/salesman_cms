@@ -251,7 +251,7 @@ export type CollectionReportGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type CollectionReportGroupByOutputType = {
   id: string
-  institution: string
+  institution: string | null
   voucherNo: string
   voucherDate: Date
   amount: runtime.Decimal
@@ -293,7 +293,7 @@ export type CollectionReportWhereInput = {
   OR?: Prisma.CollectionReportWhereInput[]
   NOT?: Prisma.CollectionReportWhereInput | Prisma.CollectionReportWhereInput[]
   id?: Prisma.UuidFilter<"CollectionReport"> | string
-  institution?: Prisma.StringFilter<"CollectionReport"> | string
+  institution?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   voucherNo?: Prisma.StringFilter<"CollectionReport"> | string
   voucherDate?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
   amount?: Prisma.DecimalFilter<"CollectionReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -313,7 +313,7 @@ export type CollectionReportWhereInput = {
 
 export type CollectionReportOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  institution?: Prisma.SortOrder
+  institution?: Prisma.SortOrderInput | Prisma.SortOrder
   voucherNo?: Prisma.SortOrder
   voucherDate?: Prisma.SortOrder
   amount?: Prisma.SortOrder
@@ -336,7 +336,7 @@ export type CollectionReportWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CollectionReportWhereInput | Prisma.CollectionReportWhereInput[]
   OR?: Prisma.CollectionReportWhereInput[]
   NOT?: Prisma.CollectionReportWhereInput | Prisma.CollectionReportWhereInput[]
-  institution?: Prisma.StringFilter<"CollectionReport"> | string
+  institution?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   voucherNo?: Prisma.StringFilter<"CollectionReport"> | string
   voucherDate?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
   amount?: Prisma.DecimalFilter<"CollectionReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -356,7 +356,7 @@ export type CollectionReportWhereUniqueInput = Prisma.AtLeast<{
 
 export type CollectionReportOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  institution?: Prisma.SortOrder
+  institution?: Prisma.SortOrderInput | Prisma.SortOrder
   voucherNo?: Prisma.SortOrder
   voucherDate?: Prisma.SortOrder
   amount?: Prisma.SortOrder
@@ -383,7 +383,7 @@ export type CollectionReportScalarWhereWithAggregatesInput = {
   OR?: Prisma.CollectionReportScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CollectionReportScalarWhereWithAggregatesInput | Prisma.CollectionReportScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"CollectionReport"> | string
-  institution?: Prisma.StringWithAggregatesFilter<"CollectionReport"> | string
+  institution?: Prisma.StringNullableWithAggregatesFilter<"CollectionReport"> | string | null
   voucherNo?: Prisma.StringWithAggregatesFilter<"CollectionReport"> | string
   voucherDate?: Prisma.DateTimeWithAggregatesFilter<"CollectionReport"> | Date | string
   amount?: Prisma.DecimalWithAggregatesFilter<"CollectionReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -402,7 +402,7 @@ export type CollectionReportScalarWhereWithAggregatesInput = {
 
 export type CollectionReportCreateInput = {
   id?: string
-  institution: string
+  institution?: string | null
   voucherNo: string
   voucherDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -421,7 +421,7 @@ export type CollectionReportCreateInput = {
 
 export type CollectionReportUncheckedCreateInput = {
   id?: string
-  institution: string
+  institution?: string | null
   voucherNo: string
   voucherDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -440,7 +440,7 @@ export type CollectionReportUncheckedCreateInput = {
 
 export type CollectionReportUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
   voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -459,7 +459,7 @@ export type CollectionReportUpdateInput = {
 
 export type CollectionReportUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
   voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -478,7 +478,7 @@ export type CollectionReportUncheckedUpdateInput = {
 
 export type CollectionReportCreateManyInput = {
   id?: string
-  institution: string
+  institution?: string | null
   voucherNo: string
   voucherDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -497,7 +497,7 @@ export type CollectionReportCreateManyInput = {
 
 export type CollectionReportUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
   voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -515,7 +515,7 @@ export type CollectionReportUpdateManyMutationInput = {
 
 export type CollectionReportUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
   voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -653,7 +653,7 @@ export type CollectionReportUncheckedUpdateManyWithoutDealerNestedInput = {
 
 export type CollectionReportCreateWithoutDealerInput = {
   id?: string
-  institution: string
+  institution?: string | null
   voucherNo: string
   voucherDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -671,7 +671,7 @@ export type CollectionReportCreateWithoutDealerInput = {
 
 export type CollectionReportUncheckedCreateWithoutDealerInput = {
   id?: string
-  institution: string
+  institution?: string | null
   voucherNo: string
   voucherDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -718,7 +718,7 @@ export type CollectionReportScalarWhereInput = {
   OR?: Prisma.CollectionReportScalarWhereInput[]
   NOT?: Prisma.CollectionReportScalarWhereInput | Prisma.CollectionReportScalarWhereInput[]
   id?: Prisma.UuidFilter<"CollectionReport"> | string
-  institution?: Prisma.StringFilter<"CollectionReport"> | string
+  institution?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   voucherNo?: Prisma.StringFilter<"CollectionReport"> | string
   voucherDate?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
   amount?: Prisma.DecimalFilter<"CollectionReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -737,7 +737,7 @@ export type CollectionReportScalarWhereInput = {
 
 export type CollectionReportCreateManyDealerInput = {
   id?: string
-  institution: string
+  institution?: string | null
   voucherNo: string
   voucherDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -755,7 +755,7 @@ export type CollectionReportCreateManyDealerInput = {
 
 export type CollectionReportUpdateWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
   voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -773,7 +773,7 @@ export type CollectionReportUpdateWithoutDealerInput = {
 
 export type CollectionReportUncheckedUpdateWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
   voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -791,7 +791,7 @@ export type CollectionReportUncheckedUpdateWithoutDealerInput = {
 
 export type CollectionReportUncheckedUpdateManyWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  institution?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
   voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -906,7 +906,7 @@ export type $CollectionReportPayload<ExtArgs extends runtime.Types.Extensions.In
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    institution: string
+    institution: string | null
     voucherNo: string
     voucherDate: Date
     amount: runtime.Decimal
