@@ -9,8 +9,8 @@ const allowedOrigins = [
   'http://localhost:3000/auth/callback',
   'https://salesmancms-dashboard.onrender.com',
   'https://salesmancms-dashboard.onrender.com/auth/callback',
-  'http://65.2.69.34',
-  'http://65.2.69.34/auth/callback',
+  'http://13.235.130.234',
+  'http://13.235.130.234/auth/callback',
   'http://salesforce.bestcement.co.in',
   'http://salesforce.bestcement.co.in/auth/callback',
 ];
