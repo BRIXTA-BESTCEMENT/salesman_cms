@@ -54,6 +54,7 @@ export const ModelName = {
   Company: 'Company',
   User: 'User',
   Dealer: 'Dealer',
+  VerifiedDealer: 'VerifiedDealer',
   Notification: 'Notification',
   DailyVisitReport: 'DailyVisitReport',
   PermanentJourneyPlan: 'PermanentJourneyPlan',
@@ -68,6 +69,7 @@ export const ModelName = {
   DailyTask: 'DailyTask',
   SalesOrder: 'SalesOrder',
   CollectionReport: 'CollectionReport',
+  OutstandingReport: 'OutstandingReport',
   ProjectionVsActualReport: 'ProjectionVsActualReport',
   ProjectionReport: 'ProjectionReport',
   DealerReportsAndScores: 'DealerReportsAndScores',
@@ -243,6 +245,31 @@ export const DealerScalarFieldEnum = {
 } as const
 
 export type DealerScalarFieldEnum = (typeof DealerScalarFieldEnum)[keyof typeof DealerScalarFieldEnum]
+
+
+export const VerifiedDealerScalarFieldEnum = {
+  id: 'id',
+  dealerCode: 'dealerCode',
+  dealerCategory: 'dealerCategory',
+  isSubdealer: 'isSubdealer',
+  dealerPartyName: 'dealerPartyName',
+  zone: 'zone',
+  area: 'area',
+  contactNo1: 'contactNo1',
+  contactNo2: 'contactNo2',
+  email: 'email',
+  address: 'address',
+  pinCode: 'pinCode',
+  relatedSpName: 'relatedSpName',
+  ownerProprietorName: 'ownerProprietorName',
+  natureOfFirm: 'natureOfFirm',
+  gstNo: 'gstNo',
+  panNo: 'panNo',
+  userId: 'userId',
+  dealerId: 'dealerId'
+} as const
+
+export type VerifiedDealerScalarFieldEnum = (typeof VerifiedDealerScalarFieldEnum)[keyof typeof VerifiedDealerScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {
@@ -574,6 +601,31 @@ export const CollectionReportScalarFieldEnum = {
 export type CollectionReportScalarFieldEnum = (typeof CollectionReportScalarFieldEnum)[keyof typeof CollectionReportScalarFieldEnum]
 
 
+export const OutstandingReportScalarFieldEnum = {
+  id: 'id',
+  securityDepositAmt: 'securityDepositAmt',
+  pendingAmt: 'pendingAmt',
+  lessThan10Days: 'lessThan10Days',
+  days10To15: 'days10To15',
+  days15To21: 'days15To21',
+  days21To30: 'days21To30',
+  days30To45: 'days30To45',
+  days45To60: 'days45To60',
+  days60To75: 'days60To75',
+  days75To90: 'days75To90',
+  greaterThan90Days: 'greaterThan90Days',
+  isOverdue: 'isOverdue',
+  isAccountJsbJud: 'isAccountJsbJud',
+  verifiedDealerId: 'verifiedDealerId',
+  collectionReportId: 'collectionReportId',
+  dvrId: 'dvrId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutstandingReportScalarFieldEnum = (typeof OutstandingReportScalarFieldEnum)[keyof typeof OutstandingReportScalarFieldEnum]
+
+
 export const ProjectionVsActualReportScalarFieldEnum = {
   id: 'id',
   reportDate: 'reportDate',
@@ -658,7 +710,8 @@ export const DealerBrandMappingScalarFieldEnum = {
   capacityMT: 'capacityMT',
   bestCapacityMT: 'bestCapacityMT',
   brandGrowthCapacityPercent: 'brandGrowthCapacityPercent',
-  userId: 'userId'
+  userId: 'userId',
+  verifiedDealerId: 'verifiedDealerId'
 } as const
 
 export type DealerBrandMappingScalarFieldEnum = (typeof DealerBrandMappingScalarFieldEnum)[keyof typeof DealerBrandMappingScalarFieldEnum]

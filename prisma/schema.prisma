@@ -29,7 +29,7 @@ model Company {
 
 model User {
   id                        Int       @id @default(autoincrement())
-  workosUserId              String?    @unique @map("workos_user_id")
+  workosUserId              String?   @unique @map("workos_user_id")
   companyId                 Int       @map("company_id")
   email                     String    @map("email")
   firstName                 String?   @map("first_name")
@@ -81,8 +81,7 @@ model User {
   permanentJourneyPlansAssigned PermanentJourneyPlan[] @relation("PJP_AssignedUser")
   permanentJourneyPlansCreated  PermanentJourneyPlan[] @relation("PJP_CreatedBy")
   noOfPJP Int?            @map("no_of_pjp")
-  dealerBrandMappings     DealerBrandMapping[]
-
+  dealerBrandMappings                 DealerBrandMapping[]
   createdMeetings                     TSOMeeting[]          @relation("UserCreatedMeetings") 
   giftLogs                            GiftAllocationLog[]   @relation("UserGiftLogs")
   giftTransfersSent                   GiftAllocationLog[]   @relation("SourceUserTransfers")
@@ -94,6 +93,7 @@ model User {
   journeys                            Journey[]     @relation("UserJourneys")
   journeyOps                          JourneyOp[]
   notifications                       Notification[] @relation("UserNotifications")
+  verifiedDealers       VerifiedDealer[]
   
   @@unique([companyId, email])
   @@index([companyId], map: "idx_user_company_id")
@@ -209,10 +209,42 @@ model Dealer {
   geoTrackings          GeoTracking[]
   collectionReports CollectionReport[]
   projectionReports ProjectionReport[]
+  verifiedDealers       VerifiedDealer[]
 
   @@index([userId], map: "idx_dealers_user_id")
   @@index([parentDealerId], map: "idx_dealers_parent_dealer_id")
   @@map("dealers")
+}
+
+model VerifiedDealer {
+  id                    Int     @id @default(autoincrement())
+  dealerCode            String? @map("dealer_code")
+  dealerCategory        String?  @map("dealer_category")
+  isSubdealer           Boolean? @map("is_subdealer")
+  dealerPartyName       String? @map("dealer_party_name")
+  zone                  String? @map("zone")
+  area                  String? @map("area")
+  contactNo1            String? @map("contact_no1")
+  contactNo2            String? @map("contact_no2")
+  email                 String? @map("email")
+  address               String? @map("address")
+  pinCode               String? @map("pin_code")
+  relatedSpName         String? @map("related_sp_name")
+  ownerProprietorName   String? @map("owner_proprietor_name")
+  natureOfFirm          String? @map("nature_of_firm")
+  gstNo                 String? @map("gst_no")
+  panNo                 String? @map("pan_no")
+
+  // Foreign key relation
+  userId                Int?    @map("user_id")
+  user                  User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  dealerId              String? @map("dealer_id") @db.VarChar(255)
+  dealer                Dealer? @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+
+  outstandingReports    OutstandingReport[]
+  dealerBrandMappings   DealerBrandMapping[]
+
+  @@map("verified_dealers")
 }
 
 //notifications
@@ -273,6 +305,7 @@ model DailyVisitReport {
   pjpId                 String?   @map("pjp_id") @db.VarChar(255)
   permanentJourneyPlan  PermanentJourneyPlan? @relation("PJPReports_DVR", fields: [pjpId], references: [id], onDelete: SetNull)
   giftAllocationLogs   GiftAllocationLog[]
+  outstandingReports    OutstandingReport[]
 
   @@index([userId], map: "idx_daily_visit_reports_user_id")
   @@index([dealerId], map: "idx_dvr_dealer_id")
@@ -681,6 +714,8 @@ model CollectionReport {
   // Relations
   dealerId            String?  @map("dealer_id") @db.VarChar(255)
   dealer              Dealer?  @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+
+  outstandingReports    OutstandingReport[]
   
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
@@ -689,6 +724,39 @@ model CollectionReport {
   @@index([dealerId], map: "idx_collection_dealer")
   @@index([voucherNo], map: "idx_collection_voucher")
   @@map("collection_reports")
+}
+
+model OutstandingReport {
+  id                   String    @id @default(uuid()) @db.Uuid
+  securityDepositAmt   Decimal?  @map("security_deposit_amt") @db.Decimal(14, 2)
+  pendingAmt           Decimal?  @map("pending_amt") @db.Decimal(14, 2)
+  lessThan10Days       Decimal?  @map("less_than_10_days") @db.Decimal(14, 2)
+  days10To15           Decimal?  @map("10_to_15_days") @db.Decimal(14, 2)
+  days15To21           Decimal?  @map("15_to_21_days") @db.Decimal(14, 2)
+  days21To30           Decimal?  @map("21_to_30_days") @db.Decimal(14, 2)
+  days30To45           Decimal?  @map("30_to_45_days") @db.Decimal(14, 2)
+  days45To60           Decimal?  @map("45_to_60_days") @db.Decimal(14, 2)
+  days60To75           Decimal?  @map("60_to_75_days") @db.Decimal(14, 2)
+  days75To90           Decimal?  @map("75_to_90_days") @db.Decimal(14, 2)
+  greaterThan90Days    Decimal?  @map("greater_than_90_days") @db.Decimal(14, 2)
+  isOverdue            Boolean?  @default(false) @map("is_overdue")
+  isAccountJsbJud      Boolean?  @default(false) @map("is_account_jsb_jud")
+
+  //Foreign Key Relations
+  verifiedDealerId     Int?      @map("verified_dealer_id")
+  verifiedDealer       VerifiedDealer? @relation(fields: [verifiedDealerId], references: [id], onDelete: SetNull)
+  collectionReportId   String?   @map("collection_report_id") @db.Uuid
+  collectionReport     CollectionReport? @relation(fields: [collectionReportId], references: [id], onDelete: SetNull)
+  dvrId                String?   @map("dvr_id") @db.VarChar(255)
+  dailyVisitReport     DailyVisitReport? @relation(fields: [dvrId], references: [id], onDelete: SetNull)
+
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([verifiedDealerId], map: "idx_outstanding_verified_dealer")
+  @@index([collectionReportId], map: "idx_outstanding_collection_report")
+  @@index([dvrId], map: "idx_outstanding_dvr")
+  @@map("outstanding_reports")
 }
 
 model ProjectionVsActualReport {
@@ -801,7 +869,9 @@ model DealerBrandMapping {
   dealer      Dealer @relation(fields: [dealerId], references: [id])
   brand       Brand  @relation(fields: [brandId], references: [id])
   userId Int? @map("user_id") // FK to User
-  user User? @relation(fields: [userId], references: [id]) // New relation
+  user User? @relation(fields: [userId], references: [id]) 
+  verifiedDealerId Int?     @map("verified_dealer_id")
+  verifiedDealer   VerifiedDealer? @relation(fields: [verifiedDealerId], references: [id], onDelete: SetNull)
 
   @@unique([dealerId, brandId])
   @@map("dealer_brand_mapping")

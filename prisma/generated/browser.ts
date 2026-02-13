@@ -33,6 +33,11 @@ export type User = Prisma.UserModel
  */
 export type Dealer = Prisma.DealerModel
 /**
+ * Model VerifiedDealer
+ * 
+ */
+export type VerifiedDealer = Prisma.VerifiedDealerModel
+/**
  * Model Notification
  * 
  */
@@ -102,6 +107,11 @@ export type SalesOrder = Prisma.SalesOrderModel
  * 
  */
 export type CollectionReport = Prisma.CollectionReportModel
+/**
+ * Model OutstandingReport
+ * 
+ */
+export type OutstandingReport = Prisma.OutstandingReportModel
 /**
  * Model ProjectionVsActualReport
  * 

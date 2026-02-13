@@ -32,6 +32,7 @@ export type DealerBrandMappingAvgAggregateOutputType = {
   bestCapacityMT: runtime.Decimal | null
   brandGrowthCapacityPercent: runtime.Decimal | null
   userId: number | null
+  verifiedDealerId: number | null
 }
 
 export type DealerBrandMappingSumAggregateOutputType = {
@@ -40,6 +41,7 @@ export type DealerBrandMappingSumAggregateOutputType = {
   bestCapacityMT: runtime.Decimal | null
   brandGrowthCapacityPercent: runtime.Decimal | null
   userId: number | null
+  verifiedDealerId: number | null
 }
 
 export type DealerBrandMappingMinAggregateOutputType = {
@@ -50,6 +52,7 @@ export type DealerBrandMappingMinAggregateOutputType = {
   bestCapacityMT: runtime.Decimal | null
   brandGrowthCapacityPercent: runtime.Decimal | null
   userId: number | null
+  verifiedDealerId: number | null
 }
 
 export type DealerBrandMappingMaxAggregateOutputType = {
@@ -60,6 +63,7 @@ export type DealerBrandMappingMaxAggregateOutputType = {
   bestCapacityMT: runtime.Decimal | null
   brandGrowthCapacityPercent: runtime.Decimal | null
   userId: number | null
+  verifiedDealerId: number | null
 }
 
 export type DealerBrandMappingCountAggregateOutputType = {
@@ -70,6 +74,7 @@ export type DealerBrandMappingCountAggregateOutputType = {
   bestCapacityMT: number
   brandGrowthCapacityPercent: number
   userId: number
+  verifiedDealerId: number
   _all: number
 }
 
@@ -80,6 +85,7 @@ export type DealerBrandMappingAvgAggregateInputType = {
   bestCapacityMT?: true
   brandGrowthCapacityPercent?: true
   userId?: true
+  verifiedDealerId?: true
 }
 
 export type DealerBrandMappingSumAggregateInputType = {
@@ -88,6 +94,7 @@ export type DealerBrandMappingSumAggregateInputType = {
   bestCapacityMT?: true
   brandGrowthCapacityPercent?: true
   userId?: true
+  verifiedDealerId?: true
 }
 
 export type DealerBrandMappingMinAggregateInputType = {
@@ -98,6 +105,7 @@ export type DealerBrandMappingMinAggregateInputType = {
   bestCapacityMT?: true
   brandGrowthCapacityPercent?: true
   userId?: true
+  verifiedDealerId?: true
 }
 
 export type DealerBrandMappingMaxAggregateInputType = {
@@ -108,6 +116,7 @@ export type DealerBrandMappingMaxAggregateInputType = {
   bestCapacityMT?: true
   brandGrowthCapacityPercent?: true
   userId?: true
+  verifiedDealerId?: true
 }
 
 export type DealerBrandMappingCountAggregateInputType = {
@@ -118,6 +127,7 @@ export type DealerBrandMappingCountAggregateInputType = {
   bestCapacityMT?: true
   brandGrowthCapacityPercent?: true
   userId?: true
+  verifiedDealerId?: true
   _all?: true
 }
 
@@ -215,6 +225,7 @@ export type DealerBrandMappingGroupByOutputType = {
   bestCapacityMT: runtime.Decimal | null
   brandGrowthCapacityPercent: runtime.Decimal | null
   userId: number | null
+  verifiedDealerId: number | null
   _count: DealerBrandMappingCountAggregateOutputType | null
   _avg: DealerBrandMappingAvgAggregateOutputType | null
   _sum: DealerBrandMappingSumAggregateOutputType | null
@@ -248,9 +259,11 @@ export type DealerBrandMappingWhereInput = {
   bestCapacityMT?: Prisma.DecimalNullableFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.DecimalNullableFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.IntNullableFilter<"DealerBrandMapping"> | number | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"DealerBrandMapping"> | number | null
   dealer?: Prisma.XOR<Prisma.DealerScalarRelationFilter, Prisma.DealerWhereInput>
   brand?: Prisma.XOR<Prisma.BrandScalarRelationFilter, Prisma.BrandWhereInput>
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
 }
 
 export type DealerBrandMappingOrderByWithRelationInput = {
@@ -261,9 +274,11 @@ export type DealerBrandMappingOrderByWithRelationInput = {
   bestCapacityMT?: Prisma.SortOrderInput | Prisma.SortOrder
   brandGrowthCapacityPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   dealer?: Prisma.DealerOrderByWithRelationInput
   brand?: Prisma.BrandOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  verifiedDealer?: Prisma.VerifiedDealerOrderByWithRelationInput
 }
 
 export type DealerBrandMappingWhereUniqueInput = Prisma.AtLeast<{
@@ -278,9 +293,11 @@ export type DealerBrandMappingWhereUniqueInput = Prisma.AtLeast<{
   bestCapacityMT?: Prisma.DecimalNullableFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.DecimalNullableFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.IntNullableFilter<"DealerBrandMapping"> | number | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"DealerBrandMapping"> | number | null
   dealer?: Prisma.XOR<Prisma.DealerScalarRelationFilter, Prisma.DealerWhereInput>
   brand?: Prisma.XOR<Prisma.BrandScalarRelationFilter, Prisma.BrandWhereInput>
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
 }, "id" | "dealerId_brandId">
 
 export type DealerBrandMappingOrderByWithAggregationInput = {
@@ -291,6 +308,7 @@ export type DealerBrandMappingOrderByWithAggregationInput = {
   bestCapacityMT?: Prisma.SortOrderInput | Prisma.SortOrder
   brandGrowthCapacityPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.DealerBrandMappingCountOrderByAggregateInput
   _avg?: Prisma.DealerBrandMappingAvgOrderByAggregateInput
   _max?: Prisma.DealerBrandMappingMaxOrderByAggregateInput
@@ -309,6 +327,7 @@ export type DealerBrandMappingScalarWhereWithAggregatesInput = {
   bestCapacityMT?: Prisma.DecimalNullableWithAggregatesFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.DecimalNullableWithAggregatesFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.IntNullableWithAggregatesFilter<"DealerBrandMapping"> | number | null
+  verifiedDealerId?: Prisma.IntNullableWithAggregatesFilter<"DealerBrandMapping"> | number | null
 }
 
 export type DealerBrandMappingCreateInput = {
@@ -319,6 +338,7 @@ export type DealerBrandMappingCreateInput = {
   dealer: Prisma.DealerCreateNestedOneWithoutDealerBrandCapacitiesInput
   brand: Prisma.BrandCreateNestedOneWithoutDealersInput
   user?: Prisma.UserCreateNestedOneWithoutDealerBrandMappingsInput
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDealerBrandMappingsInput
 }
 
 export type DealerBrandMappingUncheckedCreateInput = {
@@ -329,6 +349,7 @@ export type DealerBrandMappingUncheckedCreateInput = {
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: number | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingUpdateInput = {
@@ -339,6 +360,7 @@ export type DealerBrandMappingUpdateInput = {
   dealer?: Prisma.DealerUpdateOneRequiredWithoutDealerBrandCapacitiesNestedInput
   brand?: Prisma.BrandUpdateOneRequiredWithoutDealersNestedInput
   user?: Prisma.UserUpdateOneWithoutDealerBrandMappingsNestedInput
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDealerBrandMappingsNestedInput
 }
 
 export type DealerBrandMappingUncheckedUpdateInput = {
@@ -349,6 +371,7 @@ export type DealerBrandMappingUncheckedUpdateInput = {
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type DealerBrandMappingCreateManyInput = {
@@ -359,6 +382,7 @@ export type DealerBrandMappingCreateManyInput = {
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: number | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingUpdateManyMutationInput = {
@@ -376,6 +400,7 @@ export type DealerBrandMappingUncheckedUpdateManyInput = {
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type DealerBrandMappingListRelationFilter = {
@@ -401,6 +426,7 @@ export type DealerBrandMappingCountOrderByAggregateInput = {
   bestCapacityMT?: Prisma.SortOrder
   brandGrowthCapacityPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
 }
 
 export type DealerBrandMappingAvgOrderByAggregateInput = {
@@ -409,6 +435,7 @@ export type DealerBrandMappingAvgOrderByAggregateInput = {
   bestCapacityMT?: Prisma.SortOrder
   brandGrowthCapacityPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
 }
 
 export type DealerBrandMappingMaxOrderByAggregateInput = {
@@ -419,6 +446,7 @@ export type DealerBrandMappingMaxOrderByAggregateInput = {
   bestCapacityMT?: Prisma.SortOrder
   brandGrowthCapacityPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
 }
 
 export type DealerBrandMappingMinOrderByAggregateInput = {
@@ -429,6 +457,7 @@ export type DealerBrandMappingMinOrderByAggregateInput = {
   bestCapacityMT?: Prisma.SortOrder
   brandGrowthCapacityPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
 }
 
 export type DealerBrandMappingSumOrderByAggregateInput = {
@@ -437,6 +466,7 @@ export type DealerBrandMappingSumOrderByAggregateInput = {
   bestCapacityMT?: Prisma.SortOrder
   brandGrowthCapacityPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
 }
 
 export type DealerBrandMappingCreateNestedManyWithoutUserInput = {
@@ -523,6 +553,48 @@ export type DealerBrandMappingUncheckedUpdateManyWithoutDealerNestedInput = {
   deleteMany?: Prisma.DealerBrandMappingScalarWhereInput | Prisma.DealerBrandMappingScalarWhereInput[]
 }
 
+export type DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput> | Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput[] | Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput | Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.DealerBrandMappingCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+}
+
+export type DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput> | Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput[] | Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput | Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.DealerBrandMappingCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+}
+
+export type DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput> | Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput[] | Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput | Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.DealerBrandMappingUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.DealerBrandMappingUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.DealerBrandMappingCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  disconnect?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  delete?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  connect?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  update?: Prisma.DealerBrandMappingUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.DealerBrandMappingUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.DealerBrandMappingUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.DealerBrandMappingUpdateManyWithWhereWithoutVerifiedDealerInput[]
+  deleteMany?: Prisma.DealerBrandMappingScalarWhereInput | Prisma.DealerBrandMappingScalarWhereInput[]
+}
+
+export type DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput> | Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput[] | Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput | Prisma.DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.DealerBrandMappingUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.DealerBrandMappingUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.DealerBrandMappingCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  disconnect?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  delete?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  connect?: Prisma.DealerBrandMappingWhereUniqueInput | Prisma.DealerBrandMappingWhereUniqueInput[]
+  update?: Prisma.DealerBrandMappingUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.DealerBrandMappingUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.DealerBrandMappingUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.DealerBrandMappingUpdateManyWithWhereWithoutVerifiedDealerInput[]
+  deleteMany?: Prisma.DealerBrandMappingScalarWhereInput | Prisma.DealerBrandMappingScalarWhereInput[]
+}
+
 export type DealerBrandMappingCreateNestedManyWithoutBrandInput = {
   create?: Prisma.XOR<Prisma.DealerBrandMappingCreateWithoutBrandInput, Prisma.DealerBrandMappingUncheckedCreateWithoutBrandInput> | Prisma.DealerBrandMappingCreateWithoutBrandInput[] | Prisma.DealerBrandMappingUncheckedCreateWithoutBrandInput[]
   connectOrCreate?: Prisma.DealerBrandMappingCreateOrConnectWithoutBrandInput | Prisma.DealerBrandMappingCreateOrConnectWithoutBrandInput[]
@@ -572,6 +644,7 @@ export type DealerBrandMappingCreateWithoutUserInput = {
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   dealer: Prisma.DealerCreateNestedOneWithoutDealerBrandCapacitiesInput
   brand: Prisma.BrandCreateNestedOneWithoutDealersInput
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDealerBrandMappingsInput
 }
 
 export type DealerBrandMappingUncheckedCreateWithoutUserInput = {
@@ -581,6 +654,7 @@ export type DealerBrandMappingUncheckedCreateWithoutUserInput = {
   capacityMT: runtime.Decimal | runtime.DecimalJsLike | number | string
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingCreateOrConnectWithoutUserInput = {
@@ -620,6 +694,7 @@ export type DealerBrandMappingScalarWhereInput = {
   bestCapacityMT?: Prisma.DecimalNullableFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.DecimalNullableFilter<"DealerBrandMapping"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.IntNullableFilter<"DealerBrandMapping"> | number | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"DealerBrandMapping"> | number | null
 }
 
 export type DealerBrandMappingCreateWithoutDealerInput = {
@@ -629,6 +704,7 @@ export type DealerBrandMappingCreateWithoutDealerInput = {
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brand: Prisma.BrandCreateNestedOneWithoutDealersInput
   user?: Prisma.UserCreateNestedOneWithoutDealerBrandMappingsInput
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDealerBrandMappingsInput
 }
 
 export type DealerBrandMappingUncheckedCreateWithoutDealerInput = {
@@ -638,6 +714,7 @@ export type DealerBrandMappingUncheckedCreateWithoutDealerInput = {
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: number | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingCreateOrConnectWithoutDealerInput = {
@@ -666,6 +743,52 @@ export type DealerBrandMappingUpdateManyWithWhereWithoutDealerInput = {
   data: Prisma.XOR<Prisma.DealerBrandMappingUpdateManyMutationInput, Prisma.DealerBrandMappingUncheckedUpdateManyWithoutDealerInput>
 }
 
+export type DealerBrandMappingCreateWithoutVerifiedDealerInput = {
+  id?: string
+  capacityMT: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dealer: Prisma.DealerCreateNestedOneWithoutDealerBrandCapacitiesInput
+  brand: Prisma.BrandCreateNestedOneWithoutDealersInput
+  user?: Prisma.UserCreateNestedOneWithoutDealerBrandMappingsInput
+}
+
+export type DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput = {
+  id?: string
+  dealerId: string
+  brandId: number
+  capacityMT: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  userId?: number | null
+}
+
+export type DealerBrandMappingCreateOrConnectWithoutVerifiedDealerInput = {
+  where: Prisma.DealerBrandMappingWhereUniqueInput
+  create: Prisma.XOR<Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type DealerBrandMappingCreateManyVerifiedDealerInputEnvelope = {
+  data: Prisma.DealerBrandMappingCreateManyVerifiedDealerInput | Prisma.DealerBrandMappingCreateManyVerifiedDealerInput[]
+  skipDuplicates?: boolean
+}
+
+export type DealerBrandMappingUpsertWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.DealerBrandMappingWhereUniqueInput
+  update: Prisma.XOR<Prisma.DealerBrandMappingUpdateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedUpdateWithoutVerifiedDealerInput>
+  create: Prisma.XOR<Prisma.DealerBrandMappingCreateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type DealerBrandMappingUpdateWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.DealerBrandMappingWhereUniqueInput
+  data: Prisma.XOR<Prisma.DealerBrandMappingUpdateWithoutVerifiedDealerInput, Prisma.DealerBrandMappingUncheckedUpdateWithoutVerifiedDealerInput>
+}
+
+export type DealerBrandMappingUpdateManyWithWhereWithoutVerifiedDealerInput = {
+  where: Prisma.DealerBrandMappingScalarWhereInput
+  data: Prisma.XOR<Prisma.DealerBrandMappingUpdateManyMutationInput, Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerInput>
+}
+
 export type DealerBrandMappingCreateWithoutBrandInput = {
   id?: string
   capacityMT: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -673,6 +796,7 @@ export type DealerBrandMappingCreateWithoutBrandInput = {
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   dealer: Prisma.DealerCreateNestedOneWithoutDealerBrandCapacitiesInput
   user?: Prisma.UserCreateNestedOneWithoutDealerBrandMappingsInput
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDealerBrandMappingsInput
 }
 
 export type DealerBrandMappingUncheckedCreateWithoutBrandInput = {
@@ -682,6 +806,7 @@ export type DealerBrandMappingUncheckedCreateWithoutBrandInput = {
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: number | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingCreateOrConnectWithoutBrandInput = {
@@ -717,6 +842,7 @@ export type DealerBrandMappingCreateManyUserInput = {
   capacityMT: runtime.Decimal | runtime.DecimalJsLike | number | string
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingUpdateWithoutUserInput = {
@@ -726,6 +852,7 @@ export type DealerBrandMappingUpdateWithoutUserInput = {
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   dealer?: Prisma.DealerUpdateOneRequiredWithoutDealerBrandCapacitiesNestedInput
   brand?: Prisma.BrandUpdateOneRequiredWithoutDealersNestedInput
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDealerBrandMappingsNestedInput
 }
 
 export type DealerBrandMappingUncheckedUpdateWithoutUserInput = {
@@ -735,6 +862,7 @@ export type DealerBrandMappingUncheckedUpdateWithoutUserInput = {
   capacityMT?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type DealerBrandMappingUncheckedUpdateManyWithoutUserInput = {
@@ -744,6 +872,7 @@ export type DealerBrandMappingUncheckedUpdateManyWithoutUserInput = {
   capacityMT?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type DealerBrandMappingCreateManyDealerInput = {
@@ -753,6 +882,7 @@ export type DealerBrandMappingCreateManyDealerInput = {
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: number | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingUpdateWithoutDealerInput = {
@@ -762,6 +892,7 @@ export type DealerBrandMappingUpdateWithoutDealerInput = {
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brand?: Prisma.BrandUpdateOneRequiredWithoutDealersNestedInput
   user?: Prisma.UserUpdateOneWithoutDealerBrandMappingsNestedInput
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDealerBrandMappingsNestedInput
 }
 
 export type DealerBrandMappingUncheckedUpdateWithoutDealerInput = {
@@ -771,10 +902,52 @@ export type DealerBrandMappingUncheckedUpdateWithoutDealerInput = {
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type DealerBrandMappingUncheckedUpdateManyWithoutDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  brandId?: Prisma.IntFieldUpdateOperationsInput | number
+  capacityMT?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type DealerBrandMappingCreateManyVerifiedDealerInput = {
+  id?: string
+  dealerId: string
+  brandId: number
+  capacityMT: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  userId?: number | null
+}
+
+export type DealerBrandMappingUpdateWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  capacityMT?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  dealer?: Prisma.DealerUpdateOneRequiredWithoutDealerBrandCapacitiesNestedInput
+  brand?: Prisma.BrandUpdateOneRequiredWithoutDealersNestedInput
+  user?: Prisma.UserUpdateOneWithoutDealerBrandMappingsNestedInput
+}
+
+export type DealerBrandMappingUncheckedUpdateWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerId?: Prisma.StringFieldUpdateOperationsInput | string
+  brandId?: Prisma.IntFieldUpdateOperationsInput | number
+  capacityMT?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerId?: Prisma.StringFieldUpdateOperationsInput | string
   brandId?: Prisma.IntFieldUpdateOperationsInput | number
   capacityMT?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -789,6 +962,7 @@ export type DealerBrandMappingCreateManyBrandInput = {
   bestCapacityMT?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: number | null
+  verifiedDealerId?: number | null
 }
 
 export type DealerBrandMappingUpdateWithoutBrandInput = {
@@ -798,6 +972,7 @@ export type DealerBrandMappingUpdateWithoutBrandInput = {
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   dealer?: Prisma.DealerUpdateOneRequiredWithoutDealerBrandCapacitiesNestedInput
   user?: Prisma.UserUpdateOneWithoutDealerBrandMappingsNestedInput
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDealerBrandMappingsNestedInput
 }
 
 export type DealerBrandMappingUncheckedUpdateWithoutBrandInput = {
@@ -807,6 +982,7 @@ export type DealerBrandMappingUncheckedUpdateWithoutBrandInput = {
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type DealerBrandMappingUncheckedUpdateManyWithoutBrandInput = {
@@ -816,6 +992,7 @@ export type DealerBrandMappingUncheckedUpdateManyWithoutBrandInput = {
   bestCapacityMT?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   brandGrowthCapacityPercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -828,9 +1005,11 @@ export type DealerBrandMappingSelect<ExtArgs extends runtime.Types.Extensions.In
   bestCapacityMT?: boolean
   brandGrowthCapacityPercent?: boolean
   userId?: boolean
+  verifiedDealerId?: boolean
   dealer?: boolean | Prisma.DealerDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
   user?: boolean | Prisma.DealerBrandMapping$userArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs>
 }, ExtArgs["result"]["dealerBrandMapping"]>
 
 export type DealerBrandMappingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -841,9 +1020,11 @@ export type DealerBrandMappingSelectCreateManyAndReturn<ExtArgs extends runtime.
   bestCapacityMT?: boolean
   brandGrowthCapacityPercent?: boolean
   userId?: boolean
+  verifiedDealerId?: boolean
   dealer?: boolean | Prisma.DealerDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
   user?: boolean | Prisma.DealerBrandMapping$userArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs>
 }, ExtArgs["result"]["dealerBrandMapping"]>
 
 export type DealerBrandMappingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -854,9 +1035,11 @@ export type DealerBrandMappingSelectUpdateManyAndReturn<ExtArgs extends runtime.
   bestCapacityMT?: boolean
   brandGrowthCapacityPercent?: boolean
   userId?: boolean
+  verifiedDealerId?: boolean
   dealer?: boolean | Prisma.DealerDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
   user?: boolean | Prisma.DealerBrandMapping$userArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs>
 }, ExtArgs["result"]["dealerBrandMapping"]>
 
 export type DealerBrandMappingSelectScalar = {
@@ -867,23 +1050,27 @@ export type DealerBrandMappingSelectScalar = {
   bestCapacityMT?: boolean
   brandGrowthCapacityPercent?: boolean
   userId?: boolean
+  verifiedDealerId?: boolean
 }
 
-export type DealerBrandMappingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dealerId" | "brandId" | "capacityMT" | "bestCapacityMT" | "brandGrowthCapacityPercent" | "userId", ExtArgs["result"]["dealerBrandMapping"]>
+export type DealerBrandMappingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dealerId" | "brandId" | "capacityMT" | "bestCapacityMT" | "brandGrowthCapacityPercent" | "userId" | "verifiedDealerId", ExtArgs["result"]["dealerBrandMapping"]>
 export type DealerBrandMappingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dealer?: boolean | Prisma.DealerDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
   user?: boolean | Prisma.DealerBrandMapping$userArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs>
 }
 export type DealerBrandMappingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dealer?: boolean | Prisma.DealerDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
   user?: boolean | Prisma.DealerBrandMapping$userArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs>
 }
 export type DealerBrandMappingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dealer?: boolean | Prisma.DealerDefaultArgs<ExtArgs>
   brand?: boolean | Prisma.BrandDefaultArgs<ExtArgs>
   user?: boolean | Prisma.DealerBrandMapping$userArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs>
 }
 
 export type $DealerBrandMappingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -892,6 +1079,7 @@ export type $DealerBrandMappingPayload<ExtArgs extends runtime.Types.Extensions.
     dealer: Prisma.$DealerPayload<ExtArgs>
     brand: Prisma.$BrandPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs> | null
+    verifiedDealer: Prisma.$VerifiedDealerPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -901,6 +1089,7 @@ export type $DealerBrandMappingPayload<ExtArgs extends runtime.Types.Extensions.
     bestCapacityMT: runtime.Decimal | null
     brandGrowthCapacityPercent: runtime.Decimal | null
     userId: number | null
+    verifiedDealerId: number | null
   }, ExtArgs["result"]["dealerBrandMapping"]>
   composites: {}
 }
@@ -1298,6 +1487,7 @@ export interface Prisma__DealerBrandMappingClient<T, Null = never, ExtArgs exten
   dealer<T extends Prisma.DealerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DealerDefaultArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   brand<T extends Prisma.BrandDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BrandDefaultArgs<ExtArgs>>): Prisma.Prisma__BrandClient<runtime.Types.Result.GetResult<Prisma.$BrandPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.DealerBrandMapping$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DealerBrandMapping$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  verifiedDealer<T extends Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DealerBrandMapping$verifiedDealerArgs<ExtArgs>>): Prisma.Prisma__VerifiedDealerClient<runtime.Types.Result.GetResult<Prisma.$VerifiedDealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1334,6 +1524,7 @@ export interface DealerBrandMappingFieldRefs {
   readonly bestCapacityMT: Prisma.FieldRef<"DealerBrandMapping", 'Decimal'>
   readonly brandGrowthCapacityPercent: Prisma.FieldRef<"DealerBrandMapping", 'Decimal'>
   readonly userId: Prisma.FieldRef<"DealerBrandMapping", 'Int'>
+  readonly verifiedDealerId: Prisma.FieldRef<"DealerBrandMapping", 'Int'>
 }
     
 
@@ -1746,6 +1937,25 @@ export type DealerBrandMapping$userArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * DealerBrandMapping.verifiedDealer
+ */
+export type DealerBrandMapping$verifiedDealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VerifiedDealer
+   */
+  select?: Prisma.VerifiedDealerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VerifiedDealer
+   */
+  omit?: Prisma.VerifiedDealerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VerifiedDealerInclude<ExtArgs> | null
+  where?: Prisma.VerifiedDealerWhereInput
 }
 
 /**

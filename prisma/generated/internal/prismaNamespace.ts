@@ -387,6 +387,7 @@ export const ModelName = {
   Company: 'Company',
   User: 'User',
   Dealer: 'Dealer',
+  VerifiedDealer: 'VerifiedDealer',
   Notification: 'Notification',
   DailyVisitReport: 'DailyVisitReport',
   PermanentJourneyPlan: 'PermanentJourneyPlan',
@@ -401,6 +402,7 @@ export const ModelName = {
   DailyTask: 'DailyTask',
   SalesOrder: 'SalesOrder',
   CollectionReport: 'CollectionReport',
+  OutstandingReport: 'OutstandingReport',
   ProjectionVsActualReport: 'ProjectionVsActualReport',
   ProjectionReport: 'ProjectionReport',
   DealerReportsAndScores: 'DealerReportsAndScores',
@@ -452,7 +454,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "dealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "collectionReport" | "projectionVsActualReport" | "projectionReport" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsGateIO" | "emailReport" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
+    modelProps: "company" | "user" | "dealer" | "verifiedDealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "collectionReport" | "outstandingReport" | "projectionVsActualReport" | "projectionReport" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsGateIO" | "emailReport" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -675,6 +677,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DealerCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DealerCountAggregateOutputType> | number
+        }
+      }
+    }
+    VerifiedDealer: {
+      payload: Prisma.$VerifiedDealerPayload<ExtArgs>
+      fields: Prisma.VerifiedDealerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VerifiedDealerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VerifiedDealerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>
+        }
+        findFirst: {
+          args: Prisma.VerifiedDealerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VerifiedDealerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>
+        }
+        findMany: {
+          args: Prisma.VerifiedDealerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>[]
+        }
+        create: {
+          args: Prisma.VerifiedDealerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>
+        }
+        createMany: {
+          args: Prisma.VerifiedDealerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VerifiedDealerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>[]
+        }
+        delete: {
+          args: Prisma.VerifiedDealerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>
+        }
+        update: {
+          args: Prisma.VerifiedDealerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>
+        }
+        deleteMany: {
+          args: Prisma.VerifiedDealerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VerifiedDealerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VerifiedDealerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>[]
+        }
+        upsert: {
+          args: Prisma.VerifiedDealerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VerifiedDealerPayload>
+        }
+        aggregate: {
+          args: Prisma.VerifiedDealerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVerifiedDealer>
+        }
+        groupBy: {
+          args: Prisma.VerifiedDealerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VerifiedDealerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VerifiedDealerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VerifiedDealerCountAggregateOutputType> | number
         }
       }
     }
@@ -1711,6 +1787,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CollectionReportCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CollectionReportCountAggregateOutputType> | number
+        }
+      }
+    }
+    OutstandingReport: {
+      payload: Prisma.$OutstandingReportPayload<ExtArgs>
+      fields: Prisma.OutstandingReportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OutstandingReportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OutstandingReportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>
+        }
+        findFirst: {
+          args: Prisma.OutstandingReportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OutstandingReportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>
+        }
+        findMany: {
+          args: Prisma.OutstandingReportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>[]
+        }
+        create: {
+          args: Prisma.OutstandingReportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>
+        }
+        createMany: {
+          args: Prisma.OutstandingReportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OutstandingReportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>[]
+        }
+        delete: {
+          args: Prisma.OutstandingReportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>
+        }
+        update: {
+          args: Prisma.OutstandingReportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>
+        }
+        deleteMany: {
+          args: Prisma.OutstandingReportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OutstandingReportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OutstandingReportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>[]
+        }
+        upsert: {
+          args: Prisma.OutstandingReportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutstandingReportPayload>
+        }
+        aggregate: {
+          args: Prisma.OutstandingReportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOutstandingReport>
+        }
+        groupBy: {
+          args: Prisma.OutstandingReportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutstandingReportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OutstandingReportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutstandingReportCountAggregateOutputType> | number
         }
       }
     }
@@ -4540,6 +4690,31 @@ export const DealerScalarFieldEnum = {
 export type DealerScalarFieldEnum = (typeof DealerScalarFieldEnum)[keyof typeof DealerScalarFieldEnum]
 
 
+export const VerifiedDealerScalarFieldEnum = {
+  id: 'id',
+  dealerCode: 'dealerCode',
+  dealerCategory: 'dealerCategory',
+  isSubdealer: 'isSubdealer',
+  dealerPartyName: 'dealerPartyName',
+  zone: 'zone',
+  area: 'area',
+  contactNo1: 'contactNo1',
+  contactNo2: 'contactNo2',
+  email: 'email',
+  address: 'address',
+  pinCode: 'pinCode',
+  relatedSpName: 'relatedSpName',
+  ownerProprietorName: 'ownerProprietorName',
+  natureOfFirm: 'natureOfFirm',
+  gstNo: 'gstNo',
+  panNo: 'panNo',
+  userId: 'userId',
+  dealerId: 'dealerId'
+} as const
+
+export type VerifiedDealerScalarFieldEnum = (typeof VerifiedDealerScalarFieldEnum)[keyof typeof VerifiedDealerScalarFieldEnum]
+
+
 export const NotificationScalarFieldEnum = {
   id: 'id',
   recipientUserId: 'recipientUserId',
@@ -4869,6 +5044,31 @@ export const CollectionReportScalarFieldEnum = {
 export type CollectionReportScalarFieldEnum = (typeof CollectionReportScalarFieldEnum)[keyof typeof CollectionReportScalarFieldEnum]
 
 
+export const OutstandingReportScalarFieldEnum = {
+  id: 'id',
+  securityDepositAmt: 'securityDepositAmt',
+  pendingAmt: 'pendingAmt',
+  lessThan10Days: 'lessThan10Days',
+  days10To15: 'days10To15',
+  days15To21: 'days15To21',
+  days21To30: 'days21To30',
+  days30To45: 'days30To45',
+  days45To60: 'days45To60',
+  days60To75: 'days60To75',
+  days75To90: 'days75To90',
+  greaterThan90Days: 'greaterThan90Days',
+  isOverdue: 'isOverdue',
+  isAccountJsbJud: 'isAccountJsbJud',
+  verifiedDealerId: 'verifiedDealerId',
+  collectionReportId: 'collectionReportId',
+  dvrId: 'dvrId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutstandingReportScalarFieldEnum = (typeof OutstandingReportScalarFieldEnum)[keyof typeof OutstandingReportScalarFieldEnum]
+
+
 export const ProjectionVsActualReportScalarFieldEnum = {
   id: 'id',
   reportDate: 'reportDate',
@@ -4953,7 +5153,8 @@ export const DealerBrandMappingScalarFieldEnum = {
   capacityMT: 'capacityMT',
   bestCapacityMT: 'bestCapacityMT',
   brandGrowthCapacityPercent: 'brandGrowthCapacityPercent',
-  userId: 'userId'
+  userId: 'userId',
+  verifiedDealerId: 'verifiedDealerId'
 } as const
 
 export type DealerBrandMappingScalarFieldEnum = (typeof DealerBrandMappingScalarFieldEnum)[keyof typeof DealerBrandMappingScalarFieldEnum]
@@ -5772,6 +5973,7 @@ export type GlobalOmitConfig = {
   company?: Prisma.CompanyOmit
   user?: Prisma.UserOmit
   dealer?: Prisma.DealerOmit
+  verifiedDealer?: Prisma.VerifiedDealerOmit
   notification?: Prisma.NotificationOmit
   dailyVisitReport?: Prisma.DailyVisitReportOmit
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanOmit
@@ -5786,6 +5988,7 @@ export type GlobalOmitConfig = {
   dailyTask?: Prisma.DailyTaskOmit
   salesOrder?: Prisma.SalesOrderOmit
   collectionReport?: Prisma.CollectionReportOmit
+  outstandingReport?: Prisma.OutstandingReportOmit
   projectionVsActualReport?: Prisma.ProjectionVsActualReportOmit
   projectionReport?: Prisma.ProjectionReportOmit
   dealerReportsAndScores?: Prisma.DealerReportsAndScoresOmit

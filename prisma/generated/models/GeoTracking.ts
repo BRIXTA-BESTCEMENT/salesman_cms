@@ -1039,10 +1039,6 @@ export type GeoTrackingUncheckedUpdateManyWithoutDealerNestedInput = {
   deleteMany?: Prisma.GeoTrackingScalarWhereInput | Prisma.GeoTrackingScalarWhereInput[]
 }
 
-export type NullableBoolFieldUpdateOperationsInput = {
-  set?: boolean | null
-}
-
 export type GeoTrackingCreateNestedManyWithoutJourneyInput = {
   create?: Prisma.XOR<Prisma.GeoTrackingCreateWithoutJourneyInput, Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput> | Prisma.GeoTrackingCreateWithoutJourneyInput[] | Prisma.GeoTrackingUncheckedCreateWithoutJourneyInput[]
   connectOrCreate?: Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput | Prisma.GeoTrackingCreateOrConnectWithoutJourneyInput[]

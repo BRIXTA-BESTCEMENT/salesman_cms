@@ -424,6 +424,7 @@ export type UserWhereInput = {
   journeys?: Prisma.JourneyListRelationFilter
   journeyOps?: Prisma.JourneyOpListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
+  verifiedDealers?: Prisma.VerifiedDealerListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -481,6 +482,7 @@ export type UserOrderByWithRelationInput = {
   journeys?: Prisma.JourneyOrderByRelationAggregateInput
   journeyOps?: Prisma.JourneyOpOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
+  verifiedDealers?: Prisma.VerifiedDealerOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -542,6 +544,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   journeys?: Prisma.JourneyListRelationFilter
   journeyOps?: Prisma.JourneyOpListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
+  verifiedDealers?: Prisma.VerifiedDealerListRelationFilter
 }, "id" | "workosUserId" | "inviteToken" | "salesmanLoginId" | "techLoginId" | "adminAppLoginId" | "deviceId" | "companyId_email">
 
 export type UserOrderByWithAggregationInput = {
@@ -662,6 +665,7 @@ export type UserCreateInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -717,6 +721,7 @@ export type UserUncheckedCreateInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -771,6 +776,7 @@ export type UserUpdateInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -826,6 +832,7 @@ export type UserUncheckedUpdateInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1160,6 +1167,22 @@ export type UserUpdateOneWithoutDealersNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDealersInput, Prisma.UserUpdateWithoutDealersInput>, Prisma.UserUncheckedUpdateWithoutDealersInput>
+}
+
+export type UserCreateNestedOneWithoutVerifiedDealersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutVerifiedDealersInput, Prisma.UserUncheckedCreateWithoutVerifiedDealersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutVerifiedDealersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutVerifiedDealersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutVerifiedDealersInput, Prisma.UserUncheckedCreateWithoutVerifiedDealersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutVerifiedDealersInput
+  upsert?: Prisma.UserUpsertWithoutVerifiedDealersInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutVerifiedDealersInput, Prisma.UserUpdateWithoutVerifiedDealersInput>, Prisma.UserUncheckedUpdateWithoutVerifiedDealersInput>
 }
 
 export type UserCreateNestedOneWithoutNotificationsInput = {
@@ -1585,6 +1608,7 @@ export type UserCreateWithoutCompanyInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCompanyInput = {
@@ -1639,6 +1663,7 @@ export type UserUncheckedCreateWithoutCompanyInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCompanyInput = {
@@ -1750,6 +1775,7 @@ export type UserCreateWithoutReportsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReportsInput = {
@@ -1804,6 +1830,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReportsInput = {
@@ -1862,6 +1889,7 @@ export type UserCreateWithoutReportsToInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReportsToInput = {
@@ -1916,6 +1944,7 @@ export type UserUncheckedCreateWithoutReportsToInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReportsToInput = {
@@ -1990,6 +2019,7 @@ export type UserUpdateWithoutReportsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportsInput = {
@@ -2044,6 +2074,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutReportsToInput = {
@@ -2113,6 +2144,7 @@ export type UserCreateWithoutDealersInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDealersInput = {
@@ -2167,6 +2199,7 @@ export type UserUncheckedCreateWithoutDealersInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDealersInput = {
@@ -2236,6 +2269,7 @@ export type UserUpdateWithoutDealersInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDealersInput = {
@@ -2266,6 +2300,241 @@ export type UserUncheckedUpdateWithoutDealersInput = {
   fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUncheckedUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutAssignedByNestedInput
+  ratings?: Prisma.RatingUncheckedUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedUpdateManyWithoutUserNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedUpdateManyWithoutTsoNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedUpdateManyWithoutApproverNestedInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
+  journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutVerifiedDealersInput = {
+  workosUserId?: string | null
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  reportsTo?: Prisma.UserCreateNestedOneWithoutReportsInput
+  reports?: Prisma.UserCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskCreateNestedManyWithoutAssignedByInput
+  ratings?: Prisma.RatingCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideCreateNestedManyWithoutUserInput
+  tsoAssignments?: Prisma.TSOAssignmentCreateNestedManyWithoutTsoInput
+  bagLiftApprovals?: Prisma.BagLiftCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
+  journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+}
+
+export type UserUncheckedCreateWithoutVerifiedDealersInput = {
+  id?: number
+  workosUserId?: string | null
+  companyId: number
+  email: string
+  firstName?: string | null
+  lastName?: string | null
+  role: string
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  phoneNumber?: string | null
+  inviteToken?: string | null
+  status?: string
+  region?: string | null
+  area?: string | null
+  salesmanLoginId?: string | null
+  hashedPassword?: string | null
+  isTechnicalRole?: boolean
+  techLoginId?: string | null
+  techHashedPassword?: string | null
+  isAdminAppUser?: boolean
+  adminAppLoginId?: string | null
+  adminAppHashedPassword?: string | null
+  reportsToId?: number | null
+  deviceId?: string | null
+  fcmToken?: string | null
+  noOfPJP?: number | null
+  reports?: Prisma.UserUncheckedCreateNestedManyWithoutReportsToInput
+  dealers?: Prisma.DealerUncheckedCreateNestedManyWithoutUserInput
+  dailyVisitReports?: Prisma.DailyVisitReportUncheckedCreateNestedManyWithoutUserInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedCreateNestedManyWithoutUserInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedCreateNestedManyWithoutUserInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUncheckedCreateNestedManyWithoutUserInput
+  competitionReports?: Prisma.CompetitionReportUncheckedCreateNestedManyWithoutUserInput
+  geoTrackingRecords?: Prisma.GeoTrackingUncheckedCreateNestedManyWithoutUserInput
+  assignedTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutUserInput
+  createdTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutAssignedByInput
+  ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutUserInput
+  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutUserInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUncheckedCreateNestedManyWithoutCreatedByInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutUserInput
+  createdMeetings?: Prisma.TSOMeetingUncheckedCreateNestedManyWithoutCreatedByInput
+  giftLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutUserInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutSourceUserInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDestinationUserInput
+  assignedMasons?: Prisma.Mason_PC_SideUncheckedCreateNestedManyWithoutUserInput
+  tsoAssignments?: Prisma.TSOAssignmentUncheckedCreateNestedManyWithoutTsoInput
+  bagLiftApprovals?: Prisma.BagLiftUncheckedCreateNestedManyWithoutApproverInput
+  additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
+  journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+}
+
+export type UserCreateOrConnectWithoutVerifiedDealersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutVerifiedDealersInput, Prisma.UserUncheckedCreateWithoutVerifiedDealersInput>
+}
+
+export type UserUpsertWithoutVerifiedDealersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutVerifiedDealersInput, Prisma.UserUncheckedUpdateWithoutVerifiedDealersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutVerifiedDealersInput, Prisma.UserUncheckedCreateWithoutVerifiedDealersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutVerifiedDealersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutVerifiedDealersInput, Prisma.UserUncheckedUpdateWithoutVerifiedDealersInput>
+}
+
+export type UserUpdateWithoutVerifiedDealersInput = {
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  reportsTo?: Prisma.UserUpdateOneWithoutReportsNestedInput
+  reports?: Prisma.UserUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUpdateManyWithoutUserNestedInput
+  dailyVisitReports?: Prisma.DailyVisitReportUpdateManyWithoutUserNestedInput
+  technicalVisitReports?: Prisma.TechnicalVisitReportUpdateManyWithoutUserNestedInput
+  salesmanAttendance?: Prisma.SalesmanAttendanceUpdateManyWithoutUserNestedInput
+  salesmanLeaveApplications?: Prisma.SalesmanLeaveApplicationUpdateManyWithoutUserNestedInput
+  competitionReports?: Prisma.CompetitionReportUpdateManyWithoutUserNestedInput
+  geoTrackingRecords?: Prisma.GeoTrackingUpdateManyWithoutUserNestedInput
+  assignedTasks?: Prisma.DailyTaskUpdateManyWithoutUserNestedInput
+  createdTasks?: Prisma.DailyTaskUpdateManyWithoutAssignedByNestedInput
+  ratings?: Prisma.RatingUpdateManyWithoutUserNestedInput
+  salesOrders?: Prisma.SalesOrderUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansAssigned?: Prisma.PermanentJourneyPlanUpdateManyWithoutUserNestedInput
+  permanentJourneyPlansCreated?: Prisma.PermanentJourneyPlanUpdateManyWithoutCreatedByNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutUserNestedInput
+  createdMeetings?: Prisma.TSOMeetingUpdateManyWithoutCreatedByNestedInput
+  giftLogs?: Prisma.GiftAllocationLogUpdateManyWithoutUserNestedInput
+  giftTransfersSent?: Prisma.GiftAllocationLogUpdateManyWithoutSourceUserNestedInput
+  giftTransfersReceived?: Prisma.GiftAllocationLogUpdateManyWithoutDestinationUserNestedInput
+  assignedMasons?: Prisma.Mason_PC_SideUpdateManyWithoutUserNestedInput
+  tsoAssignments?: Prisma.TSOAssignmentUpdateManyWithoutTsoNestedInput
+  bagLiftApprovals?: Prisma.BagLiftUpdateManyWithoutApproverNestedInput
+  additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
+  journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+}
+
+export type UserUncheckedUpdateWithoutVerifiedDealersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workosUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesmanLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTechnicalRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  techLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  techHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAdminAppUser?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  adminAppLoginId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminAppHashedPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportsToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  noOfPJP?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reports?: Prisma.UserUncheckedUpdateManyWithoutReportsToNestedInput
+  dealers?: Prisma.DealerUncheckedUpdateManyWithoutUserNestedInput
   dailyVisitReports?: Prisma.DailyVisitReportUncheckedUpdateManyWithoutUserNestedInput
   technicalVisitReports?: Prisma.TechnicalVisitReportUncheckedUpdateManyWithoutUserNestedInput
   salesmanAttendance?: Prisma.SalesmanAttendanceUncheckedUpdateManyWithoutUserNestedInput
@@ -2343,6 +2612,7 @@ export type UserCreateWithoutNotificationsInput = {
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -2397,6 +2667,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -2466,6 +2737,7 @@ export type UserUpdateWithoutNotificationsInput = {
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -2520,6 +2792,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDailyVisitReportsInput = {
@@ -2573,6 +2846,7 @@ export type UserCreateWithoutDailyVisitReportsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDailyVisitReportsInput = {
@@ -2627,6 +2901,7 @@ export type UserUncheckedCreateWithoutDailyVisitReportsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDailyVisitReportsInput = {
@@ -2696,6 +2971,7 @@ export type UserUpdateWithoutDailyVisitReportsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDailyVisitReportsInput = {
@@ -2750,6 +3026,7 @@ export type UserUncheckedUpdateWithoutDailyVisitReportsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPermanentJourneyPlansAssignedInput = {
@@ -2803,6 +3080,7 @@ export type UserCreateWithoutPermanentJourneyPlansAssignedInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPermanentJourneyPlansAssignedInput = {
@@ -2857,6 +3135,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansAssignedInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPermanentJourneyPlansAssignedInput = {
@@ -2915,6 +3194,7 @@ export type UserCreateWithoutPermanentJourneyPlansCreatedInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPermanentJourneyPlansCreatedInput = {
@@ -2969,6 +3249,7 @@ export type UserUncheckedCreateWithoutPermanentJourneyPlansCreatedInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPermanentJourneyPlansCreatedInput = {
@@ -3038,6 +3319,7 @@ export type UserUpdateWithoutPermanentJourneyPlansAssignedInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPermanentJourneyPlansAssignedInput = {
@@ -3092,6 +3374,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansAssignedInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutPermanentJourneyPlansCreatedInput = {
@@ -3156,6 +3439,7 @@ export type UserUpdateWithoutPermanentJourneyPlansCreatedInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPermanentJourneyPlansCreatedInput = {
@@ -3210,6 +3494,7 @@ export type UserUncheckedUpdateWithoutPermanentJourneyPlansCreatedInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSalesmanAttendanceInput = {
@@ -3263,6 +3548,7 @@ export type UserCreateWithoutSalesmanAttendanceInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSalesmanAttendanceInput = {
@@ -3317,6 +3603,7 @@ export type UserUncheckedCreateWithoutSalesmanAttendanceInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSalesmanAttendanceInput = {
@@ -3386,6 +3673,7 @@ export type UserUpdateWithoutSalesmanAttendanceInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesmanAttendanceInput = {
@@ -3440,6 +3728,7 @@ export type UserUncheckedUpdateWithoutSalesmanAttendanceInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSalesmanLeaveApplicationsInput = {
@@ -3493,6 +3782,7 @@ export type UserCreateWithoutSalesmanLeaveApplicationsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSalesmanLeaveApplicationsInput = {
@@ -3547,6 +3837,7 @@ export type UserUncheckedCreateWithoutSalesmanLeaveApplicationsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSalesmanLeaveApplicationsInput = {
@@ -3616,6 +3907,7 @@ export type UserUpdateWithoutSalesmanLeaveApplicationsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesmanLeaveApplicationsInput = {
@@ -3670,6 +3962,7 @@ export type UserUncheckedUpdateWithoutSalesmanLeaveApplicationsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCompetitionReportsInput = {
@@ -3723,6 +4016,7 @@ export type UserCreateWithoutCompetitionReportsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCompetitionReportsInput = {
@@ -3777,6 +4071,7 @@ export type UserUncheckedCreateWithoutCompetitionReportsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCompetitionReportsInput = {
@@ -3846,6 +4141,7 @@ export type UserUpdateWithoutCompetitionReportsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCompetitionReportsInput = {
@@ -3900,6 +4196,7 @@ export type UserUncheckedUpdateWithoutCompetitionReportsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGeoTrackingRecordsInput = {
@@ -3953,6 +4250,7 @@ export type UserCreateWithoutGeoTrackingRecordsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGeoTrackingRecordsInput = {
@@ -4007,6 +4305,7 @@ export type UserUncheckedCreateWithoutGeoTrackingRecordsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGeoTrackingRecordsInput = {
@@ -4076,6 +4375,7 @@ export type UserUpdateWithoutGeoTrackingRecordsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGeoTrackingRecordsInput = {
@@ -4130,6 +4430,7 @@ export type UserUncheckedUpdateWithoutGeoTrackingRecordsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutJourneyOpsInput = {
@@ -4183,6 +4484,7 @@ export type UserCreateWithoutJourneyOpsInput = {
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutJourneyOpsInput = {
@@ -4237,6 +4539,7 @@ export type UserUncheckedCreateWithoutJourneyOpsInput = {
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutJourneyOpsInput = {
@@ -4306,6 +4609,7 @@ export type UserUpdateWithoutJourneyOpsInput = {
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutJourneyOpsInput = {
@@ -4360,6 +4664,7 @@ export type UserUncheckedUpdateWithoutJourneyOpsInput = {
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutJourneysInput = {
@@ -4413,6 +4718,7 @@ export type UserCreateWithoutJourneysInput = {
   additionalSites?: Prisma.TechnicalSiteCreateNestedManyWithoutAssociatedUsersInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutJourneysInput = {
@@ -4467,6 +4773,7 @@ export type UserUncheckedCreateWithoutJourneysInput = {
   additionalSites?: Prisma.TechnicalSiteUncheckedCreateNestedManyWithoutAssociatedUsersInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutJourneysInput = {
@@ -4536,6 +4843,7 @@ export type UserUpdateWithoutJourneysInput = {
   additionalSites?: Prisma.TechnicalSiteUpdateManyWithoutAssociatedUsersNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutJourneysInput = {
@@ -4590,6 +4898,7 @@ export type UserUncheckedUpdateWithoutJourneysInput = {
   additionalSites?: Prisma.TechnicalSiteUncheckedUpdateManyWithoutAssociatedUsersNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAssignedTasksInput = {
@@ -4643,6 +4952,7 @@ export type UserCreateWithoutAssignedTasksInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAssignedTasksInput = {
@@ -4697,6 +5007,7 @@ export type UserUncheckedCreateWithoutAssignedTasksInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAssignedTasksInput = {
@@ -4755,6 +5066,7 @@ export type UserCreateWithoutCreatedTasksInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedTasksInput = {
@@ -4809,6 +5121,7 @@ export type UserUncheckedCreateWithoutCreatedTasksInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedTasksInput = {
@@ -4878,6 +5191,7 @@ export type UserUpdateWithoutAssignedTasksInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedTasksInput = {
@@ -4932,6 +5246,7 @@ export type UserUncheckedUpdateWithoutAssignedTasksInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutCreatedTasksInput = {
@@ -4996,6 +5311,7 @@ export type UserUpdateWithoutCreatedTasksInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedTasksInput = {
@@ -5050,6 +5366,7 @@ export type UserUncheckedUpdateWithoutCreatedTasksInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSalesOrdersInput = {
@@ -5103,6 +5420,7 @@ export type UserCreateWithoutSalesOrdersInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSalesOrdersInput = {
@@ -5157,6 +5475,7 @@ export type UserUncheckedCreateWithoutSalesOrdersInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSalesOrdersInput = {
@@ -5226,6 +5545,7 @@ export type UserUpdateWithoutSalesOrdersInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesOrdersInput = {
@@ -5280,6 +5600,7 @@ export type UserUncheckedUpdateWithoutSalesOrdersInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRatingsInput = {
@@ -5333,6 +5654,7 @@ export type UserCreateWithoutRatingsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRatingsInput = {
@@ -5387,6 +5709,7 @@ export type UserUncheckedCreateWithoutRatingsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRatingsInput = {
@@ -5456,6 +5779,7 @@ export type UserUpdateWithoutRatingsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRatingsInput = {
@@ -5510,6 +5834,7 @@ export type UserUncheckedUpdateWithoutRatingsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDealerBrandMappingsInput = {
@@ -5563,6 +5888,7 @@ export type UserCreateWithoutDealerBrandMappingsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDealerBrandMappingsInput = {
@@ -5617,6 +5943,7 @@ export type UserUncheckedCreateWithoutDealerBrandMappingsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDealerBrandMappingsInput = {
@@ -5686,6 +6013,7 @@ export type UserUpdateWithoutDealerBrandMappingsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDealerBrandMappingsInput = {
@@ -5740,6 +6068,7 @@ export type UserUncheckedUpdateWithoutDealerBrandMappingsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTechnicalVisitReportsInput = {
@@ -5793,6 +6122,7 @@ export type UserCreateWithoutTechnicalVisitReportsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTechnicalVisitReportsInput = {
@@ -5847,6 +6177,7 @@ export type UserUncheckedCreateWithoutTechnicalVisitReportsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTechnicalVisitReportsInput = {
@@ -5916,6 +6247,7 @@ export type UserUpdateWithoutTechnicalVisitReportsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTechnicalVisitReportsInput = {
@@ -5970,6 +6302,7 @@ export type UserUncheckedUpdateWithoutTechnicalVisitReportsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedMeetingsInput = {
@@ -6023,6 +6356,7 @@ export type UserCreateWithoutCreatedMeetingsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
@@ -6077,6 +6411,7 @@ export type UserUncheckedCreateWithoutCreatedMeetingsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedMeetingsInput = {
@@ -6146,6 +6481,7 @@ export type UserUpdateWithoutCreatedMeetingsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
@@ -6200,6 +6536,7 @@ export type UserUncheckedUpdateWithoutCreatedMeetingsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAdditionalSitesInput = {
@@ -6253,6 +6590,7 @@ export type UserCreateWithoutAdditionalSitesInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAdditionalSitesInput = {
@@ -6307,6 +6645,7 @@ export type UserUncheckedCreateWithoutAdditionalSitesInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAdditionalSitesInput = {
@@ -6381,6 +6720,7 @@ export type UserCreateWithoutAssignedMasonsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAssignedMasonsInput = {
@@ -6435,6 +6775,7 @@ export type UserUncheckedCreateWithoutAssignedMasonsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAssignedMasonsInput = {
@@ -6504,6 +6845,7 @@ export type UserUpdateWithoutAssignedMasonsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedMasonsInput = {
@@ -6558,6 +6900,7 @@ export type UserUncheckedUpdateWithoutAssignedMasonsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGiftLogsInput = {
@@ -6611,6 +6954,7 @@ export type UserCreateWithoutGiftLogsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGiftLogsInput = {
@@ -6665,6 +7009,7 @@ export type UserUncheckedCreateWithoutGiftLogsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGiftLogsInput = {
@@ -6723,6 +7068,7 @@ export type UserCreateWithoutGiftTransfersSentInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGiftTransfersSentInput = {
@@ -6777,6 +7123,7 @@ export type UserUncheckedCreateWithoutGiftTransfersSentInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGiftTransfersSentInput = {
@@ -6835,6 +7182,7 @@ export type UserCreateWithoutGiftTransfersReceivedInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGiftTransfersReceivedInput = {
@@ -6889,6 +7237,7 @@ export type UserUncheckedCreateWithoutGiftTransfersReceivedInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGiftTransfersReceivedInput = {
@@ -6958,6 +7307,7 @@ export type UserUpdateWithoutGiftLogsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGiftLogsInput = {
@@ -7012,6 +7362,7 @@ export type UserUncheckedUpdateWithoutGiftLogsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutGiftTransfersSentInput = {
@@ -7076,6 +7427,7 @@ export type UserUpdateWithoutGiftTransfersSentInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGiftTransfersSentInput = {
@@ -7130,6 +7482,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersSentInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutGiftTransfersReceivedInput = {
@@ -7194,6 +7547,7 @@ export type UserUpdateWithoutGiftTransfersReceivedInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
@@ -7248,6 +7602,7 @@ export type UserUncheckedUpdateWithoutGiftTransfersReceivedInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBagLiftApprovalsInput = {
@@ -7301,6 +7656,7 @@ export type UserCreateWithoutBagLiftApprovalsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBagLiftApprovalsInput = {
@@ -7355,6 +7711,7 @@ export type UserUncheckedCreateWithoutBagLiftApprovalsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBagLiftApprovalsInput = {
@@ -7424,6 +7781,7 @@ export type UserUpdateWithoutBagLiftApprovalsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
@@ -7478,6 +7836,7 @@ export type UserUncheckedUpdateWithoutBagLiftApprovalsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTsoAssignmentsInput = {
@@ -7531,6 +7890,7 @@ export type UserCreateWithoutTsoAssignmentsInput = {
   journeys?: Prisma.JourneyCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
@@ -7585,6 +7945,7 @@ export type UserUncheckedCreateWithoutTsoAssignmentsInput = {
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutUserInput
   journeyOps?: Prisma.JourneyOpUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTsoAssignmentsInput = {
@@ -7654,6 +8015,7 @@ export type UserUpdateWithoutTsoAssignmentsInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
@@ -7708,6 +8070,7 @@ export type UserUncheckedUpdateWithoutTsoAssignmentsInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyCompanyInput = {
@@ -7789,6 +8152,7 @@ export type UserUpdateWithoutCompanyInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -7843,6 +8207,7 @@ export type UserUncheckedUpdateWithoutCompanyInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -7952,6 +8317,7 @@ export type UserUpdateWithoutReportsToInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportsToInput = {
@@ -8006,6 +8372,7 @@ export type UserUncheckedUpdateWithoutReportsToInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutReportsToInput = {
@@ -8087,6 +8454,7 @@ export type UserUpdateWithoutAdditionalSitesInput = {
   journeys?: Prisma.JourneyUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdditionalSitesInput = {
@@ -8141,6 +8509,7 @@ export type UserUncheckedUpdateWithoutAdditionalSitesInput = {
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutUserNestedInput
   journeyOps?: Prisma.JourneyOpUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  verifiedDealers?: Prisma.VerifiedDealerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutAdditionalSitesInput = {
@@ -8204,6 +8573,7 @@ export type UserCountOutputType = {
   journeys: number
   journeyOps: number
   notifications: number
+  verifiedDealers: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -8233,6 +8603,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   journeys?: boolean | UserCountOutputTypeCountJourneysArgs
   journeyOps?: boolean | UserCountOutputTypeCountJourneyOpsArgs
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+  verifiedDealers?: boolean | UserCountOutputTypeCountVerifiedDealersArgs
 }
 
 /**
@@ -8427,6 +8798,13 @@ export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.NotificationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountVerifiedDealersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -8483,6 +8861,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
   journeyOps?: boolean | Prisma.User$journeyOpsArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  verifiedDealers?: boolean | Prisma.User$verifiedDealersArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -8607,6 +8986,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
   journeyOps?: boolean | Prisma.User$journeyOpsArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  verifiedDealers?: boolean | Prisma.User$verifiedDealersArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -8649,6 +9029,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     journeys: Prisma.$JourneyPayload<ExtArgs>[]
     journeyOps: Prisma.$JourneyOpPayload<ExtArgs>[]
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
+    verifiedDealers: Prisma.$VerifiedDealerPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -9099,6 +9480,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   journeys<T extends Prisma.User$journeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$journeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   journeyOps<T extends Prisma.User$journeyOpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$journeyOpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JourneyOpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  verifiedDealers<T extends Prisma.User$verifiedDealersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$verifiedDealersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VerifiedDealerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10190,6 +10572,30 @@ export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
+ * User.verifiedDealers
+ */
+export type User$verifiedDealersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VerifiedDealer
+   */
+  select?: Prisma.VerifiedDealerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VerifiedDealer
+   */
+  omit?: Prisma.VerifiedDealerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VerifiedDealerInclude<ExtArgs> | null
+  where?: Prisma.VerifiedDealerWhereInput
+  orderBy?: Prisma.VerifiedDealerOrderByWithRelationInput | Prisma.VerifiedDealerOrderByWithRelationInput[]
+  cursor?: Prisma.VerifiedDealerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VerifiedDealerScalarFieldEnum | Prisma.VerifiedDealerScalarFieldEnum[]
 }
 
 /**

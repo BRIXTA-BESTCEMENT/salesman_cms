@@ -309,6 +309,7 @@ export type CollectionReportWhereInput = {
   dealerId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  outstandingReports?: Prisma.OutstandingReportListRelationFilter
 }
 
 export type CollectionReportOrderByWithRelationInput = {
@@ -329,6 +330,7 @@ export type CollectionReportOrderByWithRelationInput = {
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   dealer?: Prisma.DealerOrderByWithRelationInput
+  outstandingReports?: Prisma.OutstandingReportOrderByRelationAggregateInput
 }
 
 export type CollectionReportWhereUniqueInput = Prisma.AtLeast<{
@@ -352,6 +354,7 @@ export type CollectionReportWhereUniqueInput = Prisma.AtLeast<{
   dealerId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  outstandingReports?: Prisma.OutstandingReportListRelationFilter
 }, "id">
 
 export type CollectionReportOrderByWithAggregationInput = {
@@ -417,6 +420,7 @@ export type CollectionReportCreateInput = {
   sourceFileName?: string | null
   createdAt?: Date | string
   dealer?: Prisma.DealerCreateNestedOneWithoutCollectionReportsInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutCollectionReportInput
 }
 
 export type CollectionReportUncheckedCreateInput = {
@@ -436,6 +440,7 @@ export type CollectionReportUncheckedCreateInput = {
   sourceFileName?: string | null
   dealerId?: string | null
   createdAt?: Date | string
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutCollectionReportInput
 }
 
 export type CollectionReportUpdateInput = {
@@ -455,6 +460,7 @@ export type CollectionReportUpdateInput = {
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dealer?: Prisma.DealerUpdateOneWithoutCollectionReportsNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutCollectionReportNestedInput
 }
 
 export type CollectionReportUncheckedUpdateInput = {
@@ -474,6 +480,7 @@ export type CollectionReportUncheckedUpdateInput = {
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutCollectionReportNestedInput
 }
 
 export type CollectionReportCreateManyInput = {
@@ -609,6 +616,11 @@ export type CollectionReportSumOrderByAggregateInput = {
   salesPromoterUserId?: Prisma.SortOrder
 }
 
+export type CollectionReportNullableScalarRelationFilter = {
+  is?: Prisma.CollectionReportWhereInput | null
+  isNot?: Prisma.CollectionReportWhereInput | null
+}
+
 export type CollectionReportCreateNestedManyWithoutDealerInput = {
   create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutDealerInput, Prisma.CollectionReportUncheckedCreateWithoutDealerInput> | Prisma.CollectionReportCreateWithoutDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutDealerInput[]
   connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutDealerInput | Prisma.CollectionReportCreateOrConnectWithoutDealerInput[]
@@ -651,6 +663,22 @@ export type CollectionReportUncheckedUpdateManyWithoutDealerNestedInput = {
   deleteMany?: Prisma.CollectionReportScalarWhereInput | Prisma.CollectionReportScalarWhereInput[]
 }
 
+export type CollectionReportCreateNestedOneWithoutOutstandingReportsInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutOutstandingReportsInput, Prisma.CollectionReportUncheckedCreateWithoutOutstandingReportsInput>
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutOutstandingReportsInput
+  connect?: Prisma.CollectionReportWhereUniqueInput
+}
+
+export type CollectionReportUpdateOneWithoutOutstandingReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutOutstandingReportsInput, Prisma.CollectionReportUncheckedCreateWithoutOutstandingReportsInput>
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutOutstandingReportsInput
+  upsert?: Prisma.CollectionReportUpsertWithoutOutstandingReportsInput
+  disconnect?: Prisma.CollectionReportWhereInput | boolean
+  delete?: Prisma.CollectionReportWhereInput | boolean
+  connect?: Prisma.CollectionReportWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CollectionReportUpdateToOneWithWhereWithoutOutstandingReportsInput, Prisma.CollectionReportUpdateWithoutOutstandingReportsInput>, Prisma.CollectionReportUncheckedUpdateWithoutOutstandingReportsInput>
+}
+
 export type CollectionReportCreateWithoutDealerInput = {
   id?: string
   institution?: string | null
@@ -667,6 +695,7 @@ export type CollectionReportCreateWithoutDealerInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutCollectionReportInput
 }
 
 export type CollectionReportUncheckedCreateWithoutDealerInput = {
@@ -685,6 +714,7 @@ export type CollectionReportUncheckedCreateWithoutDealerInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutCollectionReportInput
 }
 
 export type CollectionReportCreateOrConnectWithoutDealerInput = {
@@ -735,6 +765,98 @@ export type CollectionReportScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
 }
 
+export type CollectionReportCreateWithoutOutstandingReportsInput = {
+  id?: string
+  institution?: string | null
+  voucherNo: string
+  voucherDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: string | null
+  remarks?: string | null
+  partyName: string
+  salesPromoterName?: string | null
+  zone?: string | null
+  district?: string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  createdAt?: Date | string
+  dealer?: Prisma.DealerCreateNestedOneWithoutCollectionReportsInput
+}
+
+export type CollectionReportUncheckedCreateWithoutOutstandingReportsInput = {
+  id?: string
+  institution?: string | null
+  voucherNo: string
+  voucherDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: string | null
+  remarks?: string | null
+  partyName: string
+  salesPromoterName?: string | null
+  zone?: string | null
+  district?: string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  dealerId?: string | null
+  createdAt?: Date | string
+}
+
+export type CollectionReportCreateOrConnectWithoutOutstandingReportsInput = {
+  where: Prisma.CollectionReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutOutstandingReportsInput, Prisma.CollectionReportUncheckedCreateWithoutOutstandingReportsInput>
+}
+
+export type CollectionReportUpsertWithoutOutstandingReportsInput = {
+  update: Prisma.XOR<Prisma.CollectionReportUpdateWithoutOutstandingReportsInput, Prisma.CollectionReportUncheckedUpdateWithoutOutstandingReportsInput>
+  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutOutstandingReportsInput, Prisma.CollectionReportUncheckedCreateWithoutOutstandingReportsInput>
+  where?: Prisma.CollectionReportWhereInput
+}
+
+export type CollectionReportUpdateToOneWithWhereWithoutOutstandingReportsInput = {
+  where?: Prisma.CollectionReportWhereInput
+  data: Prisma.XOR<Prisma.CollectionReportUpdateWithoutOutstandingReportsInput, Prisma.CollectionReportUncheckedUpdateWithoutOutstandingReportsInput>
+}
+
+export type CollectionReportUpdateWithoutOutstandingReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
+  voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partyName?: Prisma.StringFieldUpdateOperationsInput | string
+  salesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dealer?: Prisma.DealerUpdateOneWithoutCollectionReportsNestedInput
+}
+
+export type CollectionReportUncheckedUpdateWithoutOutstandingReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
+  voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partyName?: Prisma.StringFieldUpdateOperationsInput | string
+  salesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type CollectionReportCreateManyDealerInput = {
   id?: string
   institution?: string | null
@@ -769,6 +891,7 @@ export type CollectionReportUpdateWithoutDealerInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutCollectionReportNestedInput
 }
 
 export type CollectionReportUncheckedUpdateWithoutDealerInput = {
@@ -787,6 +910,7 @@ export type CollectionReportUncheckedUpdateWithoutDealerInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutCollectionReportNestedInput
 }
 
 export type CollectionReportUncheckedUpdateManyWithoutDealerInput = {
@@ -808,6 +932,35 @@ export type CollectionReportUncheckedUpdateManyWithoutDealerInput = {
 }
 
 
+/**
+ * Count Type CollectionReportCountOutputType
+ */
+
+export type CollectionReportCountOutputType = {
+  outstandingReports: number
+}
+
+export type CollectionReportCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  outstandingReports?: boolean | CollectionReportCountOutputTypeCountOutstandingReportsArgs
+}
+
+/**
+ * CollectionReportCountOutputType without action
+ */
+export type CollectionReportCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CollectionReportCountOutputType
+   */
+  select?: Prisma.CollectionReportCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * CollectionReportCountOutputType without action
+ */
+export type CollectionReportCountOutputTypeCountOutstandingReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OutstandingReportWhereInput
+}
+
 
 export type CollectionReportSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -827,6 +980,8 @@ export type CollectionReportSelect<ExtArgs extends runtime.Types.Extensions.Inte
   dealerId?: boolean
   createdAt?: boolean
   dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  outstandingReports?: boolean | Prisma.CollectionReport$outstandingReportsArgs<ExtArgs>
+  _count?: boolean | Prisma.CollectionReportCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["collectionReport"]>
 
 export type CollectionReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -891,6 +1046,8 @@ export type CollectionReportSelectScalar = {
 export type CollectionReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institution" | "voucherNo" | "voucherDate" | "amount" | "bankAccount" | "remarks" | "partyName" | "salesPromoterName" | "zone" | "district" | "salesPromoterUserId" | "sourceMessageId" | "sourceFileName" | "dealerId" | "createdAt", ExtArgs["result"]["collectionReport"]>
 export type CollectionReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  outstandingReports?: boolean | Prisma.CollectionReport$outstandingReportsArgs<ExtArgs>
+  _count?: boolean | Prisma.CollectionReportCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CollectionReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
@@ -903,6 +1060,7 @@ export type $CollectionReportPayload<ExtArgs extends runtime.Types.Extensions.In
   name: "CollectionReport"
   objects: {
     dealer: Prisma.$DealerPayload<ExtArgs> | null
+    outstandingReports: Prisma.$OutstandingReportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1316,6 +1474,7 @@ readonly fields: CollectionReportFieldRefs;
 export interface Prisma__CollectionReportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   dealer<T extends Prisma.CollectionReport$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectionReport$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  outstandingReports<T extends Prisma.CollectionReport$outstandingReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectionReport$outstandingReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OutstandingReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1773,6 +1932,30 @@ export type CollectionReport$dealerArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.DealerInclude<ExtArgs> | null
   where?: Prisma.DealerWhereInput
+}
+
+/**
+ * CollectionReport.outstandingReports
+ */
+export type CollectionReport$outstandingReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OutstandingReport
+   */
+  select?: Prisma.OutstandingReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OutstandingReport
+   */
+  omit?: Prisma.OutstandingReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OutstandingReportInclude<ExtArgs> | null
+  where?: Prisma.OutstandingReportWhereInput
+  orderBy?: Prisma.OutstandingReportOrderByWithRelationInput | Prisma.OutstandingReportOrderByWithRelationInput[]
+  cursor?: Prisma.OutstandingReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OutstandingReportScalarFieldEnum | Prisma.OutstandingReportScalarFieldEnum[]
 }
 
 /**

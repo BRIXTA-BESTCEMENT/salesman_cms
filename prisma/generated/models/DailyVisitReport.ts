@@ -438,6 +438,7 @@ export type DailyVisitReportWhereInput = {
   salesOrders?: Prisma.SalesOrderListRelationFilter
   permanentJourneyPlan?: Prisma.XOR<Prisma.PermanentJourneyPlanNullableScalarRelationFilter, Prisma.PermanentJourneyPlanWhereInput> | null
   giftAllocationLogs?: Prisma.GiftAllocationLogListRelationFilter
+  outstandingReports?: Prisma.OutstandingReportListRelationFilter
 }
 
 export type DailyVisitReportOrderByWithRelationInput = {
@@ -476,6 +477,7 @@ export type DailyVisitReportOrderByWithRelationInput = {
   salesOrders?: Prisma.SalesOrderOrderByRelationAggregateInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanOrderByWithRelationInput
   giftAllocationLogs?: Prisma.GiftAllocationLogOrderByRelationAggregateInput
+  outstandingReports?: Prisma.OutstandingReportOrderByRelationAggregateInput
 }
 
 export type DailyVisitReportWhereUniqueInput = Prisma.AtLeast<{
@@ -517,6 +519,7 @@ export type DailyVisitReportWhereUniqueInput = Prisma.AtLeast<{
   salesOrders?: Prisma.SalesOrderListRelationFilter
   permanentJourneyPlan?: Prisma.XOR<Prisma.PermanentJourneyPlanNullableScalarRelationFilter, Prisma.PermanentJourneyPlanWhereInput> | null
   giftAllocationLogs?: Prisma.GiftAllocationLogListRelationFilter
+  outstandingReports?: Prisma.OutstandingReportListRelationFilter
 }, "id">
 
 export type DailyVisitReportOrderByWithAggregationInput = {
@@ -623,6 +626,7 @@ export type DailyVisitReportCreateInput = {
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDailyVisitReportInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyVisitReportsInput
   giftAllocationLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUncheckedCreateInput = {
@@ -657,6 +661,7 @@ export type DailyVisitReportUncheckedCreateInput = {
   pjpId?: string | null
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDailyVisitReportInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUpdateInput = {
@@ -691,6 +696,7 @@ export type DailyVisitReportUpdateInput = {
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutDailyVisitReportNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyVisitReportsNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateInput = {
@@ -725,6 +731,7 @@ export type DailyVisitReportUncheckedUpdateInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDailyVisitReportNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportCreateManyInput = {
@@ -1143,6 +1150,22 @@ export type DailyVisitReportUpdateOneWithoutSalesOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DailyVisitReportUpdateToOneWithWhereWithoutSalesOrdersInput, Prisma.DailyVisitReportUpdateWithoutSalesOrdersInput>, Prisma.DailyVisitReportUncheckedUpdateWithoutSalesOrdersInput>
 }
 
+export type DailyVisitReportCreateNestedOneWithoutOutstandingReportsInput = {
+  create?: Prisma.XOR<Prisma.DailyVisitReportCreateWithoutOutstandingReportsInput, Prisma.DailyVisitReportUncheckedCreateWithoutOutstandingReportsInput>
+  connectOrCreate?: Prisma.DailyVisitReportCreateOrConnectWithoutOutstandingReportsInput
+  connect?: Prisma.DailyVisitReportWhereUniqueInput
+}
+
+export type DailyVisitReportUpdateOneWithoutOutstandingReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.DailyVisitReportCreateWithoutOutstandingReportsInput, Prisma.DailyVisitReportUncheckedCreateWithoutOutstandingReportsInput>
+  connectOrCreate?: Prisma.DailyVisitReportCreateOrConnectWithoutOutstandingReportsInput
+  upsert?: Prisma.DailyVisitReportUpsertWithoutOutstandingReportsInput
+  disconnect?: Prisma.DailyVisitReportWhereInput | boolean
+  delete?: Prisma.DailyVisitReportWhereInput | boolean
+  connect?: Prisma.DailyVisitReportWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DailyVisitReportUpdateToOneWithWhereWithoutOutstandingReportsInput, Prisma.DailyVisitReportUpdateWithoutOutstandingReportsInput>, Prisma.DailyVisitReportUncheckedUpdateWithoutOutstandingReportsInput>
+}
+
 export type DailyVisitReportCreateNestedOneWithoutGiftAllocationLogsInput = {
   create?: Prisma.XOR<Prisma.DailyVisitReportCreateWithoutGiftAllocationLogsInput, Prisma.DailyVisitReportUncheckedCreateWithoutGiftAllocationLogsInput>
   connectOrCreate?: Prisma.DailyVisitReportCreateOrConnectWithoutGiftAllocationLogsInput
@@ -1190,6 +1213,7 @@ export type DailyVisitReportCreateWithoutUserInput = {
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDailyVisitReportInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyVisitReportsInput
   giftAllocationLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUncheckedCreateWithoutUserInput = {
@@ -1223,6 +1247,7 @@ export type DailyVisitReportUncheckedCreateWithoutUserInput = {
   pjpId?: string | null
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDailyVisitReportInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportCreateOrConnectWithoutUserInput = {
@@ -1317,6 +1342,7 @@ export type DailyVisitReportCreateWithoutDealerInput = {
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDailyVisitReportInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyVisitReportsInput
   giftAllocationLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUncheckedCreateWithoutDealerInput = {
@@ -1350,6 +1376,7 @@ export type DailyVisitReportUncheckedCreateWithoutDealerInput = {
   pjpId?: string | null
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDailyVisitReportInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportCreateOrConnectWithoutDealerInput = {
@@ -1393,6 +1420,7 @@ export type DailyVisitReportCreateWithoutSubDealerInput = {
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDailyVisitReportInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyVisitReportsInput
   giftAllocationLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUncheckedCreateWithoutSubDealerInput = {
@@ -1426,6 +1454,7 @@ export type DailyVisitReportUncheckedCreateWithoutSubDealerInput = {
   pjpId?: string | null
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDailyVisitReportInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportCreateOrConnectWithoutSubDealerInput = {
@@ -1501,6 +1530,7 @@ export type DailyVisitReportCreateWithoutPermanentJourneyPlanInput = {
   user: Prisma.UserCreateNestedOneWithoutDailyVisitReportsInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDailyVisitReportInput
   giftAllocationLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUncheckedCreateWithoutPermanentJourneyPlanInput = {
@@ -1534,6 +1564,7 @@ export type DailyVisitReportUncheckedCreateWithoutPermanentJourneyPlanInput = {
   updatedAt?: Date | string
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDailyVisitReportInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportCreateOrConnectWithoutPermanentJourneyPlanInput = {
@@ -1593,6 +1624,7 @@ export type DailyVisitReportCreateWithoutSalesOrdersInput = {
   user: Prisma.UserCreateNestedOneWithoutDailyVisitReportsInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyVisitReportsInput
   giftAllocationLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUncheckedCreateWithoutSalesOrdersInput = {
@@ -1626,6 +1658,7 @@ export type DailyVisitReportUncheckedCreateWithoutSalesOrdersInput = {
   updatedAt?: Date | string
   pjpId?: string | null
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDealerVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportCreateOrConnectWithoutSalesOrdersInput = {
@@ -1675,6 +1708,7 @@ export type DailyVisitReportUpdateWithoutSalesOrdersInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutDailyVisitReportsNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyVisitReportsNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateWithoutSalesOrdersInput = {
@@ -1707,6 +1741,159 @@ export type DailyVisitReportUncheckedUpdateWithoutSalesOrdersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportNestedInput
+}
+
+export type DailyVisitReportCreateWithoutOutstandingReportsInput = {
+  id?: string
+  reportDate: Date | string
+  dealerType: string
+  location: string
+  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  visitType: string
+  dealerTotalPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dealerBestPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DailyVisitReportCreatebrandSellingInput | string[]
+  contactPerson?: string | null
+  contactPersonPhoneNo?: string | null
+  todayOrderMt: runtime.Decimal | runtime.DecimalJsLike | number | string
+  todayCollectionRupees: runtime.Decimal | runtime.DecimalJsLike | number | string
+  overdueAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  feedbacks: string
+  solutionBySalesperson?: string | null
+  anyRemarks?: string | null
+  checkInTime: Date | string
+  checkOutTime?: Date | string | null
+  timeSpentinLoc?: string | null
+  inTimeImageUrl?: string | null
+  outTimeImageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  dealer?: Prisma.DealerCreateNestedOneWithoutDailyVisitReportsAsDealerInput
+  subDealer?: Prisma.DealerCreateNestedOneWithoutDailyVisitReportsAsSubDealerInput
+  user: Prisma.UserCreateNestedOneWithoutDailyVisitReportsInput
+  salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDailyVisitReportInput
+  permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyVisitReportsInput
+  giftAllocationLogs?: Prisma.GiftAllocationLogCreateNestedManyWithoutDealerVisitReportInput
+}
+
+export type DailyVisitReportUncheckedCreateWithoutOutstandingReportsInput = {
+  id?: string
+  userId: number
+  reportDate: Date | string
+  dealerType: string
+  dealerId?: string | null
+  subDealerId?: string | null
+  location: string
+  latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
+  visitType: string
+  dealerTotalPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dealerBestPotential: runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DailyVisitReportCreatebrandSellingInput | string[]
+  contactPerson?: string | null
+  contactPersonPhoneNo?: string | null
+  todayOrderMt: runtime.Decimal | runtime.DecimalJsLike | number | string
+  todayCollectionRupees: runtime.Decimal | runtime.DecimalJsLike | number | string
+  overdueAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  feedbacks: string
+  solutionBySalesperson?: string | null
+  anyRemarks?: string | null
+  checkInTime: Date | string
+  checkOutTime?: Date | string | null
+  timeSpentinLoc?: string | null
+  inTimeImageUrl?: string | null
+  outTimeImageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pjpId?: string | null
+  salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDailyVisitReportInput
+  giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedCreateNestedManyWithoutDealerVisitReportInput
+}
+
+export type DailyVisitReportCreateOrConnectWithoutOutstandingReportsInput = {
+  where: Prisma.DailyVisitReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.DailyVisitReportCreateWithoutOutstandingReportsInput, Prisma.DailyVisitReportUncheckedCreateWithoutOutstandingReportsInput>
+}
+
+export type DailyVisitReportUpsertWithoutOutstandingReportsInput = {
+  update: Prisma.XOR<Prisma.DailyVisitReportUpdateWithoutOutstandingReportsInput, Prisma.DailyVisitReportUncheckedUpdateWithoutOutstandingReportsInput>
+  create: Prisma.XOR<Prisma.DailyVisitReportCreateWithoutOutstandingReportsInput, Prisma.DailyVisitReportUncheckedCreateWithoutOutstandingReportsInput>
+  where?: Prisma.DailyVisitReportWhereInput
+}
+
+export type DailyVisitReportUpdateToOneWithWhereWithoutOutstandingReportsInput = {
+  where?: Prisma.DailyVisitReportWhereInput
+  data: Prisma.XOR<Prisma.DailyVisitReportUpdateWithoutOutstandingReportsInput, Prisma.DailyVisitReportUncheckedUpdateWithoutOutstandingReportsInput>
+}
+
+export type DailyVisitReportUpdateWithoutOutstandingReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dealerType?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  visitType?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerTotalPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  dealerBestPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DailyVisitReportUpdatebrandSellingInput | string[]
+  contactPerson?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPersonPhoneNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  todayOrderMt?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  todayCollectionRupees?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  overdueAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  feedbacks?: Prisma.StringFieldUpdateOperationsInput | string
+  solutionBySalesperson?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anyRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkInTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkOutTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  timeSpentinLoc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inTimeImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outTimeImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dealer?: Prisma.DealerUpdateOneWithoutDailyVisitReportsAsDealerNestedInput
+  subDealer?: Prisma.DealerUpdateOneWithoutDailyVisitReportsAsSubDealerNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutDailyVisitReportsNestedInput
+  salesOrders?: Prisma.SalesOrderUpdateManyWithoutDailyVisitReportNestedInput
+  permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyVisitReportsNestedInput
+  giftAllocationLogs?: Prisma.GiftAllocationLogUpdateManyWithoutDealerVisitReportNestedInput
+}
+
+export type DailyVisitReportUncheckedUpdateWithoutOutstandingReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dealerType?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  visitType?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerTotalPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  dealerBestPotential?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  brandSelling?: Prisma.DailyVisitReportUpdatebrandSellingInput | string[]
+  contactPerson?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPersonPhoneNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  todayOrderMt?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  todayCollectionRupees?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  overdueAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  feedbacks?: Prisma.StringFieldUpdateOperationsInput | string
+  solutionBySalesperson?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anyRemarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkInTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkOutTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  timeSpentinLoc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inTimeImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outTimeImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDailyVisitReportNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDealerVisitReportNestedInput
 }
 
@@ -1741,6 +1928,7 @@ export type DailyVisitReportCreateWithoutGiftAllocationLogsInput = {
   user: Prisma.UserCreateNestedOneWithoutDailyVisitReportsInput
   salesOrders?: Prisma.SalesOrderCreateNestedManyWithoutDailyVisitReportInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyVisitReportsInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportUncheckedCreateWithoutGiftAllocationLogsInput = {
@@ -1774,6 +1962,7 @@ export type DailyVisitReportUncheckedCreateWithoutGiftAllocationLogsInput = {
   updatedAt?: Date | string
   pjpId?: string | null
   salesOrders?: Prisma.SalesOrderUncheckedCreateNestedManyWithoutDailyVisitReportInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutDailyVisitReportInput
 }
 
 export type DailyVisitReportCreateOrConnectWithoutGiftAllocationLogsInput = {
@@ -1823,6 +2012,7 @@ export type DailyVisitReportUpdateWithoutGiftAllocationLogsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutDailyVisitReportsNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutDailyVisitReportNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyVisitReportsNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateWithoutGiftAllocationLogsInput = {
@@ -1856,6 +2046,7 @@ export type DailyVisitReportUncheckedUpdateWithoutGiftAllocationLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDailyVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportCreateManyUserInput = {
@@ -1920,6 +2111,7 @@ export type DailyVisitReportUpdateWithoutUserInput = {
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutDailyVisitReportNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyVisitReportsNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateWithoutUserInput = {
@@ -1953,6 +2145,7 @@ export type DailyVisitReportUncheckedUpdateWithoutUserInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDailyVisitReportNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateManyWithoutUserInput = {
@@ -2079,6 +2272,7 @@ export type DailyVisitReportUpdateWithoutDealerInput = {
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutDailyVisitReportNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyVisitReportsNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateWithoutDealerInput = {
@@ -2112,6 +2306,7 @@ export type DailyVisitReportUncheckedUpdateWithoutDealerInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDailyVisitReportNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateManyWithoutDealerInput = {
@@ -2176,6 +2371,7 @@ export type DailyVisitReportUpdateWithoutSubDealerInput = {
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutDailyVisitReportNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyVisitReportsNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateWithoutSubDealerInput = {
@@ -2209,6 +2405,7 @@ export type DailyVisitReportUncheckedUpdateWithoutSubDealerInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDailyVisitReportNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateManyWithoutSubDealerInput = {
@@ -2304,6 +2501,7 @@ export type DailyVisitReportUpdateWithoutPermanentJourneyPlanInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutDailyVisitReportsNestedInput
   salesOrders?: Prisma.SalesOrderUpdateManyWithoutDailyVisitReportNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateWithoutPermanentJourneyPlanInput = {
@@ -2337,6 +2535,7 @@ export type DailyVisitReportUncheckedUpdateWithoutPermanentJourneyPlanInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salesOrders?: Prisma.SalesOrderUncheckedUpdateManyWithoutDailyVisitReportNestedInput
   giftAllocationLogs?: Prisma.GiftAllocationLogUncheckedUpdateManyWithoutDealerVisitReportNestedInput
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportNestedInput
 }
 
 export type DailyVisitReportUncheckedUpdateManyWithoutPermanentJourneyPlanInput = {
@@ -2378,11 +2577,13 @@ export type DailyVisitReportUncheckedUpdateManyWithoutPermanentJourneyPlanInput 
 export type DailyVisitReportCountOutputType = {
   salesOrders: number
   giftAllocationLogs: number
+  outstandingReports: number
 }
 
 export type DailyVisitReportCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salesOrders?: boolean | DailyVisitReportCountOutputTypeCountSalesOrdersArgs
   giftAllocationLogs?: boolean | DailyVisitReportCountOutputTypeCountGiftAllocationLogsArgs
+  outstandingReports?: boolean | DailyVisitReportCountOutputTypeCountOutstandingReportsArgs
 }
 
 /**
@@ -2407,6 +2608,13 @@ export type DailyVisitReportCountOutputTypeCountSalesOrdersArgs<ExtArgs extends 
  */
 export type DailyVisitReportCountOutputTypeCountGiftAllocationLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.GiftAllocationLogWhereInput
+}
+
+/**
+ * DailyVisitReportCountOutputType without action
+ */
+export type DailyVisitReportCountOutputTypeCountOutstandingReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OutstandingReportWhereInput
 }
 
 
@@ -2446,6 +2654,7 @@ export type DailyVisitReportSelect<ExtArgs extends runtime.Types.Extensions.Inte
   salesOrders?: boolean | Prisma.DailyVisitReport$salesOrdersArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyVisitReport$permanentJourneyPlanArgs<ExtArgs>
   giftAllocationLogs?: boolean | Prisma.DailyVisitReport$giftAllocationLogsArgs<ExtArgs>
+  outstandingReports?: boolean | Prisma.DailyVisitReport$outstandingReportsArgs<ExtArgs>
   _count?: boolean | Prisma.DailyVisitReportCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["dailyVisitReport"]>
 
@@ -2561,6 +2770,7 @@ export type DailyVisitReportInclude<ExtArgs extends runtime.Types.Extensions.Int
   salesOrders?: boolean | Prisma.DailyVisitReport$salesOrdersArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyVisitReport$permanentJourneyPlanArgs<ExtArgs>
   giftAllocationLogs?: boolean | Prisma.DailyVisitReport$giftAllocationLogsArgs<ExtArgs>
+  outstandingReports?: boolean | Prisma.DailyVisitReport$outstandingReportsArgs<ExtArgs>
   _count?: boolean | Prisma.DailyVisitReportCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DailyVisitReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2585,6 +2795,7 @@ export type $DailyVisitReportPayload<ExtArgs extends runtime.Types.Extensions.In
     salesOrders: Prisma.$SalesOrderPayload<ExtArgs>[]
     permanentJourneyPlan: Prisma.$PermanentJourneyPlanPayload<ExtArgs> | null
     giftAllocationLogs: Prisma.$GiftAllocationLogPayload<ExtArgs>[]
+    outstandingReports: Prisma.$OutstandingReportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3016,6 +3227,7 @@ export interface Prisma__DailyVisitReportClient<T, Null = never, ExtArgs extends
   salesOrders<T extends Prisma.DailyVisitReport$salesOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyVisitReport$salesOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalesOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permanentJourneyPlan<T extends Prisma.DailyVisitReport$permanentJourneyPlanArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyVisitReport$permanentJourneyPlanArgs<ExtArgs>>): Prisma.Prisma__PermanentJourneyPlanClient<runtime.Types.Result.GetResult<Prisma.$PermanentJourneyPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   giftAllocationLogs<T extends Prisma.DailyVisitReport$giftAllocationLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyVisitReport$giftAllocationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GiftAllocationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  outstandingReports<T extends Prisma.DailyVisitReport$outstandingReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyVisitReport$outstandingReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OutstandingReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3572,6 +3784,30 @@ export type DailyVisitReport$giftAllocationLogsArgs<ExtArgs extends runtime.Type
   take?: number
   skip?: number
   distinct?: Prisma.GiftAllocationLogScalarFieldEnum | Prisma.GiftAllocationLogScalarFieldEnum[]
+}
+
+/**
+ * DailyVisitReport.outstandingReports
+ */
+export type DailyVisitReport$outstandingReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OutstandingReport
+   */
+  select?: Prisma.OutstandingReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OutstandingReport
+   */
+  omit?: Prisma.OutstandingReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OutstandingReportInclude<ExtArgs> | null
+  where?: Prisma.OutstandingReportWhereInput
+  orderBy?: Prisma.OutstandingReportOrderByWithRelationInput | Prisma.OutstandingReportOrderByWithRelationInput[]
+  cursor?: Prisma.OutstandingReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OutstandingReportScalarFieldEnum | Prisma.OutstandingReportScalarFieldEnum[]
 }
 
 /**
