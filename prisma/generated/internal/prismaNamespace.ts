@@ -429,7 +429,7 @@ export const ModelName = {
   MasonsOnMeetings: 'MasonsOnMeetings',
   KYCSubmission: 'KYCSubmission',
   TSOAssignment: 'TSOAssignment',
-  LogisticsGateIO: 'LogisticsGateIO',
+  LogisticsIO: 'LogisticsIO',
   EmailReport: 'EmailReport',
   Aoi: 'Aoi',
   AoiGridCell: 'AoiGridCell',
@@ -454,7 +454,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "user" | "dealer" | "verifiedDealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "collectionReport" | "outstandingReport" | "projectionVsActualReport" | "projectionReport" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsGateIO" | "emailReport" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
+    modelProps: "company" | "user" | "dealer" | "verifiedDealer" | "notification" | "dailyVisitReport" | "permanentJourneyPlan" | "salesmanAttendance" | "salesmanLeaveApplication" | "competitionReport" | "geoTracking" | "journeyOp" | "journey" | "journeyBreadcrumb" | "syncState" | "dailyTask" | "salesOrder" | "collectionReport" | "outstandingReport" | "projectionVsActualReport" | "projectionReport" | "dealerReportsAndScores" | "rating" | "brand" | "dealerBrandMapping" | "tally_raw" | "technicalVisitReport" | "tSOMeeting" | "technicalSite" | "mason_PC_Side" | "giftAllocationLog" | "otpVerification" | "authSession" | "rewards" | "rewardCategory" | "schemesOffers" | "bagLift" | "rewardRedemption" | "pointsLedger" | "schemeSlabs" | "masonSlabAchievements" | "masonOnScheme" | "masonsOnMeetings" | "kYCSubmission" | "tSOAssignment" | "logisticsIO" | "emailReport" | "aoi" | "aoiGridCell" | "satelliteScene" | "gridChangeScore" | "highresScene" | "detectedBuilding" | "constructionSite" | "tsoVisit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3788,77 +3788,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    LogisticsGateIO: {
-      payload: Prisma.$LogisticsGateIOPayload<ExtArgs>
-      fields: Prisma.LogisticsGateIOFieldRefs
+    LogisticsIO: {
+      payload: Prisma.$LogisticsIOPayload<ExtArgs>
+      fields: Prisma.LogisticsIOFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.LogisticsGateIOFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload> | null
+          args: Prisma.LogisticsIOFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.LogisticsGateIOFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>
+          args: Prisma.LogisticsIOFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>
         }
         findFirst: {
-          args: Prisma.LogisticsGateIOFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload> | null
+          args: Prisma.LogisticsIOFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.LogisticsGateIOFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>
+          args: Prisma.LogisticsIOFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>
         }
         findMany: {
-          args: Prisma.LogisticsGateIOFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>[]
+          args: Prisma.LogisticsIOFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>[]
         }
         create: {
-          args: Prisma.LogisticsGateIOCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>
+          args: Prisma.LogisticsIOCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>
         }
         createMany: {
-          args: Prisma.LogisticsGateIOCreateManyArgs<ExtArgs>
+          args: Prisma.LogisticsIOCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.LogisticsGateIOCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>[]
+          args: Prisma.LogisticsIOCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>[]
         }
         delete: {
-          args: Prisma.LogisticsGateIODeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>
+          args: Prisma.LogisticsIODeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>
         }
         update: {
-          args: Prisma.LogisticsGateIOUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>
+          args: Prisma.LogisticsIOUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>
         }
         deleteMany: {
-          args: Prisma.LogisticsGateIODeleteManyArgs<ExtArgs>
+          args: Prisma.LogisticsIODeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.LogisticsGateIOUpdateManyArgs<ExtArgs>
+          args: Prisma.LogisticsIOUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.LogisticsGateIOUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>[]
+          args: Prisma.LogisticsIOUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>[]
         }
         upsert: {
-          args: Prisma.LogisticsGateIOUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsGateIOPayload>
+          args: Prisma.LogisticsIOUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogisticsIOPayload>
         }
         aggregate: {
-          args: Prisma.LogisticsGateIOAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateLogisticsGateIO>
+          args: Prisma.LogisticsIOAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLogisticsIO>
         }
         groupBy: {
-          args: Prisma.LogisticsGateIOGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.LogisticsGateIOGroupByOutputType>[]
+          args: Prisma.LogisticsIOGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogisticsIOGroupByOutputType>[]
         }
         count: {
-          args: Prisma.LogisticsGateIOCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.LogisticsGateIOCountAggregateOutputType> | number
+          args: Prisma.LogisticsIOCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogisticsIOCountAggregateOutputType> | number
         }
       }
     }
@@ -5512,7 +5512,7 @@ export const TSOAssignmentScalarFieldEnum = {
 export type TSOAssignmentScalarFieldEnum = (typeof TSOAssignmentScalarFieldEnum)[keyof typeof TSOAssignmentScalarFieldEnum]
 
 
-export const LogisticsGateIOScalarFieldEnum = {
+export const LogisticsIOScalarFieldEnum = {
   id: 'id',
   zone: 'zone',
   district: 'district',
@@ -5534,11 +5534,20 @@ export const LogisticsGateIOScalarFieldEnum = {
   diffGrossWtInvoiceDT: 'diffGrossWtInvoiceDT',
   diffInvoiceDTGateOut: 'diffInvoiceDTGateOut',
   diffGateInGateOut: 'diffGateInGateOut',
+  purpose: 'purpose',
+  typeOfMaterials: 'typeOfMaterials',
+  vehicleNumber: 'vehicleNumber',
+  storeDate: 'storeDate',
+  storeTime: 'storeTime',
+  noOfInvoice: 'noOfInvoice',
+  partyName: 'partyName',
+  invoiceNos: 'invoiceNos',
+  billNos: 'billNos',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type LogisticsGateIOScalarFieldEnum = (typeof LogisticsGateIOScalarFieldEnum)[keyof typeof LogisticsGateIOScalarFieldEnum]
+export type LogisticsIOScalarFieldEnum = (typeof LogisticsIOScalarFieldEnum)[keyof typeof LogisticsIOScalarFieldEnum]
 
 
 export const EmailReportScalarFieldEnum = {
@@ -6015,7 +6024,7 @@ export type GlobalOmitConfig = {
   masonsOnMeetings?: Prisma.MasonsOnMeetingsOmit
   kYCSubmission?: Prisma.KYCSubmissionOmit
   tSOAssignment?: Prisma.TSOAssignmentOmit
-  logisticsGateIO?: Prisma.LogisticsGateIOOmit
+  logisticsIO?: Prisma.LogisticsIOOmit
   emailReport?: Prisma.EmailReportOmit
   aoi?: Prisma.AoiOmit
   aoiGridCell?: Prisma.AoiGridCellOmit

@@ -1456,7 +1456,7 @@ model TSOAssignment {
   @@map("tso_assignments")
 }
 
-model LogisticsGateIO {
+model LogisticsIO {
   id String @id @default(uuid())
   zone        String? @db.VarChar(255)
   district    String? @db.VarChar(255)
@@ -1479,10 +1479,20 @@ model LogisticsGateIO {
   diffInvoiceDTGateOut String? @db.VarChar(100)
   diffGateInGateOut String? @db.VarChar(100)
 
+  purpose              String?   @db.VarChar(255)
+  typeOfMaterials      String?   @map("type_of_materials") @db.VarChar(255)
+  vehicleNumber        String?   @map("vehicle_number") @db.VarChar(100)
+  storeDate            DateTime? @map("store_date") @db.Date
+  storeTime            String?   @map("store_time") @db.VarChar(50)
+  noOfInvoice          Int?      @map("no_of_invoice")
+  partyName            String?   @map("party_name") @db.VarChar(255)
+  invoiceNos           String[]  @map("invoice_nos") // String array
+  billNos              String[]  @map("bill_nos")    // String array
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("logistics_gate_io")
+  @@map("logistics_io")
 }
 
 model EmailReport {

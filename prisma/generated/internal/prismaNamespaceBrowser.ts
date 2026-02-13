@@ -96,7 +96,7 @@ export const ModelName = {
   MasonsOnMeetings: 'MasonsOnMeetings',
   KYCSubmission: 'KYCSubmission',
   TSOAssignment: 'TSOAssignment',
-  LogisticsGateIO: 'LogisticsGateIO',
+  LogisticsIO: 'LogisticsIO',
   EmailReport: 'EmailReport',
   Aoi: 'Aoi',
   AoiGridCell: 'AoiGridCell',
@@ -1069,7 +1069,7 @@ export const TSOAssignmentScalarFieldEnum = {
 export type TSOAssignmentScalarFieldEnum = (typeof TSOAssignmentScalarFieldEnum)[keyof typeof TSOAssignmentScalarFieldEnum]
 
 
-export const LogisticsGateIOScalarFieldEnum = {
+export const LogisticsIOScalarFieldEnum = {
   id: 'id',
   zone: 'zone',
   district: 'district',
@@ -1091,11 +1091,20 @@ export const LogisticsGateIOScalarFieldEnum = {
   diffGrossWtInvoiceDT: 'diffGrossWtInvoiceDT',
   diffInvoiceDTGateOut: 'diffInvoiceDTGateOut',
   diffGateInGateOut: 'diffGateInGateOut',
+  purpose: 'purpose',
+  typeOfMaterials: 'typeOfMaterials',
+  vehicleNumber: 'vehicleNumber',
+  storeDate: 'storeDate',
+  storeTime: 'storeTime',
+  noOfInvoice: 'noOfInvoice',
+  partyName: 'partyName',
+  invoiceNos: 'invoiceNos',
+  billNos: 'billNos',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type LogisticsGateIOScalarFieldEnum = (typeof LogisticsGateIOScalarFieldEnum)[keyof typeof LogisticsGateIOScalarFieldEnum]
+export type LogisticsIOScalarFieldEnum = (typeof LogisticsIOScalarFieldEnum)[keyof typeof LogisticsIOScalarFieldEnum]
 
 
 export const EmailReportScalarFieldEnum = {
