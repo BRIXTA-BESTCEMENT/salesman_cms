@@ -67,8 +67,8 @@ export interface DashboardPermissions {
     dealerScores: boolean;
     salesmanRatings: boolean;
   };
-  logisticsGateIO: {
-    gateIO: boolean;
+  logisticsIO: {
+    records: boolean;
   };
 
   // Account section
@@ -130,8 +130,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -188,8 +188,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -246,8 +246,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -306,8 +306,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -364,8 +364,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -422,8 +422,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -480,8 +480,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -538,8 +538,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: true,
       salesmanRatings: true,
     },
-    logisticsGateIO: {
-      gateIO: true,
+    logisticsIO: {
+      records: true,
     },
     account: true,
     raiseAQuery: true,
@@ -598,8 +598,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: false,
       salesmanRatings: false,
     },
-    logisticsGateIO: {
-      gateIO: false,
+    logisticsIO: {
+      records: false,
     },
     account: true,
     raiseAQuery: true,
@@ -656,8 +656,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: false,
       salesmanRatings: false,
     },
-    logisticsGateIO: {
-      gateIO: false,
+    logisticsIO: {
+      records: false,
     },
     account: true,
     raiseAQuery: true,
@@ -714,8 +714,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dealerScores: false,
       salesmanRatings: false,
     },
-    logisticsGateIO: {
-      gateIO: false,
+    logisticsIO: {
+      records: false,
     },
     account: true,
     raiseAQuery: true,

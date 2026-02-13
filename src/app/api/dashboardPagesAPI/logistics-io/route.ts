@@ -1,11 +1,11 @@
-// src/app/api/dashboardPagesAPI/logistics-gate-io/route.ts
+// src/app/api/dashboardPagesAPI/logistics-io/route.ts
 import 'server-only';
 export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { z } from 'zod';
-import { logisticsGateIOSchema } from '@/lib/shared-zod-schema';
+import { logisticsIOSchema } from '@/lib/shared-zod-schema';
 
 const allowedRoles = [
   'president', 
@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
     let whereClause: any = {};
 
     // Date Filter (Applied to createdAt to capture all entries created in range)
-    // You could also change this to 'gateInDate' if preferred, but createdAt is safer for audit logs.
     if (startDateParam) {
       const start = new Date(startDateParam);
       const end = endDateParam ? new Date(endDateParam) : new Date(startDateParam);
@@ -74,7 +73,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 4. Fetch Data
-    const logisticsRecords = await prisma.logisticsGateIO.findMany({
+    const logisticsRecords = await prisma.logisticsIO.findMany({
       where: whereClause,
       orderBy: {
         createdAt: 'desc', // Newest first
@@ -82,32 +81,42 @@ export async function GET(request: NextRequest) {
     });
 
     // 5. Map Data to Schema
-    // We need to convert Date objects to ISO strings to satisfy the Zod schema
     const formattedRecords = logisticsRecords.map((record: any) => ({
       id: record.id,
       zone: record.zone,
       district: record.district,
       destination: record.destination,
 
+      purpose: record.purpose ?? null,
+      typeOfMaterials: record.typeOfMaterials ?? null,
+      vehicleNumber: record.vehicleNumber ?? null,
+      noOfInvoice: record.noOfInvoice ?? null,
+      partyName: record.partyName ?? null,
+      invoiceNos: Array.isArray(record.invoiceNos) ? record.invoiceNos : [],
+      billNos: Array.isArray(record.billNos) ? record.billNos : [],
+      storeDate: record.storeDate?.toISOString().split('T')[0] ?? null,
+      storeTime: record.storeTime ?? null,
+
       // Dates: Convert to String (ISO) or null
       doOrderDate: record.doOrderDate?.toISOString().split('T')[0] ?? null,
-      doOrderTime: record.doOrderTime,
+      doOrderTime: record.doOrderTime ?? null,
       gateInDate: record.gateInDate?.toISOString().split('T')[0] ?? null,
-      gateInTime: record.gateInTime,
-      processingTime: record.processingTime,
+      gateInTime: record.gateInTime ?? null,
+      processingTime: record.processingTime ?? null,
       wbInDate: record.wbInDate?.toISOString().split('T')[0] ?? null,
-      wbInTime: record.wbInTime,
-      diffGateInTareWt: record.diffGateInTareWt,
+      wbInTime: record.wbInTime ?? null,
+      diffGateInTareWt: record.diffGateInTareWt ?? null,
+      
       wbOutDate: record.wbOutDate?.toISOString().split('T')[0] ?? null,
-      wbOutTime: record.wbOutTime,
-      diffTareWtGrossWt: record.diffTareWtGrossWt,
+      wbOutTime: record.wbOutTime ?? null,
+      diffTareWtGrossWt: record.diffTareWtGrossWt ?? null,
       gateOutDate: record.gateOutDate?.toISOString().split('T')[0] ?? null,
-      gateOutTime: record.gateOutTime,
+      gateOutTime: record.gateOutTime ?? null,
 
-      diffGrossWtGateOut: record.diffGrossWtGateOut,
-      diffGrossWtInvoiceDT: record.diffGrossWtInvoiceDT,
-      diffInvoiceDTGateOut: record.diffInvoiceDTGateOut,
-      diffGateInGateOut: record.diffGateInGateOut,
+      diffGrossWtGateOut: record.diffGrossWtGateOut ?? null,
+      diffGrossWtInvoiceDT: record.diffGrossWtInvoiceDT ?? null,
+      diffInvoiceDTGateOut: record.diffInvoiceDTGateOut ?? null,
+      diffGateInGateOut: record.diffGateInGateOut ?? null,
 
       // Timestamps
       createdAt: record.createdAt.toISOString(),
@@ -115,7 +124,7 @@ export async function GET(request: NextRequest) {
     }));
 
     // 6. Zod Validation
-    const validatedData = z.array(logisticsGateIOSchema).parse(formattedRecords);
+    const validatedData = z.array(logisticsIOSchema).parse(formattedRecords);
 
     return NextResponse.json(validatedData, { status: 200 });
 

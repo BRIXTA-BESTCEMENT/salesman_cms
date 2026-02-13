@@ -970,28 +970,38 @@ export const masonSlabAchievementSchema = z.object({
   pointsAwarded: z.number().int(),
 });
 
-export const logisticsGateIOSchema = z.object({
+export const logisticsIOSchema = z.object({
   id: z.string(),
   zone: z.string().nullable().optional(),
   district: z.string().nullable().optional(),
   destination: z.string().nullable().optional(),
-  doOrderDate: z.string().nullable(),
-  doOrderTime: z.string().nullable(),
-  gateInDate: z.string().nullable(),
-  gateInTime: z.string().nullable(),
-  processingTime: z.string().nullable(),
-  wbInDate: z.string().nullable(),
-  wbInTime: z.string().nullable(),
-  diffGateInTareWt: z.string().nullable(),
-  wbOutDate: z.string().nullable(),
-  wbOutTime: z.string().nullable(),
-  diffTareWtGrossWt: z.string().nullable(),
-  gateOutDate: z.string().nullable(),
-  gateOutTime: z.string().nullable(),
-  diffGrossWtGateOut: z.string().nullable(),
-  diffGrossWtInvoiceDT: z.string().nullable(),
-  diffInvoiceDTGateOut: z.string().nullable(),
-  diffGateInGateOut: z.string().nullable(),
+  purpose: z.string().nullable().optional(),
+  typeOfMaterials: z.string().nullable().optional(),
+  vehicleNumber: z.string().nullable().optional(),
+  noOfInvoice: z.number().nullable().optional(),
+  partyName: z.string().nullable().optional(),
+  invoiceNos: z.array(z.string()).nullable().optional(),
+  billNos: z.array(z.string()).nullable().optional(),
+  storeDate: z.string().nullable().optional(),
+  storeTime: z.string().nullable().optional(),
+  doOrderDate: z.string().nullable().optional(),
+  doOrderTime: z.string().nullable().optional(),
+  gateInDate: z.string().nullable().optional(),
+  gateInTime: z.string().nullable().optional(),
+  processingTime: z.string().nullable().optional(),
+  wbInDate: z.string().nullable().optional(),
+  wbInTime: z.string().nullable().optional(),
+  diffGateInTareWt: z.string().nullable().optional(),
+  wbOutDate: z.string().nullable().optional(),
+  wbOutTime: z.string().nullable().optional(),
+  diffTareWtGrossWt: z.string().nullable().optional(),
+  gateOutDate: z.string().nullable().optional(),
+  gateOutTime: z.string().nullable().optional(),
+  diffGrossWtGateOut: z.string().nullable().optional(),
+  diffGrossWtInvoiceDT: z.string().nullable().optional(),
+  diffInvoiceDTGateOut: z.string().nullable().optional(),
+  diffGateInGateOut: z.string().nullable().optional(),
+  
   createdAt: z.string(), // ISO String
   updatedAt: z.string(), // ISO String
 });
@@ -1036,4 +1046,4 @@ export type AuthSessionSchema = z.infer<typeof authSessionSchema>;
 export type SchemeSlabsSchema = z.infer<typeof schemeSlabsSchema>;
 export type MasonSlabAchievementSchema = z.infer<typeof masonSlabAchievementSchema>;
 
-export type LogisticsGateIOSchema = z.infer<typeof logisticsGateIOSchema>;
+export type LogisticsIOSchema = z.infer<typeof logisticsIOSchema>;

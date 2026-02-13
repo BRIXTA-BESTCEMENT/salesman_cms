@@ -1478,7 +1478,6 @@ model LogisticsIO {
   diffGrossWtInvoiceDT String? @db.VarChar(100)
   diffInvoiceDTGateOut String? @db.VarChar(100)
   diffGateInGateOut String? @db.VarChar(100)
-
   purpose              String?   @db.VarChar(255)
   typeOfMaterials      String?   @map("type_of_materials") @db.VarChar(255)
   vehicleNumber        String?   @map("vehicle_number") @db.VarChar(100)

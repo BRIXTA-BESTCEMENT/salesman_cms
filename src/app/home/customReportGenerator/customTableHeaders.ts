@@ -166,7 +166,7 @@ export const tablesMetadata: TableMeta[] = [
         icon: MapPin,
         columns: [
             'id', 'salesmanName', 'salesmanEmail',
-            'journeyId', 'recordedAt', 'createdAt', 'latitude', 'longitude', 'totalDistanceTravelled',             
+            'journeyId', 'recordedAt', 'createdAt', 'latitude', 'longitude', 'totalDistanceTravelled',
             'siteName', 'checkInTime', 'checkOutTime', 'isActive', 'destLat', 'destLng'
         ],
     },
@@ -234,14 +234,15 @@ export const tablesMetadata: TableMeta[] = [
         ],
     },
     // {
-    //     id: 'logisticsGateIO',
-    //     title: 'Logistics Gate In/Out',
+    //     id: 'logisticsIO',
+    //     title: 'Logistics Operations (Gate/WB/Store)',
     //     icon: Truck,
     //     columns: [
-    //         'id', 'zone', 'district', 'destination', 'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime', 'processingTime',
-    //         'wbInDate', 'wbInTime', 'diffGateInTareWt', 'wbOutDate', 'wbOutTime', 
-    //         'diffTareWtGrossWt', 'gateOutDate', 'gateOutTime', 'diffGrossWtGateOut',
-    //         'diffGrossWtInvoiceDT', 'diffInvoiceDTGateOut', 'diffGateInGateOut', 'createdAt', 'updatedAt'
+    //         'id', 'zone', 'district', 'destination', 'purpose', 'typeOfMaterials', 'vehicleNumber', 'noOfInvoice', 
+    //          'partyName', 'invoiceNos', 'billNos', 'storeDate', 'storeTime', 
+    //          'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime', 'processingTime', 
+    //          'wbInDate', 'wbInTime', 'diffGateInTareWt', 'wbOutDate', 'wbOutTime', 'diffTareWtGrossWt', 'gateOutDate', 'gateOutTime', 
+    //          'diffGrossWtGateOut', 'diffGrossWtInvoiceDT', 'diffInvoiceDTGateOut', 'diffGateInGateOut', 'createdAt', 'updatedAt'
     //     ],
     // },
     // {

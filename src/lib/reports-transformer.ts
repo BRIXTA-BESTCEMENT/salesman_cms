@@ -2125,11 +2125,20 @@ export async function getFlattenedPointsLedger(companyId: number): Promise<Flatt
   });
 }
 
-export type FlattenedLogisticsGateIO = {
+export type FlattenedLogisticsIO = {
   id: string;
   zone: string;
   district: string;
   destination: string;
+  purpose: string | null;
+  typeOfMaterials: string | null;
+  vehicleNumber: string | null;
+  noOfInvoice: number | null;
+  partyName: string | null;
+  invoiceNos: string[];
+  billNos: string[];
+  storeDate: string | null;
+  storeTime: string | null;
   doOrderDate: string | null;
   doOrderTime: string | null;
   gateInDate: string | null;
@@ -2156,11 +2165,11 @@ const formatDate = (date: Date | null) => {
   return date ? date.toISOString().split('T')[0] : null;
 };
 
-export async function getFlattenedLogisticsGateIO(
+export async function getFlattenedLogisticsIO(
   // Optional: Add filters here if needed (e.g., date range)
   startDate?: Date, 
   endDate?: Date
-): Promise<FlattenedLogisticsGateIO[]> {
+): Promise<FlattenedLogisticsIO[]> {
   
   // Build dynamic where clause
   const where: any = {};
@@ -2171,7 +2180,7 @@ export async function getFlattenedLogisticsGateIO(
     };
   }
 
-  const rawData = await prisma.logisticsGateIO.findMany({
+  const rawData = await prisma.logisticsIO.findMany({
     where,
     orderBy: { createdAt: 'desc' },
   });
@@ -2181,6 +2190,16 @@ export async function getFlattenedLogisticsGateIO(
     zone: r.zone ?? '',
     district: r.district ?? '',
     destination: r.destination ?? '',
+    purpose: r.purpose ?? null,
+    typeOfMaterials: r.typeOfMaterials ?? null,
+    vehicleNumber: r.vehicleNumber ?? null,
+    noOfInvoice: r.noOfInvoice ?? null,
+    partyName: r.partyName ?? null,
+    invoiceNos: Array.isArray(r.invoiceNos) ? (r.invoiceNos as string[]) : [],
+    billNos: Array.isArray(r.billNos) ? (r.billNos as string[]) : [],
+    storeDate: formatDate(r.storeDate),
+    storeTime: r.storeTime ?? null,
+
     doOrderDate: formatDate(r.doOrderDate),
     doOrderTime: r.doOrderTime ?? null,
     gateInDate: formatDate(r.gateInDate),
@@ -2239,5 +2258,5 @@ export const transformerMap = {
   rewardRedemptions: getFlattenedRewardRedemptions,
   pointsLedger: getFlattenedPointsLedger,
 
-  logisticsGateIO: getFlattenedLogisticsGateIO,
+  logisticsIO: getFlattenedLogisticsIO,
 };

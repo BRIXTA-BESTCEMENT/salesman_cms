@@ -32,7 +32,7 @@ export default async function LogisticsPage() {
   const userRole = await getCurrentUserRole();
   const roleToCheck = userRole ?? 'junior-executive'; 
 
-  const canView = hasPermission(roleToCheck, 'logisticsGateIO.gateIO'); 
+  const canView = hasPermission(roleToCheck, 'logisticsIO.records'); 
 
   if (!canView) {
     return (
@@ -49,7 +49,7 @@ export default async function LogisticsPage() {
     <div className="flex-1 space-y-4 p-4 md:p-6 overflow-x-hidden">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">
-          Logistics Gate I/O
+          Logistics Records
         </h2>
       </div>
 
