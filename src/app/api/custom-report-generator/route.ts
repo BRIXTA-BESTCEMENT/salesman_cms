@@ -50,8 +50,8 @@ function applyFilters(rows: any[], filters: FilterRule[]): any[] {
             }
 
             const rawValue = row[filter.column];
-            const cellValueStr = String(rawValue ?? '').toLowerCase();
-            const filterValueStr = (filter.value ?? '').toLowerCase();
+            const cellValueStr = String(rawValue ?? '').trim().toLowerCase();
+            const filterValueStr = (filter.value ?? '').trim().toLowerCase();
 
             // 2. If filter value is empty, it passes
             if (!filterValueStr) return true;

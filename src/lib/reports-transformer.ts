@@ -1,27 +1,51 @@
 // src/lib/reports-transformer.ts
 import prisma from '@/lib/prisma';
 
-// Helper to format user name or default to email (used in TSOAssignment)
-const formatUserName = (user: { firstName: string | null, lastName: string | null, email: string } | null) => {
-  if (!user) return null;
+// 1. Helper to format User Names safely
+export const formatUserName = (user: { firstName?: string | null, lastName?: string | null, email?: string | null } | null): string => {
+  if (!user) return '';
   const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
-  return name || user.email;
+  return name || user.email || '';
 };
 
-const toISTDate = (date: Date | null) => {
-  if (!date) return '';
-  // Returns YYYY-MM-DD in IST
-  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-};
-
-const toISTDateTime = (date: Date | null) => {
+// 2. Helper to format Date objects to YYYY-MM-DD in IST
+export const formatDateIST = (date: Date | string | null | undefined): string | null => {
   if (!date) return null;
-  // Returns readable Date & Time in IST (e.g. "06/01/2026, 10:30 am")
-  return date.toLocaleString('en-IN', { 
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); // Output: "YYYY-MM-DD"
+};
+
+// 3. Helper to format Date objects to readable 12-hour IST DateTime
+export const formatDateTimeIST = (date: Date | string | null | undefined): string => {
+  if (!date) return '';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
+  // Formats as "14 Feb 2026 02:30 PM"
+  return d.toLocaleString('en-IN', {
     timeZone: 'Asia/Kolkata',
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', hour12: true 
-  }).toUpperCase();
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  }).replace(/,/g, '').toUpperCase();
+};
+
+// 4. Helper to convert raw time strings (e.g., "14:30") to 12-hour AM/PM format
+export const formatTimeStr12Hr = (timeStr: string | null | undefined): string | null => {
+  if (!timeStr) return null;
+  const trimmed = timeStr.trim();
+  if (trimmed.toUpperCase().includes('AM') || trimmed.toUpperCase().includes('PM')) return trimmed;
+  try {
+    const parts = trimmed.split(':');
+    if (parts.length < 2) return trimmed;
+    let h = parseInt(parts[0], 10);
+    if (isNaN(h)) return trimmed;
+    const m = parts[1];
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h.toString().padStart(2, '0')}:${m} ${ampm}`;
+  } catch {
+    return trimmed;
+  }
 };
 
 // Users
@@ -74,7 +98,7 @@ export async function getFlattenedUsers(companyId: number): Promise<FlattenedUse
     region: u.region ?? null,
     area: u.area ?? null,
     isTechnicalRole: u.isTechnicalRole ?? null,
-    reportsToManagerName: u.reportsTo ? `${u.reportsTo.firstName} ${u.reportsTo.lastName}` : null,
+    reportsToManagerName: formatUserName(u.reportsTo) || null,
     createdAt: u.createdAt?.toISOString() ?? '',
   }));
 }
@@ -207,9 +231,9 @@ export async function getFlattenedDealers(companyId: number): Promise<FlattenedD
     dealerPicUrl: d.dealerPicUrl ?? null, blankChequePicUrl: d.blankChequePicUrl ?? null, partnershipDeedPicUrl: d.partnershipDeedPicUrl ?? null,
 
     // DateTime Fields (Conversion to Date string)
-    dateOfBirth: d.dateOfBirth?.toISOString().slice(0, 10) ?? null,
-    anniversaryDate: d.anniversaryDate?.toISOString().slice(0, 10) ?? null,
-    declarationDate: d.declarationDate?.toISOString().slice(0, 10) ?? null,
+    dateOfBirth: formatDateIST(d.dateOfBirth) ?? null,
+    anniversaryDate: formatDateIST(d.anniversaryDate) ?? null,
+    declarationDate: formatDateIST(d.declarationDate) ?? null,
     createdAt: d.createdAt.toISOString(),
     updatedAt: d.updatedAt.toISOString(),
 
@@ -225,7 +249,7 @@ export async function getFlattenedDealers(companyId: number): Promise<FlattenedD
     brandSelling: d.brandSelling.join(', '),
 
     // Flattened Relation Field
-    associatedSalesmanName: d.user ? `${d.user.firstName} ${d.user.lastName}` : null,
+    associatedSalesmanName: formatUserName(d.user) || null,
   }));
 }
 
@@ -290,7 +314,7 @@ export async function getFlattenedDailyVisitReports(companyId: number): Promise<
 
   return raw.map((r: any) => ({
     id: r.id,
-    reportDate: r.reportDate.toISOString().slice(0, 10),
+    reportDate: formatDateIST(r.reportDate) || '',
     dealerType: r.dealerType,
     dealerName: r.dealer?.name ?? null,
     subDealerName: r.subDealer?.name ?? null,
@@ -309,14 +333,14 @@ export async function getFlattenedDailyVisitReports(companyId: number): Promise<
     feedbacks: r.feedbacks,
     solutionBySalesperson: r.solutionBySalesperson ?? null,
     anyRemarks: r.anyRemarks ?? null,
-    checkInTime: r.checkInTime.toISOString(),
-    checkOutTime: r.checkOutTime?.toISOString() ?? null,
+    checkInTime: formatDateTimeIST(r.checkInTime),
+    checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
     timeSpentinLoc: r.timeSpentinLoc ?? null,
     inTimeImageUrl: r.inTimeImageUrl ?? null,
     outTimeImageUrl: r.outTimeImageUrl ?? null,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-    salesmanName: `${r.user.firstName ?? ''} ${r.user.lastName ?? ''}`.trim() || r.user.email,
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
+    salesmanName: formatUserName(r.user),
     salesmanEmail: r.user.email,
   }));
 }
@@ -473,13 +497,13 @@ export async function getFlattenedTechnicalVisitReports(companyId: number): Prom
     timeSpentinLoc: r.timeSpentinLoc ?? null,
     inTimeImageUrl: r.inTimeImageUrl ?? null,
     outTimeImageUrl: r.outTimeImageUrl ?? null,
-    reportDate: toISTDate(r.reportDate),
-    checkInTime: toISTDateTime(r.checkInTime) || '',
-    checkOutTime: toISTDateTime(r.checkOutTime),
-    createdAt: toISTDateTime(r.createdAt) || '',
-    updatedAt: toISTDateTime(r.updatedAt) || '',
-    firstVisitTime: toISTDateTime(r.firstVisitTime),
-    lastVisitTime: toISTDateTime(r.lastVisitTime),
+    reportDate: formatDateIST(r.reportDate) || '',
+    checkInTime: formatDateIST(r.reportDate) || '',
+    checkOutTime: formatDateIST(r.reportDate),
+    createdAt: formatDateIST(r.reportDate) || '',
+    updatedAt: formatDateIST(r.reportDate) || '',
+    firstVisitTime: formatDateIST(r.reportDate),
+    lastVisitTime: formatDateIST(r.reportDate),
     conversionQuantityValue: r.conversionQuantityValue?.toNumber() ?? null,
     siteVisitBrandInUse: r.siteVisitBrandInUse.join(', '),
     influencerType: r.influencerType.join(', '),
@@ -516,7 +540,7 @@ export async function getFlattenedTechnicalVisitReports(companyId: number): Prom
     currentBrandPrice: r.currentBrandPrice?.toNumber() ?? null,
     siteStock: r.siteStock?.toNumber() ?? null,
     estRequirement: r.estRequirement?.toNumber() ?? null,
-    salesmanName: `${r.user.firstName ?? ''} ${r.user.lastName ?? ''}`.trim() || r.user.email,
+    salesmanName: formatUserName(r.user),
     salesmanEmail: r.user.email,
   }));
 }
@@ -603,10 +627,10 @@ export async function getFlattenedTechnicalSites(companyId: number): Promise<Fla
     stageOfConstruction: s.stageOfConstruction ?? null,
 
     // Dates -> String (YYYY-MM-DD)
-    constructionStartDate: s.constructionStartDate?.toISOString().slice(0, 10) ?? null,
-    constructionEndDate: s.constructionEndDate?.toISOString().slice(0, 10) ?? null,
-    firstVistDate: s.firstVistDate?.toISOString().slice(0, 10) ?? null,
-    lastVisitDate: s.lastVisitDate?.toISOString().slice(0, 10) ?? null,
+    constructionStartDate: formatDateIST(s.constructionStartDate) ?? null,
+    constructionEndDate: formatDateIST(s.constructionEndDate) ?? null,
+    firstVistDate: formatDateIST(s.firstVistDate) ?? null,
+    lastVisitDate: formatDateIST(s.lastVisitDate) ?? null,
 
     convertedSite: s.convertedSite ?? false,
     needFollowUp: s.needFollowUp ?? false,
@@ -616,8 +640,7 @@ export async function getFlattenedTechnicalSites(companyId: number): Promise<Fla
 
     // Flatten Arrays to Strings
     associatedSalesmen: s.associatedUsers
-      .map((u: any) => `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || u.email)
-      .join(', '),
+      .map((u: any) => formatUserName(u)).join(', '),
 
     associatedDealers: s.associatedDealers
       .map((d: any) => d.name)
@@ -699,8 +722,6 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
   });
 
   return rawReports.map((r: any) => {
-    const salesmanName = `${r.user.firstName || ''} ${r.user.lastName || ''}`.trim() || r.user.email;
-    const createdByName = `${r.createdBy.firstName || ''} ${r.createdBy.lastName || ''}`.trim() || r.createdBy.email;
     const visitTargetName = r.dealer?.name ?? r.site?.siteName ?? null;
 
     return {
@@ -723,9 +744,9 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
       noOfMasonPcSchemes: r.noOfMasonPcSchemes ?? 0,
       diversionReason: r.diversionReason ?? null,
 
-      planDate: r.planDate instanceof Date ? r.planDate.toISOString().split('T')[0] : r.planDate,
-      createdAt: r.createdAt.toISOString(),
-      updatedAt: r.updatedAt.toISOString(),
+      planDate: formatDateIST(r.planDate) || '',
+      createdAt: formatDateTimeIST(r.createdAt),
+      updatedAt: formatDateTimeIST(r.updatedAt),
 
       userId: r.userId,
       dealerId: r.dealerId,
@@ -733,10 +754,10 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number): Prom
       visitDealerName: visitTargetName,
       taskIds: r.dailyTasks.map((task: any) => task.id),
 
-      assignedSalesmanName: salesmanName,
+      assignedSalesmanName: formatUserName(r.user),
       assignedSalesmanEmail: r.user.email,
 
-      creatorName: createdByName,
+      creatorName: formatUserName(r.createdBy),
       creatorEmail: r.createdBy.email,
       createdByRole: r.createdBy.role,
 
@@ -787,10 +808,10 @@ export async function getFlattenedCompetitionReports(companyId: number): Promise
     remarks: r.remarks ?? null,
 
     // Conversions
-    reportDate: r.reportDate.toISOString().slice(0, 10),
+    reportDate: formatDateIST(r.reportDate) || '',
     avgSchemeCost: r.avgSchemeCost.toNumber(),
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
 
     // Flattened Relations
     salesmanName: `${r.user.firstName} ${r.user.lastName}`,
@@ -846,13 +867,13 @@ export async function getFlattenedDailyTasks(companyId: number): Promise<Flatten
 
     // DateTime Conversions
     taskDate: r.taskDate.toISOString().slice(0, 10),
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
 
     // Flattened Relations
-    assignedSalesmanName: `${r.user.firstName} ${r.user.lastName}`,
+    assignedSalesmanName: formatUserName(r.user),
     assignedSalesmanEmail: r.user.email,
-    creatorName: `${r.assignedBy.firstName} ${r.assignedBy.lastName}`,
+    creatorName: formatUserName(r.createdBy),
     creatorEmail: r.assignedBy.email,
     relatedDealerName: r.relatedDealer?.name ?? null,
   }));
@@ -920,11 +941,11 @@ export async function getFlattenedSalesmanAttendance(companyId: number): Promise
     outTimeImageUrl: r.outTimeImageUrl ?? null,
 
     // DateTime Fields (Conversion to string)
-    attendanceDate: toISTDate(r.attendanceDate), // Date only
-    inTimeTimestamp: toISTDateTime(r.inTimeTimestamp) || '-',
-    outTimeTimestamp: toISTDateTime(r.outTimeTimestamp) ?? null,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    attendanceDate: formatDateIST(r.attendanceDate) || '', // Date only
+    inTimeTimestamp: formatDateIST(r.inTimeTimestamp) || '-',
+    outTimeTimestamp: formatDateIST(r.outTimeTimestamp) ?? null,
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
 
     // Decimal Fields (Conversion to number)
     inTimeLatitude: r.inTimeLatitude.toNumber(),
@@ -941,7 +962,7 @@ export async function getFlattenedSalesmanAttendance(companyId: number): Promise
     outTimeAltitude: r.outTimeAltitude?.toNumber() ?? null,
 
     // Flattened Relation
-    salesmanName: `${r.user.firstName} ${r.user.lastName}`,
+    salesmanName: formatUserName(r.user),
     salesmanEmail: r.user.email,
   }));
 }
@@ -987,11 +1008,11 @@ export async function getFlattenedSalesmanLeaveApplication(companyId: number): P
     // DateTime Conversions
     startDate: r.startDate.toISOString().slice(0, 10),
     endDate: r.endDate.toISOString().slice(0, 10),
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
 
     // Flattened Relations
-    salesmanName: `${r.user.firstName} ${r.user.lastName}`,
+    salesmanName: formatUserName(r.user),
     salesmanEmail: r.user.email,
   }));
 }
@@ -1085,8 +1106,7 @@ export async function getFlattenedSalesOrders(companyId: number): Promise<Flatte
       o.pendingPayment != null ? toNum(o.pendingPayment) : Number((orderTotal - (receivedPayment ?? 0)).toFixed(2));
 
     const salesmanName =
-      `${o.user?.firstName ?? ''} ${o.user?.lastName ?? ''}`.trim() ||
-      o.user?.email || null;
+      formatUserName(o.user) || o.user?.email || null;
 
     return {
       // IDs
@@ -1107,7 +1127,7 @@ export async function getFlattenedSalesOrders(companyId: number): Promise<Flatte
       dealerAddress: o.dealer?.address ?? null,
 
       // Business (raw)
-      orderDate: toDate(o.orderDate)!, // not null by schema
+      orderDate: formatDateIST(o.orderDate)!, // not null by schema
       orderPartyName: o.orderPartyName,
 
       partyPhoneNo: o.partyPhoneNo ?? null,
@@ -1115,7 +1135,7 @@ export async function getFlattenedSalesOrders(companyId: number): Promise<Flatte
       partyRegion: o.partyRegion ?? null,
       partyAddress: o.partyAddress ?? null,
 
-      deliveryDate: toDate(o.deliveryDate),
+      deliveryDate: formatDateIST(o.deliveryDate),
       deliveryArea: o.deliveryArea ?? null,
       deliveryRegion: o.deliveryRegion ?? null,
       deliveryAddress: o.deliveryAddress ?? null,
@@ -1125,7 +1145,7 @@ export async function getFlattenedSalesOrders(companyId: number): Promise<Flatte
       paymentTerms: o.paymentTerms ?? null,
       paymentAmount: toNum(o.paymentAmount),
       receivedPayment,
-      receivedPaymentDate: toDate(o.receivedPaymentDate),
+      receivedPaymentDate: formatDateIST(o.receivedPaymentDate),
       pendingPayment,
 
       orderQty: toNum(o.orderQty),
@@ -1140,7 +1160,7 @@ export async function getFlattenedSalesOrders(companyId: number): Promise<Flatte
 
       // Convenience/computed
       orderTotal,
-      estimatedDelivery: toDate(o.deliveryDate),
+      estimatedDelivery: formatDateIST(o.deliveryDate),
       remarks: null,
 
       // Timestamps
@@ -1153,30 +1173,30 @@ export async function getFlattenedSalesOrders(companyId: number): Promise<Flatte
 // Geo-tracking
 export type FlattenedGeoTracking = {
   id: string;
-  latitude: number; 
-  longitude: number; 
-  recordedAt: string; 
-  accuracy: number | null; 
-  speed: number | null; 
-  heading: number | null; 
-  altitude: number | null; 
+  latitude: number;
+  longitude: number;
+  recordedAt: string;
+  accuracy: number | null;
+  speed: number | null;
+  heading: number | null;
+  altitude: number | null;
   locationType: string | null;
   activityType: string | null;
   appState: string | null;
-  batteryLevel: number | null; 
+  batteryLevel: number | null;
   isCharging: boolean | null;
   networkStatus: string | null;
   ipAddress: string | null;
   siteName: string | null;
-  checkInTime: string | null; 
-  checkOutTime: string | null; 
-  totalDistanceTravelled: number | null; 
+  checkInTime: string | null;
+  checkOutTime: string | null;
+  totalDistanceTravelled: number | null;
   journeyId: string | null;
   isActive: boolean;
-  destLat: number | null; 
-  destLng: number | null; 
-  createdAt: string; 
-  updatedAt: string; 
+  destLat: number | null;
+  destLng: number | null;
+  createdAt: string;
+  updatedAt: string;
 
   // Flattened User
   salesmanName: string;
@@ -1185,16 +1205,16 @@ export type FlattenedGeoTracking = {
 
 export async function getFlattenedGeoTracking(companyId: number): Promise<FlattenedGeoTracking[]> {
   const rawReports = await prisma.journeyOp.findMany({
-    where: { 
-      user: { companyId } 
+    where: {
+      user: { companyId }
     },
     select: {
       opId: true,
       journeyId: true,
       createdAt: true,
       payload: true,   // Contains all the tracking data
-      user: { 
-        select: { firstName: true, lastName: true, email: true } 
+      user: {
+        select: { firstName: true, lastName: true, email: true }
       },
     },
     orderBy: { createdAt: 'desc' },
@@ -1213,7 +1233,7 @@ export async function getFlattenedGeoTracking(companyId: number): Promise<Flatte
       // JSON Payload Extractions (Manual Casting)
       latitude: Number(p.latitude) || 0,
       longitude: Number(p.longitude) || 0,
-      recordedAt: p.endedAt || op.createdAt.toISOString(),
+      recordedAt: p.endedAt || formatDateTimeIST(op.createdAt),
       accuracy: p.accuracy ? Number(p.accuracy) : null,
       speed: p.speed ? Number(p.speed) : null,
       heading: p.heading ? Number(p.heading) : null,
@@ -1226,8 +1246,8 @@ export async function getFlattenedGeoTracking(companyId: number): Promise<Flatte
       networkStatus: p.networkStatus || null,
       ipAddress: p.ipAddress || null,
       siteName: p.siteName || null,
-      checkInTime: p.checkInTime || null,
-      checkOutTime: p.checkOutTime || null,
+      checkInTime: formatDateTimeIST(p.checkInTime),
+      checkOutTime: p.checkOutTime ? formatDateTimeIST(p.checkOutTime) : null,
       totalDistanceTravelled: p.totalDistance !== undefined ? Number(p.totalDistance) : null,
       isActive: Boolean(p.isActive),
       destLat: p.destLat ? Number(p.destLat) : null,
@@ -1283,8 +1303,8 @@ export async function getFlattenedDealerReportsAndScores(companyId: number): Pro
 
     // DateTime Conversions
     lastUpdatedDate: r.lastUpdatedDate.toISOString(),
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
 
     // Decimal Conversions
     dealerScore: r.dealerScore.toNumber(),
@@ -1403,19 +1423,19 @@ export type FlattenedTSOMeeting = {
   id: string;
   type: string | null;
   date: string | null;
-  totalExpenses: number | null; 
+  totalExpenses: number | null;
   participantsCount: number | null;
-  market: string | null; 
-  zone: string | null; 
-  dealerName: string | null; 
-  dealerAddress: string | null; 
-  conductedBy: string | null; 
-  giftType: string | null; 
-  accountJsbJud: string | null; 
-  billSubmitted: boolean; 
+  market: string | null;
+  zone: string | null;
+  dealerName: string | null;
+  dealerAddress: string | null;
+  conductedBy: string | null;
+  giftType: string | null;
+  accountJsbJud: string | null;
+  billSubmitted: boolean;
   createdByUserName: string;
   createdByUserEmail: string;
-  creatorRole: string; 
+  creatorRole: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -1440,11 +1460,11 @@ export async function getFlattenedTSOMeeetings(companyId: number): Promise<Flatt
       createdAt: true,
       updatedAt: true,
       createdBy: {
-        select: { 
-          firstName: true, 
-          lastName: true, 
+        select: {
+          firstName: true,
+          lastName: true,
           email: true,
-          role: true 
+          role: true
         },
       },
     },
@@ -1465,12 +1485,12 @@ export async function getFlattenedTSOMeeetings(companyId: number): Promise<Flatt
     giftType: r.giftType,
     accountJsbJud: r.accountJsbJud,
     billSubmitted: r.billSubmitted ?? false,
-    createdByUserName: `${r.createdBy.firstName ?? ''} ${r.createdBy.lastName ?? ''}`.trim() || r.createdBy.email,
+    createdByUserName: formatUserName(r.createdBy) || r.createdBy.email,
     createdByUserEmail: r.createdBy.email,
     creatorRole: r.createdBy.role ?? '',
 
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
   }));
 }
 
@@ -1508,8 +1528,8 @@ export async function getFlattenedRewards(): Promise<FlattenedReward[]> {
     totalAvailableQuantity: r.totalAvailableQuantity,
     stock: r.stock,
     isActive: r.isActive,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
   }));
 }
 
@@ -1577,7 +1597,7 @@ export async function getFlattenedGiftAllocationLogs(companyId: number): Promise
       destinationUserName: formatUserName(r.destinationUser),
       technicalVisitReportId: r.technicalVisitReportId ?? null,
       dealerVisitReportId: r.dealerVisitReportId ?? null,
-      createdAt: r.createdAt.toISOString(),
+      createdAt: formatDateTimeIST(r.createdAt),
     }
   });
 }
@@ -1647,17 +1667,6 @@ export async function getFlattenedMasonPCSide(companyId: number): Promise<Flatte
 
   return raw.map((r: any) => {
     const latestKyc = r.kycSubmissions?.[0];
-    const formattedDate = latestKyc?.createdAt
-      ? new Date(latestKyc.createdAt).toLocaleString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      })
-      : null;
 
     return {
       id: r.id,
@@ -1673,8 +1682,8 @@ export async function getFlattenedMasonPCSide(companyId: number): Promise<Flatte
       referredByUser: r.referredByUser ?? null,
       referredToUser: r.referredToUser ?? null,
       dealerName: r.dealer?.name ?? null,
-      associatedSalesman: r.user ? (`${r.user.firstName ?? ''} ${r.user.lastName ?? ''}`.trim() || r.user.email) : null,
-      kycSubmittedAt: formattedDate,
+      associatedSalesman: formatUserName(r.user) || null,
+      kycSubmittedAt: latestKyc?.createdAt ? formatDateTimeIST(latestKyc.createdAt) : null,
     };
   });
 }
@@ -1849,16 +1858,8 @@ export async function getFlattenedKYCSubmissions(companyId: number): Promise<Fla
     voterIdNumber: r.voterIdNumber ?? null,
     status: r.status,
     remark: r.remark ?? null,
-    createdAt: new Date(r.createdAt).toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
   }));
 }
 
@@ -1892,7 +1893,7 @@ export async function getFlattenedTSOAssignments(companyId: number): Promise<Fla
     tsoId: r.tsoId,
     tsoName: formatUserName(r.tso)!,
     tsoEmail: r.tso.email,
-    createdAt: r.createdAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
   }));
 }
 
@@ -2001,7 +2002,7 @@ export async function getFlattenedBagLifts(companyId: number): Promise<Flattened
     associatedSalesmanName: formatUserName(r.mason.user),
 
     approvedAt: r.approvedAt?.toISOString() ?? null,
-    createdAt: r.createdAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
   }));
 }
 
@@ -2056,8 +2057,8 @@ export async function getFlattenedRewardRedemptions(companyId: number): Promise<
     deliveryName: r.deliveryName ?? null,
     deliveryPhone: r.deliveryPhone ?? null,
     deliveryAddress: r.deliveryAddress ?? null,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
   }));
 }
 
@@ -2119,7 +2120,7 @@ export async function getFlattenedPointsLedger(companyId: number): Promise<Flatt
       sourceType: r.sourceType,
       points: r.points,
       memo: r.memo ?? null,
-      createdAt: r.createdAt.toISOString(),
+      createdAt: formatDateTimeIST(r.createdAt),
       sourceDescription: description ?? null,
     };
   });
@@ -2160,17 +2161,12 @@ export type FlattenedLogisticsIO = {
   updatedAt: string;
 };
 
-// Helper to format Date objects to YYYY-MM-DD safely
-const formatDate = (date: Date | null) => {
-  return date ? date.toISOString().split('T')[0] : null;
-};
-
 export async function getFlattenedLogisticsIO(
   // Optional: Add filters here if needed (e.g., date range)
-  startDate?: Date, 
+  startDate?: Date,
   endDate?: Date
 ): Promise<FlattenedLogisticsIO[]> {
-  
+
   // Build dynamic where clause
   const where: any = {};
   if (startDate && endDate) {
@@ -2197,28 +2193,28 @@ export async function getFlattenedLogisticsIO(
     partyName: r.partyName ?? null,
     invoiceNos: Array.isArray(r.invoiceNos) ? (r.invoiceNos as string[]) : [],
     billNos: Array.isArray(r.billNos) ? (r.billNos as string[]) : [],
-    storeDate: formatDate(r.storeDate),
+    storeDate: formatDateIST(r.storeDate),
     storeTime: r.storeTime ?? null,
 
-    doOrderDate: formatDate(r.doOrderDate),
+    doOrderDate: formatDateIST(r.doOrderDate),
     doOrderTime: r.doOrderTime ?? null,
-    gateInDate: formatDate(r.gateInDate),
+    gateInDate: formatDateIST(r.gateInDate),
     gateInTime: r.gateInTime ?? null,
     processingTime: r.processingTime ?? null,
-    wbInDate: formatDate(r.wbInDate),
+    wbInDate: formatDateIST(r.wbInDate),
     wbInTime: r.wbInTime ?? null,
     diffGateInTareWt: r.diffGateInTareWt ?? null,
-    wbOutDate: formatDate(r.wbOutDate),
+    wbOutDate: formatDateIST(r.wbOutDate),
     wbOutTime: r.wbOutTime ?? null,
     diffTareWtGrossWt: r.diffTareWtGrossWt ?? null,
-    gateOutDate: formatDate(r.gateOutDate),
+    gateOutDate: formatDateIST(r.gateOutDate),
     gateOutTime: r.gateOutTime ?? null,
     diffGrossWtGateOut: r.diffGrossWtGateOut ?? null,
     diffGrossWtInvoiceDT: r.diffGrossWtInvoiceDT ?? null,
     diffInvoiceDTGateOut: r.diffInvoiceDTGateOut ?? null,
     diffGateInGateOut: r.diffGateInGateOut ?? null,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
   }));
 }
 
