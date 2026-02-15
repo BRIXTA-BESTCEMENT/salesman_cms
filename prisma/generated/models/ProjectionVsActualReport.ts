@@ -36,6 +36,8 @@ export type ProjectionVsActualReportAvgAggregateOutputType = {
   actualCollection: runtime.Decimal | null
   shortFall: runtime.Decimal | null
   percent: runtime.Decimal | null
+  verifiedDealerId: number | null
+  userId: number | null
 }
 
 export type ProjectionVsActualReportSumAggregateOutputType = {
@@ -48,6 +50,8 @@ export type ProjectionVsActualReportSumAggregateOutputType = {
   actualCollection: runtime.Decimal | null
   shortFall: runtime.Decimal | null
   percent: runtime.Decimal | null
+  verifiedDealerId: number | null
+  userId: number | null
 }
 
 export type ProjectionVsActualReportMinAggregateOutputType = {
@@ -67,6 +71,8 @@ export type ProjectionVsActualReportMinAggregateOutputType = {
   percent: runtime.Decimal | null
   sourceMessageId: string | null
   sourceFileName: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date | null
 }
 
@@ -87,6 +93,8 @@ export type ProjectionVsActualReportMaxAggregateOutputType = {
   percent: runtime.Decimal | null
   sourceMessageId: string | null
   sourceFileName: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date | null
 }
 
@@ -107,6 +115,8 @@ export type ProjectionVsActualReportCountAggregateOutputType = {
   percent: number
   sourceMessageId: number
   sourceFileName: number
+  verifiedDealerId: number
+  userId: number
   createdAt: number
   _all: number
 }
@@ -122,6 +132,8 @@ export type ProjectionVsActualReportAvgAggregateInputType = {
   actualCollection?: true
   shortFall?: true
   percent?: true
+  verifiedDealerId?: true
+  userId?: true
 }
 
 export type ProjectionVsActualReportSumAggregateInputType = {
@@ -134,6 +146,8 @@ export type ProjectionVsActualReportSumAggregateInputType = {
   actualCollection?: true
   shortFall?: true
   percent?: true
+  verifiedDealerId?: true
+  userId?: true
 }
 
 export type ProjectionVsActualReportMinAggregateInputType = {
@@ -153,6 +167,8 @@ export type ProjectionVsActualReportMinAggregateInputType = {
   percent?: true
   sourceMessageId?: true
   sourceFileName?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
 }
 
@@ -173,6 +189,8 @@ export type ProjectionVsActualReportMaxAggregateInputType = {
   percent?: true
   sourceMessageId?: true
   sourceFileName?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
 }
 
@@ -193,6 +211,8 @@ export type ProjectionVsActualReportCountAggregateInputType = {
   percent?: true
   sourceMessageId?: true
   sourceFileName?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
   _all?: true
 }
@@ -300,6 +320,8 @@ export type ProjectionVsActualReportGroupByOutputType = {
   percent: runtime.Decimal | null
   sourceMessageId: string | null
   sourceFileName: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date
   _count: ProjectionVsActualReportCountAggregateOutputType | null
   _avg: ProjectionVsActualReportAvgAggregateOutputType | null
@@ -343,7 +365,11 @@ export type ProjectionVsActualReportWhereInput = {
   percent?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   sourceMessageId?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"ProjectionVsActualReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"ProjectionVsActualReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProjectionVsActualReport"> | Date | string
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ProjectionVsActualReportOrderByWithRelationInput = {
@@ -363,7 +389,11 @@ export type ProjectionVsActualReportOrderByWithRelationInput = {
   percent?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  verifiedDealer?: Prisma.VerifiedDealerOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ProjectionVsActualReportWhereUniqueInput = Prisma.AtLeast<{
@@ -387,7 +417,11 @@ export type ProjectionVsActualReportWhereUniqueInput = Prisma.AtLeast<{
   percent?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   sourceMessageId?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"ProjectionVsActualReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"ProjectionVsActualReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProjectionVsActualReport"> | Date | string
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "reportDate_dealerName_institution">
 
 export type ProjectionVsActualReportOrderByWithAggregationInput = {
@@ -407,6 +441,8 @@ export type ProjectionVsActualReportOrderByWithAggregationInput = {
   percent?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ProjectionVsActualReportCountOrderByAggregateInput
   _avg?: Prisma.ProjectionVsActualReportAvgOrderByAggregateInput
@@ -435,6 +471,8 @@ export type ProjectionVsActualReportScalarWhereWithAggregatesInput = {
   percent?: Prisma.DecimalNullableWithAggregatesFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   sourceMessageId?: Prisma.StringNullableWithAggregatesFilter<"ProjectionVsActualReport"> | string | null
   sourceFileName?: Prisma.StringNullableWithAggregatesFilter<"ProjectionVsActualReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableWithAggregatesFilter<"ProjectionVsActualReport"> | number | null
+  userId?: Prisma.IntNullableWithAggregatesFilter<"ProjectionVsActualReport"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectionVsActualReport"> | Date | string
 }
 
@@ -456,6 +494,8 @@ export type ProjectionVsActualReportCreateInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutProjectionVsActualReportsInput
+  user?: Prisma.UserCreateNestedOneWithoutProjectionVsActualReportsInput
 }
 
 export type ProjectionVsActualReportUncheckedCreateInput = {
@@ -475,6 +515,8 @@ export type ProjectionVsActualReportUncheckedCreateInput = {
   percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
+  verifiedDealerId?: number | null
+  userId?: number | null
   createdAt?: Date | string
 }
 
@@ -496,6 +538,8 @@ export type ProjectionVsActualReportUpdateInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutProjectionVsActualReportsNestedInput
+  user?: Prisma.UserUpdateOneWithoutProjectionVsActualReportsNestedInput
 }
 
 export type ProjectionVsActualReportUncheckedUpdateInput = {
@@ -515,6 +559,8 @@ export type ProjectionVsActualReportUncheckedUpdateInput = {
   percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -535,6 +581,8 @@ export type ProjectionVsActualReportCreateManyInput = {
   percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
+  verifiedDealerId?: number | null
+  userId?: number | null
   createdAt?: Date | string
 }
 
@@ -575,7 +623,19 @@ export type ProjectionVsActualReportUncheckedUpdateManyInput = {
   percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectionVsActualReportListRelationFilter = {
+  every?: Prisma.ProjectionVsActualReportWhereInput
+  some?: Prisma.ProjectionVsActualReportWhereInput
+  none?: Prisma.ProjectionVsActualReportWhereInput
+}
+
+export type ProjectionVsActualReportOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type ProjectionVsActualReportReportDateDealerNameInstitutionCompoundUniqueInput = {
@@ -601,6 +661,8 @@ export type ProjectionVsActualReportCountOrderByAggregateInput = {
   percent?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -614,6 +676,8 @@ export type ProjectionVsActualReportAvgOrderByAggregateInput = {
   actualCollection?: Prisma.SortOrder
   shortFall?: Prisma.SortOrder
   percent?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type ProjectionVsActualReportMaxOrderByAggregateInput = {
@@ -633,6 +697,8 @@ export type ProjectionVsActualReportMaxOrderByAggregateInput = {
   percent?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -653,6 +719,8 @@ export type ProjectionVsActualReportMinOrderByAggregateInput = {
   percent?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -666,6 +734,421 @@ export type ProjectionVsActualReportSumOrderByAggregateInput = {
   actualCollection?: Prisma.SortOrder
   shortFall?: Prisma.SortOrder
   percent?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+}
+
+export type ProjectionVsActualReportCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionVsActualReportCreateWithoutUserInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyUserInputEnvelope
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+}
+
+export type ProjectionVsActualReportUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionVsActualReportCreateWithoutUserInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyUserInputEnvelope
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+}
+
+export type ProjectionVsActualReportUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionVsActualReportCreateWithoutUserInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutUserInput | Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyUserInputEnvelope
+  set?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  disconnect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  delete?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  update?: Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutUserInput | Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutUserInput | Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.ProjectionVsActualReportScalarWhereInput | Prisma.ProjectionVsActualReportScalarWhereInput[]
+}
+
+export type ProjectionVsActualReportUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionVsActualReportCreateWithoutUserInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutUserInput | Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyUserInputEnvelope
+  set?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  disconnect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  delete?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  update?: Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutUserInput | Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutUserInput | Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.ProjectionVsActualReportScalarWhereInput | Prisma.ProjectionVsActualReportScalarWhereInput[]
+}
+
+export type ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+}
+
+export type ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+}
+
+export type ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  disconnect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  delete?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  update?: Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutVerifiedDealerInput[]
+  deleteMany?: Prisma.ProjectionVsActualReportScalarWhereInput | Prisma.ProjectionVsActualReportScalarWhereInput[]
+}
+
+export type ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionVsActualReportCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  disconnect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  delete?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  connect?: Prisma.ProjectionVsActualReportWhereUniqueInput | Prisma.ProjectionVsActualReportWhereUniqueInput[]
+  update?: Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.ProjectionVsActualReportUpdateManyWithWhereWithoutVerifiedDealerInput[]
+  deleteMany?: Prisma.ProjectionVsActualReportScalarWhereInput | Prisma.ProjectionVsActualReportScalarWhereInput[]
+}
+
+export type ProjectionVsActualReportCreateWithoutUserInput = {
+  id?: string
+  reportDate: Date | string
+  institution?: string | null
+  zone: string
+  dealerName: string
+  orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  createdAt?: Date | string
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutProjectionVsActualReportsInput
+}
+
+export type ProjectionVsActualReportUncheckedCreateWithoutUserInput = {
+  id?: string
+  reportDate: Date | string
+  institution?: string | null
+  zone: string
+  dealerName: string
+  orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  verifiedDealerId?: number | null
+  createdAt?: Date | string
+}
+
+export type ProjectionVsActualReportCreateOrConnectWithoutUserInput = {
+  where: Prisma.ProjectionVsActualReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput>
+}
+
+export type ProjectionVsActualReportCreateManyUserInputEnvelope = {
+  data: Prisma.ProjectionVsActualReportCreateManyUserInput | Prisma.ProjectionVsActualReportCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProjectionVsActualReportUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ProjectionVsActualReportWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProjectionVsActualReportUpdateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutUserInput>
+}
+
+export type ProjectionVsActualReportUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ProjectionVsActualReportWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProjectionVsActualReportUpdateWithoutUserInput, Prisma.ProjectionVsActualReportUncheckedUpdateWithoutUserInput>
+}
+
+export type ProjectionVsActualReportUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.ProjectionVsActualReportScalarWhereInput
+  data: Prisma.XOR<Prisma.ProjectionVsActualReportUpdateManyMutationInput, Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutUserInput>
+}
+
+export type ProjectionVsActualReportScalarWhereInput = {
+  AND?: Prisma.ProjectionVsActualReportScalarWhereInput | Prisma.ProjectionVsActualReportScalarWhereInput[]
+  OR?: Prisma.ProjectionVsActualReportScalarWhereInput[]
+  NOT?: Prisma.ProjectionVsActualReportScalarWhereInput | Prisma.ProjectionVsActualReportScalarWhereInput[]
+  id?: Prisma.UuidFilter<"ProjectionVsActualReport"> | string
+  reportDate?: Prisma.DateTimeFilter<"ProjectionVsActualReport"> | Date | string
+  institution?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  zone?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
+  dealerName?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
+  orderProjectionMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  sourceFileName?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"ProjectionVsActualReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"ProjectionVsActualReport"> | number | null
+  createdAt?: Prisma.DateTimeFilter<"ProjectionVsActualReport"> | Date | string
+}
+
+export type ProjectionVsActualReportCreateWithoutVerifiedDealerInput = {
+  id?: string
+  reportDate: Date | string
+  institution?: string | null
+  zone: string
+  dealerName: string
+  orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  createdAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutProjectionVsActualReportsInput
+}
+
+export type ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput = {
+  id?: string
+  reportDate: Date | string
+  institution?: string | null
+  zone: string
+  dealerName: string
+  orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  userId?: number | null
+  createdAt?: Date | string
+}
+
+export type ProjectionVsActualReportCreateOrConnectWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionVsActualReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type ProjectionVsActualReportCreateManyVerifiedDealerInputEnvelope = {
+  data: Prisma.ProjectionVsActualReportCreateManyVerifiedDealerInput | Prisma.ProjectionVsActualReportCreateManyVerifiedDealerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProjectionVsActualReportUpsertWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionVsActualReportWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProjectionVsActualReportUpdateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedUpdateWithoutVerifiedDealerInput>
+  create: Prisma.XOR<Prisma.ProjectionVsActualReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type ProjectionVsActualReportUpdateWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionVsActualReportWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProjectionVsActualReportUpdateWithoutVerifiedDealerInput, Prisma.ProjectionVsActualReportUncheckedUpdateWithoutVerifiedDealerInput>
+}
+
+export type ProjectionVsActualReportUpdateManyWithWhereWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionVsActualReportScalarWhereInput
+  data: Prisma.XOR<Prisma.ProjectionVsActualReportUpdateManyMutationInput, Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerInput>
+}
+
+export type ProjectionVsActualReportCreateManyUserInput = {
+  id?: string
+  reportDate: Date | string
+  institution?: string | null
+  zone: string
+  dealerName: string
+  orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  verifiedDealerId?: number | null
+  createdAt?: Date | string
+}
+
+export type ProjectionVsActualReportUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.StringFieldUpdateOperationsInput | string
+  orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutProjectionVsActualReportsNestedInput
+}
+
+export type ProjectionVsActualReportUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.StringFieldUpdateOperationsInput | string
+  orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectionVsActualReportUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.StringFieldUpdateOperationsInput | string
+  orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectionVsActualReportCreateManyVerifiedDealerInput = {
+  id?: string
+  reportDate: Date | string
+  institution?: string | null
+  zone: string
+  dealerName: string
+  orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  userId?: number | null
+  createdAt?: Date | string
+}
+
+export type ProjectionVsActualReportUpdateWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.StringFieldUpdateOperationsInput | string
+  orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutProjectionVsActualReportsNestedInput
+}
+
+export type ProjectionVsActualReportUncheckedUpdateWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.StringFieldUpdateOperationsInput | string
+  orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.StringFieldUpdateOperationsInput | string
+  orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderReceivedMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  doDoneMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  projectionVsActualOrderMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualOrderVsDoMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionProjection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  actualCollection?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  shortFall?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  percent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -687,7 +1170,11 @@ export type ProjectionVsActualReportSelect<ExtArgs extends runtime.Types.Extensi
   percent?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
+  verifiedDealer?: boolean | Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionVsActualReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["projectionVsActualReport"]>
 
 export type ProjectionVsActualReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -707,7 +1194,11 @@ export type ProjectionVsActualReportSelectCreateManyAndReturn<ExtArgs extends ru
   percent?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
+  verifiedDealer?: boolean | Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionVsActualReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["projectionVsActualReport"]>
 
 export type ProjectionVsActualReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -727,7 +1218,11 @@ export type ProjectionVsActualReportSelectUpdateManyAndReturn<ExtArgs extends ru
   percent?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
+  verifiedDealer?: boolean | Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionVsActualReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["projectionVsActualReport"]>
 
 export type ProjectionVsActualReportSelectScalar = {
@@ -747,14 +1242,31 @@ export type ProjectionVsActualReportSelectScalar = {
   percent?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
 }
 
-export type ProjectionVsActualReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reportDate" | "institution" | "zone" | "dealerName" | "orderProjectionMt" | "actualOrderReceivedMt" | "doDoneMt" | "projectionVsActualOrderMt" | "actualOrderVsDoMt" | "collectionProjection" | "actualCollection" | "shortFall" | "percent" | "sourceMessageId" | "sourceFileName" | "createdAt", ExtArgs["result"]["projectionVsActualReport"]>
+export type ProjectionVsActualReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reportDate" | "institution" | "zone" | "dealerName" | "orderProjectionMt" | "actualOrderReceivedMt" | "doDoneMt" | "projectionVsActualOrderMt" | "actualOrderVsDoMt" | "collectionProjection" | "actualCollection" | "shortFall" | "percent" | "sourceMessageId" | "sourceFileName" | "verifiedDealerId" | "userId" | "createdAt", ExtArgs["result"]["projectionVsActualReport"]>
+export type ProjectionVsActualReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  verifiedDealer?: boolean | Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionVsActualReport$userArgs<ExtArgs>
+}
+export type ProjectionVsActualReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  verifiedDealer?: boolean | Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionVsActualReport$userArgs<ExtArgs>
+}
+export type ProjectionVsActualReportIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  verifiedDealer?: boolean | Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionVsActualReport$userArgs<ExtArgs>
+}
 
 export type $ProjectionVsActualReportPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProjectionVsActualReport"
-  objects: {}
+  objects: {
+    verifiedDealer: Prisma.$VerifiedDealerPayload<ExtArgs> | null
+    user: Prisma.$UserPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     reportDate: Date
@@ -772,6 +1284,8 @@ export type $ProjectionVsActualReportPayload<ExtArgs extends runtime.Types.Exten
     percent: runtime.Decimal | null
     sourceMessageId: string | null
     sourceFileName: string | null
+    verifiedDealerId: number | null
+    userId: number | null
     createdAt: Date
   }, ExtArgs["result"]["projectionVsActualReport"]>
   composites: {}
@@ -1167,6 +1681,8 @@ readonly fields: ProjectionVsActualReportFieldRefs;
  */
 export interface Prisma__ProjectionVsActualReportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  verifiedDealer<T extends Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectionVsActualReport$verifiedDealerArgs<ExtArgs>>): Prisma.Prisma__VerifiedDealerClient<runtime.Types.Result.GetResult<Prisma.$VerifiedDealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.ProjectionVsActualReport$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectionVsActualReport$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1212,6 +1728,8 @@ export interface ProjectionVsActualReportFieldRefs {
   readonly percent: Prisma.FieldRef<"ProjectionVsActualReport", 'Decimal'>
   readonly sourceMessageId: Prisma.FieldRef<"ProjectionVsActualReport", 'String'>
   readonly sourceFileName: Prisma.FieldRef<"ProjectionVsActualReport", 'String'>
+  readonly verifiedDealerId: Prisma.FieldRef<"ProjectionVsActualReport", 'Int'>
+  readonly userId: Prisma.FieldRef<"ProjectionVsActualReport", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ProjectionVsActualReport", 'DateTime'>
 }
     
@@ -1229,6 +1747,10 @@ export type ProjectionVsActualReportFindUniqueArgs<ExtArgs extends runtime.Types
    * Omit specific fields from the ProjectionVsActualReport
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
   /**
    * Filter, which ProjectionVsActualReport to fetch.
    */
@@ -1248,6 +1770,10 @@ export type ProjectionVsActualReportFindUniqueOrThrowArgs<ExtArgs extends runtim
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
+  /**
    * Filter, which ProjectionVsActualReport to fetch.
    */
   where: Prisma.ProjectionVsActualReportWhereUniqueInput
@@ -1265,6 +1791,10 @@ export type ProjectionVsActualReportFindFirstArgs<ExtArgs extends runtime.Types.
    * Omit specific fields from the ProjectionVsActualReport
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
   /**
    * Filter, which ProjectionVsActualReport to fetch.
    */
@@ -1314,6 +1844,10 @@ export type ProjectionVsActualReportFindFirstOrThrowArgs<ExtArgs extends runtime
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
+  /**
    * Filter, which ProjectionVsActualReport to fetch.
    */
   where?: Prisma.ProjectionVsActualReportWhereInput
@@ -1362,6 +1896,10 @@ export type ProjectionVsActualReportFindManyArgs<ExtArgs extends runtime.Types.E
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
+  /**
    * Filter, which ProjectionVsActualReports to fetch.
    */
   where?: Prisma.ProjectionVsActualReportWhereInput
@@ -1405,6 +1943,10 @@ export type ProjectionVsActualReportCreateArgs<ExtArgs extends runtime.Types.Ext
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
+  /**
    * The data needed to create a ProjectionVsActualReport.
    */
   data: Prisma.XOR<Prisma.ProjectionVsActualReportCreateInput, Prisma.ProjectionVsActualReportUncheckedCreateInput>
@@ -1438,6 +1980,10 @@ export type ProjectionVsActualReportCreateManyAndReturnArgs<ExtArgs extends runt
    */
   data: Prisma.ProjectionVsActualReportCreateManyInput | Prisma.ProjectionVsActualReportCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1452,6 +1998,10 @@ export type ProjectionVsActualReportUpdateArgs<ExtArgs extends runtime.Types.Ext
    * Omit specific fields from the ProjectionVsActualReport
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
   /**
    * The data needed to update a ProjectionVsActualReport.
    */
@@ -1504,6 +2054,10 @@ export type ProjectionVsActualReportUpdateManyAndReturnArgs<ExtArgs extends runt
    * Limit how many ProjectionVsActualReports to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1518,6 +2072,10 @@ export type ProjectionVsActualReportUpsertArgs<ExtArgs extends runtime.Types.Ext
    * Omit specific fields from the ProjectionVsActualReport
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
   /**
    * The filter to search for the ProjectionVsActualReport to update in case it exists.
    */
@@ -1545,6 +2103,10 @@ export type ProjectionVsActualReportDeleteArgs<ExtArgs extends runtime.Types.Ext
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
+  /**
    * Filter which ProjectionVsActualReport to delete.
    */
   where: Prisma.ProjectionVsActualReportWhereUniqueInput
@@ -1565,6 +2127,44 @@ export type ProjectionVsActualReportDeleteManyArgs<ExtArgs extends runtime.Types
 }
 
 /**
+ * ProjectionVsActualReport.verifiedDealer
+ */
+export type ProjectionVsActualReport$verifiedDealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VerifiedDealer
+   */
+  select?: Prisma.VerifiedDealerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VerifiedDealer
+   */
+  omit?: Prisma.VerifiedDealerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VerifiedDealerInclude<ExtArgs> | null
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
+/**
+ * ProjectionVsActualReport.user
+ */
+export type ProjectionVsActualReport$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
  * ProjectionVsActualReport without action
  */
 export type ProjectionVsActualReportDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1576,4 +2176,8 @@ export type ProjectionVsActualReportDefaultArgs<ExtArgs extends runtime.Types.Ex
    * Omit specific fields from the ProjectionVsActualReport
    */
   omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
 }

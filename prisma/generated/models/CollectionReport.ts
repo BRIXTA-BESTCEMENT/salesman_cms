@@ -29,11 +29,15 @@ export type AggregateCollectionReport = {
 export type CollectionReportAvgAggregateOutputType = {
   amount: runtime.Decimal | null
   salesPromoterUserId: number | null
+  verifiedDealerId: number | null
+  userId: number | null
 }
 
 export type CollectionReportSumAggregateOutputType = {
   amount: runtime.Decimal | null
   salesPromoterUserId: number | null
+  verifiedDealerId: number | null
+  userId: number | null
 }
 
 export type CollectionReportMinAggregateOutputType = {
@@ -51,7 +55,8 @@ export type CollectionReportMinAggregateOutputType = {
   salesPromoterUserId: number | null
   sourceMessageId: string | null
   sourceFileName: string | null
-  dealerId: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date | null
 }
 
@@ -70,7 +75,8 @@ export type CollectionReportMaxAggregateOutputType = {
   salesPromoterUserId: number | null
   sourceMessageId: string | null
   sourceFileName: string | null
-  dealerId: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date | null
 }
 
@@ -89,7 +95,8 @@ export type CollectionReportCountAggregateOutputType = {
   salesPromoterUserId: number
   sourceMessageId: number
   sourceFileName: number
-  dealerId: number
+  verifiedDealerId: number
+  userId: number
   createdAt: number
   _all: number
 }
@@ -98,11 +105,15 @@ export type CollectionReportCountAggregateOutputType = {
 export type CollectionReportAvgAggregateInputType = {
   amount?: true
   salesPromoterUserId?: true
+  verifiedDealerId?: true
+  userId?: true
 }
 
 export type CollectionReportSumAggregateInputType = {
   amount?: true
   salesPromoterUserId?: true
+  verifiedDealerId?: true
+  userId?: true
 }
 
 export type CollectionReportMinAggregateInputType = {
@@ -120,7 +131,8 @@ export type CollectionReportMinAggregateInputType = {
   salesPromoterUserId?: true
   sourceMessageId?: true
   sourceFileName?: true
-  dealerId?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
 }
 
@@ -139,7 +151,8 @@ export type CollectionReportMaxAggregateInputType = {
   salesPromoterUserId?: true
   sourceMessageId?: true
   sourceFileName?: true
-  dealerId?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
 }
 
@@ -158,7 +171,8 @@ export type CollectionReportCountAggregateInputType = {
   salesPromoterUserId?: true
   sourceMessageId?: true
   sourceFileName?: true
-  dealerId?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
   _all?: true
 }
@@ -264,7 +278,8 @@ export type CollectionReportGroupByOutputType = {
   salesPromoterUserId: number | null
   sourceMessageId: string | null
   sourceFileName: string | null
-  dealerId: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date
   _count: CollectionReportCountAggregateOutputType | null
   _avg: CollectionReportAvgAggregateOutputType | null
@@ -306,9 +321,11 @@ export type CollectionReportWhereInput = {
   salesPromoterUserId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
-  dealerId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
-  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   outstandingReports?: Prisma.OutstandingReportListRelationFilter
 }
 
@@ -327,9 +344,11 @@ export type CollectionReportOrderByWithRelationInput = {
   salesPromoterUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
-  dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  dealer?: Prisma.DealerOrderByWithRelationInput
+  verifiedDealer?: Prisma.VerifiedDealerOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
   outstandingReports?: Prisma.OutstandingReportOrderByRelationAggregateInput
 }
 
@@ -351,9 +370,11 @@ export type CollectionReportWhereUniqueInput = Prisma.AtLeast<{
   salesPromoterUserId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
-  dealerId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
-  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   outstandingReports?: Prisma.OutstandingReportListRelationFilter
 }, "id">
 
@@ -372,7 +393,8 @@ export type CollectionReportOrderByWithAggregationInput = {
   salesPromoterUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
-  dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CollectionReportCountOrderByAggregateInput
   _avg?: Prisma.CollectionReportAvgOrderByAggregateInput
@@ -399,7 +421,8 @@ export type CollectionReportScalarWhereWithAggregatesInput = {
   salesPromoterUserId?: Prisma.IntNullableWithAggregatesFilter<"CollectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableWithAggregatesFilter<"CollectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableWithAggregatesFilter<"CollectionReport"> | string | null
-  dealerId?: Prisma.StringNullableWithAggregatesFilter<"CollectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableWithAggregatesFilter<"CollectionReport"> | number | null
+  userId?: Prisma.IntNullableWithAggregatesFilter<"CollectionReport"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CollectionReport"> | Date | string
 }
 
@@ -419,7 +442,8 @@ export type CollectionReportCreateInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
-  dealer?: Prisma.DealerCreateNestedOneWithoutCollectionReportsInput
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutCollectionReportsInput
+  user?: Prisma.UserCreateNestedOneWithoutCollectionReportsInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutCollectionReportInput
 }
 
@@ -438,7 +462,8 @@ export type CollectionReportUncheckedCreateInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
-  dealerId?: string | null
+  verifiedDealerId?: number | null
+  userId?: number | null
   createdAt?: Date | string
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutCollectionReportInput
 }
@@ -459,7 +484,8 @@ export type CollectionReportUpdateInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  dealer?: Prisma.DealerUpdateOneWithoutCollectionReportsNestedInput
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutCollectionReportsNestedInput
+  user?: Prisma.UserUpdateOneWithoutCollectionReportsNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutCollectionReportNestedInput
 }
 
@@ -478,7 +504,8 @@ export type CollectionReportUncheckedUpdateInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutCollectionReportNestedInput
 }
@@ -498,7 +525,8 @@ export type CollectionReportCreateManyInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
-  dealerId?: string | null
+  verifiedDealerId?: number | null
+  userId?: number | null
   createdAt?: Date | string
 }
 
@@ -535,7 +563,8 @@ export type CollectionReportUncheckedUpdateManyInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -564,13 +593,16 @@ export type CollectionReportCountOrderByAggregateInput = {
   salesPromoterUserId?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
-  dealerId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type CollectionReportAvgOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   salesPromoterUserId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type CollectionReportMaxOrderByAggregateInput = {
@@ -588,7 +620,8 @@ export type CollectionReportMaxOrderByAggregateInput = {
   salesPromoterUserId?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
-  dealerId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -607,13 +640,16 @@ export type CollectionReportMinOrderByAggregateInput = {
   salesPromoterUserId?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
-  dealerId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type CollectionReportSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   salesPromoterUserId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type CollectionReportNullableScalarRelationFilter = {
@@ -621,45 +657,87 @@ export type CollectionReportNullableScalarRelationFilter = {
   isNot?: Prisma.CollectionReportWhereInput | null
 }
 
-export type CollectionReportCreateNestedManyWithoutDealerInput = {
-  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutDealerInput, Prisma.CollectionReportUncheckedCreateWithoutDealerInput> | Prisma.CollectionReportCreateWithoutDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutDealerInput | Prisma.CollectionReportCreateOrConnectWithoutDealerInput[]
-  createMany?: Prisma.CollectionReportCreateManyDealerInputEnvelope
+export type CollectionReportCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutUserInput, Prisma.CollectionReportUncheckedCreateWithoutUserInput> | Prisma.CollectionReportCreateWithoutUserInput[] | Prisma.CollectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutUserInput | Prisma.CollectionReportCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.CollectionReportCreateManyUserInputEnvelope
   connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
 }
 
-export type CollectionReportUncheckedCreateNestedManyWithoutDealerInput = {
-  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutDealerInput, Prisma.CollectionReportUncheckedCreateWithoutDealerInput> | Prisma.CollectionReportCreateWithoutDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutDealerInput | Prisma.CollectionReportCreateOrConnectWithoutDealerInput[]
-  createMany?: Prisma.CollectionReportCreateManyDealerInputEnvelope
+export type CollectionReportUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutUserInput, Prisma.CollectionReportUncheckedCreateWithoutUserInput> | Prisma.CollectionReportCreateWithoutUserInput[] | Prisma.CollectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutUserInput | Prisma.CollectionReportCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.CollectionReportCreateManyUserInputEnvelope
   connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
 }
 
-export type CollectionReportUpdateManyWithoutDealerNestedInput = {
-  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutDealerInput, Prisma.CollectionReportUncheckedCreateWithoutDealerInput> | Prisma.CollectionReportCreateWithoutDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutDealerInput | Prisma.CollectionReportCreateOrConnectWithoutDealerInput[]
-  upsert?: Prisma.CollectionReportUpsertWithWhereUniqueWithoutDealerInput | Prisma.CollectionReportUpsertWithWhereUniqueWithoutDealerInput[]
-  createMany?: Prisma.CollectionReportCreateManyDealerInputEnvelope
+export type CollectionReportUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutUserInput, Prisma.CollectionReportUncheckedCreateWithoutUserInput> | Prisma.CollectionReportCreateWithoutUserInput[] | Prisma.CollectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutUserInput | Prisma.CollectionReportCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.CollectionReportUpsertWithWhereUniqueWithoutUserInput | Prisma.CollectionReportUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.CollectionReportCreateManyUserInputEnvelope
   set?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
   disconnect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
   delete?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
   connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
-  update?: Prisma.CollectionReportUpdateWithWhereUniqueWithoutDealerInput | Prisma.CollectionReportUpdateWithWhereUniqueWithoutDealerInput[]
-  updateMany?: Prisma.CollectionReportUpdateManyWithWhereWithoutDealerInput | Prisma.CollectionReportUpdateManyWithWhereWithoutDealerInput[]
+  update?: Prisma.CollectionReportUpdateWithWhereUniqueWithoutUserInput | Prisma.CollectionReportUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.CollectionReportUpdateManyWithWhereWithoutUserInput | Prisma.CollectionReportUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.CollectionReportScalarWhereInput | Prisma.CollectionReportScalarWhereInput[]
 }
 
-export type CollectionReportUncheckedUpdateManyWithoutDealerNestedInput = {
-  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutDealerInput, Prisma.CollectionReportUncheckedCreateWithoutDealerInput> | Prisma.CollectionReportCreateWithoutDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutDealerInput | Prisma.CollectionReportCreateOrConnectWithoutDealerInput[]
-  upsert?: Prisma.CollectionReportUpsertWithWhereUniqueWithoutDealerInput | Prisma.CollectionReportUpsertWithWhereUniqueWithoutDealerInput[]
-  createMany?: Prisma.CollectionReportCreateManyDealerInputEnvelope
+export type CollectionReportUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutUserInput, Prisma.CollectionReportUncheckedCreateWithoutUserInput> | Prisma.CollectionReportCreateWithoutUserInput[] | Prisma.CollectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutUserInput | Prisma.CollectionReportCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.CollectionReportUpsertWithWhereUniqueWithoutUserInput | Prisma.CollectionReportUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.CollectionReportCreateManyUserInputEnvelope
   set?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
   disconnect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
   delete?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
   connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
-  update?: Prisma.CollectionReportUpdateWithWhereUniqueWithoutDealerInput | Prisma.CollectionReportUpdateWithWhereUniqueWithoutDealerInput[]
-  updateMany?: Prisma.CollectionReportUpdateManyWithWhereWithoutDealerInput | Prisma.CollectionReportUpdateManyWithWhereWithoutDealerInput[]
+  update?: Prisma.CollectionReportUpdateWithWhereUniqueWithoutUserInput | Prisma.CollectionReportUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.CollectionReportUpdateManyWithWhereWithoutUserInput | Prisma.CollectionReportUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.CollectionReportScalarWhereInput | Prisma.CollectionReportScalarWhereInput[]
+}
+
+export type CollectionReportCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.CollectionReportCreateWithoutVerifiedDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.CollectionReportCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+}
+
+export type CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.CollectionReportCreateWithoutVerifiedDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.CollectionReportCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+}
+
+export type CollectionReportUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.CollectionReportCreateWithoutVerifiedDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.CollectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.CollectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.CollectionReportCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  disconnect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  delete?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  update?: Prisma.CollectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.CollectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.CollectionReportUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.CollectionReportUpdateManyWithWhereWithoutVerifiedDealerInput[]
+  deleteMany?: Prisma.CollectionReportScalarWhereInput | Prisma.CollectionReportScalarWhereInput[]
+}
+
+export type CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.CollectionReportCreateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.CollectionReportCreateWithoutVerifiedDealerInput[] | Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.CollectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.CollectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.CollectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.CollectionReportCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  disconnect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  delete?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  connect?: Prisma.CollectionReportWhereUniqueInput | Prisma.CollectionReportWhereUniqueInput[]
+  update?: Prisma.CollectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.CollectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.CollectionReportUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.CollectionReportUpdateManyWithWhereWithoutVerifiedDealerInput[]
   deleteMany?: Prisma.CollectionReportScalarWhereInput | Prisma.CollectionReportScalarWhereInput[]
 }
 
@@ -679,7 +757,7 @@ export type CollectionReportUpdateOneWithoutOutstandingReportsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CollectionReportUpdateToOneWithWhereWithoutOutstandingReportsInput, Prisma.CollectionReportUpdateWithoutOutstandingReportsInput>, Prisma.CollectionReportUncheckedUpdateWithoutOutstandingReportsInput>
 }
 
-export type CollectionReportCreateWithoutDealerInput = {
+export type CollectionReportCreateWithoutUserInput = {
   id?: string
   institution?: string | null
   voucherNo: string
@@ -695,10 +773,11 @@ export type CollectionReportCreateWithoutDealerInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutCollectionReportsInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutCollectionReportInput
 }
 
-export type CollectionReportUncheckedCreateWithoutDealerInput = {
+export type CollectionReportUncheckedCreateWithoutUserInput = {
   id?: string
   institution?: string | null
   voucherNo: string
@@ -713,34 +792,35 @@ export type CollectionReportUncheckedCreateWithoutDealerInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
+  verifiedDealerId?: number | null
   createdAt?: Date | string
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutCollectionReportInput
 }
 
-export type CollectionReportCreateOrConnectWithoutDealerInput = {
+export type CollectionReportCreateOrConnectWithoutUserInput = {
   where: Prisma.CollectionReportWhereUniqueInput
-  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutDealerInput, Prisma.CollectionReportUncheckedCreateWithoutDealerInput>
+  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutUserInput, Prisma.CollectionReportUncheckedCreateWithoutUserInput>
 }
 
-export type CollectionReportCreateManyDealerInputEnvelope = {
-  data: Prisma.CollectionReportCreateManyDealerInput | Prisma.CollectionReportCreateManyDealerInput[]
+export type CollectionReportCreateManyUserInputEnvelope = {
+  data: Prisma.CollectionReportCreateManyUserInput | Prisma.CollectionReportCreateManyUserInput[]
   skipDuplicates?: boolean
 }
 
-export type CollectionReportUpsertWithWhereUniqueWithoutDealerInput = {
+export type CollectionReportUpsertWithWhereUniqueWithoutUserInput = {
   where: Prisma.CollectionReportWhereUniqueInput
-  update: Prisma.XOR<Prisma.CollectionReportUpdateWithoutDealerInput, Prisma.CollectionReportUncheckedUpdateWithoutDealerInput>
-  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutDealerInput, Prisma.CollectionReportUncheckedCreateWithoutDealerInput>
+  update: Prisma.XOR<Prisma.CollectionReportUpdateWithoutUserInput, Prisma.CollectionReportUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutUserInput, Prisma.CollectionReportUncheckedCreateWithoutUserInput>
 }
 
-export type CollectionReportUpdateWithWhereUniqueWithoutDealerInput = {
+export type CollectionReportUpdateWithWhereUniqueWithoutUserInput = {
   where: Prisma.CollectionReportWhereUniqueInput
-  data: Prisma.XOR<Prisma.CollectionReportUpdateWithoutDealerInput, Prisma.CollectionReportUncheckedUpdateWithoutDealerInput>
+  data: Prisma.XOR<Prisma.CollectionReportUpdateWithoutUserInput, Prisma.CollectionReportUncheckedUpdateWithoutUserInput>
 }
 
-export type CollectionReportUpdateManyWithWhereWithoutDealerInput = {
+export type CollectionReportUpdateManyWithWhereWithoutUserInput = {
   where: Prisma.CollectionReportScalarWhereInput
-  data: Prisma.XOR<Prisma.CollectionReportUpdateManyMutationInput, Prisma.CollectionReportUncheckedUpdateManyWithoutDealerInput>
+  data: Prisma.XOR<Prisma.CollectionReportUpdateManyMutationInput, Prisma.CollectionReportUncheckedUpdateManyWithoutUserInput>
 }
 
 export type CollectionReportScalarWhereInput = {
@@ -761,8 +841,75 @@ export type CollectionReportScalarWhereInput = {
   salesPromoterUserId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
-  dealerId?: Prisma.StringNullableFilter<"CollectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"CollectionReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"CollectionReport"> | Date | string
+}
+
+export type CollectionReportCreateWithoutVerifiedDealerInput = {
+  id?: string
+  institution?: string | null
+  voucherNo: string
+  voucherDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: string | null
+  remarks?: string | null
+  partyName: string
+  salesPromoterName?: string | null
+  zone?: string | null
+  district?: string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  createdAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutCollectionReportsInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutCollectionReportInput
+}
+
+export type CollectionReportUncheckedCreateWithoutVerifiedDealerInput = {
+  id?: string
+  institution?: string | null
+  voucherNo: string
+  voucherDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: string | null
+  remarks?: string | null
+  partyName: string
+  salesPromoterName?: string | null
+  zone?: string | null
+  district?: string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  userId?: number | null
+  createdAt?: Date | string
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutCollectionReportInput
+}
+
+export type CollectionReportCreateOrConnectWithoutVerifiedDealerInput = {
+  where: Prisma.CollectionReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type CollectionReportCreateManyVerifiedDealerInputEnvelope = {
+  data: Prisma.CollectionReportCreateManyVerifiedDealerInput | Prisma.CollectionReportCreateManyVerifiedDealerInput[]
+  skipDuplicates?: boolean
+}
+
+export type CollectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.CollectionReportWhereUniqueInput
+  update: Prisma.XOR<Prisma.CollectionReportUpdateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedUpdateWithoutVerifiedDealerInput>
+  create: Prisma.XOR<Prisma.CollectionReportCreateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type CollectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.CollectionReportWhereUniqueInput
+  data: Prisma.XOR<Prisma.CollectionReportUpdateWithoutVerifiedDealerInput, Prisma.CollectionReportUncheckedUpdateWithoutVerifiedDealerInput>
+}
+
+export type CollectionReportUpdateManyWithWhereWithoutVerifiedDealerInput = {
+  where: Prisma.CollectionReportScalarWhereInput
+  data: Prisma.XOR<Prisma.CollectionReportUpdateManyMutationInput, Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerInput>
 }
 
 export type CollectionReportCreateWithoutOutstandingReportsInput = {
@@ -781,7 +928,8 @@ export type CollectionReportCreateWithoutOutstandingReportsInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
-  dealer?: Prisma.DealerCreateNestedOneWithoutCollectionReportsInput
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutCollectionReportsInput
+  user?: Prisma.UserCreateNestedOneWithoutCollectionReportsInput
 }
 
 export type CollectionReportUncheckedCreateWithoutOutstandingReportsInput = {
@@ -799,7 +947,8 @@ export type CollectionReportUncheckedCreateWithoutOutstandingReportsInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
-  dealerId?: string | null
+  verifiedDealerId?: number | null
+  userId?: number | null
   createdAt?: Date | string
 }
 
@@ -835,7 +984,8 @@ export type CollectionReportUpdateWithoutOutstandingReportsInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  dealer?: Prisma.DealerUpdateOneWithoutCollectionReportsNestedInput
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutCollectionReportsNestedInput
+  user?: Prisma.UserUpdateOneWithoutCollectionReportsNestedInput
 }
 
 export type CollectionReportUncheckedUpdateWithoutOutstandingReportsInput = {
@@ -853,11 +1003,12 @@ export type CollectionReportUncheckedUpdateWithoutOutstandingReportsInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type CollectionReportCreateManyDealerInput = {
+export type CollectionReportCreateManyUserInput = {
   id?: string
   institution?: string | null
   voucherNo: string
@@ -872,10 +1023,11 @@ export type CollectionReportCreateManyDealerInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
+  verifiedDealerId?: number | null
   createdAt?: Date | string
 }
 
-export type CollectionReportUpdateWithoutDealerInput = {
+export type CollectionReportUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
@@ -891,10 +1043,11 @@ export type CollectionReportUpdateWithoutDealerInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutCollectionReportsNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutCollectionReportNestedInput
 }
 
-export type CollectionReportUncheckedUpdateWithoutDealerInput = {
+export type CollectionReportUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
@@ -909,11 +1062,12 @@ export type CollectionReportUncheckedUpdateWithoutDealerInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutCollectionReportNestedInput
 }
 
-export type CollectionReportUncheckedUpdateManyWithoutDealerInput = {
+export type CollectionReportUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
@@ -928,6 +1082,85 @@ export type CollectionReportUncheckedUpdateManyWithoutDealerInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CollectionReportCreateManyVerifiedDealerInput = {
+  id?: string
+  institution?: string | null
+  voucherNo: string
+  voucherDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: string | null
+  remarks?: string | null
+  partyName: string
+  salesPromoterName?: string | null
+  zone?: string | null
+  district?: string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  userId?: number | null
+  createdAt?: Date | string
+}
+
+export type CollectionReportUpdateWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
+  voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partyName?: Prisma.StringFieldUpdateOperationsInput | string
+  salesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutCollectionReportsNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutCollectionReportNestedInput
+}
+
+export type CollectionReportUncheckedUpdateWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
+  voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partyName?: Prisma.StringFieldUpdateOperationsInput | string
+  salesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutCollectionReportNestedInput
+}
+
+export type CollectionReportUncheckedUpdateManyWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherNo?: Prisma.StringFieldUpdateOperationsInput | string
+  voucherDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bankAccount?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  partyName?: Prisma.StringFieldUpdateOperationsInput | string
+  salesPromoterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -977,9 +1210,11 @@ export type CollectionReportSelect<ExtArgs extends runtime.Types.Extensions.Inte
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
-  dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.CollectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.CollectionReport$userArgs<ExtArgs>
   outstandingReports?: boolean | Prisma.CollectionReport$outstandingReportsArgs<ExtArgs>
   _count?: boolean | Prisma.CollectionReportCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["collectionReport"]>
@@ -999,9 +1234,11 @@ export type CollectionReportSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
-  dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.CollectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.CollectionReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["collectionReport"]>
 
 export type CollectionReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1019,9 +1256,11 @@ export type CollectionReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
-  dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.CollectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.CollectionReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["collectionReport"]>
 
 export type CollectionReportSelectScalar = {
@@ -1039,27 +1278,32 @@ export type CollectionReportSelectScalar = {
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
 }
 
-export type CollectionReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institution" | "voucherNo" | "voucherDate" | "amount" | "bankAccount" | "remarks" | "partyName" | "salesPromoterName" | "zone" | "district" | "salesPromoterUserId" | "sourceMessageId" | "sourceFileName" | "dealerId" | "createdAt", ExtArgs["result"]["collectionReport"]>
+export type CollectionReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institution" | "voucherNo" | "voucherDate" | "amount" | "bankAccount" | "remarks" | "partyName" | "salesPromoterName" | "zone" | "district" | "salesPromoterUserId" | "sourceMessageId" | "sourceFileName" | "verifiedDealerId" | "userId" | "createdAt", ExtArgs["result"]["collectionReport"]>
 export type CollectionReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.CollectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.CollectionReport$userArgs<ExtArgs>
   outstandingReports?: boolean | Prisma.CollectionReport$outstandingReportsArgs<ExtArgs>
   _count?: boolean | Prisma.CollectionReportCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CollectionReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.CollectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.CollectionReport$userArgs<ExtArgs>
 }
 export type CollectionReportIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  dealer?: boolean | Prisma.CollectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.CollectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.CollectionReport$userArgs<ExtArgs>
 }
 
 export type $CollectionReportPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CollectionReport"
   objects: {
-    dealer: Prisma.$DealerPayload<ExtArgs> | null
+    verifiedDealer: Prisma.$VerifiedDealerPayload<ExtArgs> | null
+    user: Prisma.$UserPayload<ExtArgs> | null
     outstandingReports: Prisma.$OutstandingReportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1077,7 +1321,8 @@ export type $CollectionReportPayload<ExtArgs extends runtime.Types.Extensions.In
     salesPromoterUserId: number | null
     sourceMessageId: string | null
     sourceFileName: string | null
-    dealerId: string | null
+    verifiedDealerId: number | null
+    userId: number | null
     createdAt: Date
   }, ExtArgs["result"]["collectionReport"]>
   composites: {}
@@ -1473,7 +1718,8 @@ readonly fields: CollectionReportFieldRefs;
  */
 export interface Prisma__CollectionReportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  dealer<T extends Prisma.CollectionReport$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectionReport$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  verifiedDealer<T extends Prisma.CollectionReport$verifiedDealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectionReport$verifiedDealerArgs<ExtArgs>>): Prisma.Prisma__VerifiedDealerClient<runtime.Types.Result.GetResult<Prisma.$VerifiedDealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.CollectionReport$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectionReport$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   outstandingReports<T extends Prisma.CollectionReport$outstandingReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CollectionReport$outstandingReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OutstandingReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1518,7 +1764,8 @@ export interface CollectionReportFieldRefs {
   readonly salesPromoterUserId: Prisma.FieldRef<"CollectionReport", 'Int'>
   readonly sourceMessageId: Prisma.FieldRef<"CollectionReport", 'String'>
   readonly sourceFileName: Prisma.FieldRef<"CollectionReport", 'String'>
-  readonly dealerId: Prisma.FieldRef<"CollectionReport", 'String'>
+  readonly verifiedDealerId: Prisma.FieldRef<"CollectionReport", 'Int'>
+  readonly userId: Prisma.FieldRef<"CollectionReport", 'Int'>
   readonly createdAt: Prisma.FieldRef<"CollectionReport", 'DateTime'>
 }
     
@@ -1916,22 +2163,41 @@ export type CollectionReportDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
 }
 
 /**
- * CollectionReport.dealer
+ * CollectionReport.verifiedDealer
  */
-export type CollectionReport$dealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type CollectionReport$verifiedDealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Dealer
+   * Select specific fields to fetch from the VerifiedDealer
    */
-  select?: Prisma.DealerSelect<ExtArgs> | null
+  select?: Prisma.VerifiedDealerSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Dealer
+   * Omit specific fields from the VerifiedDealer
    */
-  omit?: Prisma.DealerOmit<ExtArgs> | null
+  omit?: Prisma.VerifiedDealerOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.DealerInclude<ExtArgs> | null
-  where?: Prisma.DealerWhereInput
+  include?: Prisma.VerifiedDealerInclude<ExtArgs> | null
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
+/**
+ * CollectionReport.user
+ */
+export type CollectionReport$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

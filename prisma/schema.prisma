@@ -94,6 +94,9 @@ model User {
   journeyOps                          JourneyOp[]
   notifications                       Notification[] @relation("UserNotifications")
   verifiedDealers       VerifiedDealer[]
+  projectionVsActualReports ProjectionVsActualReport[]
+  projectionReports         ProjectionReport[]
+  collectionReports         CollectionReport[]
   
   @@unique([companyId, email])
   @@index([companyId], map: "idx_user_company_id")
@@ -207,8 +210,6 @@ model Dealer {
   associatedMasons      Mason_PC_Side[] @relation("DealerAssociatedMasons")
   associatedSites       TechnicalSite[] @relation("SiteAssociatedDealers")
   geoTrackings          GeoTracking[]
-  collectionReports CollectionReport[]
-  projectionReports ProjectionReport[]
   verifiedDealers       VerifiedDealer[]
 
   @@index([userId], map: "idx_dealers_user_id")
@@ -243,6 +244,9 @@ model VerifiedDealer {
 
   outstandingReports    OutstandingReport[]
   dealerBrandMappings   DealerBrandMapping[]
+  projectionVsActualReports ProjectionVsActualReport[]
+  projectionReports         ProjectionReport[]
+  collectionReports         CollectionReport[]
 
   @@map("verified_dealers")
 }
@@ -712,8 +716,10 @@ model CollectionReport {
   sourceFileName      String?  @map("source_file_name")
   
   // Relations
-  dealerId            String?  @map("dealer_id") @db.VarChar(255)
-  dealer              Dealer?  @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+  verifiedDealerId    Int?            @map("verified_dealer_id")
+  verifiedDealer      VerifiedDealer? @relation(fields: [verifiedDealerId], references: [id], onDelete: SetNull)
+  userId              Int?            @map("user_id")
+  user                User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   outstandingReports    OutstandingReport[]
   
@@ -721,8 +727,9 @@ model CollectionReport {
 
   @@index([institution], map: "idx_collection_institution")
   @@index([voucherDate], map: "idx_collection_date")
-  @@index([dealerId], map: "idx_collection_dealer")
   @@index([voucherNo], map: "idx_collection_voucher")
+  @@index([verifiedDealerId], map: "idx_collection_verified_dealer")
+  @@index([userId], map: "idx_collection_user")
   @@map("collection_reports")
 }
 
@@ -776,6 +783,13 @@ model ProjectionVsActualReport {
   percent                   Decimal? @db.Decimal(6, 2)
   sourceMessageId           String?  @map("source_message_id") @db.Text
   sourceFileName            String?  @map("source_file_name") @db.Text
+
+  // Relations
+  verifiedDealerId          Int?            @map("verified_dealer_id")
+  verifiedDealer            VerifiedDealer? @relation(fields: [verifiedDealerId], references: [id], onDelete: SetNull)
+  userId                    Int?            @map("user_id")
+  user                      User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@unique([reportDate, dealerName, institution], map: "uniq_proj_actual_snapshot")
@@ -783,6 +797,8 @@ model ProjectionVsActualReport {
   @@index([zone], map: "idx_proj_actual_zone")
   @@index([dealerName], map: "idx_proj_actual_dealer")
   @@index([institution], map: "idx_proj_actual_institution")
+  @@index([verifiedDealerId], map: "idx_proj_actual_verified_dealer")
+  @@index([userId], map: "idx_proj_actual_user")
   @@map("projection_vs_actual_reports")
 }
 
@@ -800,15 +816,18 @@ model ProjectionReport {
   sourceFileName       String?  @map("source_file_name") @db.Text
 
   // Relations
-  dealerId             String?  @map("dealer_id") @db.VarChar(255)
-  dealer               Dealer?  @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+  verifiedDealerId     Int?            @map("verified_dealer_id")
+  verifiedDealer       VerifiedDealer? @relation(fields: [verifiedDealerId], references: [id], onDelete: SetNull)
+  userId               Int?            @map("user_id")
+  user                 User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([reportDate], map: "idx_projection_date")
   @@index([zone], map: "idx_projection_zone")
   @@index([institution], map: "idx_projection_institution")
-  @@index([dealerId], map: "idx_projection_dealer")
+  @@index([verifiedDealerId], map: "idx_projection_verified_dealer")
+  @@index([userId], map: "idx_projection_user")
   @@map("projection_reports")
 }
 

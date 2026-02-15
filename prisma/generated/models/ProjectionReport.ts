@@ -30,12 +30,16 @@ export type ProjectionReportAvgAggregateOutputType = {
   orderQtyMt: runtime.Decimal | null
   collectionAmount: runtime.Decimal | null
   salesPromoterUserId: number | null
+  verifiedDealerId: number | null
+  userId: number | null
 }
 
 export type ProjectionReportSumAggregateOutputType = {
   orderQtyMt: runtime.Decimal | null
   collectionAmount: runtime.Decimal | null
   salesPromoterUserId: number | null
+  verifiedDealerId: number | null
+  userId: number | null
 }
 
 export type ProjectionReportMinAggregateOutputType = {
@@ -50,7 +54,8 @@ export type ProjectionReportMinAggregateOutputType = {
   salesPromoterUserId: number | null
   sourceMessageId: string | null
   sourceFileName: string | null
-  dealerId: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date | null
 }
 
@@ -66,7 +71,8 @@ export type ProjectionReportMaxAggregateOutputType = {
   salesPromoterUserId: number | null
   sourceMessageId: string | null
   sourceFileName: string | null
-  dealerId: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date | null
 }
 
@@ -82,7 +88,8 @@ export type ProjectionReportCountAggregateOutputType = {
   salesPromoterUserId: number
   sourceMessageId: number
   sourceFileName: number
-  dealerId: number
+  verifiedDealerId: number
+  userId: number
   createdAt: number
   _all: number
 }
@@ -92,12 +99,16 @@ export type ProjectionReportAvgAggregateInputType = {
   orderQtyMt?: true
   collectionAmount?: true
   salesPromoterUserId?: true
+  verifiedDealerId?: true
+  userId?: true
 }
 
 export type ProjectionReportSumAggregateInputType = {
   orderQtyMt?: true
   collectionAmount?: true
   salesPromoterUserId?: true
+  verifiedDealerId?: true
+  userId?: true
 }
 
 export type ProjectionReportMinAggregateInputType = {
@@ -112,7 +123,8 @@ export type ProjectionReportMinAggregateInputType = {
   salesPromoterUserId?: true
   sourceMessageId?: true
   sourceFileName?: true
-  dealerId?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
 }
 
@@ -128,7 +140,8 @@ export type ProjectionReportMaxAggregateInputType = {
   salesPromoterUserId?: true
   sourceMessageId?: true
   sourceFileName?: true
-  dealerId?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
 }
 
@@ -144,7 +157,8 @@ export type ProjectionReportCountAggregateInputType = {
   salesPromoterUserId?: true
   sourceMessageId?: true
   sourceFileName?: true
-  dealerId?: true
+  verifiedDealerId?: true
+  userId?: true
   createdAt?: true
   _all?: true
 }
@@ -247,7 +261,8 @@ export type ProjectionReportGroupByOutputType = {
   salesPromoterUserId: number | null
   sourceMessageId: string | null
   sourceFileName: string | null
-  dealerId: string | null
+  verifiedDealerId: number | null
+  userId: number | null
   createdAt: Date
   _count: ProjectionReportCountAggregateOutputType | null
   _avg: ProjectionReportAvgAggregateOutputType | null
@@ -286,9 +301,11 @@ export type ProjectionReportWhereInput = {
   salesPromoterUserId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
-  dealerId?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProjectionReport"> | Date | string
-  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ProjectionReportOrderByWithRelationInput = {
@@ -303,9 +320,11 @@ export type ProjectionReportOrderByWithRelationInput = {
   salesPromoterUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
-  dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  dealer?: Prisma.DealerOrderByWithRelationInput
+  verifiedDealer?: Prisma.VerifiedDealerOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ProjectionReportWhereUniqueInput = Prisma.AtLeast<{
@@ -323,9 +342,11 @@ export type ProjectionReportWhereUniqueInput = Prisma.AtLeast<{
   salesPromoterUserId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
-  dealerId?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProjectionReport"> | Date | string
-  dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
 export type ProjectionReportOrderByWithAggregationInput = {
@@ -340,7 +361,8 @@ export type ProjectionReportOrderByWithAggregationInput = {
   salesPromoterUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
-  dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ProjectionReportCountOrderByAggregateInput
   _avg?: Prisma.ProjectionReportAvgOrderByAggregateInput
@@ -364,7 +386,8 @@ export type ProjectionReportScalarWhereWithAggregatesInput = {
   salesPromoterUserId?: Prisma.IntNullableWithAggregatesFilter<"ProjectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableWithAggregatesFilter<"ProjectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableWithAggregatesFilter<"ProjectionReport"> | string | null
-  dealerId?: Prisma.StringNullableWithAggregatesFilter<"ProjectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableWithAggregatesFilter<"ProjectionReport"> | number | null
+  userId?: Prisma.IntNullableWithAggregatesFilter<"ProjectionReport"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectionReport"> | Date | string
 }
 
@@ -381,7 +404,8 @@ export type ProjectionReportCreateInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
-  dealer?: Prisma.DealerCreateNestedOneWithoutProjectionReportsInput
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutProjectionReportsInput
+  user?: Prisma.UserCreateNestedOneWithoutProjectionReportsInput
 }
 
 export type ProjectionReportUncheckedCreateInput = {
@@ -396,7 +420,8 @@ export type ProjectionReportUncheckedCreateInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
-  dealerId?: string | null
+  verifiedDealerId?: number | null
+  userId?: number | null
   createdAt?: Date | string
 }
 
@@ -413,7 +438,8 @@ export type ProjectionReportUpdateInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  dealer?: Prisma.DealerUpdateOneWithoutProjectionReportsNestedInput
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutProjectionReportsNestedInput
+  user?: Prisma.UserUpdateOneWithoutProjectionReportsNestedInput
 }
 
 export type ProjectionReportUncheckedUpdateInput = {
@@ -428,7 +454,8 @@ export type ProjectionReportUncheckedUpdateInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -444,7 +471,8 @@ export type ProjectionReportCreateManyInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
-  dealerId?: string | null
+  verifiedDealerId?: number | null
+  userId?: number | null
   createdAt?: Date | string
 }
 
@@ -475,7 +503,8 @@ export type ProjectionReportUncheckedUpdateManyInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -501,7 +530,8 @@ export type ProjectionReportCountOrderByAggregateInput = {
   salesPromoterUserId?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
-  dealerId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -509,6 +539,8 @@ export type ProjectionReportAvgOrderByAggregateInput = {
   orderQtyMt?: Prisma.SortOrder
   collectionAmount?: Prisma.SortOrder
   salesPromoterUserId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type ProjectionReportMaxOrderByAggregateInput = {
@@ -523,7 +555,8 @@ export type ProjectionReportMaxOrderByAggregateInput = {
   salesPromoterUserId?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
-  dealerId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -539,7 +572,8 @@ export type ProjectionReportMinOrderByAggregateInput = {
   salesPromoterUserId?: Prisma.SortOrder
   sourceMessageId?: Prisma.SortOrder
   sourceFileName?: Prisma.SortOrder
-  dealerId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -547,51 +581,95 @@ export type ProjectionReportSumOrderByAggregateInput = {
   orderQtyMt?: Prisma.SortOrder
   collectionAmount?: Prisma.SortOrder
   salesPromoterUserId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
-export type ProjectionReportCreateNestedManyWithoutDealerInput = {
-  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutDealerInput> | Prisma.ProjectionReportCreateWithoutDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutDealerInput[]
-  createMany?: Prisma.ProjectionReportCreateManyDealerInputEnvelope
+export type ProjectionReportCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutUserInput, Prisma.ProjectionReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionReportCreateWithoutUserInput[] | Prisma.ProjectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutUserInput | Prisma.ProjectionReportCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ProjectionReportCreateManyUserInputEnvelope
   connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
 }
 
-export type ProjectionReportUncheckedCreateNestedManyWithoutDealerInput = {
-  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutDealerInput> | Prisma.ProjectionReportCreateWithoutDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutDealerInput[]
-  createMany?: Prisma.ProjectionReportCreateManyDealerInputEnvelope
+export type ProjectionReportUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutUserInput, Prisma.ProjectionReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionReportCreateWithoutUserInput[] | Prisma.ProjectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutUserInput | Prisma.ProjectionReportCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.ProjectionReportCreateManyUserInputEnvelope
   connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
 }
 
-export type ProjectionReportUpdateManyWithoutDealerNestedInput = {
-  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutDealerInput> | Prisma.ProjectionReportCreateWithoutDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutDealerInput[]
-  upsert?: Prisma.ProjectionReportUpsertWithWhereUniqueWithoutDealerInput | Prisma.ProjectionReportUpsertWithWhereUniqueWithoutDealerInput[]
-  createMany?: Prisma.ProjectionReportCreateManyDealerInputEnvelope
+export type ProjectionReportUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutUserInput, Prisma.ProjectionReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionReportCreateWithoutUserInput[] | Prisma.ProjectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutUserInput | Prisma.ProjectionReportCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ProjectionReportUpsertWithWhereUniqueWithoutUserInput | Prisma.ProjectionReportUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ProjectionReportCreateManyUserInputEnvelope
   set?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
   disconnect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
   delete?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
   connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
-  update?: Prisma.ProjectionReportUpdateWithWhereUniqueWithoutDealerInput | Prisma.ProjectionReportUpdateWithWhereUniqueWithoutDealerInput[]
-  updateMany?: Prisma.ProjectionReportUpdateManyWithWhereWithoutDealerInput | Prisma.ProjectionReportUpdateManyWithWhereWithoutDealerInput[]
+  update?: Prisma.ProjectionReportUpdateWithWhereUniqueWithoutUserInput | Prisma.ProjectionReportUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ProjectionReportUpdateManyWithWhereWithoutUserInput | Prisma.ProjectionReportUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.ProjectionReportScalarWhereInput | Prisma.ProjectionReportScalarWhereInput[]
 }
 
-export type ProjectionReportUncheckedUpdateManyWithoutDealerNestedInput = {
-  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutDealerInput> | Prisma.ProjectionReportCreateWithoutDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutDealerInput[]
-  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutDealerInput[]
-  upsert?: Prisma.ProjectionReportUpsertWithWhereUniqueWithoutDealerInput | Prisma.ProjectionReportUpsertWithWhereUniqueWithoutDealerInput[]
-  createMany?: Prisma.ProjectionReportCreateManyDealerInputEnvelope
+export type ProjectionReportUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutUserInput, Prisma.ProjectionReportUncheckedCreateWithoutUserInput> | Prisma.ProjectionReportCreateWithoutUserInput[] | Prisma.ProjectionReportUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutUserInput | Prisma.ProjectionReportCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.ProjectionReportUpsertWithWhereUniqueWithoutUserInput | Prisma.ProjectionReportUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.ProjectionReportCreateManyUserInputEnvelope
   set?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
   disconnect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
   delete?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
   connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
-  update?: Prisma.ProjectionReportUpdateWithWhereUniqueWithoutDealerInput | Prisma.ProjectionReportUpdateWithWhereUniqueWithoutDealerInput[]
-  updateMany?: Prisma.ProjectionReportUpdateManyWithWhereWithoutDealerInput | Prisma.ProjectionReportUpdateManyWithWhereWithoutDealerInput[]
+  update?: Prisma.ProjectionReportUpdateWithWhereUniqueWithoutUserInput | Prisma.ProjectionReportUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.ProjectionReportUpdateManyWithWhereWithoutUserInput | Prisma.ProjectionReportUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.ProjectionReportScalarWhereInput | Prisma.ProjectionReportScalarWhereInput[]
 }
 
-export type ProjectionReportCreateWithoutDealerInput = {
+export type ProjectionReportCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionReportCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+}
+
+export type ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionReportCreateManyVerifiedDealerInputEnvelope
+  connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+}
+
+export type ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.ProjectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionReportCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  disconnect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  delete?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  update?: Prisma.ProjectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.ProjectionReportUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.ProjectionReportUpdateManyWithWhereWithoutVerifiedDealerInput[]
+  deleteMany?: Prisma.ProjectionReportScalarWhereInput | Prisma.ProjectionReportScalarWhereInput[]
+}
+
+export type ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectionReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput> | Prisma.ProjectionReportCreateWithoutVerifiedDealerInput[] | Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput[]
+  connectOrCreate?: Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput | Prisma.ProjectionReportCreateOrConnectWithoutVerifiedDealerInput[]
+  upsert?: Prisma.ProjectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput[]
+  createMany?: Prisma.ProjectionReportCreateManyVerifiedDealerInputEnvelope
+  set?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  disconnect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  delete?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  connect?: Prisma.ProjectionReportWhereUniqueInput | Prisma.ProjectionReportWhereUniqueInput[]
+  update?: Prisma.ProjectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput | Prisma.ProjectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput[]
+  updateMany?: Prisma.ProjectionReportUpdateManyWithWhereWithoutVerifiedDealerInput | Prisma.ProjectionReportUpdateManyWithWhereWithoutVerifiedDealerInput[]
+  deleteMany?: Prisma.ProjectionReportScalarWhereInput | Prisma.ProjectionReportScalarWhereInput[]
+}
+
+export type ProjectionReportCreateWithoutUserInput = {
   id?: string
   institution?: string | null
   reportDate: Date | string
@@ -604,9 +682,10 @@ export type ProjectionReportCreateWithoutDealerInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
+  verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutProjectionReportsInput
 }
 
-export type ProjectionReportUncheckedCreateWithoutDealerInput = {
+export type ProjectionReportUncheckedCreateWithoutUserInput = {
   id?: string
   institution?: string | null
   reportDate: Date | string
@@ -618,33 +697,34 @@ export type ProjectionReportUncheckedCreateWithoutDealerInput = {
   salesPromoterUserId?: number | null
   sourceMessageId?: string | null
   sourceFileName?: string | null
+  verifiedDealerId?: number | null
   createdAt?: Date | string
 }
 
-export type ProjectionReportCreateOrConnectWithoutDealerInput = {
+export type ProjectionReportCreateOrConnectWithoutUserInput = {
   where: Prisma.ProjectionReportWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProjectionReportCreateWithoutDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutDealerInput>
+  create: Prisma.XOR<Prisma.ProjectionReportCreateWithoutUserInput, Prisma.ProjectionReportUncheckedCreateWithoutUserInput>
 }
 
-export type ProjectionReportCreateManyDealerInputEnvelope = {
-  data: Prisma.ProjectionReportCreateManyDealerInput | Prisma.ProjectionReportCreateManyDealerInput[]
+export type ProjectionReportCreateManyUserInputEnvelope = {
+  data: Prisma.ProjectionReportCreateManyUserInput | Prisma.ProjectionReportCreateManyUserInput[]
   skipDuplicates?: boolean
 }
 
-export type ProjectionReportUpsertWithWhereUniqueWithoutDealerInput = {
+export type ProjectionReportUpsertWithWhereUniqueWithoutUserInput = {
   where: Prisma.ProjectionReportWhereUniqueInput
-  update: Prisma.XOR<Prisma.ProjectionReportUpdateWithoutDealerInput, Prisma.ProjectionReportUncheckedUpdateWithoutDealerInput>
-  create: Prisma.XOR<Prisma.ProjectionReportCreateWithoutDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutDealerInput>
+  update: Prisma.XOR<Prisma.ProjectionReportUpdateWithoutUserInput, Prisma.ProjectionReportUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.ProjectionReportCreateWithoutUserInput, Prisma.ProjectionReportUncheckedCreateWithoutUserInput>
 }
 
-export type ProjectionReportUpdateWithWhereUniqueWithoutDealerInput = {
+export type ProjectionReportUpdateWithWhereUniqueWithoutUserInput = {
   where: Prisma.ProjectionReportWhereUniqueInput
-  data: Prisma.XOR<Prisma.ProjectionReportUpdateWithoutDealerInput, Prisma.ProjectionReportUncheckedUpdateWithoutDealerInput>
+  data: Prisma.XOR<Prisma.ProjectionReportUpdateWithoutUserInput, Prisma.ProjectionReportUncheckedUpdateWithoutUserInput>
 }
 
-export type ProjectionReportUpdateManyWithWhereWithoutDealerInput = {
+export type ProjectionReportUpdateManyWithWhereWithoutUserInput = {
   where: Prisma.ProjectionReportScalarWhereInput
-  data: Prisma.XOR<Prisma.ProjectionReportUpdateManyMutationInput, Prisma.ProjectionReportUncheckedUpdateManyWithoutDealerInput>
+  data: Prisma.XOR<Prisma.ProjectionReportUpdateManyMutationInput, Prisma.ProjectionReportUncheckedUpdateManyWithoutUserInput>
 }
 
 export type ProjectionReportScalarWhereInput = {
@@ -662,11 +742,12 @@ export type ProjectionReportScalarWhereInput = {
   salesPromoterUserId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
   sourceMessageId?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
   sourceFileName?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
-  dealerId?: Prisma.StringNullableFilter<"ProjectionReport"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
+  userId?: Prisma.IntNullableFilter<"ProjectionReport"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ProjectionReport"> | Date | string
 }
 
-export type ProjectionReportCreateManyDealerInput = {
+export type ProjectionReportCreateWithoutVerifiedDealerInput = {
   id?: string
   institution?: string | null
   reportDate: Date | string
@@ -679,9 +760,68 @@ export type ProjectionReportCreateManyDealerInput = {
   sourceMessageId?: string | null
   sourceFileName?: string | null
   createdAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutProjectionReportsInput
 }
 
-export type ProjectionReportUpdateWithoutDealerInput = {
+export type ProjectionReportUncheckedCreateWithoutVerifiedDealerInput = {
+  id?: string
+  institution?: string | null
+  reportDate: Date | string
+  zone: string
+  orderDealerName?: string | null
+  orderQtyMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionDealerName?: string | null
+  collectionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  userId?: number | null
+  createdAt?: Date | string
+}
+
+export type ProjectionReportCreateOrConnectWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectionReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type ProjectionReportCreateManyVerifiedDealerInputEnvelope = {
+  data: Prisma.ProjectionReportCreateManyVerifiedDealerInput | Prisma.ProjectionReportCreateManyVerifiedDealerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProjectionReportUpsertWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionReportWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProjectionReportUpdateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedUpdateWithoutVerifiedDealerInput>
+  create: Prisma.XOR<Prisma.ProjectionReportCreateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedCreateWithoutVerifiedDealerInput>
+}
+
+export type ProjectionReportUpdateWithWhereUniqueWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionReportWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProjectionReportUpdateWithoutVerifiedDealerInput, Prisma.ProjectionReportUncheckedUpdateWithoutVerifiedDealerInput>
+}
+
+export type ProjectionReportUpdateManyWithWhereWithoutVerifiedDealerInput = {
+  where: Prisma.ProjectionReportScalarWhereInput
+  data: Prisma.XOR<Prisma.ProjectionReportUpdateManyMutationInput, Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerInput>
+}
+
+export type ProjectionReportCreateManyUserInput = {
+  id?: string
+  institution?: string | null
+  reportDate: Date | string
+  zone: string
+  orderDealerName?: string | null
+  orderQtyMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionDealerName?: string | null
+  collectionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  verifiedDealerId?: number | null
+  createdAt?: Date | string
+}
+
+export type ProjectionReportUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -694,9 +834,58 @@ export type ProjectionReportUpdateWithoutDealerInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutProjectionReportsNestedInput
 }
 
-export type ProjectionReportUncheckedUpdateWithoutDealerInput = {
+export type ProjectionReportUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderQtyMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  collectionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectionReportUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderQtyMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  collectionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectionReportCreateManyVerifiedDealerInput = {
+  id?: string
+  institution?: string | null
+  reportDate: Date | string
+  zone: string
+  orderDealerName?: string | null
+  orderQtyMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionDealerName?: string | null
+  collectionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  salesPromoterUserId?: number | null
+  sourceMessageId?: string | null
+  sourceFileName?: string | null
+  userId?: number | null
+  createdAt?: Date | string
+}
+
+export type ProjectionReportUpdateWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -709,9 +898,10 @@ export type ProjectionReportUncheckedUpdateWithoutDealerInput = {
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutProjectionReportsNestedInput
 }
 
-export type ProjectionReportUncheckedUpdateManyWithoutDealerInput = {
+export type ProjectionReportUncheckedUpdateWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -723,6 +913,23 @@ export type ProjectionReportUncheckedUpdateManyWithoutDealerInput = {
   salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  zone?: Prisma.StringFieldUpdateOperationsInput | string
+  orderDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderQtyMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  collectionDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  collectionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  salesPromoterUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourceMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -740,9 +947,11 @@ export type ProjectionReportSelect<ExtArgs extends runtime.Types.Extensions.Inte
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
-  dealer?: boolean | Prisma.ProjectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["projectionReport"]>
 
 export type ProjectionReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -757,9 +966,11 @@ export type ProjectionReportSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
-  dealer?: boolean | Prisma.ProjectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["projectionReport"]>
 
 export type ProjectionReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -774,9 +985,11 @@ export type ProjectionReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
-  dealer?: boolean | Prisma.ProjectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionReport$userArgs<ExtArgs>
 }, ExtArgs["result"]["projectionReport"]>
 
 export type ProjectionReportSelectScalar = {
@@ -791,25 +1004,30 @@ export type ProjectionReportSelectScalar = {
   salesPromoterUserId?: boolean
   sourceMessageId?: boolean
   sourceFileName?: boolean
-  dealerId?: boolean
+  verifiedDealerId?: boolean
+  userId?: boolean
   createdAt?: boolean
 }
 
-export type ProjectionReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institution" | "reportDate" | "zone" | "orderDealerName" | "orderQtyMt" | "collectionDealerName" | "collectionAmount" | "salesPromoterUserId" | "sourceMessageId" | "sourceFileName" | "dealerId" | "createdAt", ExtArgs["result"]["projectionReport"]>
+export type ProjectionReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institution" | "reportDate" | "zone" | "orderDealerName" | "orderQtyMt" | "collectionDealerName" | "collectionAmount" | "salesPromoterUserId" | "sourceMessageId" | "sourceFileName" | "verifiedDealerId" | "userId" | "createdAt", ExtArgs["result"]["projectionReport"]>
 export type ProjectionReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  dealer?: boolean | Prisma.ProjectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionReport$userArgs<ExtArgs>
 }
 export type ProjectionReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  dealer?: boolean | Prisma.ProjectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionReport$userArgs<ExtArgs>
 }
 export type ProjectionReportIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  dealer?: boolean | Prisma.ProjectionReport$dealerArgs<ExtArgs>
+  verifiedDealer?: boolean | Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs>
+  user?: boolean | Prisma.ProjectionReport$userArgs<ExtArgs>
 }
 
 export type $ProjectionReportPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProjectionReport"
   objects: {
-    dealer: Prisma.$DealerPayload<ExtArgs> | null
+    verifiedDealer: Prisma.$VerifiedDealerPayload<ExtArgs> | null
+    user: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -823,7 +1041,8 @@ export type $ProjectionReportPayload<ExtArgs extends runtime.Types.Extensions.In
     salesPromoterUserId: number | null
     sourceMessageId: string | null
     sourceFileName: string | null
-    dealerId: string | null
+    verifiedDealerId: number | null
+    userId: number | null
     createdAt: Date
   }, ExtArgs["result"]["projectionReport"]>
   composites: {}
@@ -1219,7 +1438,8 @@ readonly fields: ProjectionReportFieldRefs;
  */
 export interface Prisma__ProjectionReportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  dealer<T extends Prisma.ProjectionReport$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectionReport$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  verifiedDealer<T extends Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectionReport$verifiedDealerArgs<ExtArgs>>): Prisma.Prisma__VerifiedDealerClient<runtime.Types.Result.GetResult<Prisma.$VerifiedDealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.ProjectionReport$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectionReport$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1260,7 +1480,8 @@ export interface ProjectionReportFieldRefs {
   readonly salesPromoterUserId: Prisma.FieldRef<"ProjectionReport", 'Int'>
   readonly sourceMessageId: Prisma.FieldRef<"ProjectionReport", 'String'>
   readonly sourceFileName: Prisma.FieldRef<"ProjectionReport", 'String'>
-  readonly dealerId: Prisma.FieldRef<"ProjectionReport", 'String'>
+  readonly verifiedDealerId: Prisma.FieldRef<"ProjectionReport", 'Int'>
+  readonly userId: Prisma.FieldRef<"ProjectionReport", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ProjectionReport", 'DateTime'>
 }
     
@@ -1658,22 +1879,41 @@ export type ProjectionReportDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
 }
 
 /**
- * ProjectionReport.dealer
+ * ProjectionReport.verifiedDealer
  */
-export type ProjectionReport$dealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type ProjectionReport$verifiedDealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Dealer
+   * Select specific fields to fetch from the VerifiedDealer
    */
-  select?: Prisma.DealerSelect<ExtArgs> | null
+  select?: Prisma.VerifiedDealerSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Dealer
+   * Omit specific fields from the VerifiedDealer
    */
-  omit?: Prisma.DealerOmit<ExtArgs> | null
+  omit?: Prisma.VerifiedDealerOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.DealerInclude<ExtArgs> | null
-  where?: Prisma.DealerWhereInput
+  include?: Prisma.VerifiedDealerInclude<ExtArgs> | null
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
+/**
+ * ProjectionReport.user
+ */
+export type ProjectionReport$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

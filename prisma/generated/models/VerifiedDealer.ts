@@ -336,6 +336,9 @@ export type VerifiedDealerWhereInput = {
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
   outstandingReports?: Prisma.OutstandingReportListRelationFilter
   dealerBrandMappings?: Prisma.DealerBrandMappingListRelationFilter
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportListRelationFilter
+  projectionReports?: Prisma.ProjectionReportListRelationFilter
+  collectionReports?: Prisma.CollectionReportListRelationFilter
 }
 
 export type VerifiedDealerOrderByWithRelationInput = {
@@ -362,6 +365,9 @@ export type VerifiedDealerOrderByWithRelationInput = {
   dealer?: Prisma.DealerOrderByWithRelationInput
   outstandingReports?: Prisma.OutstandingReportOrderByRelationAggregateInput
   dealerBrandMappings?: Prisma.DealerBrandMappingOrderByRelationAggregateInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportOrderByRelationAggregateInput
+  projectionReports?: Prisma.ProjectionReportOrderByRelationAggregateInput
+  collectionReports?: Prisma.CollectionReportOrderByRelationAggregateInput
 }
 
 export type VerifiedDealerWhereUniqueInput = Prisma.AtLeast<{
@@ -391,6 +397,9 @@ export type VerifiedDealerWhereUniqueInput = Prisma.AtLeast<{
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
   outstandingReports?: Prisma.OutstandingReportListRelationFilter
   dealerBrandMappings?: Prisma.DealerBrandMappingListRelationFilter
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportListRelationFilter
+  projectionReports?: Prisma.ProjectionReportListRelationFilter
+  collectionReports?: Prisma.CollectionReportListRelationFilter
 }, "id">
 
 export type VerifiedDealerOrderByWithAggregationInput = {
@@ -466,6 +475,9 @@ export type VerifiedDealerCreateInput = {
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerUncheckedCreateInput = {
@@ -490,6 +502,9 @@ export type VerifiedDealerUncheckedCreateInput = {
   dealerId?: string | null
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerUpdateInput = {
@@ -513,6 +528,9 @@ export type VerifiedDealerUpdateInput = {
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerUncheckedUpdateInput = {
@@ -537,6 +555,9 @@ export type VerifiedDealerUncheckedUpdateInput = {
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerCreateManyInput = {
@@ -781,6 +802,22 @@ export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
 }
 
+export type VerifiedDealerCreateNestedOneWithoutCollectionReportsInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutCollectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutCollectionReportsInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutCollectionReportsInput
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+}
+
+export type VerifiedDealerUpdateOneWithoutCollectionReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutCollectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutCollectionReportsInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutCollectionReportsInput
+  upsert?: Prisma.VerifiedDealerUpsertWithoutCollectionReportsInput
+  disconnect?: Prisma.VerifiedDealerWhereInput | boolean
+  delete?: Prisma.VerifiedDealerWhereInput | boolean
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VerifiedDealerUpdateToOneWithWhereWithoutCollectionReportsInput, Prisma.VerifiedDealerUpdateWithoutCollectionReportsInput>, Prisma.VerifiedDealerUncheckedUpdateWithoutCollectionReportsInput>
+}
+
 export type VerifiedDealerCreateNestedOneWithoutOutstandingReportsInput = {
   create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutOutstandingReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutOutstandingReportsInput>
   connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutOutstandingReportsInput
@@ -795,6 +832,38 @@ export type VerifiedDealerUpdateOneWithoutOutstandingReportsNestedInput = {
   delete?: Prisma.VerifiedDealerWhereInput | boolean
   connect?: Prisma.VerifiedDealerWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.VerifiedDealerUpdateToOneWithWhereWithoutOutstandingReportsInput, Prisma.VerifiedDealerUpdateWithoutOutstandingReportsInput>, Prisma.VerifiedDealerUncheckedUpdateWithoutOutstandingReportsInput>
+}
+
+export type VerifiedDealerCreateNestedOneWithoutProjectionVsActualReportsInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionVsActualReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionVsActualReportsInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutProjectionVsActualReportsInput
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+}
+
+export type VerifiedDealerUpdateOneWithoutProjectionVsActualReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionVsActualReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionVsActualReportsInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutProjectionVsActualReportsInput
+  upsert?: Prisma.VerifiedDealerUpsertWithoutProjectionVsActualReportsInput
+  disconnect?: Prisma.VerifiedDealerWhereInput | boolean
+  delete?: Prisma.VerifiedDealerWhereInput | boolean
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VerifiedDealerUpdateToOneWithWhereWithoutProjectionVsActualReportsInput, Prisma.VerifiedDealerUpdateWithoutProjectionVsActualReportsInput>, Prisma.VerifiedDealerUncheckedUpdateWithoutProjectionVsActualReportsInput>
+}
+
+export type VerifiedDealerCreateNestedOneWithoutProjectionReportsInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionReportsInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutProjectionReportsInput
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+}
+
+export type VerifiedDealerUpdateOneWithoutProjectionReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionReportsInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutProjectionReportsInput
+  upsert?: Prisma.VerifiedDealerUpsertWithoutProjectionReportsInput
+  disconnect?: Prisma.VerifiedDealerWhereInput | boolean
+  delete?: Prisma.VerifiedDealerWhereInput | boolean
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VerifiedDealerUpdateToOneWithWhereWithoutProjectionReportsInput, Prisma.VerifiedDealerUpdateWithoutProjectionReportsInput>, Prisma.VerifiedDealerUncheckedUpdateWithoutProjectionReportsInput>
 }
 
 export type VerifiedDealerCreateNestedOneWithoutDealerBrandMappingsInput = {
@@ -833,6 +902,9 @@ export type VerifiedDealerCreateWithoutUserInput = {
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerUncheckedCreateWithoutUserInput = {
@@ -856,6 +928,9 @@ export type VerifiedDealerUncheckedCreateWithoutUserInput = {
   dealerId?: string | null
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerCreateOrConnectWithoutUserInput = {
@@ -929,6 +1004,9 @@ export type VerifiedDealerCreateWithoutDealerInput = {
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerUncheckedCreateWithoutDealerInput = {
@@ -952,6 +1030,9 @@ export type VerifiedDealerUncheckedCreateWithoutDealerInput = {
   userId?: number | null
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerCreateOrConnectWithoutDealerInput = {
@@ -980,6 +1061,124 @@ export type VerifiedDealerUpdateManyWithWhereWithoutDealerInput = {
   data: Prisma.XOR<Prisma.VerifiedDealerUpdateManyMutationInput, Prisma.VerifiedDealerUncheckedUpdateManyWithoutDealerInput>
 }
 
+export type VerifiedDealerCreateWithoutCollectionReportsInput = {
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerUncheckedCreateWithoutCollectionReportsInput = {
+  id?: number
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  userId?: number | null
+  dealerId?: string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerCreateOrConnectWithoutCollectionReportsInput = {
+  where: Prisma.VerifiedDealerWhereUniqueInput
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutCollectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutCollectionReportsInput>
+}
+
+export type VerifiedDealerUpsertWithoutCollectionReportsInput = {
+  update: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutCollectionReportsInput, Prisma.VerifiedDealerUncheckedUpdateWithoutCollectionReportsInput>
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutCollectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutCollectionReportsInput>
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
+export type VerifiedDealerUpdateToOneWithWhereWithoutCollectionReportsInput = {
+  where?: Prisma.VerifiedDealerWhereInput
+  data: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutCollectionReportsInput, Prisma.VerifiedDealerUncheckedUpdateWithoutCollectionReportsInput>
+}
+
+export type VerifiedDealerUpdateWithoutCollectionReportsInput = {
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+}
+
+export type VerifiedDealerUncheckedUpdateWithoutCollectionReportsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+}
+
 export type VerifiedDealerCreateWithoutOutstandingReportsInput = {
   dealerCode?: string | null
   dealerCategory?: string | null
@@ -1000,6 +1199,9 @@ export type VerifiedDealerCreateWithoutOutstandingReportsInput = {
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerUncheckedCreateWithoutOutstandingReportsInput = {
@@ -1023,6 +1225,9 @@ export type VerifiedDealerUncheckedCreateWithoutOutstandingReportsInput = {
   userId?: number | null
   dealerId?: string | null
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerCreateOrConnectWithoutOutstandingReportsInput = {
@@ -1061,6 +1266,9 @@ export type VerifiedDealerUpdateWithoutOutstandingReportsInput = {
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerUncheckedUpdateWithoutOutstandingReportsInput = {
@@ -1084,6 +1292,245 @@ export type VerifiedDealerUncheckedUpdateWithoutOutstandingReportsInput = {
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+}
+
+export type VerifiedDealerCreateWithoutProjectionVsActualReportsInput = {
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerUncheckedCreateWithoutProjectionVsActualReportsInput = {
+  id?: number
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  userId?: number | null
+  dealerId?: string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerCreateOrConnectWithoutProjectionVsActualReportsInput = {
+  where: Prisma.VerifiedDealerWhereUniqueInput
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionVsActualReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionVsActualReportsInput>
+}
+
+export type VerifiedDealerUpsertWithoutProjectionVsActualReportsInput = {
+  update: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutProjectionVsActualReportsInput, Prisma.VerifiedDealerUncheckedUpdateWithoutProjectionVsActualReportsInput>
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionVsActualReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionVsActualReportsInput>
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
+export type VerifiedDealerUpdateToOneWithWhereWithoutProjectionVsActualReportsInput = {
+  where?: Prisma.VerifiedDealerWhereInput
+  data: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutProjectionVsActualReportsInput, Prisma.VerifiedDealerUncheckedUpdateWithoutProjectionVsActualReportsInput>
+}
+
+export type VerifiedDealerUpdateWithoutProjectionVsActualReportsInput = {
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
+}
+
+export type VerifiedDealerUncheckedUpdateWithoutProjectionVsActualReportsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+}
+
+export type VerifiedDealerCreateWithoutProjectionReportsInput = {
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerUncheckedCreateWithoutProjectionReportsInput = {
+  id?: number
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  userId?: number | null
+  dealerId?: string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerCreateOrConnectWithoutProjectionReportsInput = {
+  where: Prisma.VerifiedDealerWhereUniqueInput
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionReportsInput>
+}
+
+export type VerifiedDealerUpsertWithoutProjectionReportsInput = {
+  update: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutProjectionReportsInput, Prisma.VerifiedDealerUncheckedUpdateWithoutProjectionReportsInput>
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutProjectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutProjectionReportsInput>
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
+export type VerifiedDealerUpdateToOneWithWhereWithoutProjectionReportsInput = {
+  where?: Prisma.VerifiedDealerWhereInput
+  data: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutProjectionReportsInput, Prisma.VerifiedDealerUncheckedUpdateWithoutProjectionReportsInput>
+}
+
+export type VerifiedDealerUpdateWithoutProjectionReportsInput = {
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
+}
+
+export type VerifiedDealerUncheckedUpdateWithoutProjectionReportsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerCreateWithoutDealerBrandMappingsInput = {
@@ -1106,6 +1553,9 @@ export type VerifiedDealerCreateWithoutDealerBrandMappingsInput = {
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerUncheckedCreateWithoutDealerBrandMappingsInput = {
@@ -1129,6 +1579,9 @@ export type VerifiedDealerUncheckedCreateWithoutDealerBrandMappingsInput = {
   userId?: number | null
   dealerId?: string | null
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
 }
 
 export type VerifiedDealerCreateOrConnectWithoutDealerBrandMappingsInput = {
@@ -1167,6 +1620,9 @@ export type VerifiedDealerUpdateWithoutDealerBrandMappingsInput = {
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerUncheckedUpdateWithoutDealerBrandMappingsInput = {
@@ -1190,6 +1646,9 @@ export type VerifiedDealerUncheckedUpdateWithoutDealerBrandMappingsInput = {
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerCreateManyUserInput = {
@@ -1233,6 +1692,9 @@ export type VerifiedDealerUpdateWithoutUserInput = {
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerUncheckedUpdateWithoutUserInput = {
@@ -1256,6 +1718,9 @@ export type VerifiedDealerUncheckedUpdateWithoutUserInput = {
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerUncheckedUpdateManyWithoutUserInput = {
@@ -1320,6 +1785,9 @@ export type VerifiedDealerUpdateWithoutDealerInput = {
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerUncheckedUpdateWithoutDealerInput = {
@@ -1343,6 +1811,9 @@ export type VerifiedDealerUncheckedUpdateWithoutDealerInput = {
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
 }
 
 export type VerifiedDealerUncheckedUpdateManyWithoutDealerInput = {
@@ -1374,11 +1845,17 @@ export type VerifiedDealerUncheckedUpdateManyWithoutDealerInput = {
 export type VerifiedDealerCountOutputType = {
   outstandingReports: number
   dealerBrandMappings: number
+  projectionVsActualReports: number
+  projectionReports: number
+  collectionReports: number
 }
 
 export type VerifiedDealerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   outstandingReports?: boolean | VerifiedDealerCountOutputTypeCountOutstandingReportsArgs
   dealerBrandMappings?: boolean | VerifiedDealerCountOutputTypeCountDealerBrandMappingsArgs
+  projectionVsActualReports?: boolean | VerifiedDealerCountOutputTypeCountProjectionVsActualReportsArgs
+  projectionReports?: boolean | VerifiedDealerCountOutputTypeCountProjectionReportsArgs
+  collectionReports?: boolean | VerifiedDealerCountOutputTypeCountCollectionReportsArgs
 }
 
 /**
@@ -1403,6 +1880,27 @@ export type VerifiedDealerCountOutputTypeCountOutstandingReportsArgs<ExtArgs ext
  */
 export type VerifiedDealerCountOutputTypeCountDealerBrandMappingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DealerBrandMappingWhereInput
+}
+
+/**
+ * VerifiedDealerCountOutputType without action
+ */
+export type VerifiedDealerCountOutputTypeCountProjectionVsActualReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectionVsActualReportWhereInput
+}
+
+/**
+ * VerifiedDealerCountOutputType without action
+ */
+export type VerifiedDealerCountOutputTypeCountProjectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectionReportWhereInput
+}
+
+/**
+ * VerifiedDealerCountOutputType without action
+ */
+export type VerifiedDealerCountOutputTypeCountCollectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CollectionReportWhereInput
 }
 
 
@@ -1430,6 +1928,9 @@ export type VerifiedDealerSelect<ExtArgs extends runtime.Types.Extensions.Intern
   dealer?: boolean | Prisma.VerifiedDealer$dealerArgs<ExtArgs>
   outstandingReports?: boolean | Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs>
   dealerBrandMappings?: boolean | Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs>
+  projectionVsActualReports?: boolean | Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs>
+  projectionReports?: boolean | Prisma.VerifiedDealer$projectionReportsArgs<ExtArgs>
+  collectionReports?: boolean | Prisma.VerifiedDealer$collectionReportsArgs<ExtArgs>
   _count?: boolean | Prisma.VerifiedDealerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["verifiedDealer"]>
 
@@ -1509,6 +2010,9 @@ export type VerifiedDealerInclude<ExtArgs extends runtime.Types.Extensions.Inter
   dealer?: boolean | Prisma.VerifiedDealer$dealerArgs<ExtArgs>
   outstandingReports?: boolean | Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs>
   dealerBrandMappings?: boolean | Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs>
+  projectionVsActualReports?: boolean | Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs>
+  projectionReports?: boolean | Prisma.VerifiedDealer$projectionReportsArgs<ExtArgs>
+  collectionReports?: boolean | Prisma.VerifiedDealer$collectionReportsArgs<ExtArgs>
   _count?: boolean | Prisma.VerifiedDealerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type VerifiedDealerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1527,6 +2031,9 @@ export type $VerifiedDealerPayload<ExtArgs extends runtime.Types.Extensions.Inte
     dealer: Prisma.$DealerPayload<ExtArgs> | null
     outstandingReports: Prisma.$OutstandingReportPayload<ExtArgs>[]
     dealerBrandMappings: Prisma.$DealerBrandMappingPayload<ExtArgs>[]
+    projectionVsActualReports: Prisma.$ProjectionVsActualReportPayload<ExtArgs>[]
+    projectionReports: Prisma.$ProjectionReportPayload<ExtArgs>[]
+    collectionReports: Prisma.$CollectionReportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1946,6 +2453,9 @@ export interface Prisma__VerifiedDealerClient<T, Null = never, ExtArgs extends r
   dealer<T extends Prisma.VerifiedDealer$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   outstandingReports<T extends Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OutstandingReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dealerBrandMappings<T extends Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealerBrandMappingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectionVsActualReports<T extends Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectionVsActualReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectionReports<T extends Prisma.VerifiedDealer$projectionReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$projectionReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectionReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  collectionReports<T extends Prisma.VerifiedDealer$collectionReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$collectionReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CollectionReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2473,6 +2983,78 @@ export type VerifiedDealer$dealerBrandMappingsArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.DealerBrandMappingScalarFieldEnum | Prisma.DealerBrandMappingScalarFieldEnum[]
+}
+
+/**
+ * VerifiedDealer.projectionVsActualReports
+ */
+export type VerifiedDealer$projectionVsActualReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectionVsActualReport
+   */
+  select?: Prisma.ProjectionVsActualReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectionVsActualReport
+   */
+  omit?: Prisma.ProjectionVsActualReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionVsActualReportInclude<ExtArgs> | null
+  where?: Prisma.ProjectionVsActualReportWhereInput
+  orderBy?: Prisma.ProjectionVsActualReportOrderByWithRelationInput | Prisma.ProjectionVsActualReportOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectionVsActualReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectionVsActualReportScalarFieldEnum | Prisma.ProjectionVsActualReportScalarFieldEnum[]
+}
+
+/**
+ * VerifiedDealer.projectionReports
+ */
+export type VerifiedDealer$projectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectionReport
+   */
+  select?: Prisma.ProjectionReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectionReport
+   */
+  omit?: Prisma.ProjectionReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectionReportInclude<ExtArgs> | null
+  where?: Prisma.ProjectionReportWhereInput
+  orderBy?: Prisma.ProjectionReportOrderByWithRelationInput | Prisma.ProjectionReportOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectionReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectionReportScalarFieldEnum | Prisma.ProjectionReportScalarFieldEnum[]
+}
+
+/**
+ * VerifiedDealer.collectionReports
+ */
+export type VerifiedDealer$collectionReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CollectionReport
+   */
+  select?: Prisma.CollectionReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CollectionReport
+   */
+  omit?: Prisma.CollectionReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CollectionReportInclude<ExtArgs> | null
+  where?: Prisma.CollectionReportWhereInput
+  orderBy?: Prisma.CollectionReportOrderByWithRelationInput | Prisma.CollectionReportOrderByWithRelationInput[]
+  cursor?: Prisma.CollectionReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CollectionReportScalarFieldEnum | Prisma.CollectionReportScalarFieldEnum[]
 }
 
 /**

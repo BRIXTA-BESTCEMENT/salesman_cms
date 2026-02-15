@@ -594,7 +594,8 @@ export const CollectionReportScalarFieldEnum = {
   salesPromoterUserId: 'salesPromoterUserId',
   sourceMessageId: 'sourceMessageId',
   sourceFileName: 'sourceFileName',
-  dealerId: 'dealerId',
+  verifiedDealerId: 'verifiedDealerId',
+  userId: 'userId',
   createdAt: 'createdAt'
 } as const
 
@@ -643,6 +644,8 @@ export const ProjectionVsActualReportScalarFieldEnum = {
   percent: 'percent',
   sourceMessageId: 'sourceMessageId',
   sourceFileName: 'sourceFileName',
+  verifiedDealerId: 'verifiedDealerId',
+  userId: 'userId',
   createdAt: 'createdAt'
 } as const
 
@@ -661,7 +664,8 @@ export const ProjectionReportScalarFieldEnum = {
   salesPromoterUserId: 'salesPromoterUserId',
   sourceMessageId: 'sourceMessageId',
   sourceFileName: 'sourceFileName',
-  dealerId: 'dealerId',
+  verifiedDealerId: 'verifiedDealerId',
+  userId: 'userId',
   createdAt: 'createdAt'
 } as const
 
