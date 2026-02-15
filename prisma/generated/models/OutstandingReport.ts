@@ -58,6 +58,7 @@ export type OutstandingReportSumAggregateOutputType = {
 
 export type OutstandingReportMinAggregateOutputType = {
   id: string | null
+  reportDate: Date | null
   securityDepositAmt: runtime.Decimal | null
   pendingAmt: runtime.Decimal | null
   lessThan10Days: runtime.Decimal | null
@@ -80,6 +81,7 @@ export type OutstandingReportMinAggregateOutputType = {
 
 export type OutstandingReportMaxAggregateOutputType = {
   id: string | null
+  reportDate: Date | null
   securityDepositAmt: runtime.Decimal | null
   pendingAmt: runtime.Decimal | null
   lessThan10Days: runtime.Decimal | null
@@ -102,6 +104,7 @@ export type OutstandingReportMaxAggregateOutputType = {
 
 export type OutstandingReportCountAggregateOutputType = {
   id: number
+  reportDate: number
   securityDepositAmt: number
   pendingAmt: number
   lessThan10Days: number
@@ -156,6 +159,7 @@ export type OutstandingReportSumAggregateInputType = {
 
 export type OutstandingReportMinAggregateInputType = {
   id?: true
+  reportDate?: true
   securityDepositAmt?: true
   pendingAmt?: true
   lessThan10Days?: true
@@ -178,6 +182,7 @@ export type OutstandingReportMinAggregateInputType = {
 
 export type OutstandingReportMaxAggregateInputType = {
   id?: true
+  reportDate?: true
   securityDepositAmt?: true
   pendingAmt?: true
   lessThan10Days?: true
@@ -200,6 +205,7 @@ export type OutstandingReportMaxAggregateInputType = {
 
 export type OutstandingReportCountAggregateInputType = {
   id?: true
+  reportDate?: true
   securityDepositAmt?: true
   pendingAmt?: true
   lessThan10Days?: true
@@ -309,6 +315,7 @@ export type OutstandingReportGroupByArgs<ExtArgs extends runtime.Types.Extension
 
 export type OutstandingReportGroupByOutputType = {
   id: string
+  reportDate: Date | null
   securityDepositAmt: runtime.Decimal | null
   pendingAmt: runtime.Decimal | null
   lessThan10Days: runtime.Decimal | null
@@ -354,6 +361,7 @@ export type OutstandingReportWhereInput = {
   OR?: Prisma.OutstandingReportWhereInput[]
   NOT?: Prisma.OutstandingReportWhereInput | Prisma.OutstandingReportWhereInput[]
   id?: Prisma.UuidFilter<"OutstandingReport"> | string
+  reportDate?: Prisma.DateTimeNullableFilter<"OutstandingReport"> | Date | string | null
   securityDepositAmt?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -379,6 +387,7 @@ export type OutstandingReportWhereInput = {
 
 export type OutstandingReportOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  reportDate?: Prisma.SortOrderInput | Prisma.SortOrder
   securityDepositAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   pendingAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   lessThan10Days?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -404,9 +413,11 @@ export type OutstandingReportOrderByWithRelationInput = {
 
 export type OutstandingReportWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  reportDate_verifiedDealerId_isAccountJsbJud?: Prisma.OutstandingReportReportDateVerifiedDealerIdIsAccountJsbJudCompoundUniqueInput
   AND?: Prisma.OutstandingReportWhereInput | Prisma.OutstandingReportWhereInput[]
   OR?: Prisma.OutstandingReportWhereInput[]
   NOT?: Prisma.OutstandingReportWhereInput | Prisma.OutstandingReportWhereInput[]
+  reportDate?: Prisma.DateTimeNullableFilter<"OutstandingReport"> | Date | string | null
   securityDepositAmt?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -428,10 +439,11 @@ export type OutstandingReportWhereUniqueInput = Prisma.AtLeast<{
   verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
   collectionReport?: Prisma.XOR<Prisma.CollectionReportNullableScalarRelationFilter, Prisma.CollectionReportWhereInput> | null
   dailyVisitReport?: Prisma.XOR<Prisma.DailyVisitReportNullableScalarRelationFilter, Prisma.DailyVisitReportWhereInput> | null
-}, "id">
+}, "id" | "reportDate_verifiedDealerId_isAccountJsbJud">
 
 export type OutstandingReportOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  reportDate?: Prisma.SortOrderInput | Prisma.SortOrder
   securityDepositAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   pendingAmt?: Prisma.SortOrderInput | Prisma.SortOrder
   lessThan10Days?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -462,6 +474,7 @@ export type OutstandingReportScalarWhereWithAggregatesInput = {
   OR?: Prisma.OutstandingReportScalarWhereWithAggregatesInput[]
   NOT?: Prisma.OutstandingReportScalarWhereWithAggregatesInput | Prisma.OutstandingReportScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"OutstandingReport"> | string
+  reportDate?: Prisma.DateTimeNullableWithAggregatesFilter<"OutstandingReport"> | Date | string | null
   securityDepositAmt?: Prisma.DecimalNullableWithAggregatesFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.DecimalNullableWithAggregatesFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.DecimalNullableWithAggregatesFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -484,6 +497,7 @@ export type OutstandingReportScalarWhereWithAggregatesInput = {
 
 export type OutstandingReportCreateInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -506,6 +520,7 @@ export type OutstandingReportCreateInput = {
 
 export type OutstandingReportUncheckedCreateInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -528,6 +543,7 @@ export type OutstandingReportUncheckedCreateInput = {
 
 export type OutstandingReportUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -550,6 +566,7 @@ export type OutstandingReportUpdateInput = {
 
 export type OutstandingReportUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -572,6 +589,7 @@ export type OutstandingReportUncheckedUpdateInput = {
 
 export type OutstandingReportCreateManyInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -594,6 +612,7 @@ export type OutstandingReportCreateManyInput = {
 
 export type OutstandingReportUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -613,6 +632,7 @@ export type OutstandingReportUpdateManyMutationInput = {
 
 export type OutstandingReportUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -643,8 +663,15 @@ export type OutstandingReportOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type OutstandingReportReportDateVerifiedDealerIdIsAccountJsbJudCompoundUniqueInput = {
+  reportDate: Date | string
+  verifiedDealerId: number
+  isAccountJsbJud: boolean
+}
+
 export type OutstandingReportCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  reportDate?: Prisma.SortOrder
   securityDepositAmt?: Prisma.SortOrder
   pendingAmt?: Prisma.SortOrder
   lessThan10Days?: Prisma.SortOrder
@@ -682,6 +709,7 @@ export type OutstandingReportAvgOrderByAggregateInput = {
 
 export type OutstandingReportMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  reportDate?: Prisma.SortOrder
   securityDepositAmt?: Prisma.SortOrder
   pendingAmt?: Prisma.SortOrder
   lessThan10Days?: Prisma.SortOrder
@@ -704,6 +732,7 @@ export type OutstandingReportMaxOrderByAggregateInput = {
 
 export type OutstandingReportMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  reportDate?: Prisma.SortOrder
   securityDepositAmt?: Prisma.SortOrder
   pendingAmt?: Prisma.SortOrder
   lessThan10Days?: Prisma.SortOrder
@@ -867,6 +896,7 @@ export type OutstandingReportUncheckedUpdateManyWithoutCollectionReportNestedInp
 
 export type OutstandingReportCreateWithoutVerifiedDealerInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -888,6 +918,7 @@ export type OutstandingReportCreateWithoutVerifiedDealerInput = {
 
 export type OutstandingReportUncheckedCreateWithoutVerifiedDealerInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -938,6 +969,7 @@ export type OutstandingReportScalarWhereInput = {
   OR?: Prisma.OutstandingReportScalarWhereInput[]
   NOT?: Prisma.OutstandingReportScalarWhereInput | Prisma.OutstandingReportScalarWhereInput[]
   id?: Prisma.UuidFilter<"OutstandingReport"> | string
+  reportDate?: Prisma.DateTimeNullableFilter<"OutstandingReport"> | Date | string | null
   securityDepositAmt?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -960,6 +992,7 @@ export type OutstandingReportScalarWhereInput = {
 
 export type OutstandingReportCreateWithoutDailyVisitReportInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -981,6 +1014,7 @@ export type OutstandingReportCreateWithoutDailyVisitReportInput = {
 
 export type OutstandingReportUncheckedCreateWithoutDailyVisitReportInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1028,6 +1062,7 @@ export type OutstandingReportUpdateManyWithWhereWithoutDailyVisitReportInput = {
 
 export type OutstandingReportCreateWithoutCollectionReportInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1049,6 +1084,7 @@ export type OutstandingReportCreateWithoutCollectionReportInput = {
 
 export type OutstandingReportUncheckedCreateWithoutCollectionReportInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1096,6 +1132,7 @@ export type OutstandingReportUpdateManyWithWhereWithoutCollectionReportInput = {
 
 export type OutstandingReportCreateManyVerifiedDealerInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1117,6 +1154,7 @@ export type OutstandingReportCreateManyVerifiedDealerInput = {
 
 export type OutstandingReportUpdateWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1138,6 +1176,7 @@ export type OutstandingReportUpdateWithoutVerifiedDealerInput = {
 
 export type OutstandingReportUncheckedUpdateWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1159,6 +1198,7 @@ export type OutstandingReportUncheckedUpdateWithoutVerifiedDealerInput = {
 
 export type OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1180,6 +1220,7 @@ export type OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerInput = {
 
 export type OutstandingReportCreateManyDailyVisitReportInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1201,6 +1242,7 @@ export type OutstandingReportCreateManyDailyVisitReportInput = {
 
 export type OutstandingReportUpdateWithoutDailyVisitReportInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1222,6 +1264,7 @@ export type OutstandingReportUpdateWithoutDailyVisitReportInput = {
 
 export type OutstandingReportUncheckedUpdateWithoutDailyVisitReportInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1243,6 +1286,7 @@ export type OutstandingReportUncheckedUpdateWithoutDailyVisitReportInput = {
 
 export type OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1264,6 +1308,7 @@ export type OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportInput = {
 
 export type OutstandingReportCreateManyCollectionReportInput = {
   id?: string
+  reportDate?: Date | string | null
   securityDepositAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1285,6 +1330,7 @@ export type OutstandingReportCreateManyCollectionReportInput = {
 
 export type OutstandingReportUpdateWithoutCollectionReportInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1306,6 +1352,7 @@ export type OutstandingReportUpdateWithoutCollectionReportInput = {
 
 export type OutstandingReportUncheckedUpdateWithoutCollectionReportInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1327,6 +1374,7 @@ export type OutstandingReportUncheckedUpdateWithoutCollectionReportInput = {
 
 export type OutstandingReportUncheckedUpdateManyWithoutCollectionReportInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  reportDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   securityDepositAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   pendingAmt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   lessThan10Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1350,6 +1398,7 @@ export type OutstandingReportUncheckedUpdateManyWithoutCollectionReportInput = {
 
 export type OutstandingReportSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  reportDate?: boolean
   securityDepositAmt?: boolean
   pendingAmt?: boolean
   lessThan10Days?: boolean
@@ -1375,6 +1424,7 @@ export type OutstandingReportSelect<ExtArgs extends runtime.Types.Extensions.Int
 
 export type OutstandingReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  reportDate?: boolean
   securityDepositAmt?: boolean
   pendingAmt?: boolean
   lessThan10Days?: boolean
@@ -1400,6 +1450,7 @@ export type OutstandingReportSelectCreateManyAndReturn<ExtArgs extends runtime.T
 
 export type OutstandingReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  reportDate?: boolean
   securityDepositAmt?: boolean
   pendingAmt?: boolean
   lessThan10Days?: boolean
@@ -1425,6 +1476,7 @@ export type OutstandingReportSelectUpdateManyAndReturn<ExtArgs extends runtime.T
 
 export type OutstandingReportSelectScalar = {
   id?: boolean
+  reportDate?: boolean
   securityDepositAmt?: boolean
   pendingAmt?: boolean
   lessThan10Days?: boolean
@@ -1445,7 +1497,7 @@ export type OutstandingReportSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OutstandingReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "securityDepositAmt" | "pendingAmt" | "lessThan10Days" | "days10To15" | "days15To21" | "days21To30" | "days30To45" | "days45To60" | "days60To75" | "days75To90" | "greaterThan90Days" | "isOverdue" | "isAccountJsbJud" | "verifiedDealerId" | "collectionReportId" | "dvrId" | "createdAt" | "updatedAt", ExtArgs["result"]["outstandingReport"]>
+export type OutstandingReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reportDate" | "securityDepositAmt" | "pendingAmt" | "lessThan10Days" | "days10To15" | "days15To21" | "days21To30" | "days30To45" | "days45To60" | "days60To75" | "days75To90" | "greaterThan90Days" | "isOverdue" | "isAccountJsbJud" | "verifiedDealerId" | "collectionReportId" | "dvrId" | "createdAt" | "updatedAt", ExtArgs["result"]["outstandingReport"]>
 export type OutstandingReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   verifiedDealer?: boolean | Prisma.OutstandingReport$verifiedDealerArgs<ExtArgs>
   collectionReport?: boolean | Prisma.OutstandingReport$collectionReportArgs<ExtArgs>
@@ -1471,6 +1523,7 @@ export type $OutstandingReportPayload<ExtArgs extends runtime.Types.Extensions.I
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    reportDate: Date | null
     securityDepositAmt: runtime.Decimal | null
     pendingAmt: runtime.Decimal | null
     lessThan10Days: runtime.Decimal | null
@@ -1916,6 +1969,7 @@ export interface Prisma__OutstandingReportClient<T, Null = never, ExtArgs extend
  */
 export interface OutstandingReportFieldRefs {
   readonly id: Prisma.FieldRef<"OutstandingReport", 'String'>
+  readonly reportDate: Prisma.FieldRef<"OutstandingReport", 'DateTime'>
   readonly securityDepositAmt: Prisma.FieldRef<"OutstandingReport", 'Decimal'>
   readonly pendingAmt: Prisma.FieldRef<"OutstandingReport", 'Decimal'>
   readonly lessThan10Days: Prisma.FieldRef<"OutstandingReport", 'Decimal'>

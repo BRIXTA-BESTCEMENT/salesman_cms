@@ -5047,6 +5047,7 @@ export type CollectionReportScalarFieldEnum = (typeof CollectionReportScalarFiel
 
 export const OutstandingReportScalarFieldEnum = {
   id: 'id',
+  reportDate: 'reportDate',
   securityDepositAmt: 'securityDepositAmt',
   pendingAmt: 'pendingAmt',
   lessThan10Days: 'lessThan10Days',

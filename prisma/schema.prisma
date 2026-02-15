@@ -735,6 +735,7 @@ model CollectionReport {
 
 model OutstandingReport {
   id                   String    @id @default(uuid()) @db.Uuid
+  reportDate           DateTime? @map("report_date") @db.Date
   securityDepositAmt   Decimal?  @map("security_deposit_amt") @db.Decimal(14, 2)
   pendingAmt           Decimal?  @map("pending_amt") @db.Decimal(14, 2)
   lessThan10Days       Decimal?  @map("less_than_10_days") @db.Decimal(14, 2)
@@ -763,6 +764,7 @@ model OutstandingReport {
   @@index([verifiedDealerId], map: "idx_outstanding_verified_dealer")
   @@index([collectionReportId], map: "idx_outstanding_collection_report")
   @@index([dvrId], map: "idx_outstanding_dvr")
+  @@unique([reportDate, verifiedDealerId, isAccountJsbJud], map: "unique_outstanding_entry")
   @@map("outstanding_reports")
 }
 

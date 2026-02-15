@@ -1,0 +1,1 @@
+ALTER TABLE "outstanding_reports" ADD COLUMN "report_date" DATE;
