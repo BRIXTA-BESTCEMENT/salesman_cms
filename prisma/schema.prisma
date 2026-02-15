@@ -701,7 +701,7 @@ model SalesOrder {
 // Excel Reports on collections, orders, sales, due, overdue etc..
 model CollectionReport {
   id                  String   @id @default(uuid()) @db.Uuid
-  institution         String?   @db.VarChar(10)
+  institution         String   @db.VarChar(10)
   voucherNo           String   @map("voucher_no") @db.VarChar(100)
   voucherDate         DateTime @map("voucher_date") @db.Date
   amount              Decimal  @db.Decimal(14, 2)
@@ -730,6 +730,7 @@ model CollectionReport {
   @@index([voucherNo], map: "idx_collection_voucher")
   @@index([verifiedDealerId], map: "idx_collection_verified_dealer")
   @@index([userId], map: "idx_collection_user")
+  @@unique([voucherNo, institution], map: "uniq_collection_voucher_inst")
   @@map("collection_reports")
 }
 
@@ -771,7 +772,7 @@ model OutstandingReport {
 model ProjectionVsActualReport {
   id                        String   @id @default(uuid()) @db.Uuid
   reportDate                DateTime @map("report_date") @db.Date
-  institution               String?   @db.VarChar(10)
+  institution               String   @db.VarChar(10)
   zone                      String   @db.VarChar(120)
   dealerName                String   @map("dealer_name") @db.VarChar(255)
   orderProjectionMt         Decimal? @map("order_projection_mt") @db.Decimal(12, 2)
@@ -806,7 +807,7 @@ model ProjectionVsActualReport {
 
 model ProjectionReport {
   id                   String   @id @default(uuid()) @db.Uuid
-  institution          String?   @db.VarChar(10)
+  institution          String   @db.VarChar(10)
   reportDate           DateTime @map("report_date") @db.Date
   zone                 String   @db.VarChar(100)
   orderDealerName      String?  @map("order_dealer_name") @db.VarChar(255)
@@ -830,6 +831,7 @@ model ProjectionReport {
   @@index([institution], map: "idx_projection_institution")
   @@index([verifiedDealerId], map: "idx_projection_verified_dealer")
   @@index([userId], map: "idx_projection_user")
+  @@unique([reportDate, orderDealerName, collectionDealerName, institution], map: "uniq_projection_snapshot")
   @@map("projection_reports")
 }
 

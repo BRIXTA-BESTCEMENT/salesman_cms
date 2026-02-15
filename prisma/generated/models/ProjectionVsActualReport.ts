@@ -306,7 +306,7 @@ export type ProjectionVsActualReportGroupByArgs<ExtArgs extends runtime.Types.Ex
 export type ProjectionVsActualReportGroupByOutputType = {
   id: string
   reportDate: Date
-  institution: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt: runtime.Decimal | null
@@ -351,7 +351,7 @@ export type ProjectionVsActualReportWhereInput = {
   NOT?: Prisma.ProjectionVsActualReportWhereInput | Prisma.ProjectionVsActualReportWhereInput[]
   id?: Prisma.UuidFilter<"ProjectionVsActualReport"> | string
   reportDate?: Prisma.DateTimeFilter<"ProjectionVsActualReport"> | Date | string
-  institution?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  institution?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   zone?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   dealerName?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   orderProjectionMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -375,7 +375,7 @@ export type ProjectionVsActualReportWhereInput = {
 export type ProjectionVsActualReportOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   reportDate?: Prisma.SortOrder
-  institution?: Prisma.SortOrderInput | Prisma.SortOrder
+  institution?: Prisma.SortOrder
   zone?: Prisma.SortOrder
   dealerName?: Prisma.SortOrder
   orderProjectionMt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -403,7 +403,7 @@ export type ProjectionVsActualReportWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProjectionVsActualReportWhereInput[]
   NOT?: Prisma.ProjectionVsActualReportWhereInput | Prisma.ProjectionVsActualReportWhereInput[]
   reportDate?: Prisma.DateTimeFilter<"ProjectionVsActualReport"> | Date | string
-  institution?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  institution?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   zone?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   dealerName?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   orderProjectionMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -427,7 +427,7 @@ export type ProjectionVsActualReportWhereUniqueInput = Prisma.AtLeast<{
 export type ProjectionVsActualReportOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   reportDate?: Prisma.SortOrder
-  institution?: Prisma.SortOrderInput | Prisma.SortOrder
+  institution?: Prisma.SortOrder
   zone?: Prisma.SortOrder
   dealerName?: Prisma.SortOrder
   orderProjectionMt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -457,7 +457,7 @@ export type ProjectionVsActualReportScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProjectionVsActualReportScalarWhereWithAggregatesInput | Prisma.ProjectionVsActualReportScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ProjectionVsActualReport"> | string
   reportDate?: Prisma.DateTimeWithAggregatesFilter<"ProjectionVsActualReport"> | Date | string
-  institution?: Prisma.StringNullableWithAggregatesFilter<"ProjectionVsActualReport"> | string | null
+  institution?: Prisma.StringWithAggregatesFilter<"ProjectionVsActualReport"> | string
   zone?: Prisma.StringWithAggregatesFilter<"ProjectionVsActualReport"> | string
   dealerName?: Prisma.StringWithAggregatesFilter<"ProjectionVsActualReport"> | string
   orderProjectionMt?: Prisma.DecimalNullableWithAggregatesFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -479,7 +479,7 @@ export type ProjectionVsActualReportScalarWhereWithAggregatesInput = {
 export type ProjectionVsActualReportCreateInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -501,7 +501,7 @@ export type ProjectionVsActualReportCreateInput = {
 export type ProjectionVsActualReportUncheckedCreateInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -523,7 +523,7 @@ export type ProjectionVsActualReportUncheckedCreateInput = {
 export type ProjectionVsActualReportUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -545,7 +545,7 @@ export type ProjectionVsActualReportUpdateInput = {
 export type ProjectionVsActualReportUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -567,7 +567,7 @@ export type ProjectionVsActualReportUncheckedUpdateInput = {
 export type ProjectionVsActualReportCreateManyInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -589,7 +589,7 @@ export type ProjectionVsActualReportCreateManyInput = {
 export type ProjectionVsActualReportUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -609,7 +609,7 @@ export type ProjectionVsActualReportUpdateManyMutationInput = {
 export type ProjectionVsActualReportUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -825,7 +825,7 @@ export type ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNest
 export type ProjectionVsActualReportCreateWithoutUserInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -846,7 +846,7 @@ export type ProjectionVsActualReportCreateWithoutUserInput = {
 export type ProjectionVsActualReportUncheckedCreateWithoutUserInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -896,7 +896,7 @@ export type ProjectionVsActualReportScalarWhereInput = {
   NOT?: Prisma.ProjectionVsActualReportScalarWhereInput | Prisma.ProjectionVsActualReportScalarWhereInput[]
   id?: Prisma.UuidFilter<"ProjectionVsActualReport"> | string
   reportDate?: Prisma.DateTimeFilter<"ProjectionVsActualReport"> | Date | string
-  institution?: Prisma.StringNullableFilter<"ProjectionVsActualReport"> | string | null
+  institution?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   zone?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   dealerName?: Prisma.StringFilter<"ProjectionVsActualReport"> | string
   orderProjectionMt?: Prisma.DecimalNullableFilter<"ProjectionVsActualReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -918,7 +918,7 @@ export type ProjectionVsActualReportScalarWhereInput = {
 export type ProjectionVsActualReportCreateWithoutVerifiedDealerInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -939,7 +939,7 @@ export type ProjectionVsActualReportCreateWithoutVerifiedDealerInput = {
 export type ProjectionVsActualReportUncheckedCreateWithoutVerifiedDealerInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -986,7 +986,7 @@ export type ProjectionVsActualReportUpdateManyWithWhereWithoutVerifiedDealerInpu
 export type ProjectionVsActualReportCreateManyUserInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1007,7 +1007,7 @@ export type ProjectionVsActualReportCreateManyUserInput = {
 export type ProjectionVsActualReportUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1028,7 +1028,7 @@ export type ProjectionVsActualReportUpdateWithoutUserInput = {
 export type ProjectionVsActualReportUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1049,7 +1049,7 @@ export type ProjectionVsActualReportUncheckedUpdateWithoutUserInput = {
 export type ProjectionVsActualReportUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1070,7 +1070,7 @@ export type ProjectionVsActualReportUncheckedUpdateManyWithoutUserInput = {
 export type ProjectionVsActualReportCreateManyVerifiedDealerInput = {
   id?: string
   reportDate: Date | string
-  institution?: string | null
+  institution: string
   zone: string
   dealerName: string
   orderProjectionMt?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1091,7 +1091,7 @@ export type ProjectionVsActualReportCreateManyVerifiedDealerInput = {
 export type ProjectionVsActualReportUpdateWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1112,7 +1112,7 @@ export type ProjectionVsActualReportUpdateWithoutVerifiedDealerInput = {
 export type ProjectionVsActualReportUncheckedUpdateWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1133,7 +1133,7 @@ export type ProjectionVsActualReportUncheckedUpdateWithoutVerifiedDealerInput = 
 export type ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reportDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institution?: Prisma.StringFieldUpdateOperationsInput | string
   zone?: Prisma.StringFieldUpdateOperationsInput | string
   dealerName?: Prisma.StringFieldUpdateOperationsInput | string
   orderProjectionMt?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1270,7 +1270,7 @@ export type $ProjectionVsActualReportPayload<ExtArgs extends runtime.Types.Exten
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     reportDate: Date
-    institution: string | null
+    institution: string
     zone: string
     dealerName: string
     orderProjectionMt: runtime.Decimal | null
