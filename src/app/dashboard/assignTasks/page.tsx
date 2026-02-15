@@ -50,6 +50,7 @@ export default function AssignTasksPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: new Date(), to: addDays(new Date(), 4) });
   const [selectedZone, setSelectedZone] = useState<string>("all");
   const [selectedArea, setSelectedArea] = useState<string>("all");
+  const [areaSearch, setAreaSearch] = useState<string>("");
   const [dealerTypeFilter, setDealerTypeFilter] = useState<string>("all"); // 'all', 'regular', 'verified'
   const [selectedDealerIdentifiers, setSelectedDealerIdentifiers] = useState<string[]>([]);
 
@@ -88,6 +89,12 @@ export default function AssignTasksPage() {
       (s.salesmanLoginId && s.salesmanLoginId.toLowerCase().includes(lowerSearch))
     );
   }, [salesmen, salesmanSearch]);
+
+  const filteredAreasList = useMemo(() => {
+    if (!areaSearch) return uniqueAreas;
+    const lowerSearch = areaSearch.toLowerCase();
+    return uniqueAreas.filter(a => a.toLowerCase().includes(lowerSearch));
+  }, [uniqueAreas, areaSearch]);
 
   // --- 2. Dynamic Dealer Fetching ---
   const fetchDealersBasedOnFilters = async () => {
@@ -268,6 +275,7 @@ export default function AssignTasksPage() {
             <div className="bg-secondary/30 p-4 rounded-lg border space-y-4">
               <Label className="text-md font-semibold text-primary">3. Filters</Label>
               <div className="grid grid-cols-3 gap-4">
+                {/* --- ZONE FILTER --- */}
                 <Select value={selectedZone} onValueChange={(val) => { setSelectedZone(val); setSelectedArea("all"); }}>
                   <SelectTrigger><SelectValue placeholder="Zone" /></SelectTrigger>
                   <SelectContent>
@@ -276,14 +284,31 @@ export default function AssignTasksPage() {
                   </SelectContent>
                 </Select>
 
+                {/* --- AREA FILTER WITH SEARCH --- */}
                 <Select value={selectedArea} onValueChange={setSelectedArea}>
                   <SelectTrigger><SelectValue placeholder="Area" /></SelectTrigger>
                   <SelectContent>
+                    {/* Sticky Search Input */}
+                    <div className="p-2 sticky top-0 bg-background z-10 border-b">
+                      <Input 
+                        placeholder="Search area..." 
+                        value={areaSearch}
+                        onChange={(e) => setAreaSearch(e.target.value)}
+                        onKeyDown={(e) => e.stopPropagation()} // Prevents spacebar from closing dropdown
+                        className="h-8"
+                      />
+                    </div>
                     <SelectItem value="all">All Areas</SelectItem>
-                    {uniqueAreas.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+                    {/* Map over filtered list */}
+                    {filteredAreasList.length === 0 ? (
+                      <div className="p-2 text-sm text-center text-muted-foreground">No area found</div>
+                    ) : (
+                      filteredAreasList.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)
+                    )}
                   </SelectContent>
                 </Select>
 
+                {/* --- DEALER TYPE FILTER --- */}
                 <Select value={dealerTypeFilter} onValueChange={setDealerTypeFilter}>
                   <SelectTrigger><SelectValue placeholder="Dealer Type" /></SelectTrigger>
                   <SelectContent>
