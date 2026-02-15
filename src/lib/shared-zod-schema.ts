@@ -238,6 +238,35 @@ export const postDealersSchema = z.object({
 
 });
 
+// verified-dealers
+export const getVerifiedDealersSchema = z.object({
+  id: z.number(),
+  dealerCode: z.string().nullable(),
+  dealerCategory: z.string().nullable(),
+  isSubdealer: z.boolean().nullable(),
+  dealerPartyName: z.string().nullable(),
+  zone: z.string().nullable(),
+  area: z.string().nullable(),
+  contactNo1: z.string().nullable(),
+  contactNo2: z.string().nullable(),
+  email: z.string().nullable(),
+  address: z.string().nullable(),
+  pinCode: z.string().nullable(),
+  relatedSpName: z.string().nullable(),
+  ownerProprietorName: z.string().nullable(),
+  natureOfFirm: z.string().nullable(),
+  gstNo: z.string().nullable(),
+  panNo: z.string().nullable(),
+  userId: z.number().nullable(),
+  dealerId: z.string().nullable(),
+  // Optional relation inclusion from the route
+  dealer: z.object({
+    id: z.string(),
+    name: z.string(),
+    verificationStatus: z.string(),
+  }).nullable().optional(),
+});
+
 // pjp 
 export const permanentJourneyPlanSchema = z.object({
   id: z.string(),
@@ -1012,6 +1041,7 @@ export type BaseDealerBrandMappingSchema = z.infer<typeof baseDealerBrandMapping
 export type VerificationUpdateSchema = z.infer<typeof verificationUpdateSchema>;
 export type DealerVerificationSchema = z.infer<typeof dealerVerificationSchema>;
 export type GetDealersSchema = z.infer<typeof getDealersSchema>;
+export type GetVerifiedDealersSchema = z.infer<typeof getVerifiedDealersSchema>;
 export type PostDealersSchema = z.infer<typeof postDealersSchema>;
 export type PermanentJourneyPlanSchema = z.infer<typeof permanentJourneyPlanSchema>;
 export type PermanentJourneyPlanVerificationSchema = z.infer<typeof permanentJourneyPlanVerificationSchema>;

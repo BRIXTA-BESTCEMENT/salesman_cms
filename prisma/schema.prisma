@@ -241,6 +241,7 @@ model VerifiedDealer {
   user                  User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   dealerId              String? @map("dealer_id") @db.VarChar(255)
   dealer                Dealer? @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+  dailyTasks                 DailyTask[] @relation("VerifiedDealerDailyTasks")
 
   outstandingReports    OutstandingReport[]
   dealerBrandMappings   DealerBrandMapping[]
@@ -601,7 +602,8 @@ model DailyTask {
   assignedByUserId Int       @map("assigned_by_user_id") // Admin/Manager who assigned the task
   taskDate         DateTime  @map("task_date") @db.Date
   visitType        String    @map("visit_type") @db.VarChar(50) 
-  relatedDealerId  String?   @map("related_dealer_id") @db.VarChar(255) // Optional: For Client Visits (FK to Dealer.id)
+  relatedDealerId  String?   @map("related_dealer_id") @db.VarChar(255) 
+  relatedVerifiedDealerId Int? @map("related_verified_dealer_id")
   siteName         String?   @map("site_name") @db.VarChar(255) // Optional: For Technical Visits
   description      String?   @db.VarChar(500)
   status           String    @default("Assigned") @db.VarChar(50) // "Assigned", "Accepted", "Completed", "Rejected", "In Progress"
@@ -617,6 +619,7 @@ model DailyTask {
   user             User      @relation("AssignedTasks", fields: [userId], references: [id], onDelete: Cascade)
   assignedBy       User      @relation("CreatedTasks", fields: [assignedByUserId], references: [id], onDelete: NoAction)
   relatedDealer    Dealer?   @relation("DealerDailyTasks", fields: [relatedDealerId], references: [id], onDelete: SetNull)
+  relatedVerifiedDealer VerifiedDealer? @relation("VerifiedDealerDailyTasks", fields: [relatedVerifiedDealerId], references: [id], onDelete: SetNull)
   permanentJourneyPlan PermanentJourneyPlan? @relation("PJPTasks", fields: [pjpId], references: [id], onDelete: SetNull)
 
   siteId           String?   @map("site_id") @db.Uuid // FK to TechnicalSite
@@ -627,6 +630,7 @@ model DailyTask {
   @@index([taskDate], map: "idx_daily_tasks_task_date")
   @@index([pjpId], map: "idx_daily_tasks_pjp_id")
   @@index([relatedDealerId], map: "idx_daily_tasks_related_dealer_id")
+  @@index([relatedVerifiedDealerId], map: "idx_daily_tasks_related_verified_dealer_id")
   @@index([taskDate, userId], map: "idx_daily_tasks_date_user")
   @@index([status], map: "idx_daily_tasks_status")
   @@index([siteId], map: "idx_daily_tasks_site_id")

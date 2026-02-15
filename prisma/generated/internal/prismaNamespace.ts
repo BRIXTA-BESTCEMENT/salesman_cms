@@ -4969,6 +4969,7 @@ export const DailyTaskScalarFieldEnum = {
   taskDate: 'taskDate',
   visitType: 'visitType',
   relatedDealerId: 'relatedDealerId',
+  relatedVerifiedDealerId: 'relatedVerifiedDealerId',
   siteName: 'siteName',
   description: 'description',
   status: 'status',

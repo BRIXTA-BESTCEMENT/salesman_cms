@@ -44,9 +44,10 @@ export default async function DealersPage() {
   const canSeeListDealers = hasPermission(roleToCheck, 'dealerManagement.listDealers');
   const canSeeVerifyDealers = hasPermission(roleToCheck, 'dealerManagement.verifyDealers');
   const canSeeBrandMapping = hasPermission(roleToCheck, 'dealerManagement.dealerBrandMapping');
+  const canSeeListVerifiedDealers = hasPermission(roleToCheck, 'dealerManagement.listVerifiedDealers');
 
   // Corrected 'canSeeAnything' to include all permissions
-  const canSeeAnything = canSeeAddAndListDealers || canSeeListDealers || canSeeVerifyDealers || canSeeBrandMapping;
+  const canSeeAnything = canSeeAddAndListDealers || canSeeListDealers || canSeeVerifyDealers || canSeeBrandMapping || canSeeListVerifiedDealers;
 
   // 3. Handle users who can't see anything
   if (!canSeeAnything) {
@@ -77,6 +78,7 @@ export default async function DealersPage() {
         canSeeListDealers={canSeeListDealers}
         canSeeVerifyDealers={canSeeVerifyDealers}
         canSeeBrandMapping={canSeeBrandMapping}
+        canSeeListVerifiedDealers={canSeeListVerifiedDealers}
       />
     </div>
   );

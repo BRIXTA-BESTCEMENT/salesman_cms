@@ -29,11 +29,13 @@ export type AggregateDailyTask = {
 export type DailyTaskAvgAggregateOutputType = {
   userId: number | null
   assignedByUserId: number | null
+  relatedVerifiedDealerId: number | null
 }
 
 export type DailyTaskSumAggregateOutputType = {
   userId: number | null
   assignedByUserId: number | null
+  relatedVerifiedDealerId: number | null
 }
 
 export type DailyTaskMinAggregateOutputType = {
@@ -43,6 +45,7 @@ export type DailyTaskMinAggregateOutputType = {
   taskDate: Date | null
   visitType: string | null
   relatedDealerId: string | null
+  relatedVerifiedDealerId: number | null
   siteName: string | null
   description: string | null
   status: string | null
@@ -62,6 +65,7 @@ export type DailyTaskMaxAggregateOutputType = {
   taskDate: Date | null
   visitType: string | null
   relatedDealerId: string | null
+  relatedVerifiedDealerId: number | null
   siteName: string | null
   description: string | null
   status: string | null
@@ -81,6 +85,7 @@ export type DailyTaskCountAggregateOutputType = {
   taskDate: number
   visitType: number
   relatedDealerId: number
+  relatedVerifiedDealerId: number
   siteName: number
   description: number
   status: number
@@ -98,11 +103,13 @@ export type DailyTaskCountAggregateOutputType = {
 export type DailyTaskAvgAggregateInputType = {
   userId?: true
   assignedByUserId?: true
+  relatedVerifiedDealerId?: true
 }
 
 export type DailyTaskSumAggregateInputType = {
   userId?: true
   assignedByUserId?: true
+  relatedVerifiedDealerId?: true
 }
 
 export type DailyTaskMinAggregateInputType = {
@@ -112,6 +119,7 @@ export type DailyTaskMinAggregateInputType = {
   taskDate?: true
   visitType?: true
   relatedDealerId?: true
+  relatedVerifiedDealerId?: true
   siteName?: true
   description?: true
   status?: true
@@ -131,6 +139,7 @@ export type DailyTaskMaxAggregateInputType = {
   taskDate?: true
   visitType?: true
   relatedDealerId?: true
+  relatedVerifiedDealerId?: true
   siteName?: true
   description?: true
   status?: true
@@ -150,6 +159,7 @@ export type DailyTaskCountAggregateInputType = {
   taskDate?: true
   visitType?: true
   relatedDealerId?: true
+  relatedVerifiedDealerId?: true
   siteName?: true
   description?: true
   status?: true
@@ -256,6 +266,7 @@ export type DailyTaskGroupByOutputType = {
   taskDate: Date
   visitType: string
   relatedDealerId: string | null
+  relatedVerifiedDealerId: number | null
   siteName: string | null
   description: string | null
   status: string
@@ -298,6 +309,7 @@ export type DailyTaskWhereInput = {
   taskDate?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   visitType?: Prisma.StringFilter<"DailyTask"> | string
   relatedDealerId?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  relatedVerifiedDealerId?: Prisma.IntNullableFilter<"DailyTask"> | number | null
   siteName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   status?: Prisma.StringFilter<"DailyTask"> | string
@@ -311,6 +323,7 @@ export type DailyTaskWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   assignedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   relatedDealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  relatedVerifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
   permanentJourneyPlan?: Prisma.XOR<Prisma.PermanentJourneyPlanNullableScalarRelationFilter, Prisma.PermanentJourneyPlanWhereInput> | null
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
 }
@@ -322,6 +335,7 @@ export type DailyTaskOrderByWithRelationInput = {
   taskDate?: Prisma.SortOrder
   visitType?: Prisma.SortOrder
   relatedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  relatedVerifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -335,6 +349,7 @@ export type DailyTaskOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   assignedBy?: Prisma.UserOrderByWithRelationInput
   relatedDealer?: Prisma.DealerOrderByWithRelationInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerOrderByWithRelationInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanOrderByWithRelationInput
   site?: Prisma.TechnicalSiteOrderByWithRelationInput
 }
@@ -349,6 +364,7 @@ export type DailyTaskWhereUniqueInput = Prisma.AtLeast<{
   taskDate?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   visitType?: Prisma.StringFilter<"DailyTask"> | string
   relatedDealerId?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  relatedVerifiedDealerId?: Prisma.IntNullableFilter<"DailyTask"> | number | null
   siteName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   status?: Prisma.StringFilter<"DailyTask"> | string
@@ -362,6 +378,7 @@ export type DailyTaskWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   assignedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   relatedDealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  relatedVerifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
   permanentJourneyPlan?: Prisma.XOR<Prisma.PermanentJourneyPlanNullableScalarRelationFilter, Prisma.PermanentJourneyPlanWhereInput> | null
   site?: Prisma.XOR<Prisma.TechnicalSiteNullableScalarRelationFilter, Prisma.TechnicalSiteWhereInput> | null
 }, "id">
@@ -373,6 +390,7 @@ export type DailyTaskOrderByWithAggregationInput = {
   taskDate?: Prisma.SortOrder
   visitType?: Prisma.SortOrder
   relatedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  relatedVerifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -400,6 +418,7 @@ export type DailyTaskScalarWhereWithAggregatesInput = {
   taskDate?: Prisma.DateTimeWithAggregatesFilter<"DailyTask"> | Date | string
   visitType?: Prisma.StringWithAggregatesFilter<"DailyTask"> | string
   relatedDealerId?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
+  relatedVerifiedDealerId?: Prisma.IntNullableWithAggregatesFilter<"DailyTask"> | number | null
   siteName?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"DailyTask"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"DailyTask"> | string
@@ -427,6 +446,7 @@ export type DailyTaskCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
   assignedBy: Prisma.UserCreateNestedOneWithoutCreatedTasksInput
   relatedDealer?: Prisma.DealerCreateNestedOneWithoutDailyTasksInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDailyTasksInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyTasksInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutDailyTasksInput
 }
@@ -438,6 +458,7 @@ export type DailyTaskUncheckedCreateInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -465,6 +486,7 @@ export type DailyTaskUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
   assignedBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTasksNestedInput
   relatedDealer?: Prisma.DealerUpdateOneWithoutDailyTasksNestedInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDailyTasksNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyTasksNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutDailyTasksNestedInput
 }
@@ -476,6 +498,7 @@ export type DailyTaskUncheckedUpdateInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -495,6 +518,7 @@ export type DailyTaskCreateManyInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -528,6 +552,7 @@ export type DailyTaskUncheckedUpdateManyInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -557,6 +582,7 @@ export type DailyTaskCountOrderByAggregateInput = {
   taskDate?: Prisma.SortOrder
   visitType?: Prisma.SortOrder
   relatedDealerId?: Prisma.SortOrder
+  relatedVerifiedDealerId?: Prisma.SortOrder
   siteName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -572,6 +598,7 @@ export type DailyTaskCountOrderByAggregateInput = {
 export type DailyTaskAvgOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   assignedByUserId?: Prisma.SortOrder
+  relatedVerifiedDealerId?: Prisma.SortOrder
 }
 
 export type DailyTaskMaxOrderByAggregateInput = {
@@ -581,6 +608,7 @@ export type DailyTaskMaxOrderByAggregateInput = {
   taskDate?: Prisma.SortOrder
   visitType?: Prisma.SortOrder
   relatedDealerId?: Prisma.SortOrder
+  relatedVerifiedDealerId?: Prisma.SortOrder
   siteName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -600,6 +628,7 @@ export type DailyTaskMinOrderByAggregateInput = {
   taskDate?: Prisma.SortOrder
   visitType?: Prisma.SortOrder
   relatedDealerId?: Prisma.SortOrder
+  relatedVerifiedDealerId?: Prisma.SortOrder
   siteName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -615,6 +644,7 @@ export type DailyTaskMinOrderByAggregateInput = {
 export type DailyTaskSumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   assignedByUserId?: Prisma.SortOrder
+  relatedVerifiedDealerId?: Prisma.SortOrder
 }
 
 export type DailyTaskCreateNestedManyWithoutUserInput = {
@@ -743,6 +773,48 @@ export type DailyTaskUncheckedUpdateManyWithoutRelatedDealerNestedInput = {
   deleteMany?: Prisma.DailyTaskScalarWhereInput | Prisma.DailyTaskScalarWhereInput[]
 }
 
+export type DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput> | Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput[] | Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput[]
+  createMany?: Prisma.DailyTaskCreateManyRelatedVerifiedDealerInputEnvelope
+  connect?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+}
+
+export type DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput = {
+  create?: Prisma.XOR<Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput> | Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput[] | Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput[]
+  createMany?: Prisma.DailyTaskCreateManyRelatedVerifiedDealerInputEnvelope
+  connect?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+}
+
+export type DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput> | Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput[] | Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput[]
+  upsert?: Prisma.DailyTaskUpsertWithWhereUniqueWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskUpsertWithWhereUniqueWithoutRelatedVerifiedDealerInput[]
+  createMany?: Prisma.DailyTaskCreateManyRelatedVerifiedDealerInputEnvelope
+  set?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  disconnect?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  delete?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  connect?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  update?: Prisma.DailyTaskUpdateWithWhereUniqueWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskUpdateWithWhereUniqueWithoutRelatedVerifiedDealerInput[]
+  updateMany?: Prisma.DailyTaskUpdateManyWithWhereWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskUpdateManyWithWhereWithoutRelatedVerifiedDealerInput[]
+  deleteMany?: Prisma.DailyTaskScalarWhereInput | Prisma.DailyTaskScalarWhereInput[]
+}
+
+export type DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput = {
+  create?: Prisma.XOR<Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput> | Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput[] | Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput[]
+  connectOrCreate?: Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput[]
+  upsert?: Prisma.DailyTaskUpsertWithWhereUniqueWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskUpsertWithWhereUniqueWithoutRelatedVerifiedDealerInput[]
+  createMany?: Prisma.DailyTaskCreateManyRelatedVerifiedDealerInputEnvelope
+  set?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  disconnect?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  delete?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  connect?: Prisma.DailyTaskWhereUniqueInput | Prisma.DailyTaskWhereUniqueInput[]
+  update?: Prisma.DailyTaskUpdateWithWhereUniqueWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskUpdateWithWhereUniqueWithoutRelatedVerifiedDealerInput[]
+  updateMany?: Prisma.DailyTaskUpdateManyWithWhereWithoutRelatedVerifiedDealerInput | Prisma.DailyTaskUpdateManyWithWhereWithoutRelatedVerifiedDealerInput[]
+  deleteMany?: Prisma.DailyTaskScalarWhereInput | Prisma.DailyTaskScalarWhereInput[]
+}
+
 export type DailyTaskCreateNestedManyWithoutPermanentJourneyPlanInput = {
   create?: Prisma.XOR<Prisma.DailyTaskCreateWithoutPermanentJourneyPlanInput, Prisma.DailyTaskUncheckedCreateWithoutPermanentJourneyPlanInput> | Prisma.DailyTaskCreateWithoutPermanentJourneyPlanInput[] | Prisma.DailyTaskUncheckedCreateWithoutPermanentJourneyPlanInput[]
   connectOrCreate?: Prisma.DailyTaskCreateOrConnectWithoutPermanentJourneyPlanInput | Prisma.DailyTaskCreateOrConnectWithoutPermanentJourneyPlanInput[]
@@ -841,6 +913,7 @@ export type DailyTaskCreateWithoutUserInput = {
   updatedAt?: Date | string
   assignedBy: Prisma.UserCreateNestedOneWithoutCreatedTasksInput
   relatedDealer?: Prisma.DealerCreateNestedOneWithoutDailyTasksInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDailyTasksInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyTasksInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutDailyTasksInput
 }
@@ -851,6 +924,7 @@ export type DailyTaskUncheckedCreateWithoutUserInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -887,6 +961,7 @@ export type DailyTaskCreateWithoutAssignedByInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
   relatedDealer?: Prisma.DealerCreateNestedOneWithoutDailyTasksInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDailyTasksInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyTasksInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutDailyTasksInput
 }
@@ -897,6 +972,7 @@ export type DailyTaskUncheckedCreateWithoutAssignedByInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -945,6 +1021,7 @@ export type DailyTaskScalarWhereInput = {
   taskDate?: Prisma.DateTimeFilter<"DailyTask"> | Date | string
   visitType?: Prisma.StringFilter<"DailyTask"> | string
   relatedDealerId?: Prisma.StringNullableFilter<"DailyTask"> | string | null
+  relatedVerifiedDealerId?: Prisma.IntNullableFilter<"DailyTask"> | number | null
   siteName?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   description?: Prisma.StringNullableFilter<"DailyTask"> | string | null
   status?: Prisma.StringFilter<"DailyTask"> | string
@@ -987,6 +1064,7 @@ export type DailyTaskCreateWithoutRelatedDealerInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
   assignedBy: Prisma.UserCreateNestedOneWithoutCreatedTasksInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDailyTasksInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyTasksInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutDailyTasksInput
 }
@@ -997,6 +1075,7 @@ export type DailyTaskUncheckedCreateWithoutRelatedDealerInput = {
   assignedByUserId: number
   taskDate: Date | string
   visitType: string
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1035,6 +1114,70 @@ export type DailyTaskUpdateManyWithWhereWithoutRelatedDealerInput = {
   data: Prisma.XOR<Prisma.DailyTaskUpdateManyMutationInput, Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedDealerInput>
 }
 
+export type DailyTaskCreateWithoutRelatedVerifiedDealerInput = {
+  id?: string
+  taskDate: Date | string
+  visitType: string
+  siteName?: string | null
+  description?: string | null
+  status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
+  assignedBy: Prisma.UserCreateNestedOneWithoutCreatedTasksInput
+  relatedDealer?: Prisma.DealerCreateNestedOneWithoutDailyTasksInput
+  permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyTasksInput
+  site?: Prisma.TechnicalSiteCreateNestedOneWithoutDailyTasksInput
+}
+
+export type DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput = {
+  id?: string
+  userId: number
+  assignedByUserId: number
+  taskDate: Date | string
+  visitType: string
+  relatedDealerId?: string | null
+  siteName?: string | null
+  description?: string | null
+  status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pjpId?: string | null
+  siteId?: string | null
+}
+
+export type DailyTaskCreateOrConnectWithoutRelatedVerifiedDealerInput = {
+  where: Prisma.DailyTaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput>
+}
+
+export type DailyTaskCreateManyRelatedVerifiedDealerInputEnvelope = {
+  data: Prisma.DailyTaskCreateManyRelatedVerifiedDealerInput | Prisma.DailyTaskCreateManyRelatedVerifiedDealerInput[]
+  skipDuplicates?: boolean
+}
+
+export type DailyTaskUpsertWithWhereUniqueWithoutRelatedVerifiedDealerInput = {
+  where: Prisma.DailyTaskWhereUniqueInput
+  update: Prisma.XOR<Prisma.DailyTaskUpdateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedUpdateWithoutRelatedVerifiedDealerInput>
+  create: Prisma.XOR<Prisma.DailyTaskCreateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedCreateWithoutRelatedVerifiedDealerInput>
+}
+
+export type DailyTaskUpdateWithWhereUniqueWithoutRelatedVerifiedDealerInput = {
+  where: Prisma.DailyTaskWhereUniqueInput
+  data: Prisma.XOR<Prisma.DailyTaskUpdateWithoutRelatedVerifiedDealerInput, Prisma.DailyTaskUncheckedUpdateWithoutRelatedVerifiedDealerInput>
+}
+
+export type DailyTaskUpdateManyWithWhereWithoutRelatedVerifiedDealerInput = {
+  where: Prisma.DailyTaskScalarWhereInput
+  data: Prisma.XOR<Prisma.DailyTaskUpdateManyMutationInput, Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerInput>
+}
+
 export type DailyTaskCreateWithoutPermanentJourneyPlanInput = {
   id?: string
   taskDate: Date | string
@@ -1050,6 +1193,7 @@ export type DailyTaskCreateWithoutPermanentJourneyPlanInput = {
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
   assignedBy: Prisma.UserCreateNestedOneWithoutCreatedTasksInput
   relatedDealer?: Prisma.DealerCreateNestedOneWithoutDailyTasksInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDailyTasksInput
   site?: Prisma.TechnicalSiteCreateNestedOneWithoutDailyTasksInput
 }
 
@@ -1060,6 +1204,7 @@ export type DailyTaskUncheckedCreateWithoutPermanentJourneyPlanInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1112,6 +1257,7 @@ export type DailyTaskCreateWithoutSiteInput = {
   user: Prisma.UserCreateNestedOneWithoutAssignedTasksInput
   assignedBy: Prisma.UserCreateNestedOneWithoutCreatedTasksInput
   relatedDealer?: Prisma.DealerCreateNestedOneWithoutDailyTasksInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutDailyTasksInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanCreateNestedOneWithoutDailyTasksInput
 }
 
@@ -1122,6 +1268,7 @@ export type DailyTaskUncheckedCreateWithoutSiteInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1165,6 +1312,7 @@ export type DailyTaskCreateManyUserInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1183,6 +1331,7 @@ export type DailyTaskCreateManyAssignedByInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1209,6 +1358,7 @@ export type DailyTaskUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTasksNestedInput
   relatedDealer?: Prisma.DealerUpdateOneWithoutDailyTasksNestedInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDailyTasksNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyTasksNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutDailyTasksNestedInput
 }
@@ -1219,6 +1369,7 @@ export type DailyTaskUncheckedUpdateWithoutUserInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1237,6 +1388,7 @@ export type DailyTaskUncheckedUpdateManyWithoutUserInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1263,6 +1415,7 @@ export type DailyTaskUpdateWithoutAssignedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
   relatedDealer?: Prisma.DealerUpdateOneWithoutDailyTasksNestedInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDailyTasksNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyTasksNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutDailyTasksNestedInput
 }
@@ -1273,6 +1426,7 @@ export type DailyTaskUncheckedUpdateWithoutAssignedByInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1291,6 +1445,7 @@ export type DailyTaskUncheckedUpdateManyWithoutAssignedByInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1309,6 +1464,7 @@ export type DailyTaskCreateManyRelatedDealerInput = {
   assignedByUserId: number
   taskDate: Date | string
   visitType: string
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1335,6 +1491,7 @@ export type DailyTaskUpdateWithoutRelatedDealerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
   assignedBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDailyTasksNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyTasksNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutDailyTasksNestedInput
 }
@@ -1345,6 +1502,7 @@ export type DailyTaskUncheckedUpdateWithoutRelatedDealerInput = {
   assignedByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1363,6 +1521,83 @@ export type DailyTaskUncheckedUpdateManyWithoutRelatedDealerInput = {
   assignedByUserId?: Prisma.IntFieldUpdateOperationsInput | number
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type DailyTaskCreateManyRelatedVerifiedDealerInput = {
+  id?: string
+  userId: number
+  assignedByUserId: number
+  taskDate: Date | string
+  visitType: string
+  relatedDealerId?: string | null
+  siteName?: string | null
+  description?: string | null
+  status?: string
+  dealerName?: string | null
+  dealerCategory?: string | null
+  pjpCycle?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pjpId?: string | null
+  siteId?: string | null
+}
+
+export type DailyTaskUpdateWithoutRelatedVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  visitType?: Prisma.StringFieldUpdateOperationsInput | string
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+  assignedBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTasksNestedInput
+  relatedDealer?: Prisma.DealerUpdateOneWithoutDailyTasksNestedInput
+  permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyTasksNestedInput
+  site?: Prisma.TechnicalSiteUpdateOneWithoutDailyTasksNestedInput
+}
+
+export type DailyTaskUncheckedUpdateWithoutRelatedVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  assignedByUserId?: Prisma.IntFieldUpdateOperationsInput | number
+  taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  visitType?: Prisma.StringFieldUpdateOperationsInput | string
+  relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  dealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pjpCycle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  assignedByUserId?: Prisma.IntFieldUpdateOperationsInput | number
+  taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  visitType?: Prisma.StringFieldUpdateOperationsInput | string
+  relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1382,6 +1617,7 @@ export type DailyTaskCreateManyPermanentJourneyPlanInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1408,6 +1644,7 @@ export type DailyTaskUpdateWithoutPermanentJourneyPlanInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
   assignedBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTasksNestedInput
   relatedDealer?: Prisma.DealerUpdateOneWithoutDailyTasksNestedInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDailyTasksNestedInput
   site?: Prisma.TechnicalSiteUpdateOneWithoutDailyTasksNestedInput
 }
 
@@ -1418,6 +1655,7 @@ export type DailyTaskUncheckedUpdateWithoutPermanentJourneyPlanInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1436,6 +1674,7 @@ export type DailyTaskUncheckedUpdateManyWithoutPermanentJourneyPlanInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1454,6 +1693,7 @@ export type DailyTaskCreateManySiteInput = {
   taskDate: Date | string
   visitType: string
   relatedDealerId?: string | null
+  relatedVerifiedDealerId?: number | null
   siteName?: string | null
   description?: string | null
   status?: string
@@ -1480,6 +1720,7 @@ export type DailyTaskUpdateWithoutSiteInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutAssignedTasksNestedInput
   assignedBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTasksNestedInput
   relatedDealer?: Prisma.DealerUpdateOneWithoutDailyTasksNestedInput
+  relatedVerifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutDailyTasksNestedInput
   permanentJourneyPlan?: Prisma.PermanentJourneyPlanUpdateOneWithoutDailyTasksNestedInput
 }
 
@@ -1490,6 +1731,7 @@ export type DailyTaskUncheckedUpdateWithoutSiteInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1508,6 +1750,7 @@ export type DailyTaskUncheckedUpdateManyWithoutSiteInput = {
   taskDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitType?: Prisma.StringFieldUpdateOperationsInput | string
   relatedDealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedVerifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1528,6 +1771,7 @@ export type DailyTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   taskDate?: boolean
   visitType?: boolean
   relatedDealerId?: boolean
+  relatedVerifiedDealerId?: boolean
   siteName?: boolean
   description?: boolean
   status?: boolean
@@ -1541,6 +1785,7 @@ export type DailyTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assignedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   relatedDealer?: boolean | Prisma.DailyTask$relatedDealerArgs<ExtArgs>
+  relatedVerifiedDealer?: boolean | Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs>
   site?: boolean | Prisma.DailyTask$siteArgs<ExtArgs>
 }, ExtArgs["result"]["dailyTask"]>
@@ -1552,6 +1797,7 @@ export type DailyTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   taskDate?: boolean
   visitType?: boolean
   relatedDealerId?: boolean
+  relatedVerifiedDealerId?: boolean
   siteName?: boolean
   description?: boolean
   status?: boolean
@@ -1565,6 +1811,7 @@ export type DailyTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assignedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   relatedDealer?: boolean | Prisma.DailyTask$relatedDealerArgs<ExtArgs>
+  relatedVerifiedDealer?: boolean | Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs>
   site?: boolean | Prisma.DailyTask$siteArgs<ExtArgs>
 }, ExtArgs["result"]["dailyTask"]>
@@ -1576,6 +1823,7 @@ export type DailyTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   taskDate?: boolean
   visitType?: boolean
   relatedDealerId?: boolean
+  relatedVerifiedDealerId?: boolean
   siteName?: boolean
   description?: boolean
   status?: boolean
@@ -1589,6 +1837,7 @@ export type DailyTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assignedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   relatedDealer?: boolean | Prisma.DailyTask$relatedDealerArgs<ExtArgs>
+  relatedVerifiedDealer?: boolean | Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs>
   site?: boolean | Prisma.DailyTask$siteArgs<ExtArgs>
 }, ExtArgs["result"]["dailyTask"]>
@@ -1600,6 +1849,7 @@ export type DailyTaskSelectScalar = {
   taskDate?: boolean
   visitType?: boolean
   relatedDealerId?: boolean
+  relatedVerifiedDealerId?: boolean
   siteName?: boolean
   description?: boolean
   status?: boolean
@@ -1612,11 +1862,12 @@ export type DailyTaskSelectScalar = {
   siteId?: boolean
 }
 
-export type DailyTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "assignedByUserId" | "taskDate" | "visitType" | "relatedDealerId" | "siteName" | "description" | "status" | "dealerName" | "dealerCategory" | "pjpCycle" | "createdAt" | "updatedAt" | "pjpId" | "siteId", ExtArgs["result"]["dailyTask"]>
+export type DailyTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "assignedByUserId" | "taskDate" | "visitType" | "relatedDealerId" | "relatedVerifiedDealerId" | "siteName" | "description" | "status" | "dealerName" | "dealerCategory" | "pjpCycle" | "createdAt" | "updatedAt" | "pjpId" | "siteId", ExtArgs["result"]["dailyTask"]>
 export type DailyTaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assignedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   relatedDealer?: boolean | Prisma.DailyTask$relatedDealerArgs<ExtArgs>
+  relatedVerifiedDealer?: boolean | Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs>
   site?: boolean | Prisma.DailyTask$siteArgs<ExtArgs>
 }
@@ -1624,6 +1875,7 @@ export type DailyTaskIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assignedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   relatedDealer?: boolean | Prisma.DailyTask$relatedDealerArgs<ExtArgs>
+  relatedVerifiedDealer?: boolean | Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs>
   site?: boolean | Prisma.DailyTask$siteArgs<ExtArgs>
 }
@@ -1631,6 +1883,7 @@ export type DailyTaskIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assignedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   relatedDealer?: boolean | Prisma.DailyTask$relatedDealerArgs<ExtArgs>
+  relatedVerifiedDealer?: boolean | Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs>
   permanentJourneyPlan?: boolean | Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs>
   site?: boolean | Prisma.DailyTask$siteArgs<ExtArgs>
 }
@@ -1641,6 +1894,7 @@ export type $DailyTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     user: Prisma.$UserPayload<ExtArgs>
     assignedBy: Prisma.$UserPayload<ExtArgs>
     relatedDealer: Prisma.$DealerPayload<ExtArgs> | null
+    relatedVerifiedDealer: Prisma.$VerifiedDealerPayload<ExtArgs> | null
     permanentJourneyPlan: Prisma.$PermanentJourneyPlanPayload<ExtArgs> | null
     site: Prisma.$TechnicalSitePayload<ExtArgs> | null
   }
@@ -1651,6 +1905,7 @@ export type $DailyTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     taskDate: Date
     visitType: string
     relatedDealerId: string | null
+    relatedVerifiedDealerId: number | null
     siteName: string | null
     description: string | null
     status: string
@@ -2058,6 +2313,7 @@ export interface Prisma__DailyTaskClient<T, Null = never, ExtArgs extends runtim
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   assignedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   relatedDealer<T extends Prisma.DailyTask$relatedDealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyTask$relatedDealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  relatedVerifiedDealer<T extends Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyTask$relatedVerifiedDealerArgs<ExtArgs>>): Prisma.Prisma__VerifiedDealerClient<runtime.Types.Result.GetResult<Prisma.$VerifiedDealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   permanentJourneyPlan<T extends Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyTask$permanentJourneyPlanArgs<ExtArgs>>): Prisma.Prisma__PermanentJourneyPlanClient<runtime.Types.Result.GetResult<Prisma.$PermanentJourneyPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   site<T extends Prisma.DailyTask$siteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DailyTask$siteArgs<ExtArgs>>): Prisma.Prisma__TechnicalSiteClient<runtime.Types.Result.GetResult<Prisma.$TechnicalSitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -2095,6 +2351,7 @@ export interface DailyTaskFieldRefs {
   readonly taskDate: Prisma.FieldRef<"DailyTask", 'DateTime'>
   readonly visitType: Prisma.FieldRef<"DailyTask", 'String'>
   readonly relatedDealerId: Prisma.FieldRef<"DailyTask", 'String'>
+  readonly relatedVerifiedDealerId: Prisma.FieldRef<"DailyTask", 'Int'>
   readonly siteName: Prisma.FieldRef<"DailyTask", 'String'>
   readonly description: Prisma.FieldRef<"DailyTask", 'String'>
   readonly status: Prisma.FieldRef<"DailyTask", 'String'>
@@ -2517,6 +2774,25 @@ export type DailyTask$relatedDealerArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.DealerInclude<ExtArgs> | null
   where?: Prisma.DealerWhereInput
+}
+
+/**
+ * DailyTask.relatedVerifiedDealer
+ */
+export type DailyTask$relatedVerifiedDealerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VerifiedDealer
+   */
+  select?: Prisma.VerifiedDealerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VerifiedDealer
+   */
+  omit?: Prisma.VerifiedDealerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VerifiedDealerInclude<ExtArgs> | null
+  where?: Prisma.VerifiedDealerWhereInput
 }
 
 /**

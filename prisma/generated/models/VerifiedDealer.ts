@@ -334,6 +334,7 @@ export type VerifiedDealerWhereInput = {
   dealerId?: Prisma.StringNullableFilter<"VerifiedDealer"> | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  dailyTasks?: Prisma.DailyTaskListRelationFilter
   outstandingReports?: Prisma.OutstandingReportListRelationFilter
   dealerBrandMappings?: Prisma.DealerBrandMappingListRelationFilter
   projectionVsActualReports?: Prisma.ProjectionVsActualReportListRelationFilter
@@ -363,6 +364,7 @@ export type VerifiedDealerOrderByWithRelationInput = {
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   dealer?: Prisma.DealerOrderByWithRelationInput
+  dailyTasks?: Prisma.DailyTaskOrderByRelationAggregateInput
   outstandingReports?: Prisma.OutstandingReportOrderByRelationAggregateInput
   dealerBrandMappings?: Prisma.DealerBrandMappingOrderByRelationAggregateInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportOrderByRelationAggregateInput
@@ -395,6 +397,7 @@ export type VerifiedDealerWhereUniqueInput = Prisma.AtLeast<{
   dealerId?: Prisma.StringNullableFilter<"VerifiedDealer"> | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   dealer?: Prisma.XOR<Prisma.DealerNullableScalarRelationFilter, Prisma.DealerWhereInput> | null
+  dailyTasks?: Prisma.DailyTaskListRelationFilter
   outstandingReports?: Prisma.OutstandingReportListRelationFilter
   dealerBrandMappings?: Prisma.DealerBrandMappingListRelationFilter
   projectionVsActualReports?: Prisma.ProjectionVsActualReportListRelationFilter
@@ -473,6 +476,7 @@ export type VerifiedDealerCreateInput = {
   panNo?: string | null
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
@@ -500,6 +504,7 @@ export type VerifiedDealerUncheckedCreateInput = {
   panNo?: string | null
   userId?: number | null
   dealerId?: string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -526,6 +531,7 @@ export type VerifiedDealerUpdateInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -553,6 +559,7 @@ export type VerifiedDealerUncheckedUpdateInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -802,6 +809,22 @@ export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
 }
 
+export type VerifiedDealerCreateNestedOneWithoutDailyTasksInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutDailyTasksInput, Prisma.VerifiedDealerUncheckedCreateWithoutDailyTasksInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutDailyTasksInput
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+}
+
+export type VerifiedDealerUpdateOneWithoutDailyTasksNestedInput = {
+  create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutDailyTasksInput, Prisma.VerifiedDealerUncheckedCreateWithoutDailyTasksInput>
+  connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutDailyTasksInput
+  upsert?: Prisma.VerifiedDealerUpsertWithoutDailyTasksInput
+  disconnect?: Prisma.VerifiedDealerWhereInput | boolean
+  delete?: Prisma.VerifiedDealerWhereInput | boolean
+  connect?: Prisma.VerifiedDealerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VerifiedDealerUpdateToOneWithWhereWithoutDailyTasksInput, Prisma.VerifiedDealerUpdateWithoutDailyTasksInput>, Prisma.VerifiedDealerUncheckedUpdateWithoutDailyTasksInput>
+}
+
 export type VerifiedDealerCreateNestedOneWithoutCollectionReportsInput = {
   create?: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutCollectionReportsInput, Prisma.VerifiedDealerUncheckedCreateWithoutCollectionReportsInput>
   connectOrCreate?: Prisma.VerifiedDealerCreateOrConnectWithoutCollectionReportsInput
@@ -900,6 +923,7 @@ export type VerifiedDealerCreateWithoutUserInput = {
   gstNo?: string | null
   panNo?: string | null
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
@@ -926,6 +950,7 @@ export type VerifiedDealerUncheckedCreateWithoutUserInput = {
   gstNo?: string | null
   panNo?: string | null
   dealerId?: string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -1002,6 +1027,7 @@ export type VerifiedDealerCreateWithoutDealerInput = {
   gstNo?: string | null
   panNo?: string | null
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
@@ -1028,6 +1054,7 @@ export type VerifiedDealerUncheckedCreateWithoutDealerInput = {
   gstNo?: string | null
   panNo?: string | null
   userId?: number | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -1061,6 +1088,128 @@ export type VerifiedDealerUpdateManyWithWhereWithoutDealerInput = {
   data: Prisma.XOR<Prisma.VerifiedDealerUpdateManyMutationInput, Prisma.VerifiedDealerUncheckedUpdateManyWithoutDealerInput>
 }
 
+export type VerifiedDealerCreateWithoutDailyTasksInput = {
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
+  dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerUncheckedCreateWithoutDailyTasksInput = {
+  id?: number
+  dealerCode?: string | null
+  dealerCategory?: string | null
+  isSubdealer?: boolean | null
+  dealerPartyName?: string | null
+  zone?: string | null
+  area?: string | null
+  contactNo1?: string | null
+  contactNo2?: string | null
+  email?: string | null
+  address?: string | null
+  pinCode?: string | null
+  relatedSpName?: string | null
+  ownerProprietorName?: string | null
+  natureOfFirm?: string | null
+  gstNo?: string | null
+  panNo?: string | null
+  userId?: number | null
+  dealerId?: string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+  collectionReports?: Prisma.CollectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
+}
+
+export type VerifiedDealerCreateOrConnectWithoutDailyTasksInput = {
+  where: Prisma.VerifiedDealerWhereUniqueInput
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutDailyTasksInput, Prisma.VerifiedDealerUncheckedCreateWithoutDailyTasksInput>
+}
+
+export type VerifiedDealerUpsertWithoutDailyTasksInput = {
+  update: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutDailyTasksInput, Prisma.VerifiedDealerUncheckedUpdateWithoutDailyTasksInput>
+  create: Prisma.XOR<Prisma.VerifiedDealerCreateWithoutDailyTasksInput, Prisma.VerifiedDealerUncheckedCreateWithoutDailyTasksInput>
+  where?: Prisma.VerifiedDealerWhereInput
+}
+
+export type VerifiedDealerUpdateToOneWithWhereWithoutDailyTasksInput = {
+  where?: Prisma.VerifiedDealerWhereInput
+  data: Prisma.XOR<Prisma.VerifiedDealerUpdateWithoutDailyTasksInput, Prisma.VerifiedDealerUncheckedUpdateWithoutDailyTasksInput>
+}
+
+export type VerifiedDealerUpdateWithoutDailyTasksInput = {
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
+  dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUpdateManyWithoutVerifiedDealerNestedInput
+}
+
+export type VerifiedDealerUncheckedUpdateWithoutDailyTasksInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  dealerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dealerCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSubdealer?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  dealerPartyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  area?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNo2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pinCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedSpName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerProprietorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  natureOfFirm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+  collectionReports?: Prisma.CollectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
+}
+
 export type VerifiedDealerCreateWithoutCollectionReportsInput = {
   dealerCode?: string | null
   dealerCategory?: string | null
@@ -1080,6 +1229,7 @@ export type VerifiedDealerCreateWithoutCollectionReportsInput = {
   panNo?: string | null
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
@@ -1106,6 +1256,7 @@ export type VerifiedDealerUncheckedCreateWithoutCollectionReportsInput = {
   panNo?: string | null
   userId?: number | null
   dealerId?: string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -1147,6 +1298,7 @@ export type VerifiedDealerUpdateWithoutCollectionReportsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -1173,6 +1325,7 @@ export type VerifiedDealerUncheckedUpdateWithoutCollectionReportsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -1198,6 +1351,7 @@ export type VerifiedDealerCreateWithoutOutstandingReportsInput = {
   panNo?: string | null
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
   projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
@@ -1224,6 +1378,7 @@ export type VerifiedDealerUncheckedCreateWithoutOutstandingReportsInput = {
   panNo?: string | null
   userId?: number | null
   dealerId?: string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -1265,6 +1420,7 @@ export type VerifiedDealerUpdateWithoutOutstandingReportsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
   projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -1291,6 +1447,7 @@ export type VerifiedDealerUncheckedUpdateWithoutOutstandingReportsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -1316,6 +1473,7 @@ export type VerifiedDealerCreateWithoutProjectionVsActualReportsInput = {
   panNo?: string | null
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
   projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
@@ -1342,6 +1500,7 @@ export type VerifiedDealerUncheckedCreateWithoutProjectionVsActualReportsInput =
   panNo?: string | null
   userId?: number | null
   dealerId?: string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -1383,6 +1542,7 @@ export type VerifiedDealerUpdateWithoutProjectionVsActualReportsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
   projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -1409,6 +1569,7 @@ export type VerifiedDealerUncheckedUpdateWithoutProjectionVsActualReportsInput =
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -1434,6 +1595,7 @@ export type VerifiedDealerCreateWithoutProjectionReportsInput = {
   panNo?: string | null
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
@@ -1460,6 +1622,7 @@ export type VerifiedDealerUncheckedCreateWithoutProjectionReportsInput = {
   panNo?: string | null
   userId?: number | null
   dealerId?: string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -1501,6 +1664,7 @@ export type VerifiedDealerUpdateWithoutProjectionReportsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -1527,6 +1691,7 @@ export type VerifiedDealerUncheckedUpdateWithoutProjectionReportsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -1552,6 +1717,7 @@ export type VerifiedDealerCreateWithoutDealerBrandMappingsInput = {
   panNo?: string | null
   user?: Prisma.UserCreateNestedOneWithoutVerifiedDealersInput
   dealer?: Prisma.DealerCreateNestedOneWithoutVerifiedDealersInput
+  dailyTasks?: Prisma.DailyTaskCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportCreateNestedManyWithoutVerifiedDealerInput
   projectionReports?: Prisma.ProjectionReportCreateNestedManyWithoutVerifiedDealerInput
@@ -1578,6 +1744,7 @@ export type VerifiedDealerUncheckedCreateWithoutDealerBrandMappingsInput = {
   panNo?: string | null
   userId?: number | null
   dealerId?: string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedCreateNestedManyWithoutRelatedVerifiedDealerInput
   outstandingReports?: Prisma.OutstandingReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
   projectionReports?: Prisma.ProjectionReportUncheckedCreateNestedManyWithoutVerifiedDealerInput
@@ -1619,6 +1786,7 @@ export type VerifiedDealerUpdateWithoutDealerBrandMappingsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
   projectionReports?: Prisma.ProjectionReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -1645,6 +1813,7 @@ export type VerifiedDealerUncheckedUpdateWithoutDealerBrandMappingsInput = {
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionReports?: Prisma.ProjectionReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -1690,6 +1859,7 @@ export type VerifiedDealerUpdateWithoutUserInput = {
   gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealer?: Prisma.DealerUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -1716,6 +1886,7 @@ export type VerifiedDealerUncheckedUpdateWithoutUserInput = {
   gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -1783,6 +1954,7 @@ export type VerifiedDealerUpdateWithoutDealerInput = {
   gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutVerifiedDealersNestedInput
+  dailyTasks?: Prisma.DailyTaskUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUpdateManyWithoutVerifiedDealerNestedInput
@@ -1809,6 +1981,7 @@ export type VerifiedDealerUncheckedUpdateWithoutDealerInput = {
   gstNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dailyTasks?: Prisma.DailyTaskUncheckedUpdateManyWithoutRelatedVerifiedDealerNestedInput
   outstandingReports?: Prisma.OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   dealerBrandMappings?: Prisma.DealerBrandMappingUncheckedUpdateManyWithoutVerifiedDealerNestedInput
   projectionVsActualReports?: Prisma.ProjectionVsActualReportUncheckedUpdateManyWithoutVerifiedDealerNestedInput
@@ -1843,6 +2016,7 @@ export type VerifiedDealerUncheckedUpdateManyWithoutDealerInput = {
  */
 
 export type VerifiedDealerCountOutputType = {
+  dailyTasks: number
   outstandingReports: number
   dealerBrandMappings: number
   projectionVsActualReports: number
@@ -1851,6 +2025,7 @@ export type VerifiedDealerCountOutputType = {
 }
 
 export type VerifiedDealerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dailyTasks?: boolean | VerifiedDealerCountOutputTypeCountDailyTasksArgs
   outstandingReports?: boolean | VerifiedDealerCountOutputTypeCountOutstandingReportsArgs
   dealerBrandMappings?: boolean | VerifiedDealerCountOutputTypeCountDealerBrandMappingsArgs
   projectionVsActualReports?: boolean | VerifiedDealerCountOutputTypeCountProjectionVsActualReportsArgs
@@ -1866,6 +2041,13 @@ export type VerifiedDealerCountOutputTypeDefaultArgs<ExtArgs extends runtime.Typ
    * Select specific fields to fetch from the VerifiedDealerCountOutputType
    */
   select?: Prisma.VerifiedDealerCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * VerifiedDealerCountOutputType without action
+ */
+export type VerifiedDealerCountOutputTypeCountDailyTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DailyTaskWhereInput
 }
 
 /**
@@ -1926,6 +2108,7 @@ export type VerifiedDealerSelect<ExtArgs extends runtime.Types.Extensions.Intern
   dealerId?: boolean
   user?: boolean | Prisma.VerifiedDealer$userArgs<ExtArgs>
   dealer?: boolean | Prisma.VerifiedDealer$dealerArgs<ExtArgs>
+  dailyTasks?: boolean | Prisma.VerifiedDealer$dailyTasksArgs<ExtArgs>
   outstandingReports?: boolean | Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs>
   dealerBrandMappings?: boolean | Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs>
   projectionVsActualReports?: boolean | Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs>
@@ -2008,6 +2191,7 @@ export type VerifiedDealerOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type VerifiedDealerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.VerifiedDealer$userArgs<ExtArgs>
   dealer?: boolean | Prisma.VerifiedDealer$dealerArgs<ExtArgs>
+  dailyTasks?: boolean | Prisma.VerifiedDealer$dailyTasksArgs<ExtArgs>
   outstandingReports?: boolean | Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs>
   dealerBrandMappings?: boolean | Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs>
   projectionVsActualReports?: boolean | Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs>
@@ -2029,6 +2213,7 @@ export type $VerifiedDealerPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     user: Prisma.$UserPayload<ExtArgs> | null
     dealer: Prisma.$DealerPayload<ExtArgs> | null
+    dailyTasks: Prisma.$DailyTaskPayload<ExtArgs>[]
     outstandingReports: Prisma.$OutstandingReportPayload<ExtArgs>[]
     dealerBrandMappings: Prisma.$DealerBrandMappingPayload<ExtArgs>[]
     projectionVsActualReports: Prisma.$ProjectionVsActualReportPayload<ExtArgs>[]
@@ -2451,6 +2636,7 @@ export interface Prisma__VerifiedDealerClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.VerifiedDealer$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   dealer<T extends Prisma.VerifiedDealer$dealerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$dealerArgs<ExtArgs>>): Prisma.Prisma__DealerClient<runtime.Types.Result.GetResult<Prisma.$DealerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  dailyTasks<T extends Prisma.VerifiedDealer$dailyTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$dailyTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   outstandingReports<T extends Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$outstandingReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OutstandingReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dealerBrandMappings<T extends Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$dealerBrandMappingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealerBrandMappingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projectionVsActualReports<T extends Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VerifiedDealer$projectionVsActualReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectionVsActualReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2935,6 +3121,30 @@ export type VerifiedDealer$dealerArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   include?: Prisma.DealerInclude<ExtArgs> | null
   where?: Prisma.DealerWhereInput
+}
+
+/**
+ * VerifiedDealer.dailyTasks
+ */
+export type VerifiedDealer$dailyTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DailyTask
+   */
+  select?: Prisma.DailyTaskSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DailyTask
+   */
+  omit?: Prisma.DailyTaskOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DailyTaskInclude<ExtArgs> | null
+  where?: Prisma.DailyTaskWhereInput
+  orderBy?: Prisma.DailyTaskOrderByWithRelationInput | Prisma.DailyTaskOrderByWithRelationInput[]
+  cursor?: Prisma.DailyTaskWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DailyTaskScalarFieldEnum | Prisma.DailyTaskScalarFieldEnum[]
 }
 
 /**
