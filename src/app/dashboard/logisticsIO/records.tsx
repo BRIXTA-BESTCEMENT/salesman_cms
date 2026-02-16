@@ -364,6 +364,30 @@ export default function LogisticsIOList() {
                   <InfoField label="Gate In Time" value={formatTime12Hour(selectedRecord.gateInTime)} />
                   <InfoField label="Gate Out Date" value={selectedRecord.gateOutDate} />
                   <InfoField label="Gate Out Time" value={formatTime12Hour(selectedRecord.gateOutTime)} />
+                  
+                  {/* --- GATE OUT INVOICES & BILLS SECTION --- */}
+                  <div className="col-span-full mt-2">
+                    <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1 mb-2">
+                      <FileText className="w-3 h-3" /> Gate Out Invoices & Bills ({selectedRecord.gateOutNoOfInvoice || 0})
+                    </Label>
+                    
+                    {(!selectedRecord.gateOutInvoiceNos || selectedRecord.gateOutInvoiceNos.length === 0) ? (
+                      <div className="text-sm text-muted-foreground p-3 border border-dashed rounded-md bg-muted/5 text-center">
+                        No gate out documents recorded
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                        {selectedRecord.gateOutInvoiceNos.map((inv, idx) => (
+                          <div key={idx} className="flex flex-col p-2 bg-secondary/10 border rounded text-sm">
+                            <span className="font-semibold text-xs text-muted-foreground mb-1">Set {idx + 1}</span>
+                            <span><span className="font-medium">INV:</span> {inv || '-'}</span>
+                            <span><span className="font-medium">BILL:</span> {selectedRecord.gateOutBillNos?.[idx] || '-'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
                 </CardContent>
               </Card>
 

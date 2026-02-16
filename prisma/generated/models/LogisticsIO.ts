@@ -27,10 +27,12 @@ export type AggregateLogisticsIO = {
 }
 
 export type LogisticsIOAvgAggregateOutputType = {
+  gateOutNoOfInvoice: number | null
   noOfInvoice: number | null
 }
 
 export type LogisticsIOSumAggregateOutputType = {
+  gateOutNoOfInvoice: number | null
   noOfInvoice: number | null
 }
 
@@ -52,6 +54,7 @@ export type LogisticsIOMinAggregateOutputType = {
   diffTareWtGrossWt: string | null
   gateOutDate: Date | null
   gateOutTime: string | null
+  gateOutNoOfInvoice: number | null
   diffGrossWtGateOut: string | null
   diffGrossWtInvoiceDT: string | null
   diffInvoiceDTGateOut: string | null
@@ -85,6 +88,7 @@ export type LogisticsIOMaxAggregateOutputType = {
   diffTareWtGrossWt: string | null
   gateOutDate: Date | null
   gateOutTime: string | null
+  gateOutNoOfInvoice: number | null
   diffGrossWtGateOut: string | null
   diffGrossWtInvoiceDT: string | null
   diffInvoiceDTGateOut: string | null
@@ -118,6 +122,9 @@ export type LogisticsIOCountAggregateOutputType = {
   diffTareWtGrossWt: number
   gateOutDate: number
   gateOutTime: number
+  gateOutNoOfInvoice: number
+  gateOutInvoiceNos: number
+  gateOutBillNos: number
   diffGrossWtGateOut: number
   diffGrossWtInvoiceDT: number
   diffInvoiceDTGateOut: number
@@ -138,10 +145,12 @@ export type LogisticsIOCountAggregateOutputType = {
 
 
 export type LogisticsIOAvgAggregateInputType = {
+  gateOutNoOfInvoice?: true
   noOfInvoice?: true
 }
 
 export type LogisticsIOSumAggregateInputType = {
+  gateOutNoOfInvoice?: true
   noOfInvoice?: true
 }
 
@@ -163,6 +172,7 @@ export type LogisticsIOMinAggregateInputType = {
   diffTareWtGrossWt?: true
   gateOutDate?: true
   gateOutTime?: true
+  gateOutNoOfInvoice?: true
   diffGrossWtGateOut?: true
   diffGrossWtInvoiceDT?: true
   diffInvoiceDTGateOut?: true
@@ -196,6 +206,7 @@ export type LogisticsIOMaxAggregateInputType = {
   diffTareWtGrossWt?: true
   gateOutDate?: true
   gateOutTime?: true
+  gateOutNoOfInvoice?: true
   diffGrossWtGateOut?: true
   diffGrossWtInvoiceDT?: true
   diffInvoiceDTGateOut?: true
@@ -229,6 +240,9 @@ export type LogisticsIOCountAggregateInputType = {
   diffTareWtGrossWt?: true
   gateOutDate?: true
   gateOutTime?: true
+  gateOutNoOfInvoice?: true
+  gateOutInvoiceNos?: true
+  gateOutBillNos?: true
   diffGrossWtGateOut?: true
   diffGrossWtInvoiceDT?: true
   diffInvoiceDTGateOut?: true
@@ -351,6 +365,9 @@ export type LogisticsIOGroupByOutputType = {
   diffTareWtGrossWt: string | null
   gateOutDate: Date | null
   gateOutTime: string | null
+  gateOutNoOfInvoice: number | null
+  gateOutInvoiceNos: string[]
+  gateOutBillNos: string[]
   diffGrossWtGateOut: string | null
   diffGrossWtInvoiceDT: string | null
   diffInvoiceDTGateOut: string | null
@@ -409,6 +426,9 @@ export type LogisticsIOWhereInput = {
   diffTareWtGrossWt?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
   gateOutDate?: Prisma.DateTimeNullableFilter<"LogisticsIO"> | Date | string | null
   gateOutTime?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
+  gateOutNoOfInvoice?: Prisma.IntNullableFilter<"LogisticsIO"> | number | null
+  gateOutInvoiceNos?: Prisma.StringNullableListFilter<"LogisticsIO">
+  gateOutBillNos?: Prisma.StringNullableListFilter<"LogisticsIO">
   diffGrossWtGateOut?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
   diffGrossWtInvoiceDT?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
   diffInvoiceDTGateOut?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
@@ -444,6 +464,9 @@ export type LogisticsIOOrderByWithRelationInput = {
   diffTareWtGrossWt?: Prisma.SortOrderInput | Prisma.SortOrder
   gateOutDate?: Prisma.SortOrderInput | Prisma.SortOrder
   gateOutTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  gateOutNoOfInvoice?: Prisma.SortOrderInput | Prisma.SortOrder
+  gateOutInvoiceNos?: Prisma.SortOrder
+  gateOutBillNos?: Prisma.SortOrder
   diffGrossWtGateOut?: Prisma.SortOrderInput | Prisma.SortOrder
   diffGrossWtInvoiceDT?: Prisma.SortOrderInput | Prisma.SortOrder
   diffInvoiceDTGateOut?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -482,6 +505,9 @@ export type LogisticsIOWhereUniqueInput = Prisma.AtLeast<{
   diffTareWtGrossWt?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
   gateOutDate?: Prisma.DateTimeNullableFilter<"LogisticsIO"> | Date | string | null
   gateOutTime?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
+  gateOutNoOfInvoice?: Prisma.IntNullableFilter<"LogisticsIO"> | number | null
+  gateOutInvoiceNos?: Prisma.StringNullableListFilter<"LogisticsIO">
+  gateOutBillNos?: Prisma.StringNullableListFilter<"LogisticsIO">
   diffGrossWtGateOut?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
   diffGrossWtInvoiceDT?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
   diffInvoiceDTGateOut?: Prisma.StringNullableFilter<"LogisticsIO"> | string | null
@@ -517,6 +543,9 @@ export type LogisticsIOOrderByWithAggregationInput = {
   diffTareWtGrossWt?: Prisma.SortOrderInput | Prisma.SortOrder
   gateOutDate?: Prisma.SortOrderInput | Prisma.SortOrder
   gateOutTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  gateOutNoOfInvoice?: Prisma.SortOrderInput | Prisma.SortOrder
+  gateOutInvoiceNos?: Prisma.SortOrder
+  gateOutBillNos?: Prisma.SortOrder
   diffGrossWtGateOut?: Prisma.SortOrderInput | Prisma.SortOrder
   diffGrossWtInvoiceDT?: Prisma.SortOrderInput | Prisma.SortOrder
   diffInvoiceDTGateOut?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -560,6 +589,9 @@ export type LogisticsIOScalarWhereWithAggregatesInput = {
   diffTareWtGrossWt?: Prisma.StringNullableWithAggregatesFilter<"LogisticsIO"> | string | null
   gateOutDate?: Prisma.DateTimeNullableWithAggregatesFilter<"LogisticsIO"> | Date | string | null
   gateOutTime?: Prisma.StringNullableWithAggregatesFilter<"LogisticsIO"> | string | null
+  gateOutNoOfInvoice?: Prisma.IntNullableWithAggregatesFilter<"LogisticsIO"> | number | null
+  gateOutInvoiceNos?: Prisma.StringNullableListFilter<"LogisticsIO">
+  gateOutBillNos?: Prisma.StringNullableListFilter<"LogisticsIO">
   diffGrossWtGateOut?: Prisma.StringNullableWithAggregatesFilter<"LogisticsIO"> | string | null
   diffGrossWtInvoiceDT?: Prisma.StringNullableWithAggregatesFilter<"LogisticsIO"> | string | null
   diffInvoiceDTGateOut?: Prisma.StringNullableWithAggregatesFilter<"LogisticsIO"> | string | null
@@ -595,6 +627,9 @@ export type LogisticsIOCreateInput = {
   diffTareWtGrossWt?: string | null
   gateOutDate?: Date | string | null
   gateOutTime?: string | null
+  gateOutNoOfInvoice?: number | null
+  gateOutInvoiceNos?: Prisma.LogisticsIOCreategateOutInvoiceNosInput | string[]
+  gateOutBillNos?: Prisma.LogisticsIOCreategateOutBillNosInput | string[]
   diffGrossWtGateOut?: string | null
   diffGrossWtInvoiceDT?: string | null
   diffInvoiceDTGateOut?: string | null
@@ -630,6 +665,9 @@ export type LogisticsIOUncheckedCreateInput = {
   diffTareWtGrossWt?: string | null
   gateOutDate?: Date | string | null
   gateOutTime?: string | null
+  gateOutNoOfInvoice?: number | null
+  gateOutInvoiceNos?: Prisma.LogisticsIOCreategateOutInvoiceNosInput | string[]
+  gateOutBillNos?: Prisma.LogisticsIOCreategateOutBillNosInput | string[]
   diffGrossWtGateOut?: string | null
   diffGrossWtInvoiceDT?: string | null
   diffInvoiceDTGateOut?: string | null
@@ -665,6 +703,9 @@ export type LogisticsIOUpdateInput = {
   diffTareWtGrossWt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gateOutDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gateOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gateOutNoOfInvoice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gateOutInvoiceNos?: Prisma.LogisticsIOUpdategateOutInvoiceNosInput | string[]
+  gateOutBillNos?: Prisma.LogisticsIOUpdategateOutBillNosInput | string[]
   diffGrossWtGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffGrossWtInvoiceDT?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffInvoiceDTGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -700,6 +741,9 @@ export type LogisticsIOUncheckedUpdateInput = {
   diffTareWtGrossWt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gateOutDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gateOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gateOutNoOfInvoice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gateOutInvoiceNos?: Prisma.LogisticsIOUpdategateOutInvoiceNosInput | string[]
+  gateOutBillNos?: Prisma.LogisticsIOUpdategateOutBillNosInput | string[]
   diffGrossWtGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffGrossWtInvoiceDT?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffInvoiceDTGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -735,6 +779,9 @@ export type LogisticsIOCreateManyInput = {
   diffTareWtGrossWt?: string | null
   gateOutDate?: Date | string | null
   gateOutTime?: string | null
+  gateOutNoOfInvoice?: number | null
+  gateOutInvoiceNos?: Prisma.LogisticsIOCreategateOutInvoiceNosInput | string[]
+  gateOutBillNos?: Prisma.LogisticsIOCreategateOutBillNosInput | string[]
   diffGrossWtGateOut?: string | null
   diffGrossWtInvoiceDT?: string | null
   diffInvoiceDTGateOut?: string | null
@@ -770,6 +817,9 @@ export type LogisticsIOUpdateManyMutationInput = {
   diffTareWtGrossWt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gateOutDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gateOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gateOutNoOfInvoice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gateOutInvoiceNos?: Prisma.LogisticsIOUpdategateOutInvoiceNosInput | string[]
+  gateOutBillNos?: Prisma.LogisticsIOUpdategateOutBillNosInput | string[]
   diffGrossWtGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffGrossWtInvoiceDT?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffInvoiceDTGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -805,6 +855,9 @@ export type LogisticsIOUncheckedUpdateManyInput = {
   diffTareWtGrossWt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gateOutDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gateOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gateOutNoOfInvoice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gateOutInvoiceNos?: Prisma.LogisticsIOUpdategateOutInvoiceNosInput | string[]
+  gateOutBillNos?: Prisma.LogisticsIOUpdategateOutBillNosInput | string[]
   diffGrossWtGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffGrossWtInvoiceDT?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   diffInvoiceDTGateOut?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -840,6 +893,9 @@ export type LogisticsIOCountOrderByAggregateInput = {
   diffTareWtGrossWt?: Prisma.SortOrder
   gateOutDate?: Prisma.SortOrder
   gateOutTime?: Prisma.SortOrder
+  gateOutNoOfInvoice?: Prisma.SortOrder
+  gateOutInvoiceNos?: Prisma.SortOrder
+  gateOutBillNos?: Prisma.SortOrder
   diffGrossWtGateOut?: Prisma.SortOrder
   diffGrossWtInvoiceDT?: Prisma.SortOrder
   diffInvoiceDTGateOut?: Prisma.SortOrder
@@ -858,6 +914,7 @@ export type LogisticsIOCountOrderByAggregateInput = {
 }
 
 export type LogisticsIOAvgOrderByAggregateInput = {
+  gateOutNoOfInvoice?: Prisma.SortOrder
   noOfInvoice?: Prisma.SortOrder
 }
 
@@ -879,6 +936,7 @@ export type LogisticsIOMaxOrderByAggregateInput = {
   diffTareWtGrossWt?: Prisma.SortOrder
   gateOutDate?: Prisma.SortOrder
   gateOutTime?: Prisma.SortOrder
+  gateOutNoOfInvoice?: Prisma.SortOrder
   diffGrossWtGateOut?: Prisma.SortOrder
   diffGrossWtInvoiceDT?: Prisma.SortOrder
   diffInvoiceDTGateOut?: Prisma.SortOrder
@@ -912,6 +970,7 @@ export type LogisticsIOMinOrderByAggregateInput = {
   diffTareWtGrossWt?: Prisma.SortOrder
   gateOutDate?: Prisma.SortOrder
   gateOutTime?: Prisma.SortOrder
+  gateOutNoOfInvoice?: Prisma.SortOrder
   diffGrossWtGateOut?: Prisma.SortOrder
   diffGrossWtInvoiceDT?: Prisma.SortOrder
   diffInvoiceDTGateOut?: Prisma.SortOrder
@@ -928,7 +987,16 @@ export type LogisticsIOMinOrderByAggregateInput = {
 }
 
 export type LogisticsIOSumOrderByAggregateInput = {
+  gateOutNoOfInvoice?: Prisma.SortOrder
   noOfInvoice?: Prisma.SortOrder
+}
+
+export type LogisticsIOCreategateOutInvoiceNosInput = {
+  set: string[]
+}
+
+export type LogisticsIOCreategateOutBillNosInput = {
+  set: string[]
 }
 
 export type LogisticsIOCreateinvoiceNosInput = {
@@ -937,6 +1005,16 @@ export type LogisticsIOCreateinvoiceNosInput = {
 
 export type LogisticsIOCreatebillNosInput = {
   set: string[]
+}
+
+export type LogisticsIOUpdategateOutInvoiceNosInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type LogisticsIOUpdategateOutBillNosInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type LogisticsIOUpdateinvoiceNosInput = {
@@ -969,6 +1047,9 @@ export type LogisticsIOSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   diffTareWtGrossWt?: boolean
   gateOutDate?: boolean
   gateOutTime?: boolean
+  gateOutNoOfInvoice?: boolean
+  gateOutInvoiceNos?: boolean
+  gateOutBillNos?: boolean
   diffGrossWtGateOut?: boolean
   diffGrossWtInvoiceDT?: boolean
   diffInvoiceDTGateOut?: boolean
@@ -1004,6 +1085,9 @@ export type LogisticsIOSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   diffTareWtGrossWt?: boolean
   gateOutDate?: boolean
   gateOutTime?: boolean
+  gateOutNoOfInvoice?: boolean
+  gateOutInvoiceNos?: boolean
+  gateOutBillNos?: boolean
   diffGrossWtGateOut?: boolean
   diffGrossWtInvoiceDT?: boolean
   diffInvoiceDTGateOut?: boolean
@@ -1039,6 +1123,9 @@ export type LogisticsIOSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   diffTareWtGrossWt?: boolean
   gateOutDate?: boolean
   gateOutTime?: boolean
+  gateOutNoOfInvoice?: boolean
+  gateOutInvoiceNos?: boolean
+  gateOutBillNos?: boolean
   diffGrossWtGateOut?: boolean
   diffGrossWtInvoiceDT?: boolean
   diffInvoiceDTGateOut?: boolean
@@ -1074,6 +1161,9 @@ export type LogisticsIOSelectScalar = {
   diffTareWtGrossWt?: boolean
   gateOutDate?: boolean
   gateOutTime?: boolean
+  gateOutNoOfInvoice?: boolean
+  gateOutInvoiceNos?: boolean
+  gateOutBillNos?: boolean
   diffGrossWtGateOut?: boolean
   diffGrossWtInvoiceDT?: boolean
   diffInvoiceDTGateOut?: boolean
@@ -1091,7 +1181,7 @@ export type LogisticsIOSelectScalar = {
   updatedAt?: boolean
 }
 
-export type LogisticsIOOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "zone" | "district" | "destination" | "doOrderDate" | "doOrderTime" | "gateInDate" | "gateInTime" | "processingTime" | "wbInDate" | "wbInTime" | "diffGateInTareWt" | "wbOutDate" | "wbOutTime" | "diffTareWtGrossWt" | "gateOutDate" | "gateOutTime" | "diffGrossWtGateOut" | "diffGrossWtInvoiceDT" | "diffInvoiceDTGateOut" | "diffGateInGateOut" | "purpose" | "typeOfMaterials" | "vehicleNumber" | "storeDate" | "storeTime" | "noOfInvoice" | "partyName" | "invoiceNos" | "billNos" | "createdAt" | "updatedAt", ExtArgs["result"]["logisticsIO"]>
+export type LogisticsIOOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "zone" | "district" | "destination" | "doOrderDate" | "doOrderTime" | "gateInDate" | "gateInTime" | "processingTime" | "wbInDate" | "wbInTime" | "diffGateInTareWt" | "wbOutDate" | "wbOutTime" | "diffTareWtGrossWt" | "gateOutDate" | "gateOutTime" | "gateOutNoOfInvoice" | "gateOutInvoiceNos" | "gateOutBillNos" | "diffGrossWtGateOut" | "diffGrossWtInvoiceDT" | "diffInvoiceDTGateOut" | "diffGateInGateOut" | "purpose" | "typeOfMaterials" | "vehicleNumber" | "storeDate" | "storeTime" | "noOfInvoice" | "partyName" | "invoiceNos" | "billNos" | "createdAt" | "updatedAt", ExtArgs["result"]["logisticsIO"]>
 
 export type $LogisticsIOPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "LogisticsIO"
@@ -1114,6 +1204,9 @@ export type $LogisticsIOPayload<ExtArgs extends runtime.Types.Extensions.Interna
     diffTareWtGrossWt: string | null
     gateOutDate: Date | null
     gateOutTime: string | null
+    gateOutNoOfInvoice: number | null
+    gateOutInvoiceNos: string[]
+    gateOutBillNos: string[]
     diffGrossWtGateOut: string | null
     diffGrossWtInvoiceDT: string | null
     diffInvoiceDTGateOut: string | null
@@ -1569,6 +1662,9 @@ export interface LogisticsIOFieldRefs {
   readonly diffTareWtGrossWt: Prisma.FieldRef<"LogisticsIO", 'String'>
   readonly gateOutDate: Prisma.FieldRef<"LogisticsIO", 'DateTime'>
   readonly gateOutTime: Prisma.FieldRef<"LogisticsIO", 'String'>
+  readonly gateOutNoOfInvoice: Prisma.FieldRef<"LogisticsIO", 'Int'>
+  readonly gateOutInvoiceNos: Prisma.FieldRef<"LogisticsIO", 'String[]'>
+  readonly gateOutBillNos: Prisma.FieldRef<"LogisticsIO", 'String[]'>
   readonly diffGrossWtGateOut: Prisma.FieldRef<"LogisticsIO", 'String'>
   readonly diffGrossWtInvoiceDT: Prisma.FieldRef<"LogisticsIO", 'String'>
   readonly diffInvoiceDTGateOut: Prisma.FieldRef<"LogisticsIO", 'String'>

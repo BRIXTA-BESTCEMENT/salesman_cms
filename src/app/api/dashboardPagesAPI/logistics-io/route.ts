@@ -112,6 +112,9 @@ export async function GET(request: NextRequest) {
       diffTareWtGrossWt: record.diffTareWtGrossWt ?? null,
       gateOutDate: record.gateOutDate?.toISOString().split('T')[0] ?? null,
       gateOutTime: record.gateOutTime ?? null,
+      gateOutNoOfInvoice: record.gateOutNoOfInvoice ?? null,
+      gateOutInvoiceNos: Array.isArray(record.gateOutInvoiceNos) ? record.gateOutInvoiceNos : [],
+      gateOutBillNos: Array.isArray(record.gateOutBillNos) ? record.gateOutBillNos : [],
 
       diffGrossWtGateOut: record.diffGrossWtGateOut ?? null,
       diffGrossWtInvoiceDT: record.diffGrossWtInvoiceDT ?? null,

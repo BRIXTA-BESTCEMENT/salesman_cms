@@ -1501,6 +1501,9 @@ model LogisticsIO {
   diffTareWtGrossWt String? @db.VarChar(100)
   gateOutDate DateTime? @db.Date
   gateOutTime String?   @db.VarChar(50)
+  gateOutNoOfInvoice  Int?     @map("gate_out_no_of_invoice")
+  gateOutInvoiceNos   String[] @map("gate_out_invoice_nos") // string array
+  gateOutBillNos      String[] @map("gate_out_bill_nos") // string array
   diffGrossWtGateOut String? @db.VarChar(100)
   diffGrossWtInvoiceDT String? @db.VarChar(100)
   diffInvoiceDTGateOut String? @db.VarChar(100)
