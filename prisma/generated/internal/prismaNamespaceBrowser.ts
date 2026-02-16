@@ -619,6 +619,7 @@ export const OutstandingReportScalarFieldEnum = {
   greaterThan90Days: 'greaterThan90Days',
   isOverdue: 'isOverdue',
   isAccountJsbJud: 'isAccountJsbJud',
+  tempDealerName: 'tempDealerName',
   verifiedDealerId: 'verifiedDealerId',
   collectionReportId: 'collectionReportId',
   dvrId: 'dvrId',

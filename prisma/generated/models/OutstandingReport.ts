@@ -72,6 +72,7 @@ export type OutstandingReportMinAggregateOutputType = {
   greaterThan90Days: runtime.Decimal | null
   isOverdue: boolean | null
   isAccountJsbJud: boolean | null
+  tempDealerName: string | null
   verifiedDealerId: number | null
   collectionReportId: string | null
   dvrId: string | null
@@ -95,6 +96,7 @@ export type OutstandingReportMaxAggregateOutputType = {
   greaterThan90Days: runtime.Decimal | null
   isOverdue: boolean | null
   isAccountJsbJud: boolean | null
+  tempDealerName: string | null
   verifiedDealerId: number | null
   collectionReportId: string | null
   dvrId: string | null
@@ -118,6 +120,7 @@ export type OutstandingReportCountAggregateOutputType = {
   greaterThan90Days: number
   isOverdue: number
   isAccountJsbJud: number
+  tempDealerName: number
   verifiedDealerId: number
   collectionReportId: number
   dvrId: number
@@ -173,6 +176,7 @@ export type OutstandingReportMinAggregateInputType = {
   greaterThan90Days?: true
   isOverdue?: true
   isAccountJsbJud?: true
+  tempDealerName?: true
   verifiedDealerId?: true
   collectionReportId?: true
   dvrId?: true
@@ -196,6 +200,7 @@ export type OutstandingReportMaxAggregateInputType = {
   greaterThan90Days?: true
   isOverdue?: true
   isAccountJsbJud?: true
+  tempDealerName?: true
   verifiedDealerId?: true
   collectionReportId?: true
   dvrId?: true
@@ -219,6 +224,7 @@ export type OutstandingReportCountAggregateInputType = {
   greaterThan90Days?: true
   isOverdue?: true
   isAccountJsbJud?: true
+  tempDealerName?: true
   verifiedDealerId?: true
   collectionReportId?: true
   dvrId?: true
@@ -329,6 +335,7 @@ export type OutstandingReportGroupByOutputType = {
   greaterThan90Days: runtime.Decimal | null
   isOverdue: boolean | null
   isAccountJsbJud: boolean | null
+  tempDealerName: string | null
   verifiedDealerId: number | null
   collectionReportId: string | null
   dvrId: string | null
@@ -375,6 +382,7 @@ export type OutstandingReportWhereInput = {
   greaterThan90Days?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.BoolNullableFilter<"OutstandingReport"> | boolean | null
   isAccountJsbJud?: Prisma.BoolNullableFilter<"OutstandingReport"> | boolean | null
+  tempDealerName?: Prisma.StringNullableFilter<"OutstandingReport"> | string | null
   verifiedDealerId?: Prisma.IntNullableFilter<"OutstandingReport"> | number | null
   collectionReportId?: Prisma.UuidNullableFilter<"OutstandingReport"> | string | null
   dvrId?: Prisma.StringNullableFilter<"OutstandingReport"> | string | null
@@ -401,6 +409,7 @@ export type OutstandingReportOrderByWithRelationInput = {
   greaterThan90Days?: Prisma.SortOrderInput | Prisma.SortOrder
   isOverdue?: Prisma.SortOrderInput | Prisma.SortOrder
   isAccountJsbJud?: Prisma.SortOrderInput | Prisma.SortOrder
+  tempDealerName?: Prisma.SortOrderInput | Prisma.SortOrder
   verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   collectionReportId?: Prisma.SortOrderInput | Prisma.SortOrder
   dvrId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -431,6 +440,7 @@ export type OutstandingReportWhereUniqueInput = Prisma.AtLeast<{
   greaterThan90Days?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.BoolNullableFilter<"OutstandingReport"> | boolean | null
   isAccountJsbJud?: Prisma.BoolNullableFilter<"OutstandingReport"> | boolean | null
+  tempDealerName?: Prisma.StringNullableFilter<"OutstandingReport"> | string | null
   verifiedDealerId?: Prisma.IntNullableFilter<"OutstandingReport"> | number | null
   collectionReportId?: Prisma.UuidNullableFilter<"OutstandingReport"> | string | null
   dvrId?: Prisma.StringNullableFilter<"OutstandingReport"> | string | null
@@ -457,6 +467,7 @@ export type OutstandingReportOrderByWithAggregationInput = {
   greaterThan90Days?: Prisma.SortOrderInput | Prisma.SortOrder
   isOverdue?: Prisma.SortOrderInput | Prisma.SortOrder
   isAccountJsbJud?: Prisma.SortOrderInput | Prisma.SortOrder
+  tempDealerName?: Prisma.SortOrderInput | Prisma.SortOrder
   verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   collectionReportId?: Prisma.SortOrderInput | Prisma.SortOrder
   dvrId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -488,6 +499,7 @@ export type OutstandingReportScalarWhereWithAggregatesInput = {
   greaterThan90Days?: Prisma.DecimalNullableWithAggregatesFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.BoolNullableWithAggregatesFilter<"OutstandingReport"> | boolean | null
   isAccountJsbJud?: Prisma.BoolNullableWithAggregatesFilter<"OutstandingReport"> | boolean | null
+  tempDealerName?: Prisma.StringNullableWithAggregatesFilter<"OutstandingReport"> | string | null
   verifiedDealerId?: Prisma.IntNullableWithAggregatesFilter<"OutstandingReport"> | number | null
   collectionReportId?: Prisma.UuidNullableWithAggregatesFilter<"OutstandingReport"> | string | null
   dvrId?: Prisma.StringNullableWithAggregatesFilter<"OutstandingReport"> | string | null
@@ -511,6 +523,7 @@ export type OutstandingReportCreateInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutOutstandingReportsInput
@@ -534,6 +547,7 @@ export type OutstandingReportUncheckedCreateInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   verifiedDealerId?: number | null
   collectionReportId?: string | null
   dvrId?: string | null
@@ -557,6 +571,7 @@ export type OutstandingReportUpdateInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutOutstandingReportsNestedInput
@@ -580,6 +595,7 @@ export type OutstandingReportUncheckedUpdateInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   collectionReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dvrId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -603,6 +619,7 @@ export type OutstandingReportCreateManyInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   verifiedDealerId?: number | null
   collectionReportId?: string | null
   dvrId?: string | null
@@ -626,6 +643,7 @@ export type OutstandingReportUpdateManyMutationInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -646,6 +664,7 @@ export type OutstandingReportUncheckedUpdateManyInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   collectionReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dvrId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -685,6 +704,7 @@ export type OutstandingReportCountOrderByAggregateInput = {
   greaterThan90Days?: Prisma.SortOrder
   isOverdue?: Prisma.SortOrder
   isAccountJsbJud?: Prisma.SortOrder
+  tempDealerName?: Prisma.SortOrder
   verifiedDealerId?: Prisma.SortOrder
   collectionReportId?: Prisma.SortOrder
   dvrId?: Prisma.SortOrder
@@ -723,6 +743,7 @@ export type OutstandingReportMaxOrderByAggregateInput = {
   greaterThan90Days?: Prisma.SortOrder
   isOverdue?: Prisma.SortOrder
   isAccountJsbJud?: Prisma.SortOrder
+  tempDealerName?: Prisma.SortOrder
   verifiedDealerId?: Prisma.SortOrder
   collectionReportId?: Prisma.SortOrder
   dvrId?: Prisma.SortOrder
@@ -746,6 +767,7 @@ export type OutstandingReportMinOrderByAggregateInput = {
   greaterThan90Days?: Prisma.SortOrder
   isOverdue?: Prisma.SortOrder
   isAccountJsbJud?: Prisma.SortOrder
+  tempDealerName?: Prisma.SortOrder
   verifiedDealerId?: Prisma.SortOrder
   collectionReportId?: Prisma.SortOrder
   dvrId?: Prisma.SortOrder
@@ -910,6 +932,7 @@ export type OutstandingReportCreateWithoutVerifiedDealerInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   collectionReport?: Prisma.CollectionReportCreateNestedOneWithoutOutstandingReportsInput
@@ -932,6 +955,7 @@ export type OutstandingReportUncheckedCreateWithoutVerifiedDealerInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   collectionReportId?: string | null
   dvrId?: string | null
   createdAt?: Date | string
@@ -983,6 +1007,7 @@ export type OutstandingReportScalarWhereInput = {
   greaterThan90Days?: Prisma.DecimalNullableFilter<"OutstandingReport"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.BoolNullableFilter<"OutstandingReport"> | boolean | null
   isAccountJsbJud?: Prisma.BoolNullableFilter<"OutstandingReport"> | boolean | null
+  tempDealerName?: Prisma.StringNullableFilter<"OutstandingReport"> | string | null
   verifiedDealerId?: Prisma.IntNullableFilter<"OutstandingReport"> | number | null
   collectionReportId?: Prisma.UuidNullableFilter<"OutstandingReport"> | string | null
   dvrId?: Prisma.StringNullableFilter<"OutstandingReport"> | string | null
@@ -1006,6 +1031,7 @@ export type OutstandingReportCreateWithoutDailyVisitReportInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutOutstandingReportsInput
@@ -1028,6 +1054,7 @@ export type OutstandingReportUncheckedCreateWithoutDailyVisitReportInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   verifiedDealerId?: number | null
   collectionReportId?: string | null
   createdAt?: Date | string
@@ -1076,6 +1103,7 @@ export type OutstandingReportCreateWithoutCollectionReportInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   verifiedDealer?: Prisma.VerifiedDealerCreateNestedOneWithoutOutstandingReportsInput
@@ -1098,6 +1126,7 @@ export type OutstandingReportUncheckedCreateWithoutCollectionReportInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   verifiedDealerId?: number | null
   dvrId?: string | null
   createdAt?: Date | string
@@ -1146,6 +1175,7 @@ export type OutstandingReportCreateManyVerifiedDealerInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   collectionReportId?: string | null
   dvrId?: string | null
   createdAt?: Date | string
@@ -1168,6 +1198,7 @@ export type OutstandingReportUpdateWithoutVerifiedDealerInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   collectionReport?: Prisma.CollectionReportUpdateOneWithoutOutstandingReportsNestedInput
@@ -1190,6 +1221,7 @@ export type OutstandingReportUncheckedUpdateWithoutVerifiedDealerInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   collectionReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dvrId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1212,6 +1244,7 @@ export type OutstandingReportUncheckedUpdateManyWithoutVerifiedDealerInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   collectionReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dvrId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1234,6 +1267,7 @@ export type OutstandingReportCreateManyDailyVisitReportInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   verifiedDealerId?: number | null
   collectionReportId?: string | null
   createdAt?: Date | string
@@ -1256,6 +1290,7 @@ export type OutstandingReportUpdateWithoutDailyVisitReportInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutOutstandingReportsNestedInput
@@ -1278,6 +1313,7 @@ export type OutstandingReportUncheckedUpdateWithoutDailyVisitReportInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   collectionReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1300,6 +1336,7 @@ export type OutstandingReportUncheckedUpdateManyWithoutDailyVisitReportInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   collectionReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1322,6 +1359,7 @@ export type OutstandingReportCreateManyCollectionReportInput = {
   greaterThan90Days?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: boolean | null
   isAccountJsbJud?: boolean | null
+  tempDealerName?: string | null
   verifiedDealerId?: number | null
   dvrId?: string | null
   createdAt?: Date | string
@@ -1344,6 +1382,7 @@ export type OutstandingReportUpdateWithoutCollectionReportInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   verifiedDealer?: Prisma.VerifiedDealerUpdateOneWithoutOutstandingReportsNestedInput
@@ -1366,6 +1405,7 @@ export type OutstandingReportUncheckedUpdateWithoutCollectionReportInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dvrId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1388,6 +1428,7 @@ export type OutstandingReportUncheckedUpdateManyWithoutCollectionReportInput = {
   greaterThan90Days?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isOverdue?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   isAccountJsbJud?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  tempDealerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dvrId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1412,6 +1453,7 @@ export type OutstandingReportSelect<ExtArgs extends runtime.Types.Extensions.Int
   greaterThan90Days?: boolean
   isOverdue?: boolean
   isAccountJsbJud?: boolean
+  tempDealerName?: boolean
   verifiedDealerId?: boolean
   collectionReportId?: boolean
   dvrId?: boolean
@@ -1438,6 +1480,7 @@ export type OutstandingReportSelectCreateManyAndReturn<ExtArgs extends runtime.T
   greaterThan90Days?: boolean
   isOverdue?: boolean
   isAccountJsbJud?: boolean
+  tempDealerName?: boolean
   verifiedDealerId?: boolean
   collectionReportId?: boolean
   dvrId?: boolean
@@ -1464,6 +1507,7 @@ export type OutstandingReportSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   greaterThan90Days?: boolean
   isOverdue?: boolean
   isAccountJsbJud?: boolean
+  tempDealerName?: boolean
   verifiedDealerId?: boolean
   collectionReportId?: boolean
   dvrId?: boolean
@@ -1490,6 +1534,7 @@ export type OutstandingReportSelectScalar = {
   greaterThan90Days?: boolean
   isOverdue?: boolean
   isAccountJsbJud?: boolean
+  tempDealerName?: boolean
   verifiedDealerId?: boolean
   collectionReportId?: boolean
   dvrId?: boolean
@@ -1497,7 +1542,7 @@ export type OutstandingReportSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OutstandingReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reportDate" | "securityDepositAmt" | "pendingAmt" | "lessThan10Days" | "days10To15" | "days15To21" | "days21To30" | "days30To45" | "days45To60" | "days60To75" | "days75To90" | "greaterThan90Days" | "isOverdue" | "isAccountJsbJud" | "verifiedDealerId" | "collectionReportId" | "dvrId" | "createdAt" | "updatedAt", ExtArgs["result"]["outstandingReport"]>
+export type OutstandingReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reportDate" | "securityDepositAmt" | "pendingAmt" | "lessThan10Days" | "days10To15" | "days15To21" | "days21To30" | "days30To45" | "days45To60" | "days60To75" | "days75To90" | "greaterThan90Days" | "isOverdue" | "isAccountJsbJud" | "tempDealerName" | "verifiedDealerId" | "collectionReportId" | "dvrId" | "createdAt" | "updatedAt", ExtArgs["result"]["outstandingReport"]>
 export type OutstandingReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   verifiedDealer?: boolean | Prisma.OutstandingReport$verifiedDealerArgs<ExtArgs>
   collectionReport?: boolean | Prisma.OutstandingReport$collectionReportArgs<ExtArgs>
@@ -1537,6 +1582,7 @@ export type $OutstandingReportPayload<ExtArgs extends runtime.Types.Extensions.I
     greaterThan90Days: runtime.Decimal | null
     isOverdue: boolean | null
     isAccountJsbJud: boolean | null
+    tempDealerName: string | null
     verifiedDealerId: number | null
     collectionReportId: string | null
     dvrId: string | null
@@ -1983,6 +2029,7 @@ export interface OutstandingReportFieldRefs {
   readonly greaterThan90Days: Prisma.FieldRef<"OutstandingReport", 'Decimal'>
   readonly isOverdue: Prisma.FieldRef<"OutstandingReport", 'Boolean'>
   readonly isAccountJsbJud: Prisma.FieldRef<"OutstandingReport", 'Boolean'>
+  readonly tempDealerName: Prisma.FieldRef<"OutstandingReport", 'String'>
   readonly verifiedDealerId: Prisma.FieldRef<"OutstandingReport", 'Int'>
   readonly collectionReportId: Prisma.FieldRef<"OutstandingReport", 'String'>
   readonly dvrId: Prisma.FieldRef<"OutstandingReport", 'String'>

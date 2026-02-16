@@ -754,6 +754,7 @@ model OutstandingReport {
   greaterThan90Days    Decimal?  @map("greater_than_90_days") @db.Decimal(14, 2)
   isOverdue            Boolean?  @default(false) @map("is_overdue")
   isAccountJsbJud      Boolean?  @default(false) @map("is_account_jsb_jud")
+  tempDealerName       String?   @map("temp_dealer_name") @db.Text
 
   //Foreign Key Relations
   verifiedDealerId     Int?      @map("verified_dealer_id")
