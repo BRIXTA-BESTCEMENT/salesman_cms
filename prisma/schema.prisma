@@ -835,7 +835,7 @@ model ProjectionReport {
   @@index([institution], map: "idx_projection_institution")
   @@index([verifiedDealerId], map: "idx_projection_verified_dealer")
   @@index([userId], map: "idx_projection_user")
-  @@unique([reportDate, orderDealerName, collectionDealerName, institution], map: "uniq_projection_snapshot")
+  @@unique([reportDate, orderDealerName, collectionDealerName, institution, zone], map: "uniq_projection_snapshot")
   @@map("projection_reports")
 }
 

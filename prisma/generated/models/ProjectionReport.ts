@@ -329,7 +329,7 @@ export type ProjectionReportOrderByWithRelationInput = {
 
 export type ProjectionReportWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  reportDate_orderDealerName_collectionDealerName_institution?: Prisma.ProjectionReportReportDateOrderDealerNameCollectionDealerNameInstitutionCompoundUniqueInput
+  reportDate_orderDealerName_collectionDealerName_institution_zone?: Prisma.ProjectionReportReportDateOrderDealerNameCollectionDealerNameInstitutionZoneCompoundUniqueInput
   AND?: Prisma.ProjectionReportWhereInput | Prisma.ProjectionReportWhereInput[]
   OR?: Prisma.ProjectionReportWhereInput[]
   NOT?: Prisma.ProjectionReportWhereInput | Prisma.ProjectionReportWhereInput[]
@@ -348,7 +348,7 @@ export type ProjectionReportWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ProjectionReport"> | Date | string
   verifiedDealer?: Prisma.XOR<Prisma.VerifiedDealerNullableScalarRelationFilter, Prisma.VerifiedDealerWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-}, "id" | "reportDate_orderDealerName_collectionDealerName_institution">
+}, "id" | "reportDate_orderDealerName_collectionDealerName_institution_zone">
 
 export type ProjectionReportOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -519,11 +519,12 @@ export type ProjectionReportOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type ProjectionReportReportDateOrderDealerNameCollectionDealerNameInstitutionCompoundUniqueInput = {
+export type ProjectionReportReportDateOrderDealerNameCollectionDealerNameInstitutionZoneCompoundUniqueInput = {
   reportDate: Date | string
   orderDealerName: string
   collectionDealerName: string
   institution: string
+  zone: string
 }
 
 export type ProjectionReportCountOrderByAggregateInput = {
