@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
     const endDateParam = searchParams.get('endDate');
     const zoneParam = searchParams.get('zone');
     const districtParam = searchParams.get('district');
+    const sourceParam = searchParams.get('sourceName');
 
     let whereClause: any = {};
 
@@ -70,6 +71,9 @@ export async function GET(request: NextRequest) {
     }
     if (districtParam) {
       whereClause.district = { equals: districtParam, mode: 'insensitive' };
+    }
+    if (sourceParam) {
+      whereClause.partyName = { equals: sourceParam, mode: 'insensitive' };
     }
 
     // 4. Fetch Data

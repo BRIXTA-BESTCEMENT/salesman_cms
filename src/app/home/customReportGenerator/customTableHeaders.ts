@@ -233,18 +233,19 @@ export const tablesMetadata: TableMeta[] = [
             'memo', 'sourceDescription', 'createdAt'
         ],
     },
-    // {
-    //     id: 'logisticsIO',
-    //     title: 'Logistics Operations (Gate/WB/Store)',
-    //     icon: Truck,
-    //     columns: [
-    //         'id', 'zone', 'district', 'destination', 'purpose', 'typeOfMaterials', 'vehicleNumber', 'noOfInvoice', 
-    //          'partyName', 'invoiceNos', 'billNos', 'storeDate', 'storeTime', 
-    //          'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime', 'processingTime', 
-    //          'wbInDate', 'wbInTime', 'diffGateInTareWt', 'wbOutDate', 'wbOutTime', 'diffTareWtGrossWt', 'gateOutDate', 'gateOutTime', 
-    //          'diffGrossWtGateOut', 'diffGrossWtInvoiceDT', 'diffInvoiceDTGateOut', 'diffGateInGateOut', 'createdAt', 'updatedAt'
-    //     ],
-    // },
+    {
+        id: 'logisticsIO',
+        title: 'Logistics Operations (Gate/WB/Store)',
+        icon: Truck,
+        columns: [
+            'id', 'sourceName', 'zone', 'district', 'destination', 'purpose', 'typeOfMaterials', 'vehicleNumber', 'noOfInvoice', 
+             'invoiceNos', 'billNos', 'storeDate', 'storeTime', 
+             'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime', 
+             'wbInDate', 'wbInTime', 'wbOutDate', 'wbOutTime', 
+             'gateOutDate', 'gateOutTime', 'gateOutNoOfInvoice', 'gateOutInvoiceNos', 'gateOutBillNos',
+             'createdAt', 'updatedAt'
+        ],
+    },
     // {
     //   id: 'schemesOffers',
     //   title: 'Schemes & Offers',

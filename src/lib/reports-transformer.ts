@@ -2135,7 +2135,7 @@ export type FlattenedLogisticsIO = {
   typeOfMaterials: string | null;
   vehicleNumber: string | null;
   noOfInvoice: number | null;
-  partyName: string | null;
+  sourceName: string | null; // sourceName is the partyName in actual schema
   invoiceNos: string[];
   billNos: string[];
   storeDate: string | null;
@@ -2153,6 +2153,9 @@ export type FlattenedLogisticsIO = {
   diffTareWtGrossWt: string | null;
   gateOutDate: string | null;
   gateOutTime: string | null;
+  gateOutNoOfInvoice: number | null;
+  gateOutInvoiceNos: string[];
+  gateOutBillNos: string[];
   diffGrossWtGateOut: string | null;
   diffGrossWtInvoiceDT: string | null;
   diffInvoiceDTGateOut: string | null;
@@ -2190,7 +2193,7 @@ export async function getFlattenedLogisticsIO(
     typeOfMaterials: r.typeOfMaterials ?? null,
     vehicleNumber: r.vehicleNumber ?? null,
     noOfInvoice: r.noOfInvoice ?? null,
-    partyName: r.partyName ?? null,
+    sourceName: r.partyName ?? null, // sourceName is the partyName in actual schema
     invoiceNos: Array.isArray(r.invoiceNos) ? (r.invoiceNos as string[]) : [],
     billNos: Array.isArray(r.billNos) ? (r.billNos as string[]) : [],
     storeDate: formatDateIST(r.storeDate),
@@ -2209,6 +2212,9 @@ export async function getFlattenedLogisticsIO(
     diffTareWtGrossWt: r.diffTareWtGrossWt ?? null,
     gateOutDate: formatDateIST(r.gateOutDate),
     gateOutTime: r.gateOutTime ?? null,
+    gateOutNoOfInvoice: r.gateOutNoOfInvoice ?? null,
+    gateOutInvoiceNos: Array.isArray(r.gateOutInvoiceNos) ? (r.gateOutInvoiceNos as string[]) : [],
+    gateOutBillNos: Array.isArray(r.gateOutBillNos) ? (r.gateOutBillNos as string[]) : [],
     diffGrossWtGateOut: r.diffGrossWtGateOut ?? null,
     diffGrossWtInvoiceDT: r.diffGrossWtInvoiceDT ?? null,
     diffInvoiceDTGateOut: r.diffInvoiceDTGateOut ?? null,

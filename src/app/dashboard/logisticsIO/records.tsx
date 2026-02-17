@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
 import { 
   Search, MapPin, Clock, Eye, Truck, Scale, 
-  Store, Package, FileText,
+  Store, Package, FileText, Factory
 } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -36,22 +36,17 @@ const API_URL = `/api/dashboardPagesAPI/logistics-io`;
 // --- TIME FORMATTER HELPER ---
 const formatTime12Hour = (timeStr?: string | null) => {
   if (!timeStr) return '';
-  // If it already contains AM/PM, return as is
   if (timeStr.toUpperCase().includes('AM') || timeStr.toUpperCase().includes('PM')) {
     return timeStr;
   }
-  
   try {
     const parts = timeStr.split(':');
-    if (parts.length < 2) return timeStr; // Fallback if invalid format
-    
+    if (parts.length < 2) return timeStr; 
     let hours = parseInt(parts[0], 10);
     const minutes = parts[1];
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    
     hours = hours % 12;
-    hours = hours ? hours : 12; // '0' becomes '12'
-    
+    hours = hours ? hours : 12; 
     const formattedHours = hours < 10 ? `0${hours}` : hours.toString();
     return `${formattedHours}:${minutes} ${ampm}`;
   } catch (e) {
@@ -83,12 +78,14 @@ export default function LogisticsIOList() {
 
   // --- Filters ---
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterSource, setFilterSource] = useState<string>('all');
   const [filterZone, setFilterZone] = useState<string>('all');
   const [filterDistrict, setFilterDistrict] = useState<string>('all');
   
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
+  const [availableSources, setAvailableSources] = useState<string[]>([]);
   const [availableZones, setAvailableZones] = useState<string[]>([]);
   const [availableDistricts, setAvailableDistricts] = useState<string[]>([]);
 
@@ -102,6 +99,7 @@ export default function LogisticsIOList() {
       if (endDate) params.append('endDate', endDate);
       if (filterZone && filterZone !== 'all') params.append('zone', filterZone);
       if (filterDistrict && filterDistrict !== 'all') params.append('district', filterDistrict);
+      if (filterSource && filterSource !== 'all') params.append('sourceName', filterSource);
 
       const response = await fetch(`${API_URL}?${params.toString()}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -110,14 +108,17 @@ export default function LogisticsIOList() {
       const validatedData = z.array(logisticsIOSchema).parse(data);
       setRecords(validatedData);
 
+      const sources = new Set<string>();
       const zones = new Set<string>();
       const districts = new Set<string>();
       
       validatedData.forEach(r => {
+        if (r.partyName) sources.add(r.partyName);
         if (r.zone) zones.add(r.zone);
         if (r.district) districts.add(r.district);
       });
 
+      setAvailableSources(Array.from(sources).sort());
       setAvailableZones(Array.from(zones).sort());
       setAvailableDistricts(Array.from(districts).sort());
 
@@ -130,7 +131,7 @@ export default function LogisticsIOList() {
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate, filterZone, filterDistrict]);
+  }, [startDate, endDate, filterZone, filterDistrict, filterSource]);
 
   useEffect(() => {
     fetchRecords();
@@ -143,6 +144,7 @@ export default function LogisticsIOList() {
       return (
         (record.id || '').toLowerCase().includes(q) ||
         (record.vehicleNumber || '').toLowerCase().includes(q) ||
+        (record.partyName || '').toLowerCase().includes(q) ||
         (record.zone || '').toLowerCase().includes(q) ||
         (record.district || '').toLowerCase().includes(q)
       );
@@ -166,6 +168,16 @@ export default function LogisticsIOList() {
 
   // --- Columns Definition ---
   const columns: ColumnDef<LogisticsRecord>[] = [
+    {
+      header: 'Source',
+      accessorKey: 'partyName',
+      cell: ({ row }) => (
+        <Badge variant="outline" className="bg-indigo-950/30 text-indigo-400 border-indigo-900/50">
+          <Factory className="w-3 h-3 mr-1" />
+          {row.original.partyName || 'Unknown'}
+        </Badge>
+      )
+    },
     {
       header: 'Vehicle & Purpose',
       accessorKey: 'vehicleNumber',
@@ -267,7 +279,7 @@ export default function LogisticsIOList() {
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Vehicle, Zone, District..." 
+              placeholder="Vehicle, Zone, Factory..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-8 h-9"
@@ -282,6 +294,18 @@ export default function LogisticsIOList() {
         <div className="flex flex-col space-y-1">
           <label className="text-xs font-semibold text-muted-foreground">To Date</label>
           <Input type="date" className="h-9 w-[140px]" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </div>
+
+        {/* Source / Factory Filter */}
+        <div className="flex flex-col space-y-1 w-[150px]">
+          <label className="text-xs font-semibold text-muted-foreground">Source</label>
+          <Select value={filterSource} onValueChange={setFilterSource}>
+            <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sources</SelectItem>
+              {availableSources.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex flex-col space-y-1 w-[150px]">
@@ -344,7 +368,9 @@ export default function LogisticsIOList() {
             <div className="p-6 space-y-6">
               
               {/* Context */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Elevated Source Name to the top Context section! */}
+                <InfoField label="Source Factory" value={selectedRecord.partyName} icon={Factory} />
                 <InfoField label="Zone" value={selectedRecord.zone} icon={MapPin} />
                 <InfoField label="District" value={selectedRecord.district} />
                 <InfoField label="Destination" value={selectedRecord.destination} />
@@ -365,7 +391,6 @@ export default function LogisticsIOList() {
                   <InfoField label="Gate Out Date" value={selectedRecord.gateOutDate} />
                   <InfoField label="Gate Out Time" value={formatTime12Hour(selectedRecord.gateOutTime)} />
                   
-                  {/* --- GATE OUT INVOICES & BILLS SECTION --- */}
                   <div className="col-span-full mt-2">
                     <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1 mb-2">
                       <FileText className="w-3 h-3" /> Gate Out Invoices & Bills ({selectedRecord.gateOutNoOfInvoice || 0})
@@ -419,7 +444,7 @@ export default function LogisticsIOList() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4 pt-4">
-                  <InfoField label="Party Name" value={selectedRecord.partyName} fullWidth />
+                  {/* partyName has been moved from here to the top Context bar */}
                   <InfoField label="Store Date" value={selectedRecord.storeDate} />
                   <InfoField label="Store Time" value={formatTime12Hour(selectedRecord.storeTime)} />
                   
