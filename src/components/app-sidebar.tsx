@@ -140,11 +140,11 @@ const menuItems: MenuItem[] = [
         url: "/dashboard/masonpcSide",
         permission: ITEM_PERMISSIONS["Mason - Petty Contractor"]
       },
-      // {
-      //   title: "Logistics IO",
-      //   url: "/dashboard/logisticsIO",
-      //   permission: ITEM_PERMISSIONS["Logistics IO"]
-      // },
+      {
+        title: "Logistics IO",
+        url: "/dashboard/logisticsIO",
+        permission: ITEM_PERMISSIONS["Logistics IO"]
+      },
     ],
   },
   {

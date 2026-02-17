@@ -1,7 +1,7 @@
 services:
   slmcmsdashboard:
     # Use your Docker image name here
-    image: goswamirohit/slmcmsdashboard:v27
+    image: goswamirohit/slmcmsdashboard:v40
     container_name: slmcmsdashboard
     restart: unless-stopped
     ports:
@@ -10,3 +10,20 @@ services:
     env_file:
       - .env
       - .env.production
+
+    environment:
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL}
+      - WORKOS_CLIENT_ID=${WORKOS_CLIENT_ID}
+      - WORKOS_API_KEY=${WORKOS_API_KEY}
+      - WORKOS_COOKIE_PASSWORD=${WORKOS_COOKIE_PASSWORD}
+      - WORKOS_REDIRECT_URI=${WORKOS_REDIRECT_URI}
+      - WORKOS_COOKIE_SECURE=${WORKOS_COOKIE_SECURE}
+      - NEXT_PUBLIC_WORKOS_REDIRECT_URI=${NEXT_PUBLIC_WORKOS_REDIRECT_URI}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+      - NEXT_PUBLIC_MCP_SERVER_URL=${NEXT_PUBLIC_MCP_SERVER_URL}
+      - RESEND_MAIL_API=${RESEND_MAIL_API}
+      - OPENCAGE_GEO_API=${OPENCAGE_GEO_API}
+      - VITE_RADAR_PUBLISHABLE_KEY=${OPENCAGE_GEO_API}
+      - RADAR_SECRET_KEY=${RADAR_SECRET_KEY}
+      - LOCATIONIQ_KEY=${LOCATIONIQ_KEY}
