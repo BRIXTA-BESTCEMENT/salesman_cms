@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/reports/technical-visit-reports/route.ts
 import 'server-only';
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import prisma from '@/lib/prisma'; 
@@ -116,6 +116,7 @@ async function getCachedTechnicalVisitReports(companyId: number) {
 }
 
 export async function GET() {
+  await connection();
   try {
     const claims = await getTokenClaims();
 

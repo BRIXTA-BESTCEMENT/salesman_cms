@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/reward-categories/route.ts
 import 'server-only';
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -13,6 +13,7 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'senior-executive',];
 
 export async function GET() {
+  await connection();
   try {
     const claims = await getTokenClaims();
 

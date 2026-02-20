@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/schemes-offers/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -21,6 +21,7 @@ const schemeCreateSchema = z.object({
 });
 
 export async function GET() {
+  await connection();
   try {
     const claims = await getTokenClaims();
 

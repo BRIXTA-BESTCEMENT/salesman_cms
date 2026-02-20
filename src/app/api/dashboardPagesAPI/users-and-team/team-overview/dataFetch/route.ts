@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/users-and-team/team-overview/dataFetch/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { Prisma, PrismaClient } from '../../../../../../../prisma/generated/client';
@@ -14,6 +14,7 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'senior-executive',];
 
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     // 1. Get the claims from the JWT.
     const claims = await getTokenClaims();

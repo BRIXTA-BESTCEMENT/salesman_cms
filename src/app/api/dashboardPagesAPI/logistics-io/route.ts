@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/logistics-io/route.ts
 import 'server-only';
-import { NextRequest, NextResponse } from 'next/server';
+import { connection, NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { z } from 'zod';
@@ -19,6 +19,7 @@ const allowedRoles = [
 ];
 
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     const claims = await getTokenClaims();
 

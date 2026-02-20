@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/dealerManagement/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { cacheTag, cacheLife, revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma'; // Ensure this path is correct for your Prisma client
@@ -72,6 +72,7 @@ async function getCachedDealersByCompany(companyId: number) {
 }
 
 export async function GET() {
+    await connection();
     try {
         const claims = await getTokenClaims();
 

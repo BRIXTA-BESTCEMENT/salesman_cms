@@ -1,9 +1,12 @@
 // src/app/api/company/route.ts
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { getCompanyInfo } from '@/lib/company-service';
 
 export async function GET() {
+  await connection();
+  
   try {
     const claims = await getTokenClaims();
 

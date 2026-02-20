@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/salesman-attendance/route.ts
 import 'server-only';
-import { NextRequest, NextResponse } from 'next/server';
+import { connection, NextRequest, NextResponse } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma'; 
@@ -83,6 +83,7 @@ async function getCachedAttendance(companyId: number, startDateParam: string | n
 }
 
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     const claims = await getTokenClaims();
 

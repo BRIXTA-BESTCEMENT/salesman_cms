@@ -3,7 +3,7 @@
 // It combines information from the Dealer, Brand, and DealerBrandMapping tables
 // to create a single, comprehensive report.
 import 'server-only';
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod'; // Added Zod Import
@@ -73,6 +73,7 @@ function toNumberOrNull(val: any): number | null {
 
 // Main API handler for the brand mapping data.
 export async function GET() {
+  await connection();
   try {
     // 1. Authentication Check: Verify the user is logged in
     const claims = await getTokenClaims();

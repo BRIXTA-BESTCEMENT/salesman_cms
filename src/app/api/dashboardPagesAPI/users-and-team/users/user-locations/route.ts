@@ -1,10 +1,11 @@
 // src/app/api/dashboardPagesAPI/users-and-team/users/user-locations/route.ts
 import 'server-only';
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 
 export async function GET() {
+  await connection();
   try {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) {

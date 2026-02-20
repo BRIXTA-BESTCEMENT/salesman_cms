@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/users-and-team/users/route.ts
 import 'server-only';
-import { NextRequest, NextResponse } from 'next/server';
+import { connection, NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { WorkOS } from '@workos-inc/node';
@@ -354,6 +354,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+    await connection();
     try {
         const claims = await getTokenClaims();
 

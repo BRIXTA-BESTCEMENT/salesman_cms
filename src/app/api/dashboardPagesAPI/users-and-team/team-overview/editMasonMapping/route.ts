@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/users-and-team/team-overview/editMasonMapping/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, connection } from "next/server";
 import { getTokenClaims } from "@workos-inc/authkit-nextjs";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
@@ -19,6 +19,7 @@ const editMasonSchema = z.object({
 // Return ALL company masons (optionally filtered by area/region from query)
 // AND the list of mason IDs already assigned to the given userId.
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     const claims = await getTokenClaims();
     if (!claims?.sub) {

@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/assign-tasks/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -26,6 +26,7 @@ const assignSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

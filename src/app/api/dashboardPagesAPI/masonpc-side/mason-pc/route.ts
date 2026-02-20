@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/mason-pc/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
@@ -186,6 +186,7 @@ async function getCachedMasonPcRecords(
 }
 
 export async function GET(request: NextRequest) {
+  await connection();
   try {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) {

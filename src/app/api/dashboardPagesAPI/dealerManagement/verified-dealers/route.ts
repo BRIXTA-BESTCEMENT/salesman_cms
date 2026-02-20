@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/dealerManagement/verified-dealers/route.ts
 import 'server-only';
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
@@ -63,6 +63,7 @@ async function getCachedVerifiedDealers(companyId: number) {
 }
 
 export async function GET() {
+    await connection();
     try {
         const claims = await getTokenClaims();
 

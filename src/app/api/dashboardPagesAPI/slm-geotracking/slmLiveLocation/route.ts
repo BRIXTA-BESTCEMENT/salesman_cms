@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/slm-geotracking/slmLiveLocation/route.ts
 import 'server-only';
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { getTokenClaims } from "@workos-inc/authkit-nextjs";
 import prisma from "@/lib/prisma";
 import axios from "axios";
@@ -33,6 +33,7 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
 ];
 
 export async function GET() {
+  await connection();
   try {
     const claims = await getTokenClaims();
 

@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/add-dealers/dealer-verify/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma'; // Ensure this path is correct for your Prisma client
@@ -25,8 +25,8 @@ const allowedRoles = [
  * GET: Fetch all dealers with verificationStatus = 'Pending' for the current user's company.
  */
 export async function GET(request: NextRequest) {
+    await connection();
     try {
-        // 1. Authentication Check (FIXED: Using the assign-tasks pattern)
         const claims = await getTokenClaims();
         if (!claims || !claims.sub) {
             return NextResponse.json({ error: 'Unauthorized: No claims found' }, { status: 401 });

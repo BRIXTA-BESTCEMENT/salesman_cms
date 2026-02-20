@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/slm-leaves/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { z } from 'zod';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { salesmanLeaveApplicationSchema, updateLeaveApplicationSchema } from '@/lib/shared-zod-schema';
@@ -13,6 +13,7 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
 // GET /api/dashboardPagesAPI/salesman-leaves
 // Fetches all salesman leave applications from the database
 export async function GET() {
+  await connection();
   try {
     const claims = await getTokenClaims();
 

@@ -1,6 +1,6 @@
 // src/app/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification/route.ts
 import 'server-only';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import prisma from '@/lib/prisma';
@@ -96,6 +96,7 @@ async function getCachedPendingPJPs(companyId: number) {
 }
 
 export async function GET(request: NextRequest) {
+    await connection();
     try {
         const claims = await getTokenClaims();
 

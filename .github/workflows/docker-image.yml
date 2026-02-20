@@ -24,6 +24,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Fetch secrets from Infisical
+        uses: Infisical/secrets-action@v1.0.9
+        with:
+          client-id: ${{ secrets.INFISICAL_UNIVERSAL_AUTH_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET }}
+          project-id: ${{ secrets.INFISICAL_PROJECT_ID }}
+          env-slug: "prod" 
+          secret-path: "/"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:

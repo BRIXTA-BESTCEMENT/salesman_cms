@@ -1,10 +1,11 @@
 // src/app/api/setup-company/company-locations/route.ts
 import 'server-only';
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 //GET handler to fetch unique regions and areas from the Company table.
 export async function GET() {
+    await connection();
     try {
         // Fetch all unique regions from the Company table
         const uniqueRegions = await prisma.company.findMany({
