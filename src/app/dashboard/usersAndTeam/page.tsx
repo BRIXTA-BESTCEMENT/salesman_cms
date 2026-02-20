@@ -22,8 +22,7 @@ export default function UsersAndTeamPage() {
   );
 }
 
-async function getCurrentUserRole(): Promise<WorkOSRole | null> {
-
+async function getAdminUser() {
     const claims = await getTokenClaims();
     if (!claims?.sub) {
       return null;
@@ -31,17 +30,16 @@ async function getCurrentUserRole(): Promise<WorkOSRole | null> {
 
     const user = await prisma.user.findUnique({
       where: { workosUserId: claims.sub },
-      select: { role: true },
+      include: { company: true }, 
     });
     
-    return (user?.role as WorkOSRole) ?? null;
-
+    return user;
 }
 
 export async function UsersAndTeamDynamicContent() {
   await connection();
-  const userRole = await getCurrentUserRole();
-  const roleToCheck = userRole ?? 'junior-executive'; 
+  const adminUser = await getAdminUser();
+  const roleToCheck = (adminUser?.role as WorkOSRole) ?? 'junior-executive';
 
   const canSeeUsers = hasPermission(roleToCheck, 'usersAndTeam.userManagement');
   const canSeeTeamView = hasPermission(roleToCheck, 'usersAndTeam.teamOverview');
@@ -50,7 +48,7 @@ export async function UsersAndTeamDynamicContent() {
     <div className="flex-1 space-y-4 p-4 md:p-6">
       
       <UsersAndTeamTabs 
-        adminUser={userRole}
+        adminUser={adminUser}
         canSeeUsers={canSeeUsers}
         canSeeTeamView={canSeeTeamView}
       />
