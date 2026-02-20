@@ -1,6 +1,8 @@
 // src/app/home/page.tsx (Server Component)
+import { Suspense } from 'react';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +10,6 @@ import {
     LayoutDashboard,
     User,
     ArrowRight,
-    Bot,
     BotMessageSquare
 } from 'lucide-react';
 
@@ -20,22 +21,24 @@ interface CustomClaims {
     [key: string]: unknown;
 }
 
-// The 'claims' object is now passed as a prop, and we've removed the redirect logic.
-export default async function SignedInHomePage() {
+// 1. The Static Shell (Instantly compiled, no runtime data)
+export default function SignedInHomePage() {
+    return (
+        <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
+            <HomeContent />
+        </Suspense>
+    );
+}
 
+// 2. The Dynamic Content (Reads cookies securely)
+async function HomeContent() {
+    await connection();
     const claims = await getTokenClaims() as CustomClaims | null;
 
     // Redirect to landing page if not signed in
     if (!claims || !claims.sub) {
         redirect('/');
     }
-
-    // const user = {
-    //     id: claims.sub,
-    //     email: claims.email || '',
-    //     firstName: typeof claims.first_name === 'string' ? claims.first_name : undefined,
-    //     lastName: typeof claims.last_name === 'string' ? claims.last_name : undefined,
-    // };
 
     return (
         <div className="min-h-screen bg-background">
@@ -104,10 +107,6 @@ export default async function SignedInHomePage() {
                                 <CardTitle className="text-2xl mb-2">Dashboard</CardTitle>
                                 <CardDescription className="text-base">
                                     Access your complete management suite with analytics and team oversight
-                                    {/* <p className="text-sm text-red-400 font-bold mt-2">
-                                        User must be authenticated to use dashboard <br/>
-                                        <span className="text-blue-500">(Login with the account you signed up)</span>
-                                    </p> */}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="text-center pt-0">
@@ -141,31 +140,6 @@ export default async function SignedInHomePage() {
                     </Card>
                 </div>
 
-                {/* Quick Stats Section */}
-                {/* <div className="bg-card border border-border rounded-lg p-8 mb-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center space-x-3">
-                            <Building2 className="w-6 h-6 text-primary" />
-                            <h2 className="text-2xl font-semibold">Quick Overview</h2>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-primary mb-1">AI Ready</div>
-                            <div className="text-muted-foreground">AI Bot Status</div>
-                        </div> 
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-chart-2 mb-1">Active</div>
-                            <div className="text-muted-foreground">Account Status</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-chart-3 mb-1">Premium</div>
-                            <div className="text-muted-foreground">Plan Type</div>
-                        </div>
-                    </div>
-                </div> */}
-
                 {/* Footer */}
                 <footer className="border-t border-border py-12">
                     <div className="text-center">
@@ -174,7 +148,6 @@ export default async function SignedInHomePage() {
                         </p>
                     </div>
                 </footer>
-
             </div>
         </div>
     );

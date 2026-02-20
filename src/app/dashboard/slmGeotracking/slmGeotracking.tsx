@@ -16,6 +16,7 @@ import { IconCalendar } from '@tabler/icons-react';
 
 // Utilities
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { journeyOpTrackingSchema } from '@/lib/shared-zod-schema';
 import { DateRange } from "react-day-picker";
 import { cn } from '@/lib/utils';
@@ -375,9 +376,12 @@ export default function SalesmanGeoTrackingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
-        {/* Header Section */}
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Salesman Geo-Tracking</h2>
+          <RefreshDataButton
+            cachePrefix="slm-geotracking"
+            onRefresh={fetchTracks}
+          />
         </div>
 
         {/* --- Distance Summary --- */}

@@ -40,6 +40,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // Reusable Components
 import { cn } from '@/lib/utils';
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { permanentJourneyPlanSchema } from '@/lib/shared-zod-schema';
 
 type PermanentJourneyPlan = z.infer<typeof permanentJourneyPlanSchema>;
@@ -214,9 +215,12 @@ export default function PJPListPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
-
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Verified Journey Plans</h2>
+          <RefreshDataButton
+            cachePrefix="permanent-journey-plan"
+            onRefresh={fetchPjps}
+          />
         </div>
 
         {/* --- Summary Cards --- */}

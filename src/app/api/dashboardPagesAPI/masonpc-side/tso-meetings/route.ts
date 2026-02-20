@@ -1,6 +1,5 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/tso-meetings/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';

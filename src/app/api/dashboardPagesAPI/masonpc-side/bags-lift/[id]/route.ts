@@ -1,9 +1,8 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/bags-lift/[id]/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
+import { revalidateTag } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import {
@@ -250,6 +249,13 @@ export async function PATCH(
         });
       }
     });
+
+    // 2. MASSIVE CACHE INVALIDATION:
+    // Because this one transaction touches three different tables across the app,
+    // we clear the cache for all three so the UI is perfectly synced.
+    revalidateTag(`bags-lift-${currentUser.companyId}`, 'max');
+    revalidateTag(`mason-pc-${currentUser.companyId}`, 'max');
+    revalidateTag(`points-ledger-${currentUser.companyId}`, 'max');
 
     return NextResponse.json(
       {

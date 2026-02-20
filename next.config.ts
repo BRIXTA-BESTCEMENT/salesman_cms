@@ -3,6 +3,7 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 
 const nextConfig: NextConfig = {
   output:"standalone",
+  cacheComponents: true,
 
   // ... other configurations
 };

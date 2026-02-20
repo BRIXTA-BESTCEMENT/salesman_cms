@@ -1,20 +1,29 @@
 // src/app/dashboard/reports/page.tsx
-// --- NO 'use client' --- This is the Server Component.
-export const dynamic = 'force-dynamic';
-// Import the new client component from 'tabsLoader.tsx'
-import { ReportsTabs } from './tabsLoader';
-
-// Server-side imports for permissions
+import { Suspense } from 'react';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
+import { ReportsTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
+import { connection } from 'next/server';
 
-/**
- * Fetches the current user's role from the database.
- * Runs only on the server.
- */
+export default function ReportsPage() {
+  return (
+    <div className="flex-1 space-y-4 p-4 md:p-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">
+          Reports Management Page
+        </h2>
+      </div>
+
+      <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
+        <ReportsDynamicContent />
+      </Suspense>
+    </div>
+  );
+}
+
 async function getCurrentUserRole(): Promise<WorkOSRole | null> {
-  try {
+  
     const claims = await getTokenClaims();
     if (!claims?.sub) {
       return null; // Not logged in
@@ -26,18 +35,13 @@ async function getCurrentUserRole(): Promise<WorkOSRole | null> {
     });
     
     return (user?.role as WorkOSRole) ?? null;
-  } catch (error) {
-    console.error("Error fetching user role:", error);
-    return null;
-  }
+  
 }
 
 // The page component is now an 'async' function
-export default async function ReportsPage() {
-  // 1. Get the user's role on the server
+export async function ReportsDynamicContent() {
+  await connection();
   const userRole = await getCurrentUserRole();
-
-  // 2. Check permissions for each tab
   const roleToCheck = userRole ?? 'junior-executive'; // Default to lowest role
 
   const canSeeDVR = hasPermission(roleToCheck, 'reports.dailyVisitReports');
@@ -65,15 +69,7 @@ export default async function ReportsPage() {
   // 4. Render the page, passing permissions to the client component
   return (
     <div className="flex-1 space-y-4 p-4 md:p-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Reports Page
-        </h2>
-      </div>
       
-      {/* Render the CLIENT component and pass the
-        server-side permissions as props.
-      */}
       <ReportsTabs
         canSeeDVR={canSeeDVR}
         canSeeTVR={canSeeTVR}

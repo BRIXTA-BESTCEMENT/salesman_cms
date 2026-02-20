@@ -1,8 +1,8 @@
 // src/app/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification/bulk-verify/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
+import { revalidateTag } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
@@ -52,6 +52,10 @@ export async function PATCH(request: NextRequest) {
         status: 'VERIFIED',
       }
     });
+
+    // 2. CACHE INVALIDATION
+    revalidateTag(`pjp-verification-${currentUser.companyId}`, 'max');
+    revalidateTag(`permanent-journey-plan-${currentUser.companyId}`, 'max');
 
     return NextResponse.json({
       message: `${result.count} PJPs verified successfully`,

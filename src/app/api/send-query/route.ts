@@ -1,6 +1,5 @@
 // src/app/api/send-query/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { dailyVisitReportSchema } from '@/lib/shared-zod-schema';
 import { Search, Loader2 } from 'lucide-react';
 //import { BASE_URL } from '@/lib/Reusable-constants';
@@ -21,7 +22,6 @@ type DailyVisitReport = z.infer<typeof dailyVisitReportSchema> & {
   area: string;
   region: string;
 };
-const columnHelper = createColumnHelper<DailyVisitReport>();
 
 // API Endpoints for filter options
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -120,9 +120,9 @@ export default function DailyVisitReportsPage() {
         try {
           // Add ID property needed by DataTableReusable
           const validatedItem = dailyVisitReportSchema.parse(item) as DailyVisitReport;
-          return { 
-            ...validatedItem, 
-            id: (validatedItem as any).id?.toString() || `${validatedItem.salesmanName}-${validatedItem.reportDate}-${Math.random()}` 
+          return {
+            ...validatedItem,
+            id: (validatedItem as any).id?.toString() || `${validatedItem.salesmanName}-${validatedItem.reportDate}-${Math.random()}`
           } as DailyVisitReport;
         } catch (e) {
           console.error('Validation error on report item:', e);
@@ -248,12 +248,14 @@ export default function DailyVisitReportsPage() {
     { accessorKey: 'visitType', header: 'Visit Type' },
     { accessorKey: 'todayOrderMt', header: 'Order (MT)', cell: info => info.getValue().toFixed(2) },
     { accessorKey: 'todayCollectionRupees', header: 'Collection (₹)', cell: info => info.getValue().toFixed(2) },
-    { accessorKey: 'overdueAmount', 
-      header: 'Overdue (₹)', 
+    {
+      accessorKey: 'overdueAmount',
+      header: 'Overdue (₹)',
       cell: info => info.getValue() ? info.getValue().toFixed(2) : '0.00'
     },
-    { accessorKey: 'feedbacks', 
-      header: 'Feedbacks', 
+    {
+      accessorKey: 'feedbacks',
+      header: 'Feedbacks',
       cell: info => <span className="max-w-[250px] truncate block">{info.getValue()}</span>
     }
   ];
@@ -272,6 +274,10 @@ export default function DailyVisitReportsPage() {
       <div className="flex-1 space-y-8 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Daily Visit Reports</h2>
+          <RefreshDataButton
+            cachePrefix="daily-visit-reports"
+            onRefresh={fetchReports}
+          />
         </div>
 
         {/* --- Individual Filter Components --- */}
@@ -301,19 +307,19 @@ export default function DailyVisitReportsPage() {
 
           {/* 3. Area Filter (Commented out in original but kept for display) */}
           {renderSelectFilter(
-            'Area', 
-            areaFilter, 
-            (v) => { setAreaFilter(v); }, 
-            availableAreas, 
+            'Area',
+            areaFilter,
+            (v) => { setAreaFilter(v); },
+            availableAreas,
             isLoadingLocations
           )}
 
           {/* 4. Region Filter (Commented out in original but kept for display) */}
           {renderSelectFilter(
-            'Region(Zone)', 
-            regionFilter, 
-            (v) => { setRegionFilter(v); }, 
-            availableRegions, 
+            'Region(Zone)',
+            regionFilter,
+            (v) => { setRegionFilter(v); },
+            availableRegions,
             isLoadingLocations
           )}
 
@@ -329,8 +335,8 @@ export default function DailyVisitReportsPage() {
           ) : (
             <>
               <DataTableReusable
-                columns={dailyVisitReportColumns} 
-                data={filteredReports} 
+                columns={dailyVisitReportColumns}
+                data={filteredReports}
                 enableRowDragging={false}
                 onRowOrderChange={() => { }}
               />

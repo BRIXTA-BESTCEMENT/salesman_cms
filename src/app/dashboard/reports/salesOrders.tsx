@@ -7,6 +7,7 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { salesOrderSchema } from '@/lib/shared-zod-schema'
 
 // UI Components for Filtering
@@ -278,7 +279,7 @@ const renderSelectFilter = (
 
 
 // Component
-const SalesOrdersTable = () => {
+export default function SalesOrdersTable() {
   const router = useRouter();
   const [data, setData] = useState<SalesOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -447,75 +448,81 @@ const SalesOrdersTable = () => {
   }
 
   return (
-    <>
-      {/* --- Filter Components --- */}
-      <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6">
-        {/* 1. Username/Dealer Search Input */}
-        <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-          <label className="text-sm font-medium text-muted-foreground">Salesman/Dealer Search</label>
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9"
-            />
-          </div>
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <div className="flex-1 space-y-8 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Sales Orders</h2>
+          <RefreshDataButton
+            cachePrefix="sales-orders"
+            onRefresh={fetchSalesOrders}
+          />
         </div>
 
-        {/* 2. Role Filter */}
-        {renderSelectFilter(
-          'Role',
-          roleFilter,
-          (v) => { setRoleFilter(v); },
-          availableRoles,
-          isLoadingRoles
-        )}
-
-        {/* 3. Area Filter */}
-        {renderSelectFilter(
-          'Area',
-          areaFilter,
-          (v) => { setAreaFilter(v); },
-          availableAreas,
-          isLoadingLocations
-        )}
-
-        {/* 4. Region Filter */}
-        {renderSelectFilter(
-          'Region',
-          regionFilter,
-          (v) => { setRegionFilter(v); },
-          availableRegions,
-          isLoadingLocations
-        )}
-
-        {/* Display filter option errors if any */}
-        {locationError && <p className="text-xs text-red-500 w-full">Location Filter Error: {locationError}</p>}
-        {roleError && <p className="text-xs text-red-500 w-full">Role Filter Error: {roleError}</p>}
-      </div>
-      {/* --- End Filter Components --- */}
-
-      {/* Data Table */}
-      <div className="bg-card p-6 rounded-lg border border-border">
-        {filteredOrders.length === 0 ? (
-          <div className="text-center text-gray-500 py-8">
-            No sales orders found matching the selected filters.
+        {/* --- Filter Components --- */}
+        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6">
+          {/* 1. Username/Dealer Search Input */}
+          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
+            <label className="text-sm font-medium text-muted-foreground">Salesman/Dealer Search</label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-9"
+              />
+            </div>
           </div>
-        ) : (
-          <>
+
+          {/* 2. Role Filter */}
+          {renderSelectFilter(
+            'Role',
+            roleFilter,
+            (v) => { setRoleFilter(v); },
+            availableRoles,
+            isLoadingRoles
+          )}
+
+          {/* 3. Area Filter */}
+          {renderSelectFilter(
+            'Area',
+            areaFilter,
+            (v) => { setAreaFilter(v); },
+            availableAreas,
+            isLoadingLocations
+          )}
+
+          {/* 4. Region Filter */}
+          {renderSelectFilter(
+            'Region',
+            regionFilter,
+            (v) => { setRegionFilter(v); },
+            availableRegions,
+            isLoadingLocations
+          )}
+
+          {/* Display filter option errors if any */}
+          {locationError && <p className="text-xs text-red-500 w-full">Location Filter Error: {locationError}</p>}
+          {roleError && <p className="text-xs text-red-500 w-full">Role Filter Error: {roleError}</p>}
+        </div>
+        {/* --- End Filter Components --- */}
+
+        {/* Data Table */}
+        <div className="bg-card p-6 rounded-lg border border-border">
+          {filteredOrders.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">
+              No sales orders found matching the selected filters.
+            </div>
+          ) : (
             <DataTableReusable
               columns={salesOrderColumns}
               data={filteredOrders}
               enableRowDragging={false}
               onRowOrderChange={() => { }}
             />
-          </>
-        )}
+          )}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
-
-export default SalesOrdersTable;

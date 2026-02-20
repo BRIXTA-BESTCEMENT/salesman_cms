@@ -1,5 +1,4 @@
 // src/app/api/company/route.ts
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { getCompanyInfo } from '@/lib/company-service';

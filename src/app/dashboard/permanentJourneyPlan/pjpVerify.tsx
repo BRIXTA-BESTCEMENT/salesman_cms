@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -343,9 +344,12 @@ export default function PJPVerifyPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground space-y-6 p-8 pt-6">
-      <div className="space-y-0.5">
+      <div className="flex items-center gap-3">
         <h2 className="text-3xl font-bold tracking-tight text-white">PJP Verification Queue</h2>
-        <p className="text-muted-foreground text-sm">Review and verify plans submitted by sales executives.</p>
+        <RefreshDataButton
+          cachePrefix="pjp-verification"
+          onRefresh={fetchPendingPJPs}
+        />
       </div>
 
       {/* --- BULK ACTION BAR --- */}

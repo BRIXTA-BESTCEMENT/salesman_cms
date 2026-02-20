@@ -18,6 +18,7 @@ import {
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 // Import UI Components
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -629,6 +630,10 @@ export default function MasonPcPage() {
         {/* Header Section */}
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Mason/PC KYC Verification</h2>
+          <RefreshDataButton
+          cachePrefix="mason-pc"
+          onRefresh={fetchMasonPcRecords}
+        />
         </div>
 
         {/* --- Filter Components --- */}

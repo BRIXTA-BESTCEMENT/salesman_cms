@@ -1,16 +1,80 @@
 // src/app/api/dashboardPagesAPI/routes/daily-visit-reports/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma'; // Ensure this path is correct for your Prisma client
-import { z } from 'zod'; // Import Zod for schema validation
+import { cacheTag, cacheLife } from 'next/cache';
+import prisma from '@/lib/prisma'; 
+import { z } from 'zod'; 
 import { dailyVisitReportSchema } from '@/lib/shared-zod-schema';
 
 const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',];
+  'senior-executive', 'executive'
+];
+
+// 2. The Cached Function
+async function getCachedDailyVisitReports(companyId: number) {
+  'use cache';
+  cacheLife('hours');
+  cacheTag(`daily-visit-reports-${companyId}`); // Unique tag per company
+
+  const dailyVisitReports = await prisma.dailyVisitReport.findMany({
+    where: {
+      user: {
+        companyId: companyId,
+      },
+    },
+    include: {
+      user: {
+        select: { firstName: true, lastName: true, email: true, role: true, area: true, region: true },
+      },
+      dealer: { select: { name: true } },
+      subDealer: { select: { name: true } },
+    },
+    orderBy: {
+      reportDate: 'desc',
+    },
+  });
+
+  return dailyVisitReports.map((report: any) => {
+    const salesmanName = `${report.user.firstName || ''} ${report.user.lastName || ''}`.trim() || report.user.email;
+
+    return {
+      id: String(report.id),
+      salesmanName: salesmanName,
+      role: report.user.role,
+      area: report.user.area,
+      region: report.user.region,
+      reportDate: report.reportDate.toISOString().split('T')[0],
+      dealerId: report.dealerId ?? null,
+      subDealerId: report.subDealerId ?? null,
+      dealerName: report.dealer?.name ?? null,
+      subDealerName: report.subDealer?.name ?? null,
+      dealerType: report.dealerType,
+      location: report.location,
+      latitude: report.latitude.toNumber(),
+      longitude: report.longitude.toNumber(),
+      visitType: report.visitType,
+      dealerTotalPotential: report.dealerTotalPotential.toNumber(),
+      dealerBestPotential: report.dealerBestPotential.toNumber(),
+      brandSelling: report.brandSelling,
+      contactPerson: report.contactPerson,
+      contactPersonPhoneNo: report.contactPersonPhoneNo,
+      todayOrderMt: report.todayOrderMt.toNumber(),
+      todayCollectionRupees: report.todayCollectionRupees.toNumber(),
+      overdueAmount: report.overdueAmount?.toNumber() || null,
+      feedbacks: report.feedbacks,
+      solutionBySalesperson: report.solutionBySalesperson,
+      anyRemarks: report.anyRemarks,
+      checkInTime: report.checkInTime.toISOString(),
+      checkOutTime: report.checkOutTime?.toISOString() || null,
+      timeSpentinLoc: report.timeSpentinLoc || null,
+      inTimeImageUrl: report.inTimeImageUrl,
+      outTimeImageUrl: report.outTimeImageUrl,
+    };
+  });
+}
 
 export async function GET() {
   try {
@@ -32,74 +96,9 @@ export async function GET() {
       return NextResponse.json({ error: `Forbidden: Only the following roles can add dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
     }
 
-    // 4. Fetch Daily Visit Reports for the current user's company
-    const dailyVisitReports = await prisma.dailyVisitReport.findMany({
-      where: {
-        user: { // Filter reports by the company of the user who created them
-          companyId: currentUser.companyId,
-        },
-      },
-      include: {
-        user: { // Include salesman details to get their name
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true,
-            role: true,
-            area: true,
-            region: true,
-          },
-        },
-        dealer: { select: { name: true } },
-        subDealer: { select: { name: true } },
-      },
-      orderBy: {
-        reportDate: 'desc', // Order by latest reports first
-      },
-    });
+    // 4. Call the cached function
+    const formattedReports = await getCachedDailyVisitReports(currentUser.companyId);
 
-    // 5. Format the data to match the frontend's expected structure and validate
-    const formattedReports = dailyVisitReports.map((report: any) => {
-      const salesmanName = `${report.user.firstName || ''} ${report.user.lastName || ''}`.trim() || report.user.email;
-
-      return {
-        id: String(report.id),
-        salesmanName: salesmanName,
-        role: report.user.role,
-        area: report.user.area,
-        region: report.user.region,
-        reportDate: report.reportDate.toISOString().split('T')[0], // YYYY-MM-DD
-
-        dealerId: report.dealerId ?? null,          // don't hardcode null
-        subDealerId: report.subDealerId ?? null,    // don't hardcode null
-        dealerName: report.dealer?.name ?? null,
-        subDealerName: report.subDealer?.name ?? null,
-        dealerType: report.dealerType,
-        
-        location: report.location,
-        latitude: report.latitude.toNumber(),
-        longitude: report.longitude.toNumber(),
-        visitType: report.visitType,
-        dealerTotalPotential: report.dealerTotalPotential.toNumber(),
-        dealerBestPotential: report.dealerBestPotential.toNumber(),
-        brandSelling: report.brandSelling,
-        contactPerson: report.contactPerson,
-        contactPersonPhoneNo: report.contactPersonPhoneNo,
-        todayOrderMt: report.todayOrderMt.toNumber(),
-        todayCollectionRupees: report.todayCollectionRupees.toNumber(),
-        overdueAmount: report.overdueAmount?.toNumber() || null,
-        feedbacks: report.feedbacks,
-        solutionBySalesperson: report.solutionBySalesperson,
-        anyRemarks: report.anyRemarks,
-        checkInTime: report.checkInTime.toISOString(),
-        checkOutTime: report.checkOutTime?.toISOString() || null,
-        timeSpentinLoc: report.timeSpentinLoc || null,
-        inTimeImageUrl: report.inTimeImageUrl,
-        outTimeImageUrl: report.outTimeImageUrl,
-      };
-    });
-
-    // Validate the formatted data against the schema
     const validatedReports = z.array(dailyVisitReportSchema).parse(formattedReports);
 
     return NextResponse.json(validatedReports, { status: 200 });

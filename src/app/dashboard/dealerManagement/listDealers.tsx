@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import { DataTableReusable } from '@/components/data-table-reusable';
-
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { useDealerLocations } from '@/components/reusable-dealer-locations';
 import { getDealersSchema } from '@/lib/shared-zod-schema';
 
@@ -258,7 +258,10 @@ export default function ListDealersPage() {
     <div className="container mx-auto p-4 max-w-[100vw] overflow-hidden">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Manage Dealers</h1>
-        <span className="text-muted-foreground text-sm">{dealers.length} verified dealers</span>
+        <RefreshDataButton 
+          cachePrefix="dealers" 
+          onRefresh={fetchDealers} 
+        />
       </div>
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

@@ -472,6 +472,8 @@ export const JourneyScalarFieldEnum = {
   pjpId: 'pjpId',
   siteId: 'siteId',
   dealerId: 'dealerId',
+  taskId: 'taskId',
+  verifiedDealerId: 'verifiedDealerId',
   siteName: 'siteName',
   destLat: 'destLat',
   destLng: 'destLng',

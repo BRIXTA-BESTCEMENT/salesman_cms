@@ -5,14 +5,14 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { 
+import {
   IndianRupee,
-  MapPin, 
-  Search, 
-  Loader2, 
-  Check, 
-  X, 
-  Eye, 
+  MapPin,
+  Search,
+  Loader2,
+  Check,
+  X,
+  Eye,
   ExternalLink,
   CalendarIcon
 } from 'lucide-react';
@@ -20,6 +20,7 @@ import { format, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { bagLiftSchema } from '@/lib/shared-zod-schema';
 
 // UI Components
@@ -158,7 +159,7 @@ export default function BagsLiftPage() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
-  
+
   // --- Date Filter States ---
   const [dateFilterStart, setDateFilterStart] = useState<string>('');
   const [dateFilterEnd, setDateFilterEnd] = useState<string>('');
@@ -309,8 +310,8 @@ export default function BagsLiftPage() {
           if (isAfter(recordDate, endDate)) dateMatch = false;
         }
       } else if (dateFilterStart || dateFilterEnd) {
-         // If filters are active but record has no date
-         dateMatch = false;
+        // If filters are active but record has no date
+        dateMatch = false;
       }
 
       return nameMatch && statusMatch && roleMatch && areaMatch && regionMatch && dateMatch;
@@ -326,7 +327,7 @@ export default function BagsLiftPage() {
     const pointsApproved = filteredRecords
       .filter(r => r.status.toLowerCase() === 'approved')
       .reduce((acc, curr) => acc + (Number(curr.pointsCredited) || 0), 0);
-      
+
     return { totalBags, pointsPending, pointsApproved };
   }, [filteredRecords]);
 
@@ -356,13 +357,13 @@ export default function BagsLiftPage() {
       ),
     },
     // Approver Name with Fallback to Associated Salesman
-    { 
-      id: "approverName", 
+    {
+      id: "approverName",
       header: "Approved By",
       cell: ({ row }) => {
         const actualApprover = row.original.approverName;
         const associatedSalesman = row.original.associatedSalesmanName;
-        
+
         // Logic: Show Actual Approver if exists, OR show Associated Salesman
         const displayName = actualApprover || associatedSalesman;
         const isAssociated = !actualApprover && associatedSalesman;
@@ -463,68 +464,72 @@ export default function BagsLiftPage() {
       <div className="flex-1 space-y-8 p-8 pt-6">
         {/* Header Section */}
         <div className="flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Bag Lift Records</h2>
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-bold tracking-tight">Bag Lift Records</h2>
+            <RefreshDataButton
+            cachePrefix="bags-lift"
+            onRefresh={fetchBagLiftRecords}
+          />
+          </div>
 
-            {/* --- Stats Counters (Updated with Indian Number System) --- */}
-            <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                    Total Bags Lifted
-                    </CardTitle>
-                    <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                    >
-                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
-                    <path d="M4 6v12a2 2 0 0 0 2 2h14v-4" />
-                    <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
-                    </svg>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{formatIndianNumber(stats.totalBags)}</div>
-                    <p className="text-xs text-muted-foreground">
-                    Filtered view
-                    </p>
-                </CardContent>
-                </Card>
-                <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                    Points Pending
-                    </CardTitle>
-                    <Loader2 className="h-4 w-4 text-yellow-500" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold text-yellow-600">{formatIndianNumber(stats.pointsPending)}</div>
-                    <p className="text-xs text-muted-foreground">
-                    Awaiting approval
-                    </p>
-                </CardContent>
-                </Card>
-                <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                    Points Approved
-                    </CardTitle>
-                    <Check className="h-4 w-4 text-green-500" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold text-green-600">{formatIndianNumber(stats.pointsApproved)}</div>
-                    <p className="text-xs text-muted-foreground">
-                    Successfully credited
-                    </p>
-                </CardContent>
-                </Card>
-            </div>
+          {/* --- Stats Counters (Updated with Indian Number System) --- */}
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Bags Lifted
+                </CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+                  <path d="M4 6v12a2 2 0 0 0 2 2h14v-4" />
+                  <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatIndianNumber(stats.totalBags)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Filtered view
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Points Pending
+                </CardTitle>
+                <Loader2 className="h-4 w-4 text-yellow-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-600">{formatIndianNumber(stats.pointsPending)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Awaiting approval
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Points Approved
+                </CardTitle>
+                <Check className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{formatIndianNumber(stats.pointsApproved)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Successfully credited
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* --- Filter Components --- */}
@@ -553,81 +558,81 @@ export default function BagsLiftPage() {
 
           {/* 4. Area Filter */}
           {renderSelectFilter(
-            'Area', 
-            areaFilter, 
-            (v) => { setAreaFilter(v); }, 
-            availableAreas, 
+            'Area',
+            areaFilter,
+            (v) => { setAreaFilter(v); },
+            availableAreas,
             isLoadingLocations
           )}
 
           {/* 5. Region Filter */}
           {renderSelectFilter(
-            'Region(Zone)', 
-            regionFilter, 
-            (v) => { setRegionFilter(v); }, 
-            availableRegions, 
+            'Region(Zone)',
+            regionFilter,
+            (v) => { setRegionFilter(v); },
+            availableRegions,
             isLoadingLocations
           )}
 
           {/* 6. Date Range Filters - SHADCN UI COMPONENT */}
           <div className="flex flex-col space-y-1 w-full sm:w-[150px]">
-             <label className="text-sm font-medium text-muted-foreground">Purchased From</label>
-             <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full h-9 justify-start text-left font-normal bg-background border-input",
-                      !dateFilterStart && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                    {dateFilterStart ? format(new Date(dateFilterStart), "PPP") : <span>Pick date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dateFilterStart ? new Date(dateFilterStart) : undefined}
-                    onSelect={(date) => setDateFilterStart(date ? format(date, "yyyy-MM-dd") : '')}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+            <label className="text-sm font-medium text-muted-foreground">Purchased From</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full h-9 justify-start text-left font-normal bg-background border-input",
+                    !dateFilterStart && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
+                  {dateFilterStart ? format(new Date(dateFilterStart), "PPP") : <span>Pick date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dateFilterStart ? new Date(dateFilterStart) : undefined}
+                  onSelect={(date) => setDateFilterStart(date ? format(date, "yyyy-MM-dd") : '')}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="flex flex-col space-y-1 w-full sm:w-[150px]">
-             <label className="text-sm font-medium text-muted-foreground">Purchased To</label>
-             <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full h-9 justify-start text-left font-normal bg-background border-input",
-                      !dateFilterEnd && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                    {dateFilterEnd ? format(new Date(dateFilterEnd), "PPP") : <span>Pick date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dateFilterEnd ? new Date(dateFilterEnd) : undefined}
-                    onSelect={(date) => setDateFilterEnd(date ? format(date, "yyyy-MM-dd") : '')}
-                    disabled={(date) => dateFilterStart ? isBefore(date, new Date(dateFilterStart)) : false}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+            <label className="text-sm font-medium text-muted-foreground">Purchased To</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full h-9 justify-start text-left font-normal bg-background border-input",
+                    !dateFilterEnd && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
+                  {dateFilterEnd ? format(new Date(dateFilterEnd), "PPP") : <span>Pick date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dateFilterEnd ? new Date(dateFilterEnd) : undefined}
+                  onSelect={(date) => setDateFilterEnd(date ? format(date, "yyyy-MM-dd") : '')}
+                  disabled={(date) => dateFilterStart ? isBefore(date, new Date(dateFilterStart)) : false}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Clear Date Filter Button */}
           {(dateFilterStart || dateFilterEnd) && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-9 mb-0.5 text-muted-foreground hover:text-foreground"
               onClick={() => {
                 setDateFilterStart('');
@@ -697,14 +702,14 @@ export default function BagsLiftPage() {
                 <Label>Site Name & Address</Label>
                 <div className="relative mt-1">
                   <MapPin className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    className="pl-8" 
+                  <Input
+                    className="pl-8"
                     value={
-                      selectedRecord.siteName 
-                        ? `${selectedRecord.siteName} — ${selectedRecord.siteAddress || 'No Address'}` 
+                      selectedRecord.siteName
+                        ? `${selectedRecord.siteName} — ${selectedRecord.siteAddress || 'No Address'}`
                         : 'N/A'
-                    } 
-                    readOnly 
+                    }
+                    readOnly
                   />
                 </div>
               </div>

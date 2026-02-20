@@ -1,5 +1,4 @@
 // src/app/api/custom-report-generator/route.ts
-export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';

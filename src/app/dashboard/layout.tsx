@@ -1,12 +1,11 @@
 // src/app/dashboard/layout.tsx
-export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 import { withAuth, getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import type { Metadata } from "next";
 import prisma from '@/lib/prisma';
 import DashboardShell from '@/app/dashboard/dashboardShell';
-import SimpleWelcomePage from '@/app/dashboard/welcome/page'
+import { connection } from 'next/server';
 
 const allowedAdminRoles = [
   'president',
@@ -60,11 +59,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DashboardLayout({
+// 1. STATIC SHELL: This guarantees the build won't fail due to runtime data
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    // This loading screen shows up for a fraction of a second while auth resolves
+    <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
+      <AuthenticatedLayout>{children}</AuthenticatedLayout>
+    </Suspense>
+  );
+}
+
+// 2. DYNAMIC LAYOUT: Handles all the cookies, auth, and database checks
+export async function AuthenticatedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  await connection();
   const { user } = await withAuth();
   const claims = await getTokenClaims();
 

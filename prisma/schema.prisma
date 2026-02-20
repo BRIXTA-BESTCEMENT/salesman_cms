@@ -535,6 +535,8 @@ model Journey {
   pjpId         String?   @map("pjp_id") @db.VarChar(255)
   siteId        String?   @map("site_id") @db.VarChar(255)
   dealerId      String?   @map("dealer_id") @db.VarChar(255)
+  taskId        String?   @map("task_id") @db.VarChar(255)
+  verifiedDealerId Int?   @map("verified_dealer_id")
   siteName      String?   @map("site_name") @db.VarChar(255)
   destLat       Decimal?  @map("dest_lat") @db.Decimal(10, 7)
   destLng       Decimal?  @map("dest_lng") @db.Decimal(10, 7)

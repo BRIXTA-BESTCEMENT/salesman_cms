@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/dealerManagement/verified-dealers/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
+import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -14,6 +14,53 @@ const allowedRoles = [
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive', 'executive', 'junior-executive'
 ];
+
+// 1. Create the cached function
+async function getCachedVerifiedDealers(companyId: number) {
+    'use cache';
+    cacheLife('days');
+    cacheTag(`verified-dealers-${companyId}`); // Unique tag
+
+    const verifiedDealers = await prisma.verifiedDealer.findMany({
+        where: {
+            OR: [
+                { userId: null },
+                { user: { companyId: companyId } }
+            ]
+        },
+        include: { 
+            dealer: { select: { id: true, name: true, verificationStatus: true } },
+        },
+        orderBy: { id: 'desc' },
+    });
+
+    return verifiedDealers.map(vd => ({
+        id: vd.id,
+            dealerCode: vd.dealerCode ?? null,
+            dealerCategory: vd.dealerCategory ?? null,
+            isSubdealer: vd.isSubdealer ?? null,
+            dealerPartyName: vd.dealerPartyName ?? null,
+            zone: vd.zone ?? null,
+            area: vd.area ?? null,
+            contactNo1: vd.contactNo1 ?? null,
+            contactNo2: vd.contactNo2 ?? null,
+            email: vd.email ?? null,
+            address: vd.address ?? null,
+            pinCode: vd.pinCode ?? null,
+            relatedSpName: vd.relatedSpName ?? null,
+            ownerProprietorName: vd.ownerProprietorName ?? null,
+            natureOfFirm: vd.natureOfFirm ?? null,
+            gstNo: vd.gstNo ?? null,
+            panNo: vd.panNo ?? null,
+            userId: vd.userId ?? null,
+            dealerId: vd.dealerId ?? null,
+            dealer: vd.dealer ? {
+                id: vd.dealer.id,
+                name: vd.dealer.name,
+                verificationStatus: vd.dealer.verificationStatus,
+            } : null
+    }));
+}
 
 export async function GET() {
     try {
@@ -38,51 +85,8 @@ export async function GET() {
             );
         }
 
-        // 4. Fetch VerifiedDealers specifically for the current user's company
-        const verifiedDealers = await prisma.verifiedDealer.findMany({
-            where: {
-                OR: [
-                    { userId: null }, // Catches newly imported dealers
-                    { user: { companyId: currentUser.companyId } }
-                ]
-            },
-            include: { 
-                dealer: {
-                    select: { id: true, name: true, verificationStatus: true },
-                },
-            },
-            orderBy: {
-                id: 'desc', 
-            },
-        });
-
-        // 5. Format to ensure everything strictly matches the Zod schema (handling undefined vs null)
-        const formattedDealers = verifiedDealers.map(vd => ({
-            id: vd.id,
-            dealerCode: vd.dealerCode ?? null,
-            dealerCategory: vd.dealerCategory ?? null,
-            isSubdealer: vd.isSubdealer ?? null,
-            dealerPartyName: vd.dealerPartyName ?? null,
-            zone: vd.zone ?? null,
-            area: vd.area ?? null,
-            contactNo1: vd.contactNo1 ?? null,
-            contactNo2: vd.contactNo2 ?? null,
-            email: vd.email ?? null,
-            address: vd.address ?? null,
-            pinCode: vd.pinCode ?? null,
-            relatedSpName: vd.relatedSpName ?? null,
-            ownerProprietorName: vd.ownerProprietorName ?? null,
-            natureOfFirm: vd.natureOfFirm ?? null,
-            gstNo: vd.gstNo ?? null,
-            panNo: vd.panNo ?? null,
-            userId: vd.userId ?? null,
-            dealerId: vd.dealerId ?? null,
-            dealer: vd.dealer ? {
-                id: vd.dealer.id,
-                name: vd.dealer.name,
-                verificationStatus: vd.dealer.verificationStatus,
-            } : null
-        }));
+        // 4. --- FETCH FROM CACHE ---
+        const formattedDealers = await getCachedVerifiedDealers(currentUser.companyId);
 
         // 6. Validate the formatted data against the Zod schema array
         const validatedDealers = z.array(getVerifiedDealersSchema).parse(formattedDealers);

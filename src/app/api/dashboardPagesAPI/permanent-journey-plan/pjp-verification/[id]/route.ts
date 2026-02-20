@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification/[id]/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse, NextRequest } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 // zod schema imports
@@ -100,6 +100,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
                 status: verificationStatus,
             },
         });
+
+        // 2. CACHE INVALIDATION
+        revalidateTag(`pjp-verification-${currentUser.companyId}`, 'max');
 
         return NextResponse.json({
             message: `PJP status updated to ${verificationStatus}`,
@@ -208,6 +211,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
                 site: { select: { siteName: true } }
             }
         });
+
+        // 2. CACHE INVALIDATION
+        revalidateTag(`pjp-verification-${currentUser.companyId}`, 'max');
+        revalidateTag(`permanent-journey-plan-${currentUser.companyId}`, 'max');
 
         return NextResponse.json({
             message: `PJP modified and VERIFIED successfully`,

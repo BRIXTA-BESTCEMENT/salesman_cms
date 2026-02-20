@@ -8,7 +8,7 @@ import { Search, Loader2, IndianRupee, Package, CheckCircle, XCircle, Truck, Che
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
-
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 // UI Components
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,19 +24,19 @@ const REDEMPTION_ACTION_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/rewa
 
 // Type for data coming from the API
 type RedemptionRecord = {
-    id: string;
-    masonId: string;
-    masonName: string;
-    rewardId: number;
-    rewardName: string;
-    quantity: number;
-    status: string; 
-    pointsDebited: number;
-    deliveryName: string | null;
-    deliveryPhone: string | null;
-    deliveryAddress: string | null;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  masonId: string;
+  masonName: string;
+  rewardId: number;
+  rewardName: string;
+  quantity: number;
+  status: string;
+  pointsDebited: number;
+  deliveryName: string | null;
+  deliveryPhone: string | null;
+  deliveryAddress: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 // Options
@@ -69,13 +69,13 @@ const formatDate = (dateString: string) => {
 };
 
 const getStatusBadgeProps = (status: string) => {
-    switch (status.toUpperCase()) {
-        case 'APPROVED': return { icon: CheckCircle, className: 'bg-green-100 text-green-700 border-green-200' };
-        case 'REJECTED': return { icon: XCircle, className: 'bg-red-100 text-red-700 border-red-200' };
-        case 'SHIPPED': return { icon: Truck, className: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
-        case 'DELIVERED': return { icon: Package, className: 'bg-teal-100 text-teal-700 border-teal-200' };
-        default: return { icon: Loader2, className: 'bg-yellow-100 text-yellow-700 border-yellow-200' };
-    }
+  switch (status.toUpperCase()) {
+    case 'APPROVED': return { icon: CheckCircle, className: 'bg-green-100 text-green-700 border-green-200' };
+    case 'REJECTED': return { icon: XCircle, className: 'bg-red-100 text-red-700 border-red-200' };
+    case 'SHIPPED': return { icon: Truck, className: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
+    case 'DELIVERED': return { icon: Package, className: 'bg-teal-100 text-teal-700 border-teal-200' };
+    default: return { icon: Loader2, className: 'bg-yellow-100 text-yellow-700 border-yellow-200' };
+  }
 };
 
 export default function RewardsRedemptionPage() {
@@ -115,7 +115,7 @@ export default function RewardsRedemptionPage() {
   useEffect(() => { fetchRedemptionRecords(); }, [fetchRedemptionRecords]);
 
   // --- Handlers ---
-  
+
   // Opens the action modal (Approve/Reject/etc)
   const handleActionClick = (record: RedemptionRecord, type: 'approved' | 'rejected' | 'shipped' | 'delivered') => {
     setSelectedRecord(record);
@@ -172,34 +172,34 @@ export default function RewardsRedemptionPage() {
 
   // --- Columns ---
   const redemptionColumns: ColumnDef<RedemptionRecord>[] = [
-    { 
-        accessorKey: "createdAt", 
-        header: "Date", 
-        cell: ({ row }) => <span className="text-xs text-gray-600">{formatDate(row.original.createdAt)}</span>,
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }) => <span className="text-xs text-gray-600">{formatDate(row.original.createdAt)}</span>,
     },
     { accessorKey: "masonName", header: "Mason" },
     { accessorKey: "rewardName", header: "Item" },
     { accessorKey: "quantity", header: "Qty" },
-    { 
-      accessorKey: "pointsDebited", 
+    {
+      accessorKey: "pointsDebited",
       header: "Cost",
       cell: ({ row }) => (
         <div className='flex items-center text-red-600 font-medium text-xs'>
-            -{row.original.pointsDebited} <IndianRupee className='w-3 h-3 ml-0.5' />
+          -{row.original.pointsDebited} <IndianRupee className='w-3 h-3 ml-0.5' />
         </div>
       ),
     },
-    { 
-      accessorKey: "status", 
+    {
+      accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
         const status = row.original.status;
         const { icon: Icon, className } = getStatusBadgeProps(status);
         return (
-            <Badge className={`capitalize font-medium ${className}`}>
-                <Icon className="w-3 h-3 mr-1" />
-                {status.toLowerCase()}
-            </Badge>
+          <Badge className={`capitalize font-medium ${className}`}>
+            <Icon className="w-3 h-3 mr-1" />
+            {status.toLowerCase()}
+          </Badge>
         );
       },
     },
@@ -213,9 +213,9 @@ export default function RewardsRedemptionPage() {
         return (
           <div className="flex gap-2 items-center">
             {/* View Button (Always visible) */}
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="h-7 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
               onClick={() => handleViewClick(r)}
             >
@@ -226,10 +226,10 @@ export default function RewardsRedemptionPage() {
             {(status === 'placed' || status === 'pending') && (
               <>
                 <Button size="sm" className="h-7 bg-green-600 hover:bg-green-700" onClick={() => handleActionClick(r, 'approved')}>
-                   Approve
+                  Approve
                 </Button>
                 <Button size="sm" variant="destructive" className="h-7" onClick={() => handleActionClick(r, 'rejected')}>
-                   Reject
+                  Reject
                 </Button>
               </>
             )}
@@ -238,10 +238,10 @@ export default function RewardsRedemptionPage() {
             {status === 'approved' && (
               <>
                 <Button size="sm" className="h-7 bg-indigo-600 hover:bg-indigo-700" onClick={() => handleActionClick(r, 'shipped')}>
-                   <Truck className="w-3 h-3 mr-1"/> Ship
+                  <Truck className="w-3 h-3 mr-1" /> Ship
                 </Button>
                 <Button size="sm" variant="ghost" className="h-7 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => handleActionClick(r, 'rejected')}>
-                   Reject
+                  Reject
                 </Button>
               </>
             )}
@@ -249,7 +249,7 @@ export default function RewardsRedemptionPage() {
             {/* SHIPPED -> DELIVER */}
             {status === 'shipped' && (
               <Button size="sm" className="h-7 bg-teal-600 hover:bg-teal-700" onClick={() => handleActionClick(r, 'delivered')}>
-                 <Check className="w-3 h-3 mr-1"/> Mark Delivered
+                <Check className="w-3 h-3 mr-1" /> Mark Delivered
               </Button>
             )}
           </div>
@@ -263,6 +263,10 @@ export default function RewardsRedemptionPage() {
       <div className="flex-1 space-y-8 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Rewards Redemption Log</h2>
+          <RefreshDataButton
+          cachePrefix="rewards-redemption"
+          onRefresh={fetchRedemptionRecords}
+        />
         </div>
 
         <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
@@ -278,9 +282,9 @@ export default function RewardsRedemptionPage() {
 
         <div className="bg-card p-6 rounded-lg border border-border">
           {isLoading ? (
-             <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>
+            <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>
           ) : (
-             <DataTableReusable columns={redemptionColumns} data={filteredRecords} enableRowDragging={false} />
+            <DataTableReusable columns={redemptionColumns} data={filteredRecords} enableRowDragging={false} />
           )}
         </div>
       </div>
@@ -297,12 +301,12 @@ export default function RewardsRedemptionPage() {
               {actionType === 'delivered' && "Mark transaction as complete."}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Admin Notes (Optional)</Label>
-              <Textarea 
-                placeholder="Add courier details or rejection reason..." 
+              <Textarea
+                placeholder="Add courier details or rejection reason..."
                 value={fulfillmentNote}
                 onChange={(e) => setFulfillmentNote(e.target.value)}
               />
@@ -311,13 +315,13 @@ export default function RewardsRedemptionPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsActionModalOpen(false)}>Cancel</Button>
-            <Button 
-                variant={actionType === 'rejected' ? "destructive" : "default"} 
-                onClick={confirmAction}
-                disabled={isProcessing}
+            <Button
+              variant={actionType === 'rejected' ? "destructive" : "default"}
+              onClick={confirmAction}
+              disabled={isProcessing}
             >
-                {isProcessing ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : null}
-                Confirm {actionType}
+              {isProcessing ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : null}
+              Confirm {actionType}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -333,7 +337,7 @@ export default function RewardsRedemptionPage() {
             </DialogHeader>
 
             <div className="space-y-6 py-4">
-              
+
               {/* Reward Info Section */}
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-2 uppercase tracking-wider">Reward Information</h3>

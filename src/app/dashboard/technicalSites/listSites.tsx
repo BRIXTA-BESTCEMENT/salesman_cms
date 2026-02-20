@@ -5,16 +5,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
-import { 
-  Search, 
-  MapPin, 
-  Calendar, 
+import {
+  Search,
+  MapPin,
+  Calendar,
   ExternalLink
 } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { Badge } from '@/components/ui/badge';
 
 import { technicalSiteSchema } from '@/lib/shared-zod-schema';
@@ -49,7 +50,7 @@ export default function ListSitesPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      
+
       // Parse with Zod
       const validatedSites = z.array(technicalSiteSchema).parse(data);
       setSites(validatedSites);
@@ -306,7 +307,7 @@ export default function ListSitesPage() {
       cell: ({ row }) => {
         const lifts = row.original.bagLifts;
         if (!lifts || lifts.length === 0) return <span className="text-muted-foreground text-xs">-</span>;
-        
+
         const totalBags = lifts.reduce((acc, curr) => acc + curr.bagCount, 0);
         const totalPoints = lifts.reduce((acc, curr) => acc + curr.pointsCredited, 0);
 
@@ -337,16 +338,18 @@ export default function ListSitesPage() {
   return (
     <div className="container mx-auto p-4 max-w-[100vw] overflow-hidden">
       <div className="flex flex-col gap-4">
-        
         {/* Header Section */}
         <div className="flex justify-between items-center">
-           <h1 className="text-2xl font-bold">Technical Sites</h1>
-           <span className="text-muted-foreground text-sm">{sites.length} Records found</span>
+          <h1 className="text-2xl font-bold">Technical Sites</h1>
+          <RefreshDataButton
+            cachePrefix="technical-sites"
+            onRefresh={fetchSites}
+          />
         </div>
 
         {/* Filters */}
         <div className="flex flex-wrap items-end gap-4 mb-2 p-4 bg-card border rounded-lg shadow-sm">
-          
+
           {/* Search */}
           <div className="flex flex-col space-y-1 w-full sm:w-[250px]">
             <label className="text-sm font-medium text-muted-foreground">Search</label>
@@ -404,7 +407,7 @@ export default function ListSitesPage() {
               columns={columns}
               data={filteredSites}
               enableRowDragging={false}
-              onRowOrderChange={() => {}}
+              onRowOrderChange={() => { }}
             />
           </div>
         )}

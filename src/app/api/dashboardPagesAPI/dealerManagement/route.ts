@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/dealerManagement/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse, NextRequest } from 'next/server';
+import { cacheTag, cacheLife, revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma'; // Ensure this path is correct for your Prisma client
 import { z } from 'zod';
@@ -11,6 +11,100 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive', 'executive','junior-executive'];
+
+
+// 1. Create the cached function OUTSIDE your GET route
+async function getCachedDealersByCompany(companyId: number) {
+    'use cache';
+    cacheLife('days'); // Keeps it cached for a long time
+    cacheTag(`dealers-${companyId}`); // Tag it uniquely per company for easy invalidation
+
+    const dealers = await prisma.dealer.findMany({
+        where: {
+            user: { companyId: companyId },
+            verificationStatus: 'VERIFIED',
+        },
+        include: { 
+            parentDealer: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+    });
+
+    function toNumberOrNull(val: any): number | null {
+            if (val === null || val === undefined || val === '') return null;
+
+            // Prisma Decimal has .toNumber()
+            if (typeof val === 'object' && typeof val.toNumber === 'function') {
+                return val.toNumber();
+            }
+
+            const n = Number(val);
+            return Number.isFinite(n) ? n : null;
+        }
+
+    // You can even cache the formatted result to save CPU cycles!
+    return dealers.map((dealer: any) => ({
+        id: dealer.id,
+        name: dealer.name,
+        type: dealer.type,
+        region: dealer.region,
+        area: dealer.area,
+        phoneNo: dealer.phoneNo,
+        address: dealer.address,
+        pinCode: dealer.pinCode,
+        latitude: toNumberOrNull(dealer.latitude),
+        longitude: toNumberOrNull(dealer.longitude),
+        dateOfBirth: dealer.dateOfBirth ? dealer.dateOfBirth.toISOString().split('T')[0] : null,
+        anniversaryDate: dealer.anniversaryDate ? dealer.anniversaryDate.toISOString().split('T')[0] : null,
+        totalPotential: dealer.totalPotential.toNumber(),
+        bestPotential: dealer.bestPotential.toNumber(),
+        brandSelling: dealer.brandSelling,
+        feedbacks: dealer.feedbacks,
+        remarks: dealer.remarks,
+        verificationStatus: dealer.verificationStatus,
+        nameOfFirm: dealer.nameOfFirm,
+        underSalesPromoterName: dealer.underSalesPromoterName,
+        noOfPJP: dealer.noOfPJP,
+        createdAt: dealer.createdAt.toISOString(),
+        updatedAt: dealer.updatedAt.toISOString(),
+        parentDealerName: dealer.parentDealer?.name || null,
+    }));
+}
+
+export async function GET() {
+    try {
+        const claims = await getTokenClaims();
+
+        // 1. Authentication Check
+        if (!claims || !claims.sub) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // 2. Fetch Current User to get their ID and role
+        const currentUser = await prisma.user.findUnique({
+            where: { workosUserId: claims.sub },
+            select: { id: true, role: true, companyId: true } // Select only necessary fields
+        });
+
+        // 3. Role-based Authorization: Now allows 'sr executive', 'executive', and 'jr executive' to add dealers
+        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
+            return NextResponse.json({ error: `Forbidden: Only the following roles can add dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
+        }
+
+        // 4. --- FETCH FROM CACHE INSTEAD OF DB ---
+        const formattedDealers = await getCachedDealersByCompany(currentUser.companyId);
+
+        // 5. Validate the formatted data against the getDealerResponseSchema
+        const validatedDealers = z.array(getDealersSchema).parse(formattedDealers); // Use the new GET schema
+
+        return NextResponse.json(validatedDealers, { status: 200 });
+    } catch (error) {
+        console.error('Error fetching dealers (GET):', error);
+        return NextResponse.json({ error: 'Failed to fetch dealers', details: (error as Error).message }, { status: 500 });
+    } finally {
+        //await prisma.$disconnect(); // Disconnect Prisma client
+    }
+}
 
   // HAVE TO FIX DEALER ADDING - STATUS SET TO 'PENDING'
 export async function POST(request: NextRequest) {
@@ -100,106 +194,15 @@ export async function POST(request: NextRequest) {
             },
         });
 
+        // Clear the cache for this company so the new dealer appears!
+        revalidateTag(`dealers-${currentUser.companyId}`, 'max');
+
         return NextResponse.json({ message: 'Dealer added successfully!', dealer: newDealer }, { status: 201 });
     } catch (error) {
         console.error('Error adding dealer (POST):', error);
         return NextResponse.json({ error: 'Failed to add dealer', details: (error as Error).message }, { status: 500 });
     } finally {
         await prisma.$disconnect(); // Disconnect Prisma client
-    }
-}
-
-export async function GET() {
-    try {
-        const claims = await getTokenClaims();
-
-        // 1. Authentication Check
-        if (!claims || !claims.sub) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        // 2. Fetch Current User to get their ID and role
-        const currentUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub },
-            select: { id: true, role: true, companyId: true } // Select only necessary fields
-        });
-
-        // 3. Role-based Authorization: Now allows 'sr executive', 'executive', and 'jr executive' to add dealers
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: `Forbidden: Only the following roles can add dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
-        }
-
-        // 4. Fetch Dealers for the current user's company, filtering for 'Verified' status
-        const dealers = await prisma.dealer.findMany({
-            where: {
-                user: { // Filter dealers by the company of the user who created them
-                    companyId: currentUser.companyId,
-                },
-                verificationStatus: 'VERIFIED', // <-- ADDED FILTER: Only fetch verified dealers
-            },
-            include: { 
-                parentDealer: { // include relation to parent dealer
-                    select: { id: true, name: true },
-                },
-            },
-            orderBy: {
-                createdAt: 'desc', // Order by latest added dealers first
-            },
-            // take: 200, // Limit to recent dealers for dashboard view
-        });
-
-        // 5. Format the data to match the getDealerResponseSchema for the frontend
-        // helper in the same file above formattedDealers
-        function toNumberOrNull(val: any): number | null {
-            if (val === null || val === undefined || val === '') return null;
-
-            // Prisma Decimal has .toNumber()
-            if (typeof val === 'object' && typeof val.toNumber === 'function') {
-                return val.toNumber();
-            }
-
-            const n = Number(val);
-            return Number.isFinite(n) ? n : null;
-        }
-
-        // Then in your mapping:
-        const formattedDealers = dealers.map((dealer:any) => ({
-            id: dealer.id,
-            name: dealer.name,
-            type: dealer.type,
-            region: dealer.region,
-            area: dealer.area,
-            phoneNo: dealer.phoneNo,
-            address: dealer.address,
-            pinCode: dealer.pinCode,
-            latitude: toNumberOrNull(dealer.latitude),
-            longitude: toNumberOrNull(dealer.longitude),
-            dateOfBirth: dealer.dateOfBirth ? dealer.dateOfBirth.toISOString().split('T')[0] : null,
-            anniversaryDate: dealer.anniversaryDate ? dealer.anniversaryDate.toISOString().split('T')[0] : null,
-            totalPotential: dealer.totalPotential.toNumber(),
-            bestPotential: dealer.bestPotential.toNumber(),
-            brandSelling: dealer.brandSelling,
-            feedbacks: dealer.feedbacks,
-            remarks: dealer.remarks,
-            verificationStatus: dealer.verificationStatus,
-            nameOfFirm: dealer.nameOfFirm,
-            underSalesPromoterName: dealer.underSalesPromoterName,
-            noOfPJP: dealer.noOfPJP,
-            createdAt: dealer.createdAt.toISOString(),
-            updatedAt: dealer.updatedAt.toISOString(),
-            parentDealerName: dealer.parentDealer?.name || null,
-        }));
-
-
-        // 6. Validate the formatted data against the getDealerResponseSchema
-        const validatedDealers = z.array(getDealersSchema).parse(formattedDealers); // Use the new GET schema
-
-        return NextResponse.json(validatedDealers, { status: 200 });
-    } catch (error) {
-        console.error('Error fetching dealers (GET):', error);
-        return NextResponse.json({ error: 'Failed to fetch dealers', details: (error as Error).message }, { status: 500 });
-    } finally {
-        //await prisma.$disconnect(); // Disconnect Prisma client
     }
 }
 
@@ -251,6 +254,9 @@ export async function DELETE(request: NextRequest) {
         await prisma.dealer.delete({
             where: { id: dealerId }
         });
+
+        // Clear the cache for this company so the new dealer appears!
+        revalidateTag(`dealers-${currentUser.companyId}`, 'max');
 
         return NextResponse.json({ message: 'Dealer deleted successfully' }, { status: 200 });
 

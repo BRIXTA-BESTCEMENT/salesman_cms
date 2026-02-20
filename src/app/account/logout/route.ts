@@ -1,5 +1,4 @@
 // src/app/account/logout/route.ts
-export const runtime = 'nodejs';
 import { signOut } from '@workos-inc/authkit-nextjs';
 import { redirect } from 'next/navigation';
 

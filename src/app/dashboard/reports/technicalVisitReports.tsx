@@ -9,12 +9,13 @@ import { z } from 'zod';
 import {
   Loader2, Search, Eye, ExternalLink, MapPin,
   User, Calendar, Briefcase, Store, HardHat, Camera,
-  Image as ImageIcon, LogIn, LogOut, 
+  Image as ImageIcon, LogIn, LogOut,
   RefreshCw, Wrench, Users,
 } from 'lucide-react';
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { technicalVisitReportSchema } from '@/lib/shared-zod-schema';
 
 // UI Components
@@ -335,7 +336,7 @@ export default function TechnicalVisitReportsPage() {
   // --- LAYOUT RENDERERS FOR MODAL ---
   const renderIHBDetails = (r: TechnicalVisitReport) => (
     <div className="space-y-6">
-      
+
       {/* 1. CONSTRUCTION SITE BASIC INFO */}
       <Card className="border-l-4 border-l-primary">
         <CardHeader className="pb-2">
@@ -358,7 +359,7 @@ export default function TechnicalVisitReportsPage() {
 
       {/* 2. CONVERSION & TECH SERVICES (Side by Side) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+
         <Card className={`border-l-4 ${r.isConverted ? 'border-l-green-500' : 'border-l-muted'}`}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -439,12 +440,12 @@ export default function TechnicalVisitReportsPage() {
         <div className="col-span-2 grid grid-cols-2 gap-4 p-2 rounded-lg">
           <InfoField label="Bag Picked (Converted)" value={r.isConverted ? "YES" : "NO"} />
           {r.isConverted && (
-              <>
-                <InfoField label="Quantity" value={`${r.conversionQuantityValue || 0} ${r.conversionQuantityUnit || ''}`} />
-                <InfoField label="Rate per Bag" value={r.currentBrandPrice ? `₹${r.currentBrandPrice}` : 'N/A'} />
-                <InfoField label="Date of Supply" value={r.date ? new Date(r.date).toLocaleDateString() : 'N/A'} />
-              </>
-            )}
+            <>
+              <InfoField label="Quantity" value={`${r.conversionQuantityValue || 0} ${r.conversionQuantityUnit || ''}`} />
+              <InfoField label="Rate per Bag" value={r.currentBrandPrice ? `₹${r.currentBrandPrice}` : 'N/A'} />
+              <InfoField label="Date of Supply" value={r.date ? new Date(r.date).toLocaleDateString() : 'N/A'} />
+            </>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -481,6 +482,11 @@ export default function TechnicalVisitReportsPage() {
           <Badge variant="outline" className="text-base px-4 py-1">
             Total Reports: {filteredReports.length}
           </Badge>
+
+          <RefreshDataButton
+            cachePrefix="technical-visit-reports"
+            onRefresh={fetchTechnicalReports}
+          />
         </div>
 
         {/* Filter Bar */}

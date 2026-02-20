@@ -1,6 +1,5 @@
 // src/app/api/dashboardPagesAPI/slm-leaves/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse, NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';

@@ -8,7 +8,7 @@ import { Search, Loader2 } from 'lucide-react';
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
-
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 // UI Components for Filtering
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,14 +20,14 @@ const POINTS_LEDGER_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/points-l
 
 // Type for data coming from the API (must match the flattened response structure)
 type PointsLedgerRecord = {
-    id: string;
-    masonId: string;
-    masonName: string;
-    sourceType: string;
-    sourceId: string | null;
-    points: number;
-    memo: string | null;
-    createdAt: string; // ISO string
+  id: string;
+  masonId: string;
+  masonName: string;
+  sourceType: string;
+  sourceId: string | null;
+  points: number;
+  memo: string | null;
+  createdAt: string; // ISO string
 };
 
 // Static options for the Source Type filter
@@ -88,13 +88,13 @@ const formatDate = (dateString: string | null | undefined) => {
  * Determines the color for the points badge based on positive/negative value.
  */
 const getPointsBadgeColor = (points: number) => {
-    if (points > 0) {
-        return 'bg-green-100 text-green-700 hover:bg-green-200'; // Credit
-    } else if (points < 0) {
-        return 'bg-red-100 text-red-700 hover:bg-red-200'; // Debit/Redemption
-    } else {
-        return 'bg-gray-100 text-gray-700 hover:bg-gray-200'; // Zero
-    }
+  if (points > 0) {
+    return 'bg-green-100 text-green-700 hover:bg-green-200'; // Credit
+  } else if (points < 0) {
+    return 'bg-red-100 text-red-700 hover:bg-red-200'; // Debit/Redemption
+  } else {
+    return 'bg-gray-100 text-gray-700 hover:bg-gray-200'; // Zero
+  }
 };
 
 
@@ -120,7 +120,7 @@ export default function PointsLedgerPage() {
     try {
       const response = await fetch(POINTS_LEDGER_API_ENDPOINT);
       if (!response.ok) {
-         if (response.status === 401) {
+        if (response.status === 401) {
           toast.error('You are not authenticated. Redirecting to login.');
           window.location.href = '/login';
           return;
@@ -142,7 +142,7 @@ export default function PointsLedgerPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []); 
+  }, []);
 
   // Initial data load
   useEffect(() => {
@@ -153,15 +153,15 @@ export default function PointsLedgerPage() {
   // --- Filtering Logic ---
   const filteredRecords = useMemo(() => {
     // ⚠️ Removed manual reset of currentPage state
-    
+
     return ledgerRecords.filter((record) => {
       // 1. Mason Name Search
       const nameMatch = !searchQuery ||
         record.masonName.toLowerCase().includes(searchQuery.toLowerCase());
 
       // 2. Source Type Filter
-      const typeMatch = sourceTypeFilter === 'all' || 
-        record.sourceType.toLowerCase() === sourceTypeFilter.toLowerCase(); 
+      const typeMatch = sourceTypeFilter === 'all' ||
+        record.sourceType.toLowerCase() === sourceTypeFilter.toLowerCase();
 
       return nameMatch && typeMatch;
     });
@@ -169,20 +169,20 @@ export default function PointsLedgerPage() {
 
   // --- Define Columns for Points Ledger DataTable (unchanged) ---
   const ledgerColumns: ColumnDef<PointsLedgerRecord>[] = [
-    { 
-        accessorKey: "createdAt", 
-        header: "Date/Time", 
-        cell: ({ row }) => <span className="text-sm font-medium text-gray-100">{formatDate(row.original.createdAt)}</span>,
-        enableSorting: true,
-        sortingFn: 'datetime',
+    {
+      accessorKey: "createdAt",
+      header: "Date/Time",
+      cell: ({ row }) => <span className="text-sm font-medium text-gray-100">{formatDate(row.original.createdAt)}</span>,
+      enableSorting: true,
+      sortingFn: 'datetime',
     },
-    { 
-      accessorKey: "masonName", 
+    {
+      accessorKey: "masonName",
       header: "Mason Name",
       enableSorting: true,
     },
-    { 
-      accessorKey: "sourceType", 
+    {
+      accessorKey: "sourceType",
       header: "Source Type",
       cell: ({ row }) => (
         <Badge variant="outline" className="capitalize bg-blue-50 text-blue-700 border-blue-200">
@@ -190,39 +190,39 @@ export default function PointsLedgerPage() {
         </Badge>
       )
     },
-    { 
-      accessorKey: "points", 
+    {
+      accessorKey: "points",
       header: "Points Change",
       cell: ({ row }) => {
         const points = row.original.points;
         const colorClass = getPointsBadgeColor(points);
         const sign = points > 0 ? '+' : '';
         return (
-            <Badge className={`font-semibold text-sm ${colorClass}`}>
-                {sign}{points}
-            </Badge>
+          <Badge className={`font-semibold text-sm ${colorClass}`}>
+            {sign}{points}
+          </Badge>
         );
       },
       enableSorting: true,
     },
-    { 
-        accessorKey: "memo", 
-        header: "Memo",
-        cell: ({ row }) => (
-            <p className="max-w-[200px] truncate text-xs text-foreground" title={row.original.memo ?? 'N/A'}>
-                {row.original.memo ?? 'N/A'}
-            </p>
-        )
+    {
+      accessorKey: "memo",
+      header: "Memo",
+      cell: ({ row }) => (
+        <p className="max-w-[200px] truncate text-xs text-foreground" title={row.original.memo ?? 'N/A'}>
+          {row.original.memo ?? 'N/A'}
+        </p>
+      )
     },
-    { 
-        accessorKey: "sourceId", 
-        header: "Source ID",
-        cell: ({ row }) => <span className="text-xs font-mono">{row.original.sourceId ? `${row.original.sourceId}` : 'N/A'}</span> 
+    {
+      accessorKey: "sourceId",
+      header: "Source ID",
+      cell: ({ row }) => <span className="text-xs font-mono">{row.original.sourceId ? `${row.original.sourceId}` : 'N/A'}</span>
     },
-    { 
-      accessorKey: "id", 
-      header: "Transaction ID", 
-      cell: ({ row }) => <span className="text-xs font-mono">{row.original.id}</span> 
+    {
+      accessorKey: "id",
+      header: "Transaction ID",
+      cell: ({ row }) => <span className="text-xs font-mono">{row.original.id}</span>
     },
   ];
 
@@ -251,6 +251,10 @@ export default function PointsLedgerPage() {
         {/* Header Section */}
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Points Ledger</h2>
+          <RefreshDataButton
+          cachePrefix="points-ledger"
+          onRefresh={fetchPointsLedgerRecords}
+        />
         </div>
 
         {/* --- Filter Components --- */}
@@ -271,12 +275,12 @@ export default function PointsLedgerPage() {
 
           {/* 2. Source Type Filter */}
           {renderSelectFilter(
-            'Source Type', 
-            sourceTypeFilter, 
-            (v) => { setSourceTypeFilter(v); }, 
+            'Source Type',
+            sourceTypeFilter,
+            (v) => { setSourceTypeFilter(v); },
             SOURCE_TYPE_OPTIONS
           )}
-          
+
         </div>
         {/* --- End Filter Components --- */}
 
@@ -287,8 +291,8 @@ export default function PointsLedgerPage() {
           ) : (
             <DataTableReusable
               columns={ledgerColumns}
-              data={filteredRecords} 
-              enableRowDragging={false} 
+              data={filteredRecords}
+              enableRowDragging={false}
               onRowOrderChange={handleLedgerOrderChange}
             />
           )}

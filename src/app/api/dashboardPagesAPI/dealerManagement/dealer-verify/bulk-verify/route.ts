@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/add-dealers/dealer-verify/bulk-verify/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse, NextRequest } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -81,10 +81,10 @@ export async function PATCH(request: NextRequest) {
             }
         });
 
-        return NextResponse.json({ 
-            message: 'Bulk verification successful', 
-            count: result.count 
-        }, { status: 200 });
+        revalidateTag(`dealers-${currentUser.companyId}`, 'max');
+        revalidateTag(`verified-dealers-${currentUser.companyId}`, 'max');
+
+        return NextResponse.json({ message: 'Bulk verification successful', count: result.count }, { status: 200 });
 
     } catch (error: any) {
         console.error('Bulk verify error:', error);

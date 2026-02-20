@@ -1,7 +1,8 @@
 // src/app/home/layout.tsx
-export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 import { withAuth, getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import prisma from '@/lib/prisma';
 import HomeShell from '@/app/home/homeShell';
 import type { Metadata } from "next";
@@ -34,15 +35,26 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * Layout component for the CemTem Chat page.
- * Handles WorkOS authentication and user data synchronization before rendering children.
- */
-export default async function CemTemChatLayout({
+// 1. STATIC SHELL: Allows Next.js Cache Components to prerender successfully
+export default function CemTemChatLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
+      <AuthenticatedHomeLayout>{children}</AuthenticatedHomeLayout>
+    </Suspense>
+  );
+}
+
+export async function AuthenticatedHomeLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  await connection();
+  
   const { user } = await withAuth();
   const claims = await getTokenClaims();
 

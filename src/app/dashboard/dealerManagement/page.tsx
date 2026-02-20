@@ -1,67 +1,13 @@
 // src/app/dashboard/dealerManagement/page.tsx
-// --- NO 'use client' --- This is the Server Component.
-export const dynamic = 'force-dynamic';
-// Import the new client component from 'tabsLoader.tsx'
-import { DealerManagementTabs } from './tabsLoader';
-
-// Server-side imports for permissions
+import { Suspense } from 'react';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
+import { DealerManagementTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
+import { connection } from 'next/server';
 
-/**
- * Fetches the current user's role from the database.
- * Runs only on the server.
- */
-async function getCurrentUserRole(): Promise<WorkOSRole | null> {
-  try {
-    const claims = await getTokenClaims();
-    if (!claims?.sub) {
-      return null; // Not logged in
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { role: true },
-    });
-    
-    return (user?.role as WorkOSRole) ?? null;
-  } catch (error) {
-    console.error("Error fetching user role:", error);
-    return null;
-  }
-}
-
-// The page component is now an 'async' function
-export default async function DealersPage() {
-  // 1. Get the user's role on the server
-  const userRole = await getCurrentUserRole();
-
-  // 2. Check permissions for each tab
-  const roleToCheck = userRole ?? 'junior-executive'; // Default to lowest role
-
-  const canSeeAddAndListDealers = hasPermission(roleToCheck, 'dealerManagement.addAndListDealers');
-  const canSeeListDealers = hasPermission(roleToCheck, 'dealerManagement.listDealers');
-  const canSeeVerifyDealers = hasPermission(roleToCheck, 'dealerManagement.verifyDealers');
-  const canSeeBrandMapping = hasPermission(roleToCheck, 'dealerManagement.dealerBrandMapping');
-  const canSeeListVerifiedDealers = hasPermission(roleToCheck, 'dealerManagement.listVerifiedDealers');
-
-  // Corrected 'canSeeAnything' to include all permissions
-  const canSeeAnything = canSeeAddAndListDealers || canSeeListDealers || canSeeVerifyDealers || canSeeBrandMapping || canSeeListVerifiedDealers;
-
-  // 3. Handle users who can't see anything
-  if (!canSeeAnything) {
-    return (
-      <div className="flex-1 space-y-4 p-4 md:p-6">
-        <h2 className="text-3xl font-bold tracking-tight">Access Denied</h2>
-        <p className="text-neutral-500">
-          You do not have permission to view this section.
-        </p>
-      </div>
-    );
-  }
-
-  // 4. Render the page, passing permissions to the client component
+// 1. The Static Shell
+export default function DealersPage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-6">
       <div className="flex items-center justify-between space-y-2">
@@ -70,11 +16,60 @@ export default async function DealersPage() {
         </h2>
       </div>
 
-      {/* Render the CLIENT component and pass the
-        server-side permissions as props.
-      */}
+      <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
+        <DealersDynamicContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function getCurrentUserRole(): Promise<WorkOSRole | null> {
+
+  const claims = await getTokenClaims();
+  if (!claims?.sub) {
+    return null;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { workosUserId: claims.sub },
+    select: { role: true },
+  });
+
+  return (user?.role as WorkOSRole) ?? null;
+
+}
+
+// 2. The Dynamic Content
+async function DealersDynamicContent() {
+  await connection();
+  const userRole = await getCurrentUserRole();
+  const roleToCheck = userRole ?? 'junior-executive'; // Default to lowest role
+
+  const canSeeAddAndListDealers = hasPermission(roleToCheck, 'dealerManagement.addAndListDealers');
+  const canSeeListDealers = hasPermission(roleToCheck, 'dealerManagement.listDealers');
+  const canSeeVerifyDealers = hasPermission(roleToCheck, 'dealerManagement.verifyDealers');
+  const canSeeBrandMapping = hasPermission(roleToCheck, 'dealerManagement.dealerBrandMapping');
+  const canSeeListVerifiedDealers = hasPermission(roleToCheck, 'dealerManagement.listVerifiedDealers');
+
+  const canSeeAnything = canSeeAddAndListDealers || canSeeListDealers || canSeeVerifyDealers || canSeeBrandMapping || canSeeListVerifiedDealers;
+
+  // Handle users who can't see anything
+  if (!canSeeAnything) {
+    return (
+      <div className="mt-4">
+        <h3 className="text-xl font-semibold tracking-tight text-red-600">Access Denied</h3>
+        <p className="text-neutral-500">
+          You do not have permission to view this section.
+        </p>
+      </div>
+    );
+  }
+
+  // Render the CLIENT component and pass the server-side permissions as props
+  return (
+    <div className="flex-1 space-y-4 p-4 md:p-6 overflow-x-hidden">
+
       <DealerManagementTabs
-        //canSeeAddAndListDealers={canSeeAddAndListDealers}
         canSeeListDealers={canSeeListDealers}
         canSeeVerifyDealers={canSeeVerifyDealers}
         canSeeBrandMapping={canSeeBrandMapping}

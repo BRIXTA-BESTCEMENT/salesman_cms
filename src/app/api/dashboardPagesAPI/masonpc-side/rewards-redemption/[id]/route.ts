@@ -1,9 +1,8 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/rewards-redemption/[id]/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
+import { revalidateTag } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
@@ -131,6 +130,21 @@ export async function PATCH(
             }
         });
     });
+
+    // --- 2. CACHE INVALIDATION ---
+    // The redemption list itself changed
+    revalidateTag(`rewards-redemption-${currentUser.companyId}`, 'max');
+
+    // The reward stock was updated (global cache, not company specific)
+    if (newStatus === 'approved' || newStatus === 'rejected') {
+        revalidateTag('rewards', 'max'); 
+    }
+
+    // Points were refunded, so invalidate Ledger and Mason PC
+    if (newStatus === 'rejected') {
+        revalidateTag(`points-ledger-${currentUser.companyId}`, 'max');
+        revalidateTag(`mason-pc-${currentUser.companyId}`, 'max');
+    }
 
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {

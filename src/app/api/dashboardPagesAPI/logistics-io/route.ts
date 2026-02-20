@@ -1,6 +1,5 @@
 // src/app/api/dashboardPagesAPI/logistics-io/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';

@@ -28,6 +28,7 @@ export type AggregateJourney = {
 
 export type JourneyAvgAggregateOutputType = {
   userId: number | null
+  verifiedDealerId: number | null
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
   totalDistance: runtime.Decimal | null
@@ -35,6 +36,7 @@ export type JourneyAvgAggregateOutputType = {
 
 export type JourneySumAggregateOutputType = {
   userId: number | null
+  verifiedDealerId: number | null
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
   totalDistance: runtime.Decimal | null
@@ -46,6 +48,8 @@ export type JourneyMinAggregateOutputType = {
   pjpId: string | null
   siteId: string | null
   dealerId: string | null
+  taskId: string | null
+  verifiedDealerId: number | null
   siteName: string | null
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
@@ -65,6 +69,8 @@ export type JourneyMaxAggregateOutputType = {
   pjpId: string | null
   siteId: string | null
   dealerId: string | null
+  taskId: string | null
+  verifiedDealerId: number | null
   siteName: string | null
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
@@ -84,6 +90,8 @@ export type JourneyCountAggregateOutputType = {
   pjpId: number
   siteId: number
   dealerId: number
+  taskId: number
+  verifiedDealerId: number
   siteName: number
   destLat: number
   destLng: number
@@ -101,6 +109,7 @@ export type JourneyCountAggregateOutputType = {
 
 export type JourneyAvgAggregateInputType = {
   userId?: true
+  verifiedDealerId?: true
   destLat?: true
   destLng?: true
   totalDistance?: true
@@ -108,6 +117,7 @@ export type JourneyAvgAggregateInputType = {
 
 export type JourneySumAggregateInputType = {
   userId?: true
+  verifiedDealerId?: true
   destLat?: true
   destLng?: true
   totalDistance?: true
@@ -119,6 +129,8 @@ export type JourneyMinAggregateInputType = {
   pjpId?: true
   siteId?: true
   dealerId?: true
+  taskId?: true
+  verifiedDealerId?: true
   siteName?: true
   destLat?: true
   destLng?: true
@@ -138,6 +150,8 @@ export type JourneyMaxAggregateInputType = {
   pjpId?: true
   siteId?: true
   dealerId?: true
+  taskId?: true
+  verifiedDealerId?: true
   siteName?: true
   destLat?: true
   destLng?: true
@@ -157,6 +171,8 @@ export type JourneyCountAggregateInputType = {
   pjpId?: true
   siteId?: true
   dealerId?: true
+  taskId?: true
+  verifiedDealerId?: true
   siteName?: true
   destLat?: true
   destLng?: true
@@ -263,6 +279,8 @@ export type JourneyGroupByOutputType = {
   pjpId: string | null
   siteId: string | null
   dealerId: string | null
+  taskId: string | null
+  verifiedDealerId: number | null
   siteName: string | null
   destLat: runtime.Decimal | null
   destLng: runtime.Decimal | null
@@ -305,6 +323,8 @@ export type JourneyWhereInput = {
   pjpId?: Prisma.StringNullableFilter<"Journey"> | string | null
   siteId?: Prisma.StringNullableFilter<"Journey"> | string | null
   dealerId?: Prisma.StringNullableFilter<"Journey"> | string | null
+  taskId?: Prisma.StringNullableFilter<"Journey"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"Journey"> | number | null
   siteName?: Prisma.StringNullableFilter<"Journey"> | string | null
   destLat?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -327,6 +347,8 @@ export type JourneyOrderByWithRelationInput = {
   pjpId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  taskId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   destLat?: Prisma.SortOrderInput | Prisma.SortOrder
   destLng?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -352,6 +374,8 @@ export type JourneyWhereUniqueInput = Prisma.AtLeast<{
   pjpId?: Prisma.StringNullableFilter<"Journey"> | string | null
   siteId?: Prisma.StringNullableFilter<"Journey"> | string | null
   dealerId?: Prisma.StringNullableFilter<"Journey"> | string | null
+  taskId?: Prisma.StringNullableFilter<"Journey"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"Journey"> | number | null
   siteName?: Prisma.StringNullableFilter<"Journey"> | string | null
   destLat?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -374,6 +398,8 @@ export type JourneyOrderByWithAggregationInput = {
   pjpId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteId?: Prisma.SortOrderInput | Prisma.SortOrder
   dealerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  taskId?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrderInput | Prisma.SortOrder
   siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   destLat?: Prisma.SortOrderInput | Prisma.SortOrder
   destLng?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -401,6 +427,8 @@ export type JourneyScalarWhereWithAggregatesInput = {
   pjpId?: Prisma.StringNullableWithAggregatesFilter<"Journey"> | string | null
   siteId?: Prisma.StringNullableWithAggregatesFilter<"Journey"> | string | null
   dealerId?: Prisma.StringNullableWithAggregatesFilter<"Journey"> | string | null
+  taskId?: Prisma.StringNullableWithAggregatesFilter<"Journey"> | string | null
+  verifiedDealerId?: Prisma.IntNullableWithAggregatesFilter<"Journey"> | number | null
   siteName?: Prisma.StringNullableWithAggregatesFilter<"Journey"> | string | null
   destLat?: Prisma.DecimalNullableWithAggregatesFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableWithAggregatesFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -419,6 +447,8 @@ export type JourneyCreateInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -441,6 +471,8 @@ export type JourneyUncheckedCreateInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -461,6 +493,8 @@ export type JourneyUpdateInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -483,6 +517,8 @@ export type JourneyUncheckedUpdateInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -504,6 +540,8 @@ export type JourneyCreateManyInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -522,6 +560,8 @@ export type JourneyUpdateManyMutationInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -541,6 +581,8 @@ export type JourneyUncheckedUpdateManyInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -575,6 +617,8 @@ export type JourneyCountOrderByAggregateInput = {
   pjpId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
+  taskId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
   siteName?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
@@ -590,6 +634,7 @@ export type JourneyCountOrderByAggregateInput = {
 
 export type JourneyAvgOrderByAggregateInput = {
   userId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
   totalDistance?: Prisma.SortOrder
@@ -601,6 +646,8 @@ export type JourneyMaxOrderByAggregateInput = {
   pjpId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
+  taskId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
   siteName?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
@@ -620,6 +667,8 @@ export type JourneyMinOrderByAggregateInput = {
   pjpId?: Prisma.SortOrder
   siteId?: Prisma.SortOrder
   dealerId?: Prisma.SortOrder
+  taskId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
   siteName?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
@@ -635,6 +684,7 @@ export type JourneyMinOrderByAggregateInput = {
 
 export type JourneySumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
+  verifiedDealerId?: Prisma.SortOrder
   destLat?: Prisma.SortOrder
   destLng?: Prisma.SortOrder
   totalDistance?: Prisma.SortOrder
@@ -722,6 +772,8 @@ export type JourneyCreateWithoutUserInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -742,6 +794,8 @@ export type JourneyUncheckedCreateWithoutUserInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -792,6 +846,8 @@ export type JourneyScalarWhereInput = {
   pjpId?: Prisma.StringNullableFilter<"Journey"> | string | null
   siteId?: Prisma.StringNullableFilter<"Journey"> | string | null
   dealerId?: Prisma.StringNullableFilter<"Journey"> | string | null
+  taskId?: Prisma.StringNullableFilter<"Journey"> | string | null
+  verifiedDealerId?: Prisma.IntNullableFilter<"Journey"> | number | null
   siteName?: Prisma.StringNullableFilter<"Journey"> | string | null
   destLat?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.DecimalNullableFilter<"Journey"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -810,6 +866,8 @@ export type JourneyCreateWithoutGeoTrackingsInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -831,6 +889,8 @@ export type JourneyUncheckedCreateWithoutGeoTrackingsInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -866,6 +926,8 @@ export type JourneyUpdateWithoutGeoTrackingsInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -887,6 +949,8 @@ export type JourneyUncheckedUpdateWithoutGeoTrackingsInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -906,6 +970,8 @@ export type JourneyCreateWithoutBreadcrumbsInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -927,6 +993,8 @@ export type JourneyUncheckedCreateWithoutBreadcrumbsInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -962,6 +1030,8 @@ export type JourneyUpdateWithoutBreadcrumbsInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -983,6 +1053,8 @@ export type JourneyUncheckedUpdateWithoutBreadcrumbsInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1002,6 +1074,8 @@ export type JourneyCreateManyUserInput = {
   pjpId?: string | null
   siteId?: string | null
   dealerId?: string | null
+  taskId?: string | null
+  verifiedDealerId?: number | null
   siteName?: string | null
   destLat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1020,6 +1094,8 @@ export type JourneyUpdateWithoutUserInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1040,6 +1116,8 @@ export type JourneyUncheckedUpdateWithoutUserInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1060,6 +1138,8 @@ export type JourneyUncheckedUpdateManyWithoutUserInput = {
   pjpId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   siteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dealerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedDealerId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destLat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   destLng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1119,6 +1199,8 @@ export type JourneySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   pjpId?: boolean
   siteId?: boolean
   dealerId?: boolean
+  taskId?: boolean
+  verifiedDealerId?: boolean
   siteName?: boolean
   destLat?: boolean
   destLng?: boolean
@@ -1142,6 +1224,8 @@ export type JourneySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   pjpId?: boolean
   siteId?: boolean
   dealerId?: boolean
+  taskId?: boolean
+  verifiedDealerId?: boolean
   siteName?: boolean
   destLat?: boolean
   destLng?: boolean
@@ -1162,6 +1246,8 @@ export type JourneySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   pjpId?: boolean
   siteId?: boolean
   dealerId?: boolean
+  taskId?: boolean
+  verifiedDealerId?: boolean
   siteName?: boolean
   destLat?: boolean
   destLng?: boolean
@@ -1182,6 +1268,8 @@ export type JourneySelectScalar = {
   pjpId?: boolean
   siteId?: boolean
   dealerId?: boolean
+  taskId?: boolean
+  verifiedDealerId?: boolean
   siteName?: boolean
   destLat?: boolean
   destLng?: boolean
@@ -1195,7 +1283,7 @@ export type JourneySelectScalar = {
   updatedAt?: boolean
 }
 
-export type JourneyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "pjpId" | "siteId" | "dealerId" | "siteName" | "destLat" | "destLng" | "status" | "isActive" | "startTime" | "endTime" | "totalDistance" | "isSynced" | "createdAt" | "updatedAt", ExtArgs["result"]["journey"]>
+export type JourneyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "pjpId" | "siteId" | "dealerId" | "taskId" | "verifiedDealerId" | "siteName" | "destLat" | "destLng" | "status" | "isActive" | "startTime" | "endTime" | "totalDistance" | "isSynced" | "createdAt" | "updatedAt", ExtArgs["result"]["journey"]>
 export type JourneyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   geoTrackings?: boolean | Prisma.Journey$geoTrackingsArgs<ExtArgs>
@@ -1222,6 +1310,8 @@ export type $JourneyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     pjpId: string | null
     siteId: string | null
     dealerId: string | null
+    taskId: string | null
+    verifiedDealerId: number | null
     siteName: string | null
     destLat: runtime.Decimal | null
     destLng: runtime.Decimal | null
@@ -1664,6 +1754,8 @@ export interface JourneyFieldRefs {
   readonly pjpId: Prisma.FieldRef<"Journey", 'String'>
   readonly siteId: Prisma.FieldRef<"Journey", 'String'>
   readonly dealerId: Prisma.FieldRef<"Journey", 'String'>
+  readonly taskId: Prisma.FieldRef<"Journey", 'String'>
+  readonly verifiedDealerId: Prisma.FieldRef<"Journey", 'Int'>
   readonly siteName: Prisma.FieldRef<"Journey", 'String'>
   readonly destLat: Prisma.FieldRef<"Journey", 'Decimal'>
   readonly destLng: Prisma.FieldRef<"Journey", 'Decimal'>

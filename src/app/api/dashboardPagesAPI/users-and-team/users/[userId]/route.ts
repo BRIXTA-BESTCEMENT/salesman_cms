@@ -1,6 +1,5 @@
 // src/app/api/dashboardPagesAPI/users-and-team/users/[userId]/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { WorkOS } from '@workos-inc/node';

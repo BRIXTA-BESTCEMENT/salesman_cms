@@ -1,19 +1,29 @@
-// --- NO 'use client' --- This is the Server Component.
-export const dynamic = 'force-dynamic';
-// Import the new client component from 'tabsLoader.tsx'
-import { MasonPcTabs } from './tabsLoader';
-
-// Server-side imports for permissions
+// src/app/dashboard/masonpcSide/page.tsx
+import { Suspense } from 'react';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
+import { MasonPcTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
+import { connection } from 'next/server';
 
-/**
- * Fetches the current user's role from the database.
- * Runs only on the server.
- */
+export default function MasonPcPage() {
+  return (
+    <div className="flex-1 space-y-4 p-4 md:p-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">
+          Mason-PC Management Page
+        </h2>
+      </div>
+
+      <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
+        <MasonPcDynamicContent />
+      </Suspense>
+    </div>
+  );
+}
+
 async function getCurrentUserRole(): Promise<WorkOSRole | null> {
-  try {
+  
     const claims = await getTokenClaims();
     if (!claims?.sub) {
       return null; // Not logged in
@@ -25,18 +35,13 @@ async function getCurrentUserRole(): Promise<WorkOSRole | null> {
     });
     
     return (user?.role as WorkOSRole) ?? null;
-  } catch (error) {
-    console.error("Error fetching user role:", error);
-    return null;
-  }
+  
 }
 
 // The page component is now an 'async' function
-export default async function MasonPcPage() {
-  // 1. Get the user's role on the server
+export async function MasonPcDynamicContent() {
+  await connection();
   const userRole = await getCurrentUserRole();
-
-  // 2. Check permissions for each tab in this section
   const roleToCheck = userRole ?? 'junior-executive'; // Default to lowest role
 
   // Assumes permission strings match this 'masonpcSide.tabName' format
@@ -67,15 +72,7 @@ export default async function MasonPcPage() {
   // 4. Render the page, passing permissions to the client component
   return (
     <div className="flex-1 space-y-4 p-4 md:p-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Mason/PC Management Page
-        </h2>
-      </div>
-
-      {/* Render the CLIENT component and pass the
-        server-side permissions as props.
-      */}
+      
       <MasonPcTabs
         canSeeMasonPc={canSeeMasonPc}
         canSeeTsoMeetings={canSeeTsoMeetings}

@@ -1,6 +1,5 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/rewards/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';

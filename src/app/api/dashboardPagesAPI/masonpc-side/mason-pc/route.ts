@@ -1,8 +1,7 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/mason-pc/route.ts
 import 'server-only';
-export const runtime = 'nodejs';
-
 import { NextResponse, NextRequest } from 'next/server';
+import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
@@ -57,9 +56,135 @@ const masonPcFullSchema = masonPCSideSchema.extend({
 
 export type MasonPcFullDetails = z.infer<typeof masonPcFullSchema>;
 
-/**
- * GET: Fetches Mason_PC_Side Records, including KYC details and user info for filtering.
- */
+// 2. The Cached Function
+async function getCachedMasonPcRecords(
+  companyId: number,
+  kycStatusFilter: string | null
+) {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag(`mason-pc-${companyId}`);
+
+  const whereClause: any = {};
+
+  if (kycStatusFilter === 'VERIFIED') {
+    whereClause.kycStatus = { in: ['verified', 'approved'] };
+  } else {
+    const filterToDbMap: Record<string, string> = {
+      PENDING: 'pending',
+      REJECTED: 'rejected',
+      NONE: 'none',
+    };
+
+    if (kycStatusFilter && filterToDbMap[kycStatusFilter]) {
+      whereClause.kycStatus = filterToDbMap[kycStatusFilter];
+    }
+  }
+
+  const masonPcRecords = await prisma.mason_PC_Side.findMany({
+    where: whereClause,
+    include: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          area: true,
+          region: true,
+        },
+      },
+      dealer: { select: { id: true, name: true } },
+      kycSubmissions: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        select: {
+          aadhaarNumber: true,
+          panNumber: true,
+          voterIdNumber: true,
+          documents: true,
+          remark: true,
+          createdAt: true,
+        },
+      },
+    },
+    orderBy: { name: 'asc' },
+    take: 2000,
+  });
+
+  const formattedRecords = masonPcRecords.map(
+    (record): MasonPcFullDetails => {
+      const salesmanName =
+        [record.user?.firstName, record.user?.lastName]
+          .filter(Boolean)
+          .join(' ') || 'N/A';
+
+      let displayStatus: KycVerificationStatus;
+      switch (record.kycStatus) {
+        case 'verified':
+        case 'approved':
+          displayStatus = 'VERIFIED';
+          break;
+        case 'pending':
+          displayStatus = 'PENDING';
+          break;
+        case 'rejected':
+          displayStatus = 'REJECTED';
+          break;
+        default:
+          displayStatus = 'NONE';
+      }
+
+      const latestKycSubmission = record.kycSubmissions?.[0];
+      const rawDocs = latestKycSubmission?.documents;
+
+      let normalizedDocs: Record<string, string> | null = null;
+
+      if (rawDocs) {
+        if (typeof rawDocs === 'string') {
+          try {
+            const parsed = JSON.parse(rawDocs);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              const entries = Object.entries(parsed).filter(
+                ([, v]) => typeof v === 'string' && (v as string).length > 0,
+              ) as [string, string][];
+              normalizedDocs = Object.fromEntries(entries);
+            }
+          } catch {
+            normalizedDocs = null;
+          }
+        } else if (typeof rawDocs === 'object' && !Array.isArray(rawDocs)) {
+          const entries = Object.entries(
+            rawDocs as Record<string, unknown>,
+          ).filter(
+            ([, v]) => typeof v === 'string' && (v as string).length > 0,
+          ) as [string, string][];
+          normalizedDocs = Object.fromEntries(entries);
+        }
+      }
+
+      return {
+        ...record,
+        salesmanName,
+        role: record.user?.role ?? 'N/A',
+        area: record.user?.area ?? 'N/A',
+        region: record.user?.region ?? 'N/A',
+        dealerName: record.dealer?.name ?? null,
+        kycVerificationStatus: displayStatus,
+        kycAadhaarNumber: latestKycSubmission?.aadhaarNumber ?? null,
+        kycPanNumber: latestKycSubmission?.panNumber ?? null,
+        kycVoterIdNumber: latestKycSubmission?.voterIdNumber ?? null,
+        kycDocuments: normalizedDocs,
+        kycSubmissionRemark: latestKycSubmission?.remark ?? null,
+        kycSubmittedAt:
+          latestKycSubmission?.createdAt?.toISOString() ?? null,
+      };
+    },
+  );
+
+  return formattedRecords;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const claims = await getTokenClaims();
@@ -80,140 +205,9 @@ export async function GET(request: NextRequest) {
     }
 
     const searchParams = request.nextUrl.searchParams;
-    const whereClause: any = {};
-
     const kycStatusFilter = searchParams.get('kycStatus');
 
-    if (kycStatusFilter === 'VERIFIED') {
-      whereClause.kycStatus = { in: ['verified', 'approved'] };
-    }
-    else {
-      const filterToDbMap: Record<string, string> = {
-        PENDING: 'pending',
-        REJECTED: 'rejected',
-        NONE: 'none',
-      };
-
-      if (kycStatusFilter && filterToDbMap[kycStatusFilter]) {
-        whereClause.kycStatus = filterToDbMap[kycStatusFilter];
-      }
-    }
-
-    const masonPcRecords = await prisma.mason_PC_Side.findMany({
-      where: whereClause,
-      include: {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            role: true,
-            area: true,
-            region: true,
-          },
-        },
-        dealer: {
-          select: { id: true, name: true }
-        },
-        kycSubmissions: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-          select: {
-            aadhaarNumber: true,
-            panNumber: true,
-            voterIdNumber: true,
-            documents: true, // jsonb
-            remark: true,
-            createdAt: true,
-          },
-        },
-      },
-      orderBy: { name: 'asc' },
-      take: 2000,
-    });
-
-    const formattedRecords = masonPcRecords.map((record): MasonPcFullDetails => {
-      const salesmanName =
-        [record.user?.firstName, record.user?.lastName].filter(Boolean).join(' ') || 'N/A';
-
-      let displayStatus: KycVerificationStatus;
-      switch (record.kycStatus) {
-        case 'verified':
-        case 'approved':  
-          displayStatus = 'VERIFIED';
-          break;
-        case 'pending':
-          displayStatus = 'PENDING';
-          break;
-        case 'rejected':
-          displayStatus = 'REJECTED';
-          break;
-        case 'none':
-        default:
-          displayStatus = 'NONE';
-      }
-
-      const latestKycSubmission = record.kycSubmissions?.[0];
-      const rawDocs = latestKycSubmission?.documents;
-
-      // HARD NORMALIZATION: jsonb -> Record<string,string> | null
-      let normalizedDocs: Record<string, string> | null = null;
-
-      if (rawDocs) {
-        if (typeof rawDocs === 'string') {
-          // stringified JSON -> parse
-          try {
-            const parsed = JSON.parse(rawDocs);
-            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-              const entries = Object.entries(parsed).filter(
-                ([, v]) => typeof v === 'string' && (v as string).length > 0,
-              ) as [string, string][];
-
-              normalizedDocs = Object.fromEntries(entries);
-            }
-          } catch {
-            normalizedDocs = null;
-          }
-        } else if (typeof rawDocs === 'object' && !Array.isArray(rawDocs)) {
-          const entries = Object.entries(rawDocs as Record<string, unknown>).filter(
-            ([, v]) => typeof v === 'string' && (v as string).length > 0,
-          ) as [string, string][];
-
-          normalizedDocs = Object.fromEntries(entries);
-        }
-      }
-
-      return {
-        ...record,
-        id: record.id,
-        name: record.name,
-        phoneNumber: record.phoneNumber,
-        kycDocumentName: record.kycDocumentName ?? null,
-        kycDocumentIdNum: record.kycDocumentIdNum ?? null,
-        kycStatus: record.kycStatus ?? null,
-        pointsBalance: record.pointsBalance,
-        bagsLifted: record.bagsLifted,
-        isReferred: record.isReferred,
-
-        salesmanName,
-        role: record.user?.role ?? 'N/A',
-        area: record.user?.area ?? 'N/A',
-        region: record.user?.region ?? 'N/A',
-
-        userId: record.userId,
-        dealerId: record.dealerId,
-
-        dealerName: record.dealer?.name ?? null,
-
-        kycVerificationStatus: displayStatus,
-        kycAadhaarNumber: latestKycSubmission?.aadhaarNumber ?? null,
-        kycPanNumber: latestKycSubmission?.panNumber ?? null,
-        kycVoterIdNumber: latestKycSubmission?.voterIdNumber ?? null,
-        kycDocuments: normalizedDocs,
-        kycSubmissionRemark: latestKycSubmission?.remark ?? null,
-        kycSubmittedAt: latestKycSubmission?.createdAt?.toISOString() ?? null,
-      };
-    });
+    const formattedRecords = await getCachedMasonPcRecords(currentUser.companyId, kycStatusFilter);
 
     const validatedReports = z.array(masonPcFullSchema).parse(formattedRecords);
 

@@ -3,7 +3,6 @@
 // It combines information from the Dealer, Brand, and DealerBrandMapping tables
 // to create a single, comprehensive report.
 import 'server-only';
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import prisma from '@/lib/prisma';
