@@ -1,0 +1,2 @@
+ALTER TABLE "logistics_io" RENAME COLUMN "diffGrossWtInvoiceDt" TO "diffGrossWtInvoiceDT";--> statement-breakpoint
+ALTER TABLE "logistics_io" RENAME COLUMN "diffInvoiceDtGateOut" TO "diffInvoiceDTGateOut";
