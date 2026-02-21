@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/slm-geotracking/slmLiveLocation/route.ts
-import { NextRequest } from 'next/server';
 import 'server-only';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest){
-  return 0;
+  return NextResponse.json(0, { status: 200 });
 }

@@ -1,1 +1,0 @@
-ALTER TABLE salesman_attendance ADD COLUMN role VARCHAR(50) DEFAULT 'SALES';

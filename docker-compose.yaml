@@ -12,7 +12,6 @@ services:
       - .env.production
 
     environment:
-      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
       - DATABASE_URL=${DATABASE_URL}
       - WORKOS_CLIENT_ID=${WORKOS_CLIENT_ID}
       - WORKOS_API_KEY=${WORKOS_API_KEY}

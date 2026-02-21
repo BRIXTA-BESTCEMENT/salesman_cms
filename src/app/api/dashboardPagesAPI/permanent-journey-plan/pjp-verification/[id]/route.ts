@@ -52,7 +52,8 @@ async function verifyPJP(pjpId: string, currentUserCompanyId: number) {
 /**
  * PUT: Update the verificationStatus of a PJP (VERIFIED or REJECTED).
  */
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, 
+    { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id: pjpId } = await params;
 
@@ -122,7 +123,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 /**
  * PATCH: Modify PJP data fields and set status to 'VERIFIED'.
  */
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, 
+    { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id: pjpId } = await params;
 
