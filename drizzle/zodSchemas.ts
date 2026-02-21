@@ -7,16 +7,17 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
     siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
-    tallyRaw, logisticsIo,
+    outstandingReports,masonsOnMeetings, tallyRaw, logisticsIo, masonOnScheme,
     aoi, aoiGridCell, satelliteScene, gridChangeScore, constructionSite, 
     tsoVisit, highresScene, detectedBuilding, notifications, syncState, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, 
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
-    dealerTrendMetrics, salesPromoters, outstandingReports,
-    dealerFinancialSnapshot, dealerIntelligenceSnapshot, masonsOnMeetings, 
-    masonOnScheme } from "../drizzle/index";
+} from "../drizzle/index";
 
+/* ================================= XXXXXXXXXXX ================================ */
 /* ========================= drizzle-zod insert schemas ========================= */
+/* ================================= XXXXXXXXXXX ================================ */
+
 export const insertCompanySchema = createInsertSchema(companies);
 export const insertUserSchema = createInsertSchema(users);
 export const insertDailyVisitReportSchema = createInsertSchema(dailyVisitReports);
@@ -92,13 +93,11 @@ export const insertOutstandingReportsSchema = createInsertSchema(outstandingRepo
 export const insertVerifiedDealersSchema = createInsertSchema(verifiedDealers);
 export const insertProjectionVsActualReportsSchema = createInsertSchema(projectionVsActualReports);
 export const insertProjectionReportsSchema = createInsertSchema(projectionReports);
-export const insertDealerFinancialSnapshotSchema = createInsertSchema(dealerFinancialSnapshot);
-export const insertSalesPromotersSchema = createInsertSchema(salesPromoters);
-export const insertDealerTrendMetricsSchema = createInsertSchema(dealerTrendMetrics);
-export const insertDealerIntelligenceSnapshotSchema = createInsertSchema(dealerIntelligenceSnapshot);
 
 /* ================================= XXXXXXXXXXX ================================ */
 /* ========================= drizzle-zod select schemas ========================= */
+/* ================================= XXXXXXXXXXX ================================ */
+
 export const selectCompanySchema = createSelectSchema(companies);
 export const selectUserSchema = createSelectSchema(users);
 export const selectDailyVisitReportSchema = createSelectSchema(dailyVisitReports);
@@ -174,7 +173,3 @@ export const selectOutstandingReportsSchema = createSelectSchema(outstandingRepo
 export const selectVerifiedDealersSchema = createSelectSchema(verifiedDealers);
 export const selectProjectionVsActualReportsSchema = createSelectSchema(projectionVsActualReports);
 export const selectProjectionReportsSchema = createSelectSchema(projectionReports);
-export const selectDealerFinancialSnapshotSchema = createSelectSchema(dealerFinancialSnapshot);
-export const selectSalesPromotersSchema = createSelectSchema(salesPromoters);
-export const selectDealerTrendMetricsSchema = createSelectSchema(dealerTrendMetrics);
-export const selectDealerIntelligenceSnapshotSchema = createSelectSchema(dealerIntelligenceSnapshot);

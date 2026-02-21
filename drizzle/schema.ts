@@ -3,7 +3,6 @@ import { pgTable, uniqueIndex, foreignKey, varchar, text, numeric, timestamp,
 	bigserial, check, bigint, real, primaryKey, pgView 
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
-import { Zone } from "@/lib/Reusable-constants";
 
 export const vLatestPositions = pgView("v_latest_positions", {	userId: integer("user_id"),
 	journeyId: text("journey_id"),
@@ -179,46 +178,28 @@ export const dealers = pgTable("dealers", {
 ]);
 
 export const verifiedDealers = pgTable("verified_dealers", {
-	id: serial().primaryKey().notNull(),
-	dealerCode: varchar("dealer_code", { length: 255 }),
-	dealerPartyName: varchar("dealer_party_name", { length: 255 }),
-	contactNo1: varchar("contact_no1", { length: 20 }),
-	contactNo2: varchar("contact_no2", { length: 20 }),
-	email: varchar({ length: 255 }),
-	address: text(),
-	zone: varchar({ length: 255 }),
-	area: varchar({ length: 255 }),
-	pinCode: varchar("pin_code", { length: 20 }),
-	ownerProprietorName: varchar("owner_proprietor_name", { length: 255 }),
-	natureOfFirm: varchar("nature_of_firm", { length: 255 }),
-	gstNo: varchar("gst_no", { length: 50 }),
-	panNo: varchar("pan_no", { length: 50 }),
-	dealerCategory: varchar("dealer_category", { length: 255 }),
-	isSubdealer: boolean("is_subdealer"),
-	userId: integer("user_id"),
-	dealerId: varchar("dealer_id", { length: 255 }),
-	creditLimit: numeric("credit_limit", { precision: 14, scale:  2 }),
-	creditDaysAllowed: integer("credit_days_allowed"),
-	isActive: boolean("is_active").default(true).notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_verified_dealer_code").using("btree", table.dealerCode.asc().nullsLast().op("text_ops")),
-	index("idx_verified_dealer_fk").using("btree", table.dealerId.asc().nullsLast().op("text_ops")),
-	index("idx_verified_user").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
-	uniqueIndex("uniq_verified_dealer_fk").using("btree", table.dealerId.asc().nullsLast().op("text_ops")).where(sql`(dealer_id IS NOT NULL)`),
-	uniqueIndex("uniq_verified_party_name").using("btree", table.dealerPartyName.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "fk_verified_dealers_user_id"
-		}).onDelete("set null"),
-	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "fk_verified_dealers_dealer_id"
-		}).onDelete("set null"),
-]);
+  id: serial("id").primaryKey(),
+  dealerCode: varchar("dealer_code", { length: 255 }),
+  dealerCategory: varchar("dealer_category", { length: 255 }),
+  isSubdealer: boolean("is_subdealer"),
+  dealerPartyName: varchar("dealer_party_name", { length: 255 }),
+  zone: varchar("zone", { length: 255 }),
+  area: varchar("area", { length: 255 }),
+  contactNo1: varchar("contact_no1", { length: 20 }),
+  contactNo2: varchar("contact_no2", { length: 20 }),
+  email: varchar("email", { length: 255 }),
+  address: text("address"),
+  pinCode: varchar("pin_code", { length: 20 }),
+  relatedSpName: varchar("related_sp_name", { length: 255 }),
+  ownerProprietorName: varchar("owner_proprietor_name", { length: 255 }),
+  natureOfFirm: varchar("nature_of_firm", { length: 255 }),
+  gstNo: varchar("gst_no", { length: 50 }),
+  panNo: varchar("pan_no", { length: 50 }),
+
+  // Foreign Keys 
+  userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+  dealerId: varchar("dealer_id", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
+});
 
 export const permanentJourneyPlans = pgTable("permanent_journey_plans", {
 	id: varchar({ length: 255 }).primaryKey().notNull(),
@@ -1220,110 +1201,21 @@ export const outstandingReports = pgTable("outstanding_reports", {
 	unique("unique_outstanding_entry").on(table.isAccountJsbJud, table.verifiedDealerId, table.reportDate),
 ]);
 
-export const dealerTrendMetrics = pgTable("dealer_trend_metrics", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	dealerId: integer("dealer_id").notNull(),
-	cycleDate: date("cycle_date").notNull(),
-	outstandingDelta: numeric("outstanding_delta", { precision: 18, scale:  2 }),
-	collectionDelta: numeric("collection_delta", { precision: 18, scale:  2 }),
-	movingAvgOutstanding: numeric("moving_avg_outstanding", { precision: 18, scale:  2 }),
-	volatilityIndex: numeric("volatility_index", { precision: 8, scale:  4 }),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_trend_dealer").using("btree", table.dealerId.asc().nullsLast().op("int4_ops")),
-	uniqueIndex("uniq_trend_snapshot").using("btree", table.dealerId.asc().nullsLast().op("int4_ops"), table.cycleDate.asc().nullsLast().op("int4_ops")),
-	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "dealer_trend_metrics_dealer_id_fkey"
-		}).onDelete("cascade"),
-]);
-
-export const salesPromoters = pgTable("sales_promoters", {
-	id: serial().primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
-	employeeCode: varchar("employee_code", { length: 100 }),
-	designation: varchar({ length: 100 }),
-	targetMonthlyCollection: numeric("target_monthly_collection", { precision: 14, scale:  2 }),
-	targetMonthlySalesMt: numeric("target_monthly_sales_mt", { precision: 10, scale:  2 }),
-	isActive: boolean("is_active").default(true).notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_sales_promoter_user").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
-	uniqueIndex("uniq_sales_promoter_user").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "sales_promoters_user_id_fkey"
-		}).onDelete("cascade"),
-]);
-
 export const emailReports = pgTable("email_reports", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	messageId: text("message_id").notNull(),
-	subject: text(),
-	sender: text(),
-	fileName: text("file_name"),
-	payload: jsonb().notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	institution: text(),
-	dealerNames: jsonb("dealer_names"),
-	payloadHash: text("payload_hash").default('').notNull(),
-	fingerprint: text().default('').notNull(),
-	schemaVersion: integer("schema_version").default(1),
-	reportType: text("report_type"),
-	cycleDate: date("cycle_date"),
-	version: integer().default(1),
-	isLatestVersion: boolean("is_latest_version").default(true),
-	sheetCount: integer("sheet_count"),
-	numericRatio: numeric("numeric_ratio", { precision: 5, scale:  4 }),
-	hasAgeingPattern: boolean("has_ageing_pattern"),
-	hasDatePattern: boolean("has_date_pattern"),
-	processingStage: text("processing_stage").default('INGESTED'),
-}, (table) => [
-	index("idx_email_reports_message").using("btree", table.messageId.asc().nullsLast().op("text_ops")),
-	uniqueIndex("uniq_email_reports_message_file").using("btree", table.messageId.asc().nullsLast().op("text_ops"), table.fileName.asc().nullsLast().op("text_ops")),
-]);
-
-export const dealerFinancialSnapshot = pgTable("dealer_financial_snapshot", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	dealerId: integer("dealer_id").notNull(),
-	cycleDate: date("cycle_date").notNull(),
-	totalOutstanding: numeric("total_outstanding", { precision: 18, scale:  2 }),
-	totalOverdue: numeric("total_overdue", { precision: 18, scale:  2 }),
-	overdueRatio: numeric("overdue_ratio", { precision: 5, scale:  4 }),
-	totalCollection: numeric("total_collection", { precision: 18, scale:  2 }),
-	projectedOrderQty: numeric("projected_order_qty", { precision: 18, scale:  2 }),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_financial_cycle").using("btree", table.cycleDate.asc().nullsLast().op("date_ops")),
-	index("idx_financial_dealer").using("btree", table.dealerId.asc().nullsLast().op("int4_ops")),
-	uniqueIndex("uniq_financial_snapshot").using("btree", table.dealerId.asc().nullsLast().op("int4_ops"), table.cycleDate.asc().nullsLast().op("int4_ops")),
-	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "dealer_financial_snapshot_dealer_id_fkey"
-		}).onDelete("cascade"),
-]);
-
-export const dealerIntelligenceSnapshot = pgTable("dealer_intelligence_snapshot", {
-	dealerId: integer("dealer_id").notNull(),
-	currentOutstanding: numeric("current_outstanding", { precision: 18, scale:  2 }),
-	currentOverdue: numeric("current_overdue", { precision: 18, scale:  2 }),
-	currentCollection: numeric("current_collection", { precision: 18, scale:  2 }),
-	riskScore: numeric("risk_score", { precision: 5, scale:  2 }),
-	riskCategory: text("risk_category"),
-	healthIndicator: text("health_indicator"),
-	lastCycleDate: date("last_cycle_date"),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_intelligence_risk").using("btree", table.riskCategory.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "dealer_intelligence_snapshot_dealer_id_fkey"
-		}).onDelete("cascade"),
+  id: uuid("id").primaryKey().defaultRandom(),
+  messageId: text("message_id").notNull(), 
+  subject: text("subject"),
+  sender: text("sender"),
+  fileName: text("file_name"),
+  payload: jsonb("payload").notNull(),
+  processed: boolean("processed").default(false),
+  institution: text("institution"),
+  reportName: text("report_name"),
+  dealerNames: jsonb("dealer_names"), 
+  reportDate: date("report_date"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}, (t) => [
+  index("idx_email_reports_message").on(t.messageId),
 ]);
 
 // ------- Mason PC stuff --------
