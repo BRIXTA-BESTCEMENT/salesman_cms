@@ -2,7 +2,9 @@
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, dealers } from '../../../../../../drizzle'; 
+import { eq } from 'drizzle-orm';
 
 export async function GET() {
   await connection();
@@ -12,25 +14,27 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { companyId: true }
-    });
+    const currentUserResult = await db
+      .select({ companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+      
+    const currentUser = currentUserResult[0];
+    
     if (!currentUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Fetch all unique types for the current dealer's 
-    const uniqueTypes = await prisma.dealer.findMany({
-      where: {
-        user: { companyId: currentUser.companyId },
-      },
-      select: { type: true },
-      distinct: ['type'], // This is the key part of the query
-    });
+    // Fetch all unique types for the current company's dealers
+    const uniqueTypes = await db
+      .selectDistinct({ type: dealers.type })
+      .from(dealers)
+      .leftJoin(users, eq(dealers.userId, users.id))
+      .where(eq(users.companyId, currentUser.companyId));
 
-    // Extract the string values from the query results
-    const type = uniqueTypes.map((a:any) => a.type);
+    // Extract the string values from the query results and filter out nulls
+    const type = uniqueTypes.map((a) => a.type).filter(Boolean);
 
     return NextResponse.json({ type }, { status: 200 });
 

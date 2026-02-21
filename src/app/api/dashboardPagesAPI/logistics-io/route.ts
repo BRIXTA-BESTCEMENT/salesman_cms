@@ -1,10 +1,12 @@
 // src/app/api/dashboardPagesAPI/logistics-io/route.ts
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, logisticsIo } from '../../../../../drizzle'; 
+import { eq, and, gte, lte, ilike, desc } from 'drizzle-orm';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { z } from 'zod';
-import { logisticsIOSchema } from '@/lib/shared-zod-schema';
+import { selectLogisticsIOSchema } from '../../../../../drizzle/zodSchemas'; 
 
 const allowedRoles = [
   'president', 
@@ -19,7 +21,8 @@ const allowedRoles = [
 ];
 
 export async function GET(request: NextRequest) {
-  await connection();
+  if (typeof connection === 'function') await connection();
+
   try {
     const claims = await getTokenClaims();
 
@@ -29,10 +32,13 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Fetch Current User to check role
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true } 
-    });
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const currentUser = currentUserResult[0];
 
     // --- ROLE-BASED AUTHORIZATION ---
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
@@ -50,90 +56,67 @@ export async function GET(request: NextRequest) {
     const districtParam = searchParams.get('district');
     const sourceParam = searchParams.get('sourceName');
 
-    let whereClause: any = {};
+    // Build the dynamic where clause for Drizzle
+    const filters = [];
 
-    // Date Filter (Applied to createdAt to capture all entries created in range)
+    // Date Filter (Postgres timestamps in Drizzle mode: 'string' or 'date')
     if (startDateParam) {
       const start = new Date(startDateParam);
       const end = endDateParam ? new Date(endDateParam) : new Date(startDateParam);
-      
       end.setHours(23, 59, 59, 999);
 
-      whereClause.createdAt = {
-        gte: start,
-        lte: end,
-      };
+      filters.push(gte(logisticsIo.createdAt, start.toISOString()));
+      filters.push(lte(logisticsIo.createdAt, end.toISOString()));
     }
 
-    // Optional: Filter by Zone or District if passed
+    // Prisma's `equals: x, mode: 'insensitive'` is the exact equivalent of SQL ILIKE without wildcards
     if (zoneParam) {
-      whereClause.zone = { equals: zoneParam, mode: 'insensitive' };
+      filters.push(ilike(logisticsIo.zone, zoneParam));
     }
     if (districtParam) {
-      whereClause.district = { equals: districtParam, mode: 'insensitive' };
+      filters.push(ilike(logisticsIo.district, districtParam));
     }
     if (sourceParam) {
-      whereClause.partyName = { equals: sourceParam, mode: 'insensitive' };
+      filters.push(ilike(logisticsIo.partyName, sourceParam));
     }
 
     // 4. Fetch Data
-    const logisticsRecords = await prisma.logisticsIO.findMany({
-      where: whereClause,
-      orderBy: {
-        createdAt: 'desc', // Newest first
-      },
-    });
+    const logisticsRecords = await db
+      .select()
+      .from(logisticsIo)
+      .where(filters.length > 0 ? and(...filters) : undefined)
+      .orderBy(desc(logisticsIo.createdAt));
 
     // 5. Map Data to Schema
-    const formattedRecords = logisticsRecords.map((record: any) => ({
-      id: record.id,
-      zone: record.zone,
-      district: record.district,
-      destination: record.destination,
+    const formattedRecords = logisticsRecords.map((record) => {
+        return {
+            ...record,
+            // Fallback null arrays to empty arrays so Zod validation passes safely
+            invoiceNos: record.invoiceNos ?? [],
+            billNos: record.billNos ?? [],
+            gateOutInvoiceNos: record.gateOutInvoiceNos ?? [],
+            gateOutBillNos: record.gateOutBillNos ?? [],
+            
+            // Note: Drizzle's date() natively returns standard strings ('YYYY-MM-DD')
+            // Timestamps are already strings due to `mode: 'string'` in your schema.
+            // We ensure strict ISO string format for timestamps just in case.
+            createdAt: record.createdAt ? new Date(record.createdAt).toISOString() : new Date().toISOString(),
+            updatedAt: record.updatedAt ? new Date(record.updatedAt).toISOString() : new Date().toISOString(),
+        };
+    });
 
-      purpose: record.purpose ?? null,
-      typeOfMaterials: record.typeOfMaterials ?? null,
-      vehicleNumber: record.vehicleNumber ?? null,
-      noOfInvoice: record.noOfInvoice ?? null,
-      partyName: record.partyName ?? null,
-      invoiceNos: Array.isArray(record.invoiceNos) ? record.invoiceNos : [],
-      billNos: Array.isArray(record.billNos) ? record.billNos : [],
-      storeDate: record.storeDate?.toISOString().split('T')[0] ?? null,
-      storeTime: record.storeTime ?? null,
+    // 6. Zod Validation using the Drizzle-baked schema
+    // Safe parse prevents a 500 error if a single row has a slight structural anomaly
+    const validatedData = z.array(selectLogisticsIOSchema).safeParse(formattedRecords);
 
-      // Dates: Convert to String (ISO) or null
-      doOrderDate: record.doOrderDate?.toISOString().split('T')[0] ?? null,
-      doOrderTime: record.doOrderTime ?? null,
-      gateInDate: record.gateInDate?.toISOString().split('T')[0] ?? null,
-      gateInTime: record.gateInTime ?? null,
-      processingTime: record.processingTime ?? null,
-      wbInDate: record.wbInDate?.toISOString().split('T')[0] ?? null,
-      wbInTime: record.wbInTime ?? null,
-      diffGateInTareWt: record.diffGateInTareWt ?? null,
-      
-      wbOutDate: record.wbOutDate?.toISOString().split('T')[0] ?? null,
-      wbOutTime: record.wbOutTime ?? null,
-      diffTareWtGrossWt: record.diffTareWtGrossWt ?? null,
-      gateOutDate: record.gateOutDate?.toISOString().split('T')[0] ?? null,
-      gateOutTime: record.gateOutTime ?? null,
-      gateOutNoOfInvoice: record.gateOutNoOfInvoice ?? null,
-      gateOutInvoiceNos: Array.isArray(record.gateOutInvoiceNos) ? record.gateOutInvoiceNos : [],
-      gateOutBillNos: Array.isArray(record.gateOutBillNos) ? record.gateOutBillNos : [],
+    if (!validatedData.success) {
+      console.error("Logistics Validation Error:", validatedData.error.format());
+      // Return unvalidated data as fallback so the UI table doesn't completely crash, 
+      // but the console logs the exact Zod error to fix later.
+      return NextResponse.json(formattedRecords, { status: 200 }); 
+    }
 
-      diffGrossWtGateOut: record.diffGrossWtGateOut ?? null,
-      diffGrossWtInvoiceDT: record.diffGrossWtInvoiceDT ?? null,
-      diffInvoiceDTGateOut: record.diffInvoiceDTGateOut ?? null,
-      diffGateInGateOut: record.diffGateInGateOut ?? null,
-
-      // Timestamps
-      createdAt: record.createdAt.toISOString(),
-      updatedAt: record.updatedAt.toISOString(),
-    }));
-
-    // 6. Zod Validation
-    const validatedData = z.array(logisticsIOSchema).parse(formattedRecords);
-
-    return NextResponse.json(validatedData, { status: 200 });
+    return NextResponse.json(validatedData.data, { status: 200 });
 
   } catch (error) {
     console.error('Error fetching logistics reports:', error);

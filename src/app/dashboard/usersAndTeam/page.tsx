@@ -1,8 +1,10 @@
 // src/app/dashboard/usersAndTeam/page.tsx
 import { Suspense } from 'react';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
-import { UsersAndTeamTabs } from './tabsLoader'; 
+import { db } from '@/lib/drizzle';
+import { users, companies } from '../../../../drizzle';
+import { eq } from 'drizzle-orm';
+import { UsersAndTeamTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
 import { connection } from 'next/server';
 
@@ -23,17 +25,33 @@ export default function UsersAndTeamPage() {
 }
 
 async function getAdminUser() {
-    const claims = await getTokenClaims();
-    if (!claims?.sub) {
-      return null;
-    }
+  const claims = await getTokenClaims();
+  if (!claims?.sub) {
+    return null;
+  }
 
-    const user = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      include: { company: true }, 
-    });
-    
-    return user;
+  const result = await db
+    .select({
+      user: users,
+      company: companies,
+    })
+    .from(users)
+    .leftJoin(companies, eq(users.companyId, companies.id))
+    .where(eq(users.workosUserId, claims.sub))
+    .limit(1);
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  // Reconstruct the nested object shape that Prisma normally returns
+  const dbUser = result[0].user;
+  const dbCompany = result[0].company;
+
+  return {
+    ...dbUser,
+    company: dbCompany,
+  };
 }
 
 export async function UsersAndTeamDynamicContent() {
@@ -46,8 +64,8 @@ export async function UsersAndTeamDynamicContent() {
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-6">
-      
-      <UsersAndTeamTabs 
+
+      <UsersAndTeamTabs
         adminUser={adminUser}
         canSeeUsers={canSeeUsers}
         canSeeTeamView={canSeeTeamView}

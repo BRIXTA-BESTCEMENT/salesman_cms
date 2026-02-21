@@ -1,4 +1,4 @@
-// src/app/api/delete-user/route.ts
+// src/app/api/delete-user/route.ts -- workos only
 import 'server-only';
 import { NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';

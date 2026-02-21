@@ -3,8 +3,12 @@ import 'server-only';
 import { connection, NextResponse } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache'; 
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, pointsLedger, masonPcSide } from '../../../../../../drizzle'; 
+import { eq, desc, and } from 'drizzle-orm';
 import { z } from 'zod';
+// Use Drizzle-baked schema
+import { selectPointsLedgerSchema } from '../../../../../../drizzle/zodSchemas'; 
 
 const allowedRoles = [
   'president', 'senior-general-manager', 'general-manager',
@@ -13,96 +17,57 @@ const allowedRoles = [
   'senior-executive',
 ];
 
-const ledgerResponseSchema = z.object({
-  id: z.string(),
-  masonId: z.string(),
-  masonName: z.string(),
-  sourceType: z.string(),
-  sourceId: z.string().nullable(),
-  points: z.number().int(),
-  memo: z.string().nullable(),
-  createdAt: z.string(),
-});
-
-// Handled on the server, completely isolated from runtime user data
 async function getCachedPointsLedger(companyId: number) {
   'use cache';
   cacheLife('minutes');
   cacheTag(`points-ledger-${companyId}`); 
 
-  const ledgerRecords = await prisma.pointsLedger.findMany({
-    where: {
-      // Filter records where the associated mason's user belongs to the current user's company
-      mason: {
-        user: {
-          companyId: companyId,
-        },
-      },
-    },
-    select: {
-      id: true,
-      masonId: true,
-      sourceType: true,
-      sourceId: true,
-      points: true,
-      memo: true,
-      createdAt: true,
-      mason: { select: { name: true } }, // Join to get Mason Name
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    take: 1000, // Add a reasonable limit
-  });
+  const ledgerRecords = await db
+    .select({
+      ledger: pointsLedger,
+      masonName: masonPcSide.name,
+    })
+    .from(pointsLedger)
+    .leftJoin(masonPcSide, eq(pointsLedger.masonId, masonPcSide.id))
+    .leftJoin(users, eq(masonPcSide.userId, users.id))
+    .where(eq(users.companyId, companyId))
+    .orderBy(desc(pointsLedger.createdAt))
+    .limit(1000);
 
-  // Map and format the data
-  return ledgerRecords.map(record => ({
-    id: record.id,
-    masonId: record.masonId,
-    masonName: record.mason.name, // Flattened field
-    sourceType: record.sourceType,
-    sourceId: record.sourceId ?? null,
-    points: record.points,
-    memo: record.memo ?? null,
-    createdAt: record.createdAt.toISOString(),
+  return ledgerRecords.map(({ ledger, masonName }) => ({
+    ...ledger,
+    masonName: masonName || 'Unknown Mason',
+    createdAt: new Date(ledger.createdAt).toISOString(),
   }));
 }
 
-// 3. The Route Handler
 export async function GET() {
   await connection();
   try {
     const claims = await getTokenClaims();
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // 1. Authentication Check
-    if (!claims || !claims.sub) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const currentUserResult = await db
+      .select({ role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
 
-    // 2. Fetch Current User to check role and companyId
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { role: true, companyId: true }
-    });
+    const currentUser = currentUserResult[0];
 
-    // 3. Authorization Check
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Only allowed roles can access this data.` }, { status: 403 });
+      return NextResponse.json({ error: `Forbidden: Insufficient permissions.` }, { status: 403 });
     }
 
-    // 4. Call the purely cached function
     const formattedReports = await getCachedPointsLedger(currentUser.companyId);
     
-    // 5. Validate schema
-    const validatedReports = z.array(ledgerResponseSchema).parse(formattedReports);
+    // Use .loose() to allow the joined 'masonName' field
+    const validatedReports = z.array(selectPointsLedgerSchema.loose()).parse(formattedReports);
 
     return NextResponse.json(validatedReports, { status: 200 });
     
-  } catch (error) {
-    console.error('Error fetching points ledger data:', error);
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.message }, { status: 400 });
-    }
-    return NextResponse.json({ error: 'Failed to fetch points ledger data' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error fetching points ledger:', error);
+    return NextResponse.json({ error: 'Failed to fetch data', details: error.message }, { status: 500 });
   }
 }

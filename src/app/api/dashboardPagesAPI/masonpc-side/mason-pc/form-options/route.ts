@@ -1,77 +1,101 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/form-options/route.ts
 import 'server-only';
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
+import { db } from '@/lib/drizzle';
+import { users, dealers, technicalSites } from '../../../../../../../drizzle';
+import { eq, and, asc } from 'drizzle-orm';
 
-export async function GET() {
-  try {
-    const claims = await getTokenClaims();
-    if (!claims) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export async function GET(request: NextRequest) {
+    // Opt into dynamic rendering for Next.js 15+
+    if (typeof connection === 'function') await connection();
 
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { companyId: true },
-    });
+    try {
+        const claims = await getTokenClaims();
+        if (!claims || !claims.sub) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
-    if (!currentUser || !currentUser.companyId) return NextResponse.json({ error: 'User/Company not found' }, { status: 403 });
+        const currentUserResult = await db
+            .select({ companyId: users.companyId })
+            .from(users)
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
 
-    // 1. Fetch Salesmen (CORRECTED FIELD NAME)
-    const users = await prisma.user.findMany({
-      where: {
-        companyId: currentUser.companyId,
-        isTechnicalRole: true,
-      },
-      select: { id: true, firstName: true, lastName: true },
-      orderBy: { firstName: 'asc' }
-    });
+        const currentUser = currentUserResult[0];
 
-    const formattedUsers = users.map((u) => ({
-      id: u.id,
-      name: `${u.firstName} ${u.lastName || ''}`.trim(),
-    }));
+        if (!currentUser || !currentUser.companyId) {
+            return NextResponse.json({ error: 'User/Company not found' }, { status: 403 });
+        }
 
-    // 2. Fetch Dealers with Region and Area (Supported by schema )
-    const dealers = await prisma.dealer.findMany({
-      where: {
-        user: {
-          companyId: currentUser.companyId
-        },
-        verificationStatus: 'VERIFIED',
-      },
-      select: {
-        id: true,
-        name: true,
-        region: true, 
-        area: true,   
-      },
-      orderBy: { name: 'asc' },
-    });
+        // 1. Fetch Salesmen (isTechnicalRole = true)
+        const techUsers = await db
+            .select({
+                id: users.id,
+                firstName: users.firstName,
+                lastName: users.lastName
+            })
+            .from(users)
+            .where(
+                and(
+                    eq(users.companyId, currentUser.companyId),
+                    eq(users.isTechnicalRole, true)
+                )
+            )
+            .orderBy(asc(users.firstName));
 
-    // FORMATTING LOGIC: "Name (Region, Area)"
-    const formattedDealers = dealers.map((d) => ({
-      id: d.id,
-      name: `${d.name} (${d.region || '-'}, ${d.area || '-'})`,
-    }));
+        const formattedUsers = techUsers.map((u) => ({
+            id: u.id,
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim(),
+        }));
 
-    // 3. Fetch Technical Sites (Supported by schema [cite: 229])
-    const sites = await prisma.technicalSite.findMany({
-      select: { id: true, siteName: true, region: true, area: true }
-    });
+        // 2. Fetch Dealers with Region and Area (joined with users to enforce companyId)
+        const verifiedDealers = await db
+            .select({
+                id: dealers.id,
+                name: dealers.name,
+                region: dealers.region,
+                area: dealers.area
+            })
+            .from(dealers)
+            .innerJoin(users, eq(dealers.userId, users.id))
+            .where(
+                and(
+                    eq(users.companyId, currentUser.companyId),
+                    eq(dealers.verificationStatus, 'VERIFIED')
+                )
+            )
+            .orderBy(asc(dealers.name));
 
-    const formattedSites = sites.map((s) => ({
-      id: s.id,
-      name: `${s.siteName} (${s.region || '-'}, ${s.area || '-'})`
-    }));
+        const formattedDealers = verifiedDealers.map((d) => ({
+            id: d.id,
+            name: `${d.name} (${d.region || '-'}, ${d.area || '-'})`,
+        }));
 
-    return NextResponse.json({
-      users: formattedUsers,
-      dealers: formattedDealers,
-      sites: formattedSites,
-    });
+        // 3. Fetch Technical Sites (Matches original Prisma behavior of fetching all)
+        const sites = await db
+            .select({
+                id: technicalSites.id,
+                siteName: technicalSites.siteName,
+                region: technicalSites.region,
+                area: technicalSites.area
+            })
+            .from(technicalSites)
+            .orderBy(asc(technicalSites.siteName)); 
 
-  } catch (error: any) {
-    console.error('Error fetching form options:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+        const formattedSites = sites.map((s) => ({
+            id: s.id,
+            name: `${s.siteName} (${s.region || '-'}, ${s.area || '-'})`
+        }));
+
+        return NextResponse.json({
+            users: formattedUsers,
+            dealers: formattedDealers,
+            sites: formattedSites,
+        }, { status: 200 });
+
+    } catch (error: any) {
+        console.error('Error fetching form options:', error);
+        return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+    }
 }

@@ -2,16 +2,22 @@
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, dealers, verifiedDealers, dailyTasks } from '../../../../../drizzle/schema'; // Adjust path
+import { getTableColumns, eq, and, or, ilike, inArray, isNull, desc, asc, aliasedTable } from 'drizzle-orm';
 import { z } from 'zod';
-import { dailyTaskSchema } from '@/lib/shared-zod-schema';
+import { selectDailyTaskSchema } from '../../../../../drizzle/zodSchemas'; // Using your Drizzle-baked schema
 
-const allowedAssignerRoles = ['president', 'senior-general-manager', 'general-manager',
+const allowedAssignerRoles = [
+  'president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager'];
+  'senior-manager', 'manager', 'assistant-manager'
+];
 
-  const allowedAssigneeRoles = ['assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager', 'senior-executive', 'executive', 'junior-executive',];
+const allowedAssigneeRoles = [
+  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
+  'senior-manager', 'manager', 'assistant-manager', 'senior-executive', 'executive', 'junior-executive'
+];
 
 const assignSchema = z.object({
   salesmanId: z.number().int(),
@@ -25,16 +31,27 @@ const assignSchema = z.object({
   message: "Select at least one dealer (Regular or Verified)",
 });
 
+// Extend the baked DB schema to include the flattened relational fields for the frontend
+const apiResponseTaskSchema = selectDailyTaskSchema.extend({
+  salesmanName: z.string(),
+  assignedByUserName: z.string(),
+  relatedDealerName: z.string().nullable().optional(),
+});
+
 export async function GET(request: NextRequest) {
-  await connection();
+  if (typeof connection === 'function') await connection();
+
   try {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true, area: true, region: true },
-    });
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId, area: users.area, region: users.region })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const currentUser = currentUserResult[0];
 
     if (!currentUser || !allowedAssignerRoles.includes(currentUser.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -49,46 +66,51 @@ export async function GET(request: NextRequest) {
       const area = searchParams.get('area');
       const type = searchParams.get('type') || 'all';
 
-      let regularDealers: any[] = [];
-      let verifiedDealers: any[] = [];
+      let fetchedRegularDealers: any[] = [];
+      let fetchedVerifiedDealers: any[] = [];
 
       // 1. Fetch Regular Dealers (Case-Insensitive)
       if (type === 'all' || type === 'regular') {
-        regularDealers = await prisma.dealer.findMany({
-          where: {
-            user: { companyId: currentUser.companyId },
-            ...(zone && zone !== 'all' && { region: { equals: zone, mode: 'insensitive' } }),
-            ...(area && area !== 'all' && { area: { equals: area, mode: 'insensitive' } }),
-          },
-          select: { id: true, name: true, region: true, area: true }
-        });
+        fetchedRegularDealers = await db
+          .select({ id: dealers.id, name: dealers.name, region: dealers.region, area: dealers.area })
+          .from(dealers)
+          .innerJoin(users, eq(dealers.userId, users.id))
+          .where(
+            and(
+              eq(users.companyId, currentUser.companyId),
+              zone && zone !== 'all' ? ilike(dealers.region, zone) : undefined,
+              area && area !== 'all' ? ilike(dealers.area, area) : undefined
+            )
+          );
       }
 
       // 2. Fetch Verified Dealers (Case-Insensitive AND allows null users)
       if (type === 'all' || type === 'verified') {
-        verifiedDealers = await prisma.verifiedDealer.findMany({
-          where: {
-            OR: [
-              { userId: null },
-              { user: { companyId: currentUser.companyId } }
-            ],
-            ...(zone && zone !== 'all' && { zone: { equals: zone, mode: 'insensitive' } }),
-            ...(area && area !== 'all' && { area: { equals: area, mode: 'insensitive' } }),
-          },
-          select: { id: true, dealerPartyName: true, zone: true, area: true }
-        });
+        fetchedVerifiedDealers = await db
+          .select({ id: verifiedDealers.id, dealerPartyName: verifiedDealers.dealerPartyName, zone: verifiedDealers.zone, area: verifiedDealers.area })
+          .from(verifiedDealers)
+          .leftJoin(users, eq(verifiedDealers.userId, users.id))
+          .where(
+            and(
+              or(
+                isNull(verifiedDealers.userId),
+                eq(users.companyId, currentUser.companyId)
+              ),
+              zone && zone !== 'all' ? ilike(verifiedDealers.zone, zone) : undefined,
+              area && area !== 'all' ? ilike(verifiedDealers.area, area) : undefined
+            )
+          );
       }
 
-      // Format them into a unified structure for the frontend MultiSelect
       const combinedDealers = [
-        ...regularDealers.map(d => ({
+        ...fetchedRegularDealers.map(d => ({
           id: d.id,
           name: d.name,
           region: d.region,
           area: d.area,
           isVerified: false
         })),
-        ...verifiedDealers.map(d => ({
+        ...fetchedVerifiedDealers.map(d => ({
           id: d.id,
           name: d.dealerPartyName || 'Unnamed Verified Dealer',
           region: d.zone,
@@ -101,27 +123,36 @@ export async function GET(request: NextRequest) {
     }
 
     // --- Action: Initial Page Load (Salesmen, Tasks, and Filter Dropdowns) ---
-    const assignableSalesmen = await prisma.user.findMany({
-      where: {
-        companyId: currentUser.companyId,
-        role: { in: allowedAssigneeRoles },
-      },
-      select: { id: true, firstName: true, lastName: true, email: true, salesmanLoginId: true, area: true, region: true },
-      orderBy: { firstName: 'asc' },
-    });
+    const assignableSalesmen = await db
+      .select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        salesmanLoginId: users.salesmanLoginId,
+        area: users.area,
+        region: users.region
+      })
+      .from(users)
+      .where(
+        and(
+          eq(users.companyId, currentUser.companyId),
+          inArray(users.role, allowedAssigneeRoles)
+        )
+      )
+      .orderBy(asc(users.firstName));
 
-    // Extract unique regions and areas efficiently to populate frontend dropdowns
-    const distinctRegular = await prisma.dealer.findMany({
-      where: { user: { companyId: currentUser.companyId } },
-      select: { region: true, area: true },
-      distinct: ['region', 'area']
-    });
+    const distinctRegular = await db
+      .selectDistinct({ region: dealers.region, area: dealers.area })
+      .from(dealers)
+      .innerJoin(users, eq(dealers.userId, users.id))
+      .where(eq(users.companyId, currentUser.companyId));
 
-    const distinctVerified = await prisma.verifiedDealer.findMany({
-      where: { user: { companyId: currentUser.companyId } },
-      select: { zone: true, area: true },
-      distinct: ['zone', 'area']
-    });
+    const distinctVerified = await db
+      .selectDistinct({ zone: verifiedDealers.zone, area: verifiedDealers.area })
+      .from(verifiedDealers)
+      .innerJoin(users, eq(verifiedDealers.userId, users.id))
+      .where(eq(users.companyId, currentUser.companyId));
 
     const uniqueZones = Array.from(new Set([
       ...distinctRegular.map(d => d.region),
@@ -133,40 +164,55 @@ export async function GET(request: NextRequest) {
       ...distinctVerified.map(d => d.area)
     ])).filter(Boolean).sort();
 
-    const dailyTasks = await prisma.dailyTask.findMany({
-      where: {
-        user: { companyId: currentUser.companyId },
-      },
-      include: {
-        user: { select: { firstName: true, lastName: true, email: true } },
-        assignedBy: { select: { firstName: true, lastName: true, email: true } },
-        relatedDealer: { select: { name: true } },
-        relatedVerifiedDealer: { select: { dealerPartyName: true } }
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 200,
-    });
+    const assignedByUsers = aliasedTable(users, 'assignedByUsers');
 
-    const formattedTasks = dailyTasks.map((task: any) => ({
-      id: task.id,
-      salesmanName: `${task.user.firstName || ''} ${task.user.lastName || ''}`.trim() || task.user.email,
-      assignedByUserName: `${task.assignedBy.firstName || ''} ${task.assignedBy.lastName || ''}`.trim() || task.assignedBy.email,
-      taskDate: task.taskDate.toISOString().split('T')[0],
-      visitType: task.visitType,
-      relatedDealerName: task.relatedVerifiedDealer?.dealerPartyName || task.relatedDealer?.name || task.dealerName || 'N/A',
-      siteName: task.siteName || null,
-      description: task.description,
-      status: task.status,
-      createdAt: task.createdAt.toISOString(),
+    const dailyTasksRaw = await db
+      .select({
+        ...getTableColumns(dailyTasks),
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userEmail: users.email,
+        assignedByFirstName: assignedByUsers.firstName,
+        assignedByLastName: assignedByUsers.lastName,
+        assignedByEmail: assignedByUsers.email,
+        dealerName: dealers.name,
+        verifiedDealerName: verifiedDealers.dealerPartyName,
+      })
+      .from(dailyTasks)
+      .innerJoin(users, eq(dailyTasks.userId, users.id))
+      .leftJoin(assignedByUsers, eq(dailyTasks.assignedByUserId, assignedByUsers.id))
+      .leftJoin(dealers, eq(dailyTasks.relatedDealerId, dealers.id))
+      .leftJoin(verifiedDealers, eq(dailyTasks.relatedVerifiedDealerId, verifiedDealers.id))
+      .where(eq(users.companyId, currentUser.companyId))
+      .orderBy(desc(dailyTasks.createdAt))
+      .limit(200);
+
+    const formattedTasks = dailyTasksRaw.map((task: any) => ({
+      ...task,
+      salesmanName:
+        `${task.userFirstName || ''} ${task.userLastName || ''}`.trim()
+        || task.userEmail
+        || 'Unknown',
+      assignedByUserName:
+        `${task.assignedByFirstName || ''} ${task.assignedByLastName || ''}`.trim()
+        || task.assignedByEmail
+        || 'Unknown',
+      relatedDealerName:
+        task.verifiedDealerName || task.dealerName || task.dealerName || 'N/A',
     }));
 
-    const validatedTasks = z.array(dailyTaskSchema).safeParse(formattedTasks);
+    // Validates against the baked DB schema PLUS our added relational string fields
+    const validatedTasks = z.array(apiResponseTaskSchema).safeParse(formattedTasks);
+
+    if (!validatedTasks.success) {
+      console.error("Task Validation Error:", validatedTasks.error.format());
+    }
 
     return NextResponse.json({
       salesmen: assignableSalesmen,
       uniqueZones,
       uniqueAreas,
-      tasks: validatedTasks.success ? validatedTasks.data : []
+      tasks: validatedTasks.success ? validatedTasks.data : formattedTasks // Fallback so UI doesn't break if strict parse fails
     }, { status: 200 });
 
   } catch (error) {
@@ -180,10 +226,13 @@ export async function POST(request: NextRequest) {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true }
-    });
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const currentUser = currentUserResult[0];
 
     if (!currentUser || !allowedAssignerRoles.includes(currentUser.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -212,35 +261,37 @@ export async function POST(request: NextRequest) {
 
     if (datesToAssign.length === 0) return NextResponse.json({ message: "Invalid date range" }, { status: 400 });
 
-    // --- Pre-fetch Names for Snapshots ---
-    const regularInfos = regularDealerIds.length > 0 ? await prisma.dealer.findMany({
-      where: { id: { in: regularDealerIds } }, select: { id: true, name: true }
-    }) : [];
+    const regularInfos = regularDealerIds.length > 0
+      ? await db
+        .select({ id: dealers.id, name: dealers.name })
+        .from(dealers)
+        .where(inArray(dealers.id, regularDealerIds))
+      : [];
 
-    const verifiedInfos = verifiedDealerIds.length > 0 ? await prisma.verifiedDealer.findMany({
-      where: { id: { in: verifiedDealerIds } }, select: { id: true, dealerPartyName: true }
-    }) : [];
+    const verifiedInfos = verifiedDealerIds.length > 0
+      ? await db
+        .select({ id: verifiedDealers.id, dealerPartyName: verifiedDealers.dealerPartyName })
+        .from(verifiedDealers)
+        .where(inArray(verifiedDealers.id, verifiedDealerIds))
+      : [];
 
-    // Combine all selected dealers into a single flat array for distribution
     const allSelectedDealers = [
       ...regularInfos.map(d => ({ id: d.id, name: d.name, type: 'regular' })),
       ...verifiedInfos.map(d => ({ id: d.id, name: d.dealerPartyName, type: 'verified' }))
     ];
 
-    // --- Smart Distribution Logic ---
-    // If we have 20 dealers and 5 days, we assign 4 dealers per day.
     const totalDays = datesToAssign.length;
     const tasksToCreate = [];
 
     for (let i = 0; i < allSelectedDealers.length; i++) {
       const dealer = allSelectedDealers[i];
-      // Modulo operator cleanly wraps around the dates array, distributing evenly
       const assignedDate = datesToAssign[i % totalDays];
 
       tasksToCreate.push({
+        id: crypto.randomUUID(),
         userId: salesmanId,
         assignedByUserId: currentUser.id,
-        taskDate: assignedDate,
+        taskDate: assignedDate.toISOString().split('T')[0], // Match the schema's YYYY-MM-DD mode string
         visitType: "Dealer Visit",
         relatedDealerId: dealer.type === 'regular' ? (dealer.id as string) : null,
         relatedVerifiedDealerId: dealer.type === 'verified' ? (dealer.id as number) : null,
@@ -250,14 +301,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const result = await prisma.dailyTask.createMany({
-      data: tasksToCreate,
-      skipDuplicates: true,
-    });
+    await db
+      .insert(dailyTasks)
+      .values(tasksToCreate)
+      .onConflictDoNothing();
 
     return NextResponse.json({
-      message: `Successfully distributed ${result.count} tasks across ${totalDays} days.`,
-      count: result.count
+      message: `Successfully distributed tasks across ${totalDays} days.`,
+      count: tasksToCreate.length
     }, { status: 201 });
 
   } catch (error) {

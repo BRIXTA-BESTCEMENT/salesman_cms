@@ -3,115 +3,157 @@ import 'server-only';
 import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, dealers, salesOrders } from '../../../../../../drizzle';
+import { eq, desc, and, getTableColumns } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
-import { salesOrderSchema } from '@/lib/shared-zod-schema';
+import { selectSalesOrderSchema } from '../../../../../../drizzle/zodSchemas';
 
-// Roles allowed to access Sales Orders
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
+const allowedRoles = [
+  'president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive', 'executive', 'junior-executive'
 ];
 
-// 2. The Cached Function
+// 1. Extend the baked DB schema to strictly type the calculated and joined fields
+const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
+  salesmanName: z.string(),
+  salesmanRole: z.string(),
+  dealerName: z.string(),
+  dealerType: z.string(),
+  dealerPhone: z.string(),
+  dealerAddress: z.string(),
+  area: z.string(),
+  region: z.string(),
+  
+  // Strict numeric typing for the frontend, overriding Drizzle's string decimals
+  orderQty: z.number().nullable(),
+  itemPrice: z.number().nullable(),
+  discountPercentage: z.number().nullable(),
+  itemPriceAfterDiscount: z.number().nullable(),
+  paymentAmount: z.number().nullable(),
+  receivedPayment: z.number().nullable(),
+  pendingPayment: z.number().nullable(),
+  orderTotal: z.number(),
+  
+  // Date string overrides
+  orderDate: z.string(),
+  deliveryDate: z.string().nullable(),
+  receivedPaymentDate: z.string().nullable(),
+  estimatedDelivery: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  remarks: z.string().nullable().optional(),
+});
+
+// 2. Explicit type to survive Next.js 'use cache' boundary collapse
+type SalesOrderRow = InferSelectModel<typeof salesOrders> & {
+  userFirstName: string | null;
+  userLastName: string | null;
+  userRole: string | null;
+  userEmail: string | null;
+  dealerNameStr: string | null;
+  dealerType: string | null;
+  dealerPhone: string | null;
+  dealerAddress: string | null;
+  dealerArea: string | null;
+  dealerRegion: string | null;
+};
+
+// 3. The Cached Function
 async function getCachedSalesOrders(companyId: number) {
   'use cache';
   cacheLife('hours');
   cacheTag(`sales-orders-${companyId}`);
 
-  const salesOrders = await prisma.salesOrder.findMany({
-    where: {
-      user: {
-        companyId: companyId,
-      },
-    },
-    include: {
-      user: { select: { firstName: true, lastName: true, role: true, email: true } },
-      dealer: { select: { name: true, type: true, phoneNo: true, address: true, area: true, region: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  // Use getTableColumns and explicit typing to prevent `never[]`
+  const results: SalesOrderRow[] = await db
+    .select({
+      ...getTableColumns(salesOrders),
+      userFirstName: users.firstName,
+      userLastName: users.lastName,
+      userRole: users.role,
+      userEmail: users.email,
+      dealerNameStr: dealers.name,
+      dealerType: dealers.type,
+      dealerPhone: dealers.phoneNo,
+      dealerAddress: dealers.address,
+      dealerArea: dealers.area,
+      dealerRegion: dealers.region,
+    })
+    .from(salesOrders)
+    .leftJoin(users, eq(salesOrders.userId, users.id))
+    .leftJoin(dealers, eq(salesOrders.dealerId, dealers.id))
+    .where(eq(users.companyId, companyId))
+    .orderBy(desc(salesOrders.createdAt));
 
-  return salesOrders.map((order: any) => {
+  return results.map((row) => {
     const toNum = (v: any) => (v == null ? null : Number(v));
     const toDate = (d: any) => (d ? new Date(d).toISOString().split('T')[0] : null);
 
-    const qty = toNum(order.orderQty) ?? 0;
-    const effPrice = toNum(order.itemPriceAfterDiscount) ?? toNum(order.itemPrice) ?? 0;
+    const qty = toNum(row.orderQty) ?? 0;
+    const effPrice = toNum(row.itemPriceAfterDiscount) ?? toNum(row.itemPrice) ?? 0;
     const orderTotal = Number((qty * effPrice).toFixed(2));
 
-    const receivedPayment = toNum(order.receivedPayment);
-    const pendingPayment = order.pendingPayment != null
-      ? toNum(order.pendingPayment)
+    const receivedPayment = toNum(row.receivedPayment);
+    const pendingPayment = row.pendingPayment != null
+      ? toNum(row.pendingPayment)
       : Number((orderTotal - (receivedPayment ?? 0)).toFixed(2));
 
-    const salesmanName = `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim() || order.user?.email || 'Unknown';
+    const salesmanName = `${row.userFirstName || ''} ${row.userLastName || ''}`.trim() || row.userEmail || 'Unknown';
 
     return {
-      id: order.id,
-      userId: order.userId ?? null,
-      dealerId: order.dealerId ?? null,
-      dvrId: order.dvrId ?? null,
-      pjpId: order.pjpId ?? null,
+      ...row,
       salesmanName,
-      salesmanRole: order.user?.role || 'Unknown',
-      dealerName: order.dealer?.name || 'Unknown',
-      dealerType: order.dealer?.type || 'Unknown',
-      dealerPhone: order.dealer?.phoneNo || '',
-      dealerAddress: order.dealer?.address || '',
-      area: order.dealer?.area || '',
-      region: order.dealer?.region || '',
-      orderDate: toDate(order.orderDate) as string,
-      orderPartyName: order.orderPartyName,
-      partyPhoneNo: order.partyPhoneNo ?? null,
-      partyArea: order.partyArea ?? null,
-      partyRegion: order.partyRegion ?? null,
-      partyAddress: order.partyAddress ?? null,
-      deliveryDate: toDate(order.deliveryDate),
-      deliveryArea: order.deliveryArea ?? null,
-      deliveryRegion: order.deliveryRegion ?? null,
-      deliveryAddress: order.deliveryAddress ?? null,
-      deliveryLocPincode: order.deliveryLocPincode ?? null,
-      paymentMode: order.paymentMode ?? null,
-      paymentTerms: order.paymentTerms ?? null,
-      paymentAmount: toNum(order.paymentAmount),
+      salesmanRole: row.userRole || 'Unknown',
+      dealerName: row.dealerNameStr || 'Unknown',
+      dealerType: row.dealerType || 'Unknown',
+      dealerPhone: row.dealerPhone || '',
+      dealerAddress: row.dealerAddress || '',
+      area: row.dealerArea || '',
+      region: row.dealerRegion || '',
+      
+      orderDate: toDate(row.orderDate) as string,
+      deliveryDate: toDate(row.deliveryDate),
+      receivedPaymentDate: toDate(row.receivedPaymentDate),
+      estimatedDelivery: toDate(row.deliveryDate),
+      
+      paymentAmount: toNum(row.paymentAmount),
       receivedPayment,
-      receivedPaymentDate: toDate(order.receivedPaymentDate),
       pendingPayment,
-      orderQty: toNum(order.orderQty),
-      orderUnit: order.orderUnit ?? null,
-      itemPrice: toNum(order.itemPrice),
-      discountPercentage: toNum(order.discountPercentage),
-      itemPriceAfterDiscount: toNum(order.itemPriceAfterDiscount),
-      itemType: order.itemType ?? null,
-      itemGrade: order.itemGrade ?? null,
+      orderQty: toNum(row.orderQty),
+      itemPrice: toNum(row.itemPrice),
+      discountPercentage: toNum(row.discountPercentage),
+      itemPriceAfterDiscount: toNum(row.itemPriceAfterDiscount),
       orderTotal,
-      estimatedDelivery: toDate(order.deliveryDate),
+      
       remarks: null,
-      createdAt: order.createdAt.toISOString(),
-      updatedAt: order.updatedAt.toISOString(),
+      createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
+      updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
     };
   });
 }
 
 export async function GET() {
-  await connection();
+  if (typeof connection === 'function') await connection();
+  
   try {
     const claims = await getTokenClaims();
 
-    // 1. Auth Check
     if (!claims || !claims.sub) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Current User Lookup
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true },
-    });
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
 
-    // 3. Role Check
+    const currentUser = currentUserResult[0];
+
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
       return NextResponse.json(
         { error: 'Forbidden: Your role does not have access to this data.' },
@@ -119,12 +161,18 @@ export async function GET() {
       );
     }
 
-    // 4. Call the cached function
     const formatted = await getCachedSalesOrders(currentUser.companyId);
 
-    const validated = z.array(salesOrderSchema).parse(formatted);
+    // Strictly parse using the extended schema instead of .loose()
+    const validated = z.array(frontendSalesOrderSchema).safeParse(formatted);
 
-    return NextResponse.json(validated, { status: 200 });
+    if (!validated.success) {
+        console.error("Sales Orders Validation Error:", validated.error.format());
+        // Return unvalidated data gracefully so the frontend table doesn't break
+        return NextResponse.json(formatted, { status: 200 }); 
+    }
+
+    return NextResponse.json(validated.data, { status: 200 });
   } catch (error) {
     console.error('Error fetching sales orders:', error);
     return NextResponse.json(

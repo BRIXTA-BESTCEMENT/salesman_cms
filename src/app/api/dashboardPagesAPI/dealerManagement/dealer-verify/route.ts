@@ -1,15 +1,15 @@
 // src/app/api/dashboardPagesAPI/add-dealers/dealer-verify/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma'; // Ensure this path is correct for your Prisma client
+import { db } from '@/lib/drizzle';
+import { users, dealers } from '../../../../../../drizzle'; 
+import { eq, and, asc } from 'drizzle-orm';
 import { z } from 'zod';
-import { dealerVerificationSchema, verificationUpdateSchema } from '@/lib/shared-zod-schema';
+import { selectDealerSchema, insertDealerSchema } from '../../../../../../drizzle/zodSchemas';
+import { refreshCompanyCache } from '@/app/actions/cache';
 
-// Define roles allowed to perform dealer verification actions (GET and PUT)
 const allowedRoles = [
-    'Admin', // Assuming 'Admin' is a high-level role
     'president',
     'senior-general-manager',
     'general-manager',
@@ -17,9 +17,7 @@ const allowedRoles = [
     'senior-manager',
     'manager',
     'assistant-manager',
-    'senior-executive','executive'
 ];
-
 
 /**
  * GET: Fetch all dealers with verificationStatus = 'Pending' for the current user's company.
@@ -33,11 +31,13 @@ export async function GET(request: NextRequest) {
         }
 
         // 2. Fetch Current User for robust role and companyId check
-        const currentUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub }, 
-            // Include company to ensure we can filter dealers by companyId
-            select: { id: true, role: true, companyId: true } 
-        });
+        const currentUserResult = await db
+            .select({ id: users.id, role: users.role, companyId: users.companyId })
+            .from(users)
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
+
+        const currentUser = currentUserResult[0];
 
         // 3. Authorization Check (Role and Existence)
         if (!currentUser || !allowedRoles.includes(currentUser.role)) {
@@ -47,44 +47,44 @@ export async function GET(request: NextRequest) {
         }
 
         // 4. Fetch pending dealers for the current user's company
-        const dealers = await prisma.dealer.findMany({
-            where: {
-                user: {
-                    companyId: currentUser.companyId, // Filter by fetched companyId
-                },
-                // This line is correct per your schema: model Dealer { ... verificationStatus String ... }
-                verificationStatus: 'PENDING', 
-            },
-            select: {
-                id: true,
-                name: true,
-                phoneNo: true,
-                area: true,
-                region: true,
-                type: true,
-                verificationStatus: true,
-                nameOfFirm: true,
-                underSalesPromoterName: true,
+        const pendingDealers = await db
+            .select({
+                id: dealers.id,
+                name: dealers.name,
+                phoneNo: dealers.phoneNo,
+                area: dealers.area,
+                region: dealers.region,
+                type: dealers.type,
+                verificationStatus: dealers.verificationStatus,
+                nameOfFirm: dealers.nameOfFirm,
+                underSalesPromoterName: dealers.underSalesPromoterName,
                 // Statutory IDs
-                gstinNo: true,
-                panNo: true,
-                aadharNo: true,
-                tradeLicNo: true,
+                gstinNo: dealers.gstinNo,
+                panNo: dealers.panNo,
+                aadharNo: dealers.aadharNo,
+                tradeLicNo: dealers.tradeLicNo,
                 // Image URLs
-                tradeLicencePicUrl: true,
-                shopPicUrl: true,
-                dealerPicUrl: true,
-                blankChequePicUrl: true,
-                partnershipDeedPicUrl: true,
-                remarks: true,
-            },
-            orderBy: {
-                createdAt: 'asc',
-            },
-        });
+                tradeLicencePicUrl: dealers.tradeLicencePicUrl,
+                shopPicUrl: dealers.shopPicUrl,
+                dealerPicUrl: dealers.dealerPicUrl,
+                blankChequePicUrl: dealers.blankChequePicUrl,
+                partnershipDeedPicUrl: dealers.partnershipDeedPicUrl,
+                remarks: dealers.remarks,
+            })
+            .from(dealers)
+            .leftJoin(users, eq(dealers.userId, users.id))
+            .where(
+                and(
+                    eq(users.companyId, currentUser.companyId),
+                    eq(dealers.verificationStatus, 'PENDING')
+                )
+            )
+            .orderBy(asc(dealers.createdAt));
         
         // 5. Validate and return data
-        const validatedDealers = z.array(dealerVerificationSchema).safeParse(dealers);
+        const frontendDealerSchema = selectDealerSchema.partial().loose();
+        const validatedDealers = z.array(frontendDealerSchema).safeParse(pendingDealers);
+
         if (!validatedDealers.success) {
             console.error("GET Response Validation Error:", validatedDealers.error);
             return NextResponse.json({ error: 'Data integrity error on server', details: validatedDealers.error }, { status: 500 });
@@ -95,8 +95,6 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error('Error fetching pending dealers (GET):', error);
         return NextResponse.json({ error: 'Failed to fetch pending dealers', details: (error as Error).message }, { status: 500 });
-    } finally {
-        await prisma.$disconnect();
     }
 }
 
@@ -112,10 +110,13 @@ export async function PUT(request: NextRequest) {
         }
 
         // 2. Fetch Current User
-        const currentUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub },
-            select: { id: true, role: true, companyId: true } 
-        });
+        const currentUserResult = await db
+            .select({ id: users.id, role: users.role, companyId: users.companyId })
+            .from(users)
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
+
+        const currentUser = currentUserResult[0];
 
         // 3. Authorization Check
         if (!currentUser || !allowedRoles.includes(currentUser.role)) {
@@ -132,49 +133,49 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ error: 'Missing or invalid dealer ID in query' }, { status: 400 });
         }
 
-        // 4. Validate request body against the new, simplified schema
+        // 4. Validate request body
         const body = await request.json();
+        const verificationUpdateSchema = insertDealerSchema.pick({ verificationStatus: true });
         const validatedBody = verificationUpdateSchema.safeParse(body);
 
         if (!validatedBody.success) {
             console.error("PUT Request Body Validation Error:", validatedBody.error);
-            // This is the error being returned as a 400
             return NextResponse.json({ error: 'Invalid verification status format or value.', details: validatedBody.error.issues }, { status: 400 });
         }
 
-        const { verificationStatus } = validatedBody.data; // Destructure the correct key
+        const { verificationStatus } = validatedBody.data;
 
         // 5. Verify dealer existence and company ownership
-        const dealerToUpdate = await prisma.dealer.findUnique({
-            where: { id: dealerId },
-            include: { user: true }
-        });
+        const dealerToUpdateResult = await db
+            .select({ id: dealers.id, userCompanyId: users.companyId })
+            .from(dealers)
+            .leftJoin(users, eq(dealers.userId, users.id))
+            .where(eq(dealers.id, dealerId))
+            .limit(1);
+
+        const dealerToUpdate = dealerToUpdateResult[0];
 
         if (!dealerToUpdate) {
             return NextResponse.json({ error: 'Dealer not found' }, { status: 404 });
         }
 
-        if (!dealerToUpdate.user || dealerToUpdate.user.companyId !== currentUser.companyId) {
+        if (dealerToUpdate.userCompanyId !== currentUser.companyId) {
             return NextResponse.json({ error: 'Forbidden: Cannot update a dealer from another company' }, { status: 403 });
         }
 
         // 6. Update the verification status
-        await prisma.dealer.update({
-            where: { id: dealerId },
-            data: {
-                verificationStatus: verificationStatus,
-            },
-        });
+        await db
+            .update(dealers)
+            .set({ verificationStatus: verificationStatus })
+            .where(eq(dealers.id, dealerId));
 
-        revalidateTag(`dealers-${currentUser.companyId}`, 'max');
-        revalidateTag(`verified-dealers-${currentUser.companyId}`, 'max');
+        await refreshCompanyCache('dealers');
+        await refreshCompanyCache('verified-dealers');
 
         return NextResponse.json({ message: `Dealer status updated to ${verificationStatus}` }, { status: 200 });
 
     } catch (error) {
         console.error('Error updating dealer status (PUT):', error);
         return NextResponse.json({ error: 'Failed to update dealer status', details: (error as Error).message }, { status: 500 });
-    } finally {
-       // await prisma.$disconnect();
     }
 }

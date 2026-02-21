@@ -1,78 +1,95 @@
 // src/app/api/dashboardPagesAPI/dealerManagement/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { cacheTag, cacheLife, revalidateTag } from 'next/cache';
+import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma'; // Ensure this path is correct for your Prisma client
+import { db } from '@/lib/drizzle';
+import { users, dealers } from '../../../../../drizzle';
+import { eq, and, desc, aliasedTable, getTableColumns } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
-import { getDealersSchema, postDealersSchema } from '@/lib/shared-zod-schema';
+import { selectDealerSchema } from '../../../../../drizzle/zodSchemas';
+import { refreshCompanyCache } from '@/app/actions/cache';
 
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive','junior-executive'];
+const allowedRoles = [
+    'president', 'senior-general-manager', 'general-manager',
+    'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
+    'senior-manager', 'manager', 'assistant-manager',
+    'senior-executive', 'executive', 'junior-executive'
+];
 
-
+// Extend the baked DB schema to include frontend-specific types and joined fields
+const frontendDealerSchema = selectDealerSchema.extend({
+    totalPotential: z.number(),
+    bestPotential: z.number(),
+    latitude: z.number().nullable(),
+    longitude: z.number().nullable(),
+    monthlySaleMt: z.number().nullable().optional(),
+    projectedMonthlySalesBestCementMt: z.number().nullable().optional(),
+    salesGrowthPercentage: z.number().nullable().optional(),
+    parentDealerName: z.string().nullable().optional(),
+});
+type DealerRow = InferSelectModel<typeof dealers> & {
+  parentDealerName: string | null;
+};
 // 1. Create the cached function OUTSIDE your GET route
 async function getCachedDealersByCompany(companyId: number) {
     'use cache';
-    cacheLife('days'); // Keeps it cached for a long time
-    cacheTag(`dealers-${companyId}`); // Tag it uniquely per company for easy invalidation
+    cacheLife('days');
+    cacheTag(`dealers-${companyId}`);
 
-    const dealers = await prisma.dealer.findMany({
-        where: {
-            user: { companyId: companyId },
-            verificationStatus: 'VERIFIED',
-        },
-        include: { 
-            parentDealer: { select: { id: true, name: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-    });
+    const parentDealers = aliasedTable(dealers, 'parentDealers');
 
-    function toNumberOrNull(val: any): number | null {
-            if (val === null || val === undefined || val === '') return null;
+    const dealerColumns = getTableColumns(dealers);
+    
+    const rawDealers: DealerRow[] = await db
+        .select({
+            ...dealerColumns,
+            parentDealerName: parentDealers.name,
+        })
+        .from(dealers)
+        .leftJoin(users, eq(dealers.userId, users.id))
+        .leftJoin(parentDealers, eq(dealers.parentDealerId, parentDealers.id))
+        .where(
+            and(
+                eq(users.companyId, companyId),
+                eq(dealers.verificationStatus, 'VERIFIED')
+            )
+        )
+        .orderBy(desc(dealers.createdAt));
 
-            // Prisma Decimal has .toNumber()
-            if (typeof val === 'object' && typeof val.toNumber === 'function') {
-                return val.toNumber();
-            }
+    const toNumber = (val: any) =>
+        val === null || val === undefined || val === ''
+            ? null
+            : Number(val);
+    const toStringDate = (val: any) => (val ? new Date(val).toISOString().split('T')[0] : null);
 
-            const n = Number(val);
-            return Number.isFinite(n) ? n : null;
-        }
+    return rawDealers.map((row) => ({
+        ...row,
+        // Convert numeric/decimal strings from Postgres to JS Numbers for the frontend
+        totalPotential: toNumber(row.totalPotential),
+        bestPotential: toNumber(row.bestPotential),
+        latitude: row.latitude ? Number(row.latitude) : null,
+        longitude: row.longitude ? Number(row.longitude) : null,
+        monthlySaleMt: row.monthlySaleMt ? Number(row.monthlySaleMt) : null,
+        projectedMonthlySalesBestCementMt: row.projectedMonthlySalesBestCementMt ? Number(row.projectedMonthlySalesBestCementMt) : null,
+        salesGrowthPercentage: row.salesGrowthPercentage ? Number(row.salesGrowthPercentage) : null,
 
-    // You can even cache the formatted result to save CPU cycles!
-    return dealers.map((dealer: any) => ({
-        id: dealer.id,
-        name: dealer.name,
-        type: dealer.type,
-        region: dealer.region,
-        area: dealer.area,
-        phoneNo: dealer.phoneNo,
-        address: dealer.address,
-        pinCode: dealer.pinCode,
-        latitude: toNumberOrNull(dealer.latitude),
-        longitude: toNumberOrNull(dealer.longitude),
-        dateOfBirth: dealer.dateOfBirth ? dealer.dateOfBirth.toISOString().split('T')[0] : null,
-        anniversaryDate: dealer.anniversaryDate ? dealer.anniversaryDate.toISOString().split('T')[0] : null,
-        totalPotential: dealer.totalPotential.toNumber(),
-        bestPotential: dealer.bestPotential.toNumber(),
-        brandSelling: dealer.brandSelling,
-        feedbacks: dealer.feedbacks,
-        remarks: dealer.remarks,
-        verificationStatus: dealer.verificationStatus,
-        nameOfFirm: dealer.nameOfFirm,
-        underSalesPromoterName: dealer.underSalesPromoterName,
-        noOfPJP: dealer.noOfPJP,
-        createdAt: dealer.createdAt.toISOString(),
-        updatedAt: dealer.updatedAt.toISOString(),
-        parentDealerName: dealer.parentDealer?.name || null,
+        // Format Dates
+        dateOfBirth: toStringDate(row.dateOfBirth),
+        anniversaryDate: toStringDate(row.anniversaryDate),
+        declarationDate: toStringDate(row.declarationDate),
+        createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
+        updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
+
+        // Ensure parent name fallback
+        parentDealerName: row.parentDealerName || null,
     }));
 }
 
 export async function GET() {
-    await connection();
+    if (typeof connection === 'function') await connection();
+
     try {
         const claims = await getTokenClaims();
 
@@ -82,32 +99,38 @@ export async function GET() {
         }
 
         // 2. Fetch Current User to get their ID and role
-        const currentUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub },
-            select: { id: true, role: true, companyId: true } // Select only necessary fields
-        });
+        const currentUserResult = await db
+            .select({ id: users.id, role: users.role, companyId: users.companyId })
+            .from(users)
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
 
-        // 3. Role-based Authorization: Now allows 'sr executive', 'executive', and 'jr executive' to add dealers
+        const currentUser = currentUserResult[0];
+
+        // 3. Role-based Authorization
         if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: `Forbidden: Only the following roles can add dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
+            return NextResponse.json({ error: `Forbidden: Only the following roles can access dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
         }
 
         // 4. --- FETCH FROM CACHE INSTEAD OF DB ---
         const formattedDealers = await getCachedDealersByCompany(currentUser.companyId);
 
-        // 5. Validate the formatted data against the getDealerResponseSchema
-        const validatedDealers = z.array(getDealersSchema).parse(formattedDealers); // Use the new GET schema
+        // 5. Validate the formatted data against the Drizzle-Zod schema
+        const validatedDealers = z.array(frontendDealerSchema).safeParse(formattedDealers);
 
-        return NextResponse.json(validatedDealers, { status: 200 });
+        if (!validatedDealers.success) {
+            console.error("Dealer GET Validation Error:", validatedDealers.error.format());
+            // Graceful fallback to raw data so UI doesn't crash completely
+            return NextResponse.json(formattedDealers, { status: 200 });
+        }
+
+        return NextResponse.json(validatedDealers.data, { status: 200 });
     } catch (error) {
         console.error('Error fetching dealers (GET):', error);
         return NextResponse.json({ error: 'Failed to fetch dealers', details: (error as Error).message }, { status: 500 });
-    } finally {
-        //await prisma.$disconnect(); // Disconnect Prisma client
     }
 }
 
-  // HAVE TO FIX DEALER ADDING - STATUS SET TO 'PENDING'
 export async function POST(request: NextRequest) {
     try {
         const claims = await getTokenClaims();
@@ -118,19 +141,23 @@ export async function POST(request: NextRequest) {
         }
 
         // 2. Fetch Current User to get their ID and role
-        const currentUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub },
-            select: { id: true, role: true, companyId: true } // Select only necessary fields
-        });
+        const currentUserResult = await db
+            .select({ id: users.id, role: users.role, companyId: users.companyId })
+            .from(users)
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
 
-        // --- UPDATED ROLE-BASED AUTHORIZATION ---
-        // 3. Role-based Authorization: Now allows 'sr executive', 'executive', and 'jr executive' to add dealers
+        const currentUser = currentUserResult[0];
+
+        // 3. Role-based Authorization
         if (!currentUser || !allowedRoles.includes(currentUser.role)) {
             return NextResponse.json({ error: `Forbidden: Only the following roles can add dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
         }
 
         const body = await request.json();
-        const parsedBody = postDealersSchema.safeParse(body); // Use postDealerSchema for POST validation
+
+        // We can safely parse the incoming POST body with the frontend schema or the base schema
+        const parsedBody = selectDealerSchema.loose().safeParse(body);
 
         if (!parsedBody.success) {
             console.error('Add Dealer Validation Error (POST):', parsedBody.error.format());
@@ -144,7 +171,7 @@ export async function POST(request: NextRequest) {
             feedbacks, remarks, parentDealerId,
         } = parsedBody.data;
 
-        // --- UPDATED GEOCODING SECTION ---
+        // --- GEOCODING SECTION ---
         let latitude: number | null = null;
         let longitude: number | null = null;
         const apiKey = process.env.OPENCAGE_GEO_API;
@@ -169,41 +196,40 @@ export async function POST(request: NextRequest) {
         } else {
             console.warn('OPENCAGE_GEO_API key not set. Skipping geocoding.');
         }
-        // --- END OF UPDATED GEOCODING SECTION ---
 
         // Create the new dealer in the database
-        const newDealer = await prisma.dealer.create({
-            data: {
-                userId: currentUser.id, // Associate the dealer with the current admin/manager
-                name: name,
-                type: type,
-                region: region,
-                area: area,
-                phoneNo: phoneNo,
-                address: address,
-                pinCode,
-                latitude: latitude,
-                longitude: longitude,
-                dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
-                anniversaryDate: anniversaryDate ? new Date(anniversaryDate) : null,
-                totalPotential: totalPotential,
-                bestPotential: bestPotential,
-                brandSelling: brandSelling,
-                feedbacks: feedbacks,
-                remarks: remarks,
-                parentDealerId: parentDealerId || null,
-            },
-        });
+        const newDealerResult = await db.insert(dealers).values({
+            id: crypto.randomUUID(),
+            userId: currentUser.id,
+            name: name,
+            type: type,
+            region: region,
+            area: area,
+            phoneNo: phoneNo,
+            address: address,
+            pinCode,
+            latitude: latitude?.toString() ?? null,
+            longitude: longitude?.toString() ?? null,
+            // Split by T to format specifically to YYYY-MM-DD for standard pg date columns
+            dateOfBirth: dateOfBirth ? new Date(dateOfBirth).toISOString().split('T')[0] : null,
+            anniversaryDate: anniversaryDate ? new Date(anniversaryDate).toISOString().split('T')[0] : null,
+            totalPotential: totalPotential?.toString() ?? null,
+            bestPotential: bestPotential?.toString() ?? null,
+            brandSelling: brandSelling,
+            feedbacks: feedbacks,
+            remarks: remarks,
+            parentDealerId: parentDealerId || null,
+        }).returning();
+
+        const newDealer = newDealerResult[0];
 
         // Clear the cache for this company so the new dealer appears!
-        revalidateTag(`dealers-${currentUser.companyId}`, 'max');
+        await refreshCompanyCache('dealers');
 
         return NextResponse.json({ message: 'Dealer added successfully!', dealer: newDealer }, { status: 201 });
     } catch (error) {
         console.error('Error adding dealer (POST):', error);
         return NextResponse.json({ error: 'Failed to add dealer', details: (error as Error).message }, { status: 500 });
-    } finally {
-        await prisma.$disconnect(); // Disconnect Prisma client
     }
 }
 
@@ -218,10 +244,13 @@ export async function DELETE(request: NextRequest) {
         }
 
         // 2. Fetch Current User to get their ID and role
-        const currentUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub },
-            select: { id: true, role: true, companyId: true }
-        });
+        const currentUserResult = await db
+            .select({ id: users.id, role: users.role, companyId: users.companyId })
+            .from(users)
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
+
+        const currentUser = currentUserResult[0];
 
         // 3. Role-based Authorization
         if (!currentUser || !allowedRoles.includes(currentUser.role)) {
@@ -237,34 +266,36 @@ export async function DELETE(request: NextRequest) {
         }
 
         // 5. Verify the dealer exists and belongs to the current user's company
-        const dealerToDelete = await prisma.dealer.findUnique({
-            where: { id: dealerId },
-            include: { user: true }
-        });
+        const dealerToDeleteResult = await db
+            .select({ id: dealers.id, userCompanyId: users.companyId })
+            .from(dealers)
+            .leftJoin(users, eq(dealers.userId, users.id))
+            .where(eq(dealers.id, dealerId))
+            .limit(1);
+
+        const dealerToDelete = dealerToDeleteResult[0];
 
         if (!dealerToDelete) {
             return NextResponse.json({ error: 'Dealer not found' }, { status: 404 });
         }
 
-        if (!dealerToDelete.user || dealerToDelete.user.companyId !== currentUser.companyId) {
+        if (dealerToDelete.userCompanyId !== currentUser.companyId) {
             return NextResponse.json({ error: 'Forbidden: Cannot delete a dealer from another company' },
                 { status: 403 });
         }
 
         // 6. Delete the dealer from the database
-        await prisma.dealer.delete({
-            where: { id: dealerId }
-        });
+        await db
+            .delete(dealers)
+            .where(eq(dealers.id, dealerId));
 
         // Clear the cache for this company so the new dealer appears!
-        revalidateTag(`dealers-${currentUser.companyId}`, 'max');
+        await refreshCompanyCache('dealers');
 
         return NextResponse.json({ message: 'Dealer deleted successfully' }, { status: 200 });
 
     } catch (error) {
         console.error('Error deleting dealer (DELETE):', error);
         return NextResponse.json({ error: 'Failed to delete dealer', details: (error as Error).message }, { status: 500 });
-    } finally {
-        //await prisma.$disconnect();
     }
 }

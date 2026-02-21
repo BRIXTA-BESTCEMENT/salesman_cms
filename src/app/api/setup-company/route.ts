@@ -2,7 +2,9 @@
 import 'server-only';
 import { NextResponse } from 'next/server';
 import { withAuth } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, companies } from '../../../../drizzle'; 
+import { eq } from 'drizzle-orm';
 import { WorkOS } from '@workos-inc/node';
 import { z } from 'zod';
 
@@ -42,9 +44,13 @@ export async function POST(request: Request) {
 
     const { companyName, officeAddress, isHeadOffice, phoneNumber, region, area } = parsedBody.data;
 
-    const existingCompanyInDb = await prisma.company.findUnique({
-      where: { adminUserId: user.id },
-    });
+    const existingCompanyResult = await db
+      .select()
+      .from(companies)
+      .where(eq(companies.adminUserId, user.id))
+      .limit(1);
+
+    const existingCompanyInDb = existingCompanyResult[0];
 
     if (existingCompanyInDb) {
       return NextResponse.json({ error: 'Company already set up for this user in your database.' }, { status: 409 });
@@ -109,32 +115,32 @@ export async function POST(request: Request) {
     }
 
     // Create database records
-    const newCompany = await prisma.company.create({
-      data: {
-        companyName,
-        officeAddress,
-        isHeadOffice,
-        phoneNumber,
-        region: region, // Save the new region
-        area: area, // Save the new area
-        adminUserId: user.id,
-        workosOrganizationId: workosOrganization.id,
-      },
-    });
+    const newCompanyResult = await db.insert(companies).values({
+      companyName,
+      officeAddress,
+      isHeadOffice,
+      phoneNumber,
+      region: region, 
+      area: area,     
+      adminUserId: user.id,
+      workosOrganizationId: workosOrganization.id,
+    }).returning();
+
+    const newCompany = newCompanyResult[0];
 
     // Create the initial user with the senior-manager role and the new fields
-    const newAdminUser = await prisma.user.create({
-      data: {
-        workosUserId: user.id,
-        companyId: newCompany.id,
-        email: user.email,
-        firstName: user.firstName || null,
-        lastName: user.lastName || null,
-        role: 'senior-manager', // This is your internal database role <Change this change default role here + WorkOS>
-        region: region, // Save the new region
-        area: area, // Save the new area
-      },
-    });
+    const newAdminUserResult = await db.insert(users).values({
+      workosUserId: user.id,
+      companyId: newCompany.id,
+      email: user.email,
+      firstName: user.firstName || null,
+      lastName: user.lastName || null,
+      role: 'senior-manager', 
+      region: region, 
+      area: area,     
+    }).returning();
+
+    const newAdminUser = newAdminUserResult[0];
 
     console.log('🎉 Company setup completed successfully!');
     return NextResponse.json({

@@ -3,7 +3,9 @@ import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { WorkOS } from '@workos-inc/node';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, companies } from '../../../../../../../drizzle';
+import { eq, and, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import { Resend } from 'resend';
 import { RESEND_API_KEY } from '@/lib/Reusable-constants';
@@ -133,41 +135,53 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const adminUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-    });
+    const adminUserResult = await db
+      .select({
+        role: users.role,
+        companyId: users.companyId
+      })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const adminUser = adminUserResult[0];
 
     if (!adminUser || !allowedAdminRoles.includes(adminUser.role)) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const targetUser = await prisma.user.findFirst({
-      where: {
-        id: parseInt(userId),
-        companyId: adminUser.companyId,
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        region: true,
-        area: true,
-        phoneNumber: true,
-        isTechnicalRole: true,
-        isAdminAppUser: true,
-        deviceId: true,
-        workosUserId: true,
-        inviteToken: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-        salesmanLoginId: true,
-        techLoginId: true,
-        adminAppLoginId: true,
-      },
-    });
+    const targetUserResult = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        role: users.role,
+        region: users.region,
+        area: users.area,
+        phoneNumber: users.phoneNumber,
+        isTechnicalRole: users.isTechnicalRole,
+        isAdminAppUser: users.isAdminAppUser,
+        deviceId: users.deviceId,
+        workosUserId: users.workosUserId,
+        inviteToken: users.inviteToken,
+        status: users.status,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        salesmanLoginId: users.salesmanLoginId,
+        techLoginId: users.techLoginId,
+        adminAppLoginId: users.adminAppLoginId,
+      })
+      .from(users)
+      .where(
+        and(
+          eq(users.id, Number(userId)),
+          eq(users.companyId, adminUser.companyId)
+        )
+      )
+      .limit(1);
+
+    const targetUser = targetUserResult[0];
 
     if (!targetUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -202,10 +216,21 @@ export async function PUT(
     const organizationId = claims.org_id as string;
 
     // 1. Fetch Current User for Authorization
-    const adminUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      include: { company: true },
-    });
+    const adminUserResult = await db
+      .select({
+        id: users.id,
+        role: users.role,
+        companyId: users.companyId,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        companyName: companies.companyName,
+      })
+      .from(users)
+      .leftJoin(companies, eq(users.companyId, companies.id))
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const adminUser = adminUserResult[0];
 
     if (!adminUser || !allowedAdminRoles.includes(adminUser.role)) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
@@ -224,27 +249,13 @@ export async function PUT(
     const { role, area, region, phoneNumber, isTechnical, isAdminAppUser, clearDevice, isDashboardUser, ...workosStandardData } = parsedBody.data;
 
     // 2. Check target user
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetUserLocalId },
-      select: {
-        id: true,
-        companyId: true,
-        workosUserId: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        role: true,
-        salesmanLoginId: true,
-        hashedPassword: true,
-        techLoginId: true,
-        isTechnicalRole: true,
-        techHashedPassword: true,
-        isAdminAppUser: true,
-        adminAppLoginId: true,
-        adminAppHashedPassword: true,
-        deviceId: true,
-      }
-    });
+    const targetUserResult = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, targetUserLocalId))
+      .limit(1);
+
+    const targetUser = targetUserResult[0];
 
     if (!targetUser || targetUser.companyId !== adminUser.companyId) {
       return NextResponse.json({ error: 'User not found or access denied.' }, { status: 404 });
@@ -252,20 +263,24 @@ export async function PUT(
 
     // 3. Check for email conflict
     if (workosStandardData.email && workosStandardData.email !== targetUser.email) {
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          email: workosStandardData.email,
-          companyId: adminUser.companyId,
-          id: { not: targetUserLocalId }
-        }
-      });
-      if (existingUser) {
+      const existing = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(
+          and(
+            eq(users.companyId, adminUser.companyId),
+            eq(users.email, workosStandardData.email),
+            ne(users.id, targetUserLocalId)
+          )
+        )
+        .limit(1);
+      if (existing[0]) {
         return NextResponse.json({ error: 'Email already exists for another user in this company' }, { status: 409 });
       }
     }
 
     // 4. Prepare Updates
-    const prismaUpdateData: any = {
+    const drizzleUpdateData: any = {
       ...workosStandardData,
       ...(role !== undefined && { role }),
       ...(area !== undefined && { area }),
@@ -286,15 +301,19 @@ export async function PUT(
 
       while (!isUnique) {
         newAdminLoginId = `ADM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-        const existingAdmin = await prisma.user.findFirst({ where: { adminAppLoginId: newAdminLoginId } });
-        if (!existingAdmin) isUnique = true;
-      }
+        const existingAdmin = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.adminAppLoginId, newAdminLoginId))
+          .limit(1);
 
+        if (!existingAdmin[0]) isUnique = true;
+      }
       const newAdminPassword = generateRandomPassword();
 
-      prismaUpdateData.isAdminAppUser = true;
-      prismaUpdateData.adminAppLoginId = newAdminLoginId;
-      prismaUpdateData.adminAppHashedPassword = newAdminPassword;
+      drizzleUpdateData.isAdminAppUser = true;
+      drizzleUpdateData.adminAppLoginId = newAdminLoginId;
+      drizzleUpdateData.adminAppHashedPassword = newAdminPassword;
 
       newCredentialsToSend.push({
         type: 'Admin',
@@ -303,7 +322,7 @@ export async function PUT(
       });
 
     } else if (isAdminAppUser !== undefined) {
-      prismaUpdateData.isAdminAppUser = isAdminAppUser;
+      drizzleUpdateData.isAdminAppUser = isAdminAppUser;
     }
 
     // --- LOGIC B: Technical User Update ---
@@ -314,15 +333,20 @@ export async function PUT(
 
       while (!isUnique) {
         newTechLoginId = `TSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-        const existingTechUser = await prisma.user.findFirst({ where: { techLoginId: newTechLoginId } });
-        if (!existingTechUser) isUnique = true;
+        const existing = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.techLoginId, newTechLoginId))
+          .limit(1);
+
+        if (!existing[0]) isUnique = true;
       }
 
       const newTechPassword = generateRandomPassword();
 
-      prismaUpdateData.isTechnicalRole = true;
-      prismaUpdateData.techLoginId = newTechLoginId;
-      prismaUpdateData.techHashedPassword = newTechPassword;
+      drizzleUpdateData.isTechnicalRole = true;
+      drizzleUpdateData.techLoginId = newTechLoginId;
+      drizzleUpdateData.techHashPassword = newTechPassword;
 
       newCredentialsToSend.push({
         type: 'Technical',
@@ -331,7 +355,7 @@ export async function PUT(
       });
 
     } else if (isTechnical !== undefined) {
-      prismaUpdateData.isTechnicalRole = isTechnical;
+      drizzleUpdateData.isTechnicalRole = isTechnical;
     }
 
     // --- LOGIC C: Salesman/Role Update ---
@@ -345,14 +369,19 @@ export async function PUT(
 
       while (!isUnique) {
         newSalesmanId = `EMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-        const existingSalesman = await prisma.user.findUnique({ where: { salesmanLoginId: newSalesmanId } });
-        if (!existingSalesman) isUnique = true;
+        const existingSalesman = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.salesmanLoginId, newSalesmanId))
+          .limit(1);
+
+        if (!existingSalesman[0]) isUnique = true;
       }
 
       const newSalesmanPassword = generateRandomPassword();
 
-      prismaUpdateData.salesmanLoginId = newSalesmanId;
-      prismaUpdateData.hashedPassword = newSalesmanPassword;
+      drizzleUpdateData.salesmanLoginId = newSalesmanId;
+      drizzleUpdateData.hashedPassword = newSalesmanPassword;
 
       newCredentialsToSend.push({
         type: 'Salesman',
@@ -367,7 +396,7 @@ export async function PUT(
         sendAppCredentialsEmail({
           to: targetUser.email,
           firstName: (workosStandardData.firstName || targetUser.firstName || 'Team Member'),
-          companyName: adminUser.company.companyName,
+          companyName: adminUser.companyName ?? 'Best Cement',
           adminName: `${adminUser.firstName} ${adminUser.lastName}`,
           credentials: newCredentialsToSend
         })
@@ -384,22 +413,22 @@ export async function PUT(
           roleSlug: (role || targetUser.role).toLowerCase()
         });
 
-        prismaUpdateData.inviteToken = workosInvitation.id;
-        prismaUpdateData.status = 'pending';
+        drizzleUpdateData.inviteToken = workosInvitation.id;
+        drizzleUpdateData.status = 'pending';
 
         emailNotificationPromises.push(
           sendInvitationEmailResend({
             to: workosStandardData.email || targetUser.email,
             firstName: workosStandardData.firstName || targetUser.firstName || '',
             lastName: workosStandardData.lastName || targetUser.lastName || '',
-            companyName: adminUser.company.companyName,
+            companyName: adminUser.companyName,
             adminName: `${adminUser.firstName} ${adminUser.lastName}`,
             inviteUrl: workosInvitation.acceptInvitationUrl,
             role: (role || targetUser.role).toLowerCase(),
-            salesmanLoginId: prismaUpdateData.salesmanLoginId || targetUser.salesmanLoginId,
-            tempPassword: prismaUpdateData.hashedPassword || targetUser.hashedPassword,
-            techLoginId: prismaUpdateData.techLoginId || targetUser.techLoginId,
-            techTempPassword: prismaUpdateData.techHashedPassword || targetUser.techHashedPassword
+            salesmanLoginId: drizzleUpdateData.salesmanLoginId || targetUser.salesmanLoginId,
+            tempPassword: drizzleUpdateData.hashedPassword || targetUser.hashedPassword,
+            techLoginId: drizzleUpdateData.techLoginId || targetUser.techLoginId,
+            techTempPassword: drizzleUpdateData.techHashPassword || targetUser.techHashPassword
           })
         );
       } catch (err: any) {
@@ -408,10 +437,11 @@ export async function PUT(
     }
 
     // 5. Execute DB Update
-    const prismaUpdatePromise = prisma.user.update({
-      where: { id: targetUserLocalId },
-      data: prismaUpdateData
-    });
+    const drizzleUpdatePromise = db
+      .update(users)
+      .set(drizzleUpdateData)
+      .where(eq(users.id, targetUserLocalId))
+      .returning();
 
     // 6. Execute WorkOS Update
     let workosUpdatePromise;
@@ -436,14 +466,14 @@ export async function PUT(
     }
 
     await Promise.all([
-      prismaUpdatePromise,
+      drizzleUpdatePromise,
       workosUpdatePromise,
       ...emailNotificationPromises,
     ].filter(Boolean));
 
     return NextResponse.json({
       message: 'User updated successfully',
-      user: await prismaUpdatePromise
+      user: await drizzleUpdatePromise
     });
 
   } catch (error: any) {

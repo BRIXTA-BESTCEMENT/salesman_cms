@@ -15,9 +15,21 @@ import {
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { useDealerLocations } from '@/components/reusable-dealer-locations';
-import { getDealersSchema } from '@/lib/shared-zod-schema';
+import { selectDealerSchema } from '../../../../drizzle/zodSchemas';
 
-type DealerRecord = z.infer<typeof getDealersSchema>;
+const dealerFrontendSchema = selectDealerSchema.extend({
+  totalPotential: z.number(),
+  bestPotential: z.number(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
+
+  createdAt: z.string(),
+  updatedAt: z.string(),
+
+  parentDealerName: z.string().nullable().optional(),
+});
+
+type DealerRecord = z.infer<typeof dealerFrontendSchema>;
 
 const DEALER_LOCATIONS_API = `/api/dashboardPagesAPI/dealerManagement`;
 const DEALER_TYPES_API = `/api/dashboardPagesAPI/dealerManagement/dealer-types`;
@@ -107,7 +119,7 @@ export default function ListDealersPage() {
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
       const data = await response.json();
-      const validatedDealers = z.array(getDealersSchema).parse(data);
+      const validatedDealers = z.array(dealerFrontendSchema).parse(data);
       setDealers(validatedDealers);
       toast.success('Verified dealers loaded successfully!');
     } catch (e: any) {
@@ -157,7 +169,7 @@ export default function ListDealersPage() {
 
   // --- Helper for Maps ---
   const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
-    if (!lat || !lng) return null;
+    if (lat == null || lng == null) return null;
     return `https://www.google.com/maps?q=${lat},${lng}`;
   };
 
@@ -206,19 +218,31 @@ export default function ListDealersPage() {
     { accessorKey: 'phoneNo', header: 'Phone No.' },
     
     // Combined Business Info
-    {
+   {
       header: 'Business Info',
-      cell: ({ row }) => (
-        <div className="flex flex-col text-xs space-y-1 min-w-[120px]">
-           <div>Total: <span className="font-medium">{(row.original.totalPotential)?.toFixed(2)}</span></div>
-           <div>Best: <span className="font-medium">{(row.original.bestPotential)?.toFixed(2)}</span></div>
-           <div className="text-muted-foreground truncate max-w-[150px]" title={row.original.brandSelling.join(', ')}>
-             {row.original.brandSelling.join(', ')}
-           </div>
-        </div>
-      )
+      cell: ({ row }) => {
+        // Move logic outside the return block
+        const brands = row.original.brandSelling ?? [];
+        const total = Number(row.original.totalPotential || 0);
+        const best = Number(row.original.bestPotential || 0);
+        return (
+          <div className="flex flex-col text-xs space-y-1 min-w-[120px]">
+            <div>
+              Total: <span className="font-medium">{total.toFixed(2)}</span>
+            </div>
+            <div>
+              Best: <span className="font-medium">{best.toFixed(2)}</span>
+            </div>
+            <div 
+              className="text-muted-foreground truncate max-w-[150px]" 
+              title={brands.join(', ')}
+            >
+              {brands.length > 0 ? brands.join(', ') : 'No brands'}
+            </div>
+          </div>
+        );
+      }
     },
-
     { accessorKey: 'createdAt', header: 'Added On', cell: info => new Date(info.getValue() as string).toLocaleDateString() },
     
     // {

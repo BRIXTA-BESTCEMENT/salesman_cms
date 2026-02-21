@@ -1,7 +1,9 @@
 // src/app/dashboard/slmGeotracking/page.tsx
 import { Suspense } from 'react';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users } from '../../../../drizzle';
+import { eq } from 'drizzle-orm';
 import { GeotrackingTabs } from './tabsLoader'; 
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
 import { connection } from 'next/server';
@@ -29,10 +31,13 @@ async function getCurrentUserRole(): Promise<WorkOSRole | null> {
       return null; // Not logged in
     }
 
-    const user = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { role: true },
-    });
+    const result = await db
+      .select({ role: users.role })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+    
+    const user = result[0];
     
     return (user?.role as WorkOSRole) ?? null;
   

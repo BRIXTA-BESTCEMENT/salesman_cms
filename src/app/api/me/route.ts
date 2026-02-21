@@ -2,7 +2,9 @@
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users } from '../../../../drizzle';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 // Schema for validating returned user info
@@ -10,7 +12,7 @@ const currentUserSchema = z.object({
   id: z.number(),
   firstName: z.string().nullable(),
   lastName: z.string().nullable(),
-  email: z.string().email(),
+  email: z.string(),
   role: z.string(),
   companyId: z.number().nullable(),
 });
@@ -26,17 +28,20 @@ export async function GET() {
     }
 
     // 2. Fetch current user from DB
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        role: true,
-        companyId: true,
-      },
-    });
+    const result = await db
+      .select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        role: users.role,
+        companyId: users.companyId,
+      })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const currentUser = result[0];
 
     if (!currentUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });

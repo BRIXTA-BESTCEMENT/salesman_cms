@@ -2,17 +2,19 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, companies } from '../../../../../../../drizzle';
+import { eq, and } from 'drizzle-orm';
 import { WorkOS } from '@workos-inc/node';
-import { 
-    sendInvitationEmailResend, 
-    generateRandomPassword, 
+import {
+    sendInvitationEmailResend,
+    generateRandomPassword,
 } from '@/app/api/dashboardPagesAPI/users-and-team/users/route';
 
 const allowedAdminRoles = [
     'president',
     'senior-general-manager',
-    'general-manager', 
+    'general-manager',
     'regional-sales-manager',
     'area-sales-manager',
     'senior-manager',
@@ -67,9 +69,18 @@ async function processSingleInvitation(
     const adminName = `${adminUser!.firstName} ${adminUser!.lastName}`;
 
     // 1. Check for existing user in DB (using unique constraint on email/companyId)
-    const existingUser = await prisma.user.findUnique({
-        where: { companyId_email: { companyId, email: email } },
-    });
+    const existingUserResult = await db
+        .select()
+        .from(users)
+        .where(
+            and(
+                eq(users.companyId, companyId),
+                eq(users.email, email)
+            )
+        )
+        .limit(1);
+
+    const existingUser = existingUserResult[0];
 
     if (existingUser && existingUser.workosUserId) {
         throw new Error(`User ${email} already exists and is active`);
@@ -84,7 +95,11 @@ async function processSingleInvitation(
         let isUnique = false;
         while (!isUnique) {
             const generatedId = `EMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            const existingSalesman = await prisma.user.findUnique({ where: { salesmanLoginId: generatedId } });
+            const existingSalesman = await db
+                .select({ id: users.id })
+                .from(users)
+                .where(eq(users.salesmanLoginId, generatedId))
+                .limit(1);
             if (!existingSalesman) {
                 salesmanLoginId = generatedId;
                 isUnique = true;
@@ -106,7 +121,11 @@ async function processSingleInvitation(
         while (!isUnique) {
             const generatedId = `TSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
             // We removed unique constraint, but checking is still good practice
-            const existingTechUser = await prisma.user.findFirst({ where: { techLoginId: generatedId } });
+            const existingTechUser = await db
+                .select({ id: users.id })
+                .from(users)
+                .where(eq(users.techLoginId, generatedId))
+                .limit(1);
             if (!existingTechUser) {
                 techLoginId = generatedId;
                 isUnique = true;
@@ -137,32 +156,47 @@ async function processSingleInvitation(
 
     // 4. Create/Update user in your database
     const userData = {
-        firstName, 
-        lastName, 
-        phoneNumber, 
-        role: workosRole, 
-        region, 
+        firstName,
+        lastName,
+        phoneNumber,
+        role: workosRole,
+        region,
         area,
         status: 'pending',
         inviteToken: workosInvitation.id,
         salesmanLoginId,
         hashedPassword,
-        isTechnicalRole, 
-        techLoginId, 
+        isTechnicalRole,
+        techLoginId,
         techHashedPassword,
     };
     // --- END UPDATE ---
 
     let newUser;
     if (existingUser) {
-        newUser = await prisma.user.update({
-            where: { id: existingUser.id },
-            data: userData,
-        });
+        const result = await db
+            .update(users)
+            .set({
+                ...userData,
+                techHashPassword: techHashedPassword,
+            })
+            .where(eq(users.id, existingUser.id))
+            .returning();
+
+        newUser = result[0];
     } else {
-        newUser = await prisma.user.create({
-            data: { ...userData, email, workosUserId: null, companyId },
-        });
+        const result = await db
+            .insert(users)
+            .values({
+                ...userData,
+                email,
+                workosUserId: null,
+                companyId,
+                techHashPassword: techHashedPassword,
+            })
+            .returning();
+
+        newUser = result[0];
     }
 
     // 5. Send custom invitation email
@@ -170,17 +204,17 @@ async function processSingleInvitation(
         // --- UPDATED: Pass new tech credentials to email function ---
         await sendInvitationEmailResend({
             to: email,
-            firstName, 
-            lastName, 
-            companyName, 
+            firstName,
+            lastName,
+            companyName,
             adminName,
             inviteUrl: workosInvitation.acceptInvitationUrl, // google auth setup
             //inviteUrl: customInviteUrl, // magicAuth setup
             role: workosRole,
             salesmanLoginId: salesmanLoginId,
             tempPassword: tempPasswordPlaintext,
-            techLoginId: techLoginId, 
-            techTempPassword: techTempPasswordPlaintext 
+            techLoginId: techLoginId,
+            techTempPassword: techTempPasswordPlaintext
         });
         // --- END UPDATE ---
     } catch (emailError) {
@@ -214,12 +248,26 @@ export async function POST(request: NextRequest) {
         if (usersToProcess.length === 0) {
             return NextResponse.json({ error: 'No user data provided' }, { status: 400 });
         }
-        
+
         // --- ADMIN & ORGANIZATION CHECK ---
-        const adminUser = await prisma.user.findUnique({
-            where: { workosUserId: userId },
-            include: { company: true }
-        });
+        const adminUserResult = await db
+            .select({
+                id: users.id,
+                companyId: users.companyId,
+                email: users.email,
+                firstName: users.firstName,
+                lastName: users.lastName,
+                role: users.role,
+                company: {
+                    companyName: companies.companyName,
+                },
+            })
+            .from(users)
+            .leftJoin(companies, eq(users.companyId, companies.id))
+            .where(eq(users.workosUserId, userId))
+            .limit(1);
+
+        const adminUser = adminUserResult[0];
 
         if (!adminUser || !allowedAdminRoles.includes(adminUser.role)) {
             return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
@@ -245,7 +293,7 @@ export async function POST(request: NextRequest) {
                 });
                 continue; // Skip this user
             }
-            
+
             try {
                 const result = await processSingleInvitation(userPayload, adminUser, organizationId);
                 results.push(result);
@@ -259,7 +307,7 @@ export async function POST(request: NextRequest) {
                 });
             }
         }
-        
+
         // Return a summary response
         const successfulCount = results.filter(r => r.success).length;
         const failedCount = results.filter(r => !r.success).length;

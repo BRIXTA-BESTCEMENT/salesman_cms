@@ -1,7 +1,9 @@
 // src/app/api/custom-report-generator/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users } from '../../../../drizzle';
+import { eq } from 'drizzle-orm';
 import { transformerMap } from '@/lib/reports-transformer';
 import { exportTablesToCSVZip, generateAndStreamXlsxMulti } from '@/lib/download-utils';
 
@@ -25,10 +27,14 @@ async function getAuthClaims() {
     if (!claims || !claims.sub || !claims.org_id) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
-    const currentUser = await prisma.user.findUnique({
-        where: { workosUserId: claims.sub },
-        select: { companyId: true, role: true },
-    });
+    
+    const result = await db
+        .select({ companyId: users.companyId, role: users.role })
+        .from(users)
+        .where(eq(users.workosUserId, claims.sub))
+        .limit(1);
+
+    const currentUser = result[0];
 
     if (!currentUser) {
         return new NextResponse('User not found', { status: 404 });

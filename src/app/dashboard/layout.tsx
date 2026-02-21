@@ -3,7 +3,9 @@ import { Suspense } from 'react';
 import { withAuth, getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { redirect } from 'next/navigation';
 import type { Metadata } from "next";
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, companies } from '../../../drizzle';
+import { eq } from 'drizzle-orm';
 import DashboardShell from '@/app/dashboard/dashboardShell';
 import { connection } from 'next/server';
 
@@ -39,10 +41,13 @@ async function refreshUserJWTIfNeeded(user: any, claims: any) {
   if (!claims?.org_id) {
     console.log('⚠️ JWT missing organization data, checking database...');
 
-    const dbUser = await prisma.user.findUnique({
-      where: { workosUserId: user.id },
-      include: { company: true }
-    });
+    const result = await db
+      .select({ id: users.id, email: users.email })
+      .from(users)
+      .where(eq(users.workosUserId, user.id))
+      .limit(1);
+
+    const dbUser = result[0];
 
     // We now check if the user's role is in the list of allowed admin roles
     if (dbUser) {
@@ -88,29 +93,71 @@ export async function AuthenticatedLayout({
   }
 
   // Ensure the user is in the local database before proceeding.
-  let dbUser = await prisma.user.findUnique({
-    where: { workosUserId: user.id },
-    include: { company: true }
-  });
+  let result = await db
+    .select({
+      id: users.id,
+      workosUserId: users.workosUserId,
+      email: users.email,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      role: users.role,
+      status: users.status,
+      inviteToken: users.inviteToken,
+      companyId: companies.id,
+      companyName: companies.companyName,
+      adminUserId: companies.adminUserId,
+    })
+    .from(users)
+    .leftJoin(companies, eq(users.companyId, companies.id))
+    .where(eq(users.workosUserId, user.id))
+    .limit(1);
+
+  let dbUser = result[0];
 
   // If the user doesn't exist in the database by workosUserId,
   // try to find them by email and link their account.
   if (!dbUser) {
-    const userByEmail = await prisma.user.findFirst({
-      where: { email: user.email },
-    });
+    const userByEmailResult = await db
+      .select({ id: users.id, email: users.email, role: users.role })
+      .from(users)
+      .where(eq(users.email, user.email!))
+      .limit(1);
+
+    const userByEmail = userByEmailResult[0];
+
     if (userByEmail) {
       console.log(`🔗 Linking existing user account ${userByEmail.email} with WorkOS ID ${user.id}`);
-      dbUser = await prisma.user.update({
-        where: { id: userByEmail.id },
-        data: {
+      await db
+        .update(users)
+        .set({
           workosUserId: user.id,
           status: 'active',
           inviteToken: null,
-          role: claims?.role as string || userByEmail.role,
-        },
-        include: { company: true }
-      });
+          role: (claims?.role as string) || userByEmail.role,
+        })
+        .where(eq(users.id, userByEmail.id));
+
+      // Re-fetch mapped user and company
+      result = await db
+        .select({
+          id: users.id,
+          workosUserId: users.workosUserId,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          role: users.role,
+          status: users.status,
+          inviteToken: users.inviteToken,
+          companyId: companies.id,
+          companyName: companies.companyName,
+          adminUserId: companies.adminUserId,
+        })
+        .from(users)
+        .leftJoin(companies, eq(users.companyId, companies.id))
+        .where(eq(users.id, userByEmail.id))
+        .limit(1);
+
+      dbUser = result[0];
     } else {
       // If they are not in the DB at all, this is a critical issue.
       console.error('❌ User exists in WorkOS but not in the local database.');
@@ -130,16 +177,17 @@ export async function AuthenticatedLayout({
   // Check if the user's role is out of sync and update it
   if (workosRole && dbUser.role !== workosRole) {
     console.log(`🔄 Updating user role from ${dbUser.role} to ${workosRole}`);
-    dbUser = await prisma.user.update({
-      where: { id: dbUser.id },
-      data: { role: workosRole },
-      include: { company: true }
-    });
+
+    await db
+      .update(users)
+      .set({ role: workosRole })
+      .where(eq(users.id, dbUser.id));
+
+    dbUser.role = workosRole;
   }
 
   // Check for company access
-  const company = dbUser.company;
-  if (!company) {
+  if (!dbUser.companyId) {
     console.error('User has no company access');
     redirect('/setup-company');
   }
@@ -198,10 +246,24 @@ export async function AuthenticatedLayout({
     );
   }
 
+  // Format data to match DashboardShellProps exactly
+  const mappedUser = {
+    id: dbUser.id,
+    email: dbUser.email,
+    firstName: dbUser.firstName,
+    lastName: dbUser.lastName,
+    role: dbUser.role,
+    company: {
+      id: dbUser.companyId!,
+      companyName: dbUser.companyName!,
+      adminUserId: dbUser.adminUserId?.toString() || dbUser.id.toString(),
+    }
+  };
+
   return (
     <DashboardShell
-      user={dbUser}
-      company={company}
+      user={mappedUser}
+      company={mappedUser.company}
       workosRole={finalRole}
       permissions={permissions}
     >

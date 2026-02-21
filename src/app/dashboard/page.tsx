@@ -1,7 +1,9 @@
 // src/app/dashboard/page.tsx
 import { Suspense } from 'react';
 import { withAuth } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users } from '../../../drizzle'; 
+import { eq } from 'drizzle-orm';
 import DashboardGraphs from './dashboardGraphs';
 import SimpleWelcomePage from '@/app/dashboard/welcome/page';
 import { connection } from 'next/server';
@@ -12,7 +14,7 @@ const allowedNonAdminRoles = [
   'junior-executive',
 ];
 
-// 1. The Static Shell (Exports instantly, complies with Cache Components)
+// 1. The Static Shell 
 export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -30,11 +32,13 @@ async function DashboardContent() {
   
   if (!user) return null; 
 
-  const dbUser = await prisma.user.findUnique({
-    where: { workosUserId: user.id },
-    select: { role: true, firstName: true }
-  });
+  const result = await db
+    .select({ role: users.role, firstName: users.firstName })
+    .from(users)
+    .where(eq(users.workosUserId, user.id))
+    .limit(1);
 
+  const dbUser = result[0];
   const userRole = dbUser?.role || '';
 
   // CONDITIONAL RENDER
@@ -44,6 +48,5 @@ async function DashboardContent() {
 
   console.log('DashboardPage: Rendering DashboardGraphs...');
   
-  // We removed the Suspense from here, as it's now wrapping this whole component
   return <DashboardGraphs />;
 }

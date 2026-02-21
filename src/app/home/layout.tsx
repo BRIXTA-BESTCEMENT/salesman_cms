@@ -1,28 +1,31 @@
 // src/app/home/layout.tsx
-import { Suspense } from 'react';
-import { withAuth, getTokenClaims } from '@workos-inc/authkit-nextjs';
-import { redirect } from 'next/navigation';
-import { connection } from 'next/server';
-import prisma from '@/lib/prisma';
-import HomeShell from '@/app/home/homeShell';
+
+import { Suspense } from "react";
+import { withAuth, getTokenClaims } from "@workos-inc/authkit-nextjs";
+import { redirect } from "next/navigation";
+import { connection } from "next/server";
+import { db } from "@/lib/drizzle";
+import { users, companies } from "../../../drizzle";
+import { eq } from "drizzle-orm";
+import HomeShell from "@/app/home/homeShell";
 import type { Metadata } from "next";
 
-/**
- * Checks if the user's JWT is missing essential organization data and needs to be refreshed.
- * This is based on the logic from the dashboard layout.
- */
 async function refreshUserJWTIfNeeded(user: any, claims: any) {
-  // If org_id is missing from the claims, it suggests the JWT is incomplete.
   if (!claims?.org_id) {
-    console.log('⚠️ JWT missing organization data, checking database...');
+    console.log("⚠️ JWT missing organization data, checking database...");
 
-    // A simple existence check to confirm the user is known in the DB
-    const dbUser = await prisma.user.findUnique({
-      where: { workosUserId: user.id },
-    });
+    const result = await db
+      .select({ id: users.id, email: users.email })
+      .from(users)
+      .where(eq(users.workosUserId, user.id))
+      .limit(1);
+
+    const dbUser = result[0];
 
     if (dbUser) {
-      console.log(`🔄 User ${dbUser.email || user.id} detected with incomplete JWT - forcing refresh.`);
+      console.log(
+        `🔄 User ${dbUser.email || user.id} detected with incomplete JWT - forcing refresh.`
+      );
       return { needsRefresh: true };
     }
   }
@@ -30,12 +33,9 @@ async function refreshUserJWTIfNeeded(user: any, claims: any) {
 }
 
 export const metadata: Metadata = {
-  icons: {
-    icon: "/favicon.ico",
-  },
+  icons: { icon: "/favicon.ico" },
 };
 
-// 1. STATIC SHELL: Allows Next.js Cache Components to prerender successfully
 export default function CemTemChatLayout({
   children,
 }: {
@@ -54,80 +54,127 @@ export async function AuthenticatedHomeLayout({
   children: React.ReactNode;
 }) {
   await connection();
-  
   const { user } = await withAuth();
   const claims = await getTokenClaims();
 
-  // 1. Authentication Check
   if (!user) {
-    redirect('/login');
+    redirect("/login");
   }
 
-  // 2. Ensure the user is in the local database.
-  let dbUser = await prisma.user.findUnique({
-    where: { workosUserId: user.id },
-    include: { company: true }
-  });
+  // prisma.user.findUnique({ include: { company: true } })
+  let result = await db
+    .select({
+      userId: users.id,
+      workosUserId: users.workosUserId,
+      email: users.email,
+      role: users.role,
+      status: users.status,
+      inviteToken: users.inviteToken,
+      firstName: users.firstName, 
+      lastName: users.lastName,   
+      companyId: companies.id,
+      companyName: companies.companyName,
+    })
+    .from(users)
+    .leftJoin(companies, eq(users.companyId, companies.id))
+    .where(eq(users.workosUserId, user.id))
+    .limit(1);
 
-  // 3. Account Linking Logic (Check by email if workosUserId is missing)
+  let dbUser = result[0];
+
+  // Account Linking Logic
   if (!dbUser) {
-    const userByEmail = await prisma.user.findFirst({
-      where: { email: user.email },
-    });
+    const userByEmail = await db
+      .select({ id: users.id, role: users.role, email: users.email })
+      .from(users)
+      .where(eq(users.email, user.email!))
+      .limit(1);
 
-    if (userByEmail) {
-      console.log(`🔗 Linking existing user account ${userByEmail.email} with WorkOS ID ${user.id}`);
-      dbUser = await prisma.user.update({
-        where: { id: userByEmail.id },
-        data: {
+    if (userByEmail[0]) {
+      console.log(
+        `🔗 Linking existing user account ${userByEmail[0].email} with WorkOS ID ${user.id}`
+      );
+
+      await db
+        .update(users)
+        .set({
           workosUserId: user.id,
-          status: 'active',
+          status: "active",
           inviteToken: null,
-          role: claims?.role as string || userByEmail.role,
-        },
-        include: { company: true }
-      });
+          role: (claims?.role as string) || userByEmail[0].role,
+        })
+        .where(eq(users.id, userByEmail[0].id));
+
+      // re-fetch updated user + company
+      result = await db
+        .select({
+          userId: users.id,
+          workosUserId: users.workosUserId,
+          email: users.email,
+          role: users.role,
+          status: users.status,             
+          inviteToken: users.inviteToken,   
+          firstName: users.firstName,
+          lastName: users.lastName,
+          companyId: companies.id,
+          companyName: companies.companyName,
+        })
+        .from(users)
+        .leftJoin(companies, eq(users.companyId, companies.id))
+        .where(eq(users.id, userByEmail[0].id))
+        .limit(1);
+
+      dbUser = result[0];
     } else {
-      // User is authenticated via WorkOS but not found in DB. Critical issue.
-      console.error('❌ User exists in WorkOS but not in the local database. Redirecting to setup.');
-      redirect('/setup-company');
+      console.error(
+        "❌ User exists in WorkOS but not in the local database. Redirecting to setup."
+      );
+      redirect("/setup-company");
     }
   }
 
-  // 4. JWT Refresh Check
   const refreshCheck = await refreshUserJWTIfNeeded(user, claims);
   if (refreshCheck.needsRefresh) {
-    // Redirect back to this chat page after a successful refresh
-    redirect('/auth/refresh?returnTo=/home');
+    redirect("/auth/refresh?returnTo=/home");
   }
 
-  // 5. Role Synchronization Check
   const workosRole = claims?.role as string | undefined;
+
   if (workosRole && dbUser.role !== workosRole) {
     console.log(`🔄 Updating user role from ${dbUser.role} to ${workosRole}`);
-    dbUser = await prisma.user.update({
-      where: { id: dbUser.id },
-      data: { role: workosRole },
-      include: { company: true }
-    });
+
+    await db
+      .update(users)
+      .set({ role: workosRole })
+      .where(eq(users.id, dbUser.userId));
+
+    dbUser.role = workosRole;
   }
 
-  // 6. Company Access Check
-  const company = dbUser.company;
-  if (!company) {
-    console.error('User has no company access. Redirecting to setup.');
-    redirect('/setup-company');
+  if (!dbUser.companyId) {
+    console.error("User has no company access. Redirecting to setup.");
+    redirect("/setup-company");
   }
 
-  const finalRole = dbUser.role || 'senior-executive';
+  const finalRole = dbUser.role || "senior-executive";
   const permissions = (claims?.permissions as string[]) || [];
-
-  // No complex role-based page restriction is applied here, as this page is assumed to be an essential utility.
+  const mappedUser = {
+    id: dbUser.userId,
+    email: dbUser.email,
+    role: dbUser.role,
+    firstName: dbUser.firstName, 
+    lastName: dbUser.lastName,   
+    company: {
+      id: dbUser.companyId!,
+      companyName: dbUser.companyName!,
+      adminUserId: dbUser.userId.toString(), // adjust if different column exists
+    },
+  };
 
   return (
     <HomeShell
-      user={dbUser}
-      company={company}
+      user={mappedUser}
+      company={mappedUser.company}
       workosRole={finalRole}
       permissions={permissions}
     >

@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils'; // Assuming you have shadcn's cn utility
-import { Settings, MessageSquareText } from 'lucide-react'; // Import icons
+import { MessageSquareText } from 'lucide-react'; // Import icons
 
 export default function AccountPage() {
   const router = useRouter();

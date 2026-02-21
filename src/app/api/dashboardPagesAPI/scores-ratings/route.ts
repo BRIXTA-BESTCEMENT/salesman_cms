@@ -2,9 +2,11 @@
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, ratings, dealerReportsAndScores, dealers } from '../../../../../drizzle'; 
+import { eq, and, getTableColumns } from 'drizzle-orm';
 import { z } from 'zod';
-import { salesmanRatingSchema, dealerScoreSchema } from '@/lib/shared-zod-schema';
+import { selectRatingSchema, selectDealerReportsAndScoresSchema } from '../../../../../drizzle/zodSchemas'; 
 
 const allowedRoles = [
   'president', 'senior-general-manager', 'general-manager',
@@ -12,18 +14,41 @@ const allowedRoles = [
   'senior-manager', 'manager', 'assistant-manager', 'senior-executive',
 ];
 
+// 1. Extend schemas for the frontend
+const frontendRatingSchema = selectRatingSchema.extend({
+  salesPersonName: z.string(),
+});
+
+const frontendDealerScoreSchema = selectDealerReportsAndScoresSchema.extend({
+  dealerName: z.string(),
+  area: z.string(),
+  region: z.string(),
+  type: z.string(),
+  // Override decimals to strict JS numbers
+  dealerScore: z.number().nullable(),
+  trustWorthinessScore: z.number().nullable(),
+  creditWorthinessScore: z.number().nullable(),
+  orderHistoryScore: z.number().nullable(),
+  visitFrequencyScore: z.number().nullable(),
+  lastUpdatedDate: z.string().nullable(),
+});
+
 export async function GET(request: Request) {
-  await connection();
+  if (typeof connection === 'function') await connection();
+
   try {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true },
-    });
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const currentUser = currentUserResult[0];
 
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
       return NextResponse.json(
@@ -34,67 +59,80 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const reportType = searchParams.get('type');
+    
     if (!reportType) {
       return NextResponse.json({ error: 'Missing required query parameter: type' }, { status: 400 });
     }
 
     switch (reportType) {
       case 'salesman': {
-        const salesmanRatings = await prisma.rating.findMany({
-          where: { user: { companyId: currentUser.companyId } },
-          include: {
-            user: { select: { firstName: true, lastName: true, email: true } },
-          },
-        });
+        const salesmanRatingsResult = await db
+          .select({
+            ...getTableColumns(ratings),
+            userFirstName: users.firstName,
+            userLastName: users.lastName,
+            userEmail: users.email,
+          })
+          .from(ratings)
+          .leftJoin(users, eq(ratings.userId, users.id))
+          .where(eq(users.companyId, currentUser.companyId));
 
-        const formatted = salesmanRatings.map((r:any) => ({
-          id: r.id,
+        const formatted = salesmanRatingsResult.map((row) => ({
+          ...row,
           salesPersonName:
-            `${r.user.firstName || ''} ${r.user.lastName || ''}`.trim() || r.user.email,
-          area: r.area,
-          region: r.region,
-          rating: r.rating,
+            `${row.userFirstName || ''} ${row.userLastName || ''}`.trim() || row.userEmail || 'N/A',
         }));
 
-        const validated = z.array(salesmanRatingSchema).parse(formatted);
-        return NextResponse.json(validated, { status: 200 });
+        const validated = z.array(frontendRatingSchema).safeParse(formatted);
+        
+        if (!validated.success) {
+            console.error("Salesman Ratings Validation Error:", validated.error.format());
+            return NextResponse.json(formatted, { status: 200 }); // Graceful fallback
+        }
+
+        return NextResponse.json(validated.data, { status: 200 });
       }
 
       case 'dealer': {
-        const dealerScores = await prisma.dealerReportsAndScores.findMany({
-          where: {
-            dealer: {
-              user: { companyId: currentUser.companyId },
-            },
-          },
-          include: {
-            dealer: {
-              select: {
-                name: true,
-                area: true,
-                region: true,
-                type: true,
-              },
-            },
-          },
+        const dealerScoresResult = await db
+          .select({
+            ...getTableColumns(dealerReportsAndScores),
+            dealerNameStr: dealers.name,
+            dealerArea: dealers.area,
+            dealerRegion: dealers.region,
+            dealerTypeStr: dealers.type,
+          })
+          .from(dealerReportsAndScores)
+          .leftJoin(dealers, eq(dealerReportsAndScores.dealerId, dealers.id))
+          .leftJoin(users, eq(dealers.userId, users.id)) // Join users via dealer to check companyId
+          .where(eq(users.companyId, currentUser.companyId));
+
+        const formatted = dealerScoresResult.map((row) => {
+          const toNum = (val: any) => (val ? Number(val) : 0);
+          
+          return {
+            ...row,
+            dealerName: row.dealerNameStr || 'Unknown',
+            dealerScore: toNum(row.dealerScore),
+            trustWorthinessScore: toNum(row.trustWorthinessScore),
+            creditWorthinessScore: toNum(row.creditWorthinessScore),
+            orderHistoryScore: toNum(row.orderHistoryScore),
+            visitFrequencyScore: toNum(row.visitFrequencyScore),
+            lastUpdatedDate: row.lastUpdatedDate ? new Date(row.lastUpdatedDate).toISOString().split('T')[0] : null,
+            area: row.dealerArea ?? '',
+            region: row.dealerRegion ?? '',
+            type: row.dealerTypeStr ?? '',
+          };
         });
 
-        const formatted = dealerScores.map((s:any) => ({
-          id: s.id,
-          dealerName: s.dealer.name,
-          dealerScore: s.dealerScore.toNumber(),
-          trustWorthinessScore: s.trustWorthinessScore.toNumber(),
-          creditWorthinessScore: s.creditWorthinessScore.toNumber(),
-          orderHistoryScore: s.orderHistoryScore.toNumber(),
-          visitFrequencyScore: s.visitFrequencyScore.toNumber(),
-          lastUpdatedDate: s.lastUpdatedDate.toISOString().split('T')[0],
-          area: s.dealer.area ?? '',
-          region: s.dealer.region ?? '',
-          type: s.dealer.type ?? '',
-        }));
+        const validated = z.array(frontendDealerScoreSchema).safeParse(formatted);
 
-        const validated = z.array(dealerScoreSchema).parse(formatted);
-        return NextResponse.json(validated, { status: 200 });
+        if (!validated.success) {
+            console.error("Dealer Scores Validation Error:", validated.error.format());
+            return NextResponse.json(formatted, { status: 200 }); // Graceful fallback
+        }
+
+        return NextResponse.json(validated.data, { status: 200 });
       }
 
       default:

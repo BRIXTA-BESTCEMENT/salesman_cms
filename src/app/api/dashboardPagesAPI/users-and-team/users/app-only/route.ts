@@ -2,10 +2,12 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
-import { 
-    sendInvitationEmailResend, 
-    generateRandomPassword 
+import { db } from '@/lib/drizzle';
+import { users, companies } from '../../../../../../../drizzle';
+import { eq, and } from 'drizzle-orm';
+import {
+    sendInvitationEmailResend,
+    generateRandomPassword
 } from '@/app/api/dashboardPagesAPI/users-and-team/users/route';
 
 const allowedAdminRoles = [
@@ -21,10 +23,21 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const adminUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub },
-            include: { company: true }
-        });
+        const adminUserResult = await db
+            .select({
+                id: users.id,
+                companyId: users.companyId,
+                role: users.role,
+                firstName: users.firstName,
+                lastName: users.lastName,
+                companyName: companies.companyName,
+            })
+            .from(users)
+            .leftJoin(companies, eq(users.companyId, companies.id))
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
+
+        const adminUser = adminUserResult[0];
 
         if (!adminUser || !allowedAdminRoles.includes(adminUser.role)) {
             return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
@@ -38,14 +51,18 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if user already exists in this company
-        const existingUser = await prisma.user.findUnique({
-            where: {
-                companyId_email: {
-                    companyId: adminUser.companyId,
-                    email: email,
-                },
-            },
-        });
+        const existingUserResult = await db
+            .select({ id: users.id })
+            .from(users)
+            .where(
+                and(
+                    eq(users.companyId, adminUser.companyId),
+                    eq(users.email, email)
+                )
+            )
+            .limit(1);
+
+        const existingUser = existingUserResult[0];
 
         if (existingUser) {
             return NextResponse.json({ error: 'User with this email already exists' }, { status: 409 });
@@ -54,12 +71,16 @@ export async function POST(request: NextRequest) {
         // --- Salesman Credentials Generation ---
         let salesmanLoginId: string | null = null;
         let tempPasswordPlaintext = generateRandomPassword();
-        
+
         let isUnique = false;
         while (!isUnique) {
             const generatedId = `EMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            const collision = await prisma.user.findUnique({ where: { salesmanLoginId: generatedId } });
-            if (!collision) {
+            const collision = await db
+                .select({ id: users.id })
+                .from(users)
+                .where(eq(users.salesmanLoginId, generatedId))
+                .limit(1);
+            if (!collision[0]) {
                 salesmanLoginId = generatedId;
                 isUnique = true;
             }
@@ -73,8 +94,12 @@ export async function POST(request: NextRequest) {
             let isTechUnique = false;
             while (!isTechUnique) {
                 const generatedId = `TSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-                const collision = await prisma.user.findFirst({ where: { techLoginId: generatedId } });
-                if (!collision) {
+                const collision = await db
+                    .select({ id: users.id })
+                    .from(users)
+                    .where(eq(users.techLoginId, generatedId))
+                    .limit(1);
+                if (!collision[0]) {
                     techLoginId = generatedId;
                     isTechUnique = true;
                 }
@@ -83,8 +108,9 @@ export async function POST(request: NextRequest) {
         }
 
         // --- Create Local User (Skip WorkOS) ---
-        const newUser = await prisma.user.create({
-            data: {
+        const result = await db
+            .insert(users)
+            .values({
                 email,
                 firstName,
                 lastName,
@@ -93,15 +119,17 @@ export async function POST(request: NextRequest) {
                 region,
                 area,
                 companyId: adminUser.companyId,
-                status: 'active', // Active for App, though no WorkOS ID exists yet
-                workosUserId: null, 
+                status: 'active',
+                workosUserId: null,
                 salesmanLoginId,
-                hashedPassword: tempPasswordPlaintext, // Storing plaintext as per your current pattern
+                hashedPassword: tempPasswordPlaintext,
                 isTechnicalRole: !!isTechnical,
                 techLoginId,
-                techHashedPassword: techTempPasswordPlaintext,
-            },
-        });
+                techHashPassword: techTempPasswordPlaintext,
+            })
+            .returning();
+
+        const newUser = result[0];
 
         // --- Send Email ---
         // Note: We pass inviteUrl as an empty string because App-Only users don't have a WorkOS setup link
@@ -110,7 +138,7 @@ export async function POST(request: NextRequest) {
                 to: email,
                 firstName,
                 lastName,
-                companyName: adminUser.company.companyName,
+                companyName: adminUser.companyName,
                 adminName: `${adminUser.firstName} ${adminUser.lastName}`,
                 inviteUrl: "", // No dashboard invite link
                 role: role.toLowerCase(),

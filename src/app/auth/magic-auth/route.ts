@@ -1,36 +1,12 @@
 // src/app/api/auth/magic-auth/route.ts
 import { WorkOS } from '@workos-inc/node';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-// import * as nodemailer from 'nodemailer';
-// import type SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { db } from '@/lib/drizzle';
+import { users, companies } from '../../../../drizzle'; 
+import { eq } from 'drizzle-orm';
 import { Resend } from 'resend';
 import { MagicAuthEmail } from '@/components/InvitationEmail'; 
 import { RESEND_API_KEY } from '@/lib/Reusable-constants';
-
-// --- START: EMAIL UTILITY DEPENDENCIES (COMPLETE DEFINITION INCLUDED) ---
-// const EMAIL_TIMEOUT_MS = 12000;
-
-// const transportOptions: SMTPTransport.Options = {
-//     host: 'smtp.gmail.com',
-//     port: 587,
-//     secure: false,
-//     auth: { user: process.env.GMAIL_USER!, pass: process.env.GMAIL_APP_PASSWORD! },
-//     connectionTimeout: 10000,
-//     greetingTimeout: 7000,
-//     socketTimeout: 15000,
-//     // @ts-ignore
-//     family: 4,
-// };
-
-// const transporter = nodemailer.createTransport(transportOptions);
-
-// async function withTimeout<T>(p: Promise<T>, ms = EMAIL_TIMEOUT_MS): Promise<T> {
-//     return await Promise.race([
-//         p,
-//         new Promise<never>((_, reject) => setTimeout(() => reject(new Error('EMAIL_TIMEOUT')), ms)),
-//     ]);
-// }
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -90,12 +66,15 @@ export const POST = async (request: NextRequest) => {
         console.log(`✅ WorkOS created Magic Auth ID: ${magicAuth.id}`);
 
         // Get the Company Name for better email branding
-        const user = await prisma.user.findFirst({
-            where: { email: email },
-            select: { company: { select: { companyName: true } } }
-        });
+        const result = await db
+            .select({ companyName: companies.companyName })
+            .from(users)
+            .leftJoin(companies, eq(users.companyId, companies.id))
+            .where(eq(users.email, email))
+            .limit(1);
+
         // Use the actual company name in the sender
-        const companyName = user?.company?.companyName || 'Best Cement'; 
+        const companyName = result[0]?.companyName || 'Best Cement';
 
         // Send email using your custom Nodemailer function
         if (magicAuth.code) {

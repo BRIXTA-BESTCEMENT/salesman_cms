@@ -1,5 +1,8 @@
 // src/lib/company-service.ts
-import prisma from '@/lib/prisma';
+
+import { db } from "@/lib/drizzle";
+import { users, companies } from "../../drizzle";
+import { eq, and, count } from "drizzle-orm";
 
 export interface CompanyInfo {
   companyName: string;
@@ -13,48 +16,64 @@ export interface CompanyInfo {
 
 export async function getCompanyInfo(workosUserId: string): Promise<CompanyInfo | null> {
   try {
-    // Get user with company information
-    const user = await prisma.user.findUnique({
-      where: { workosUserId },
-      include: { 
-        company: true
-      }
-    });
+    // Equivalent of prisma.user.findUnique({ include: { company: true } })
+    const result = await db
+      .select({
+        userId: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        companyId: companies.id,
+        companyName: companies.companyName,
+      })
+      .from(users)
+      .leftJoin(companies, eq(users.companyId, companies.id))
+      .where(eq(users.workosUserId, workosUserId))
+      .limit(1);
 
-    if (!user || !user.company) {
+    const user = result[0];
+
+    if (!user || !user.companyId) {
       return null;
     }
 
-    // Get user statistics for the company
-    const totalUsers = await prisma.user.count({
-      where: { companyId: user.companyId }
-    });
+    // prisma.user.count()
+    const [{ count: totalUsers }] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(eq(users.companyId, user.companyId));
 
-    const activeUsers = await prisma.user.count({
-      where: { 
-        companyId: user.companyId,
-        status: 'active'
-      }
-    });
+    const [{ count: activeUsers }] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(
+        and(
+          eq(users.companyId, user.companyId),
+          eq(users.status, "active")
+        )
+      );
 
-    const pendingUsers = await prisma.user.count({
-      where: { 
-        companyId: user.companyId,
-        status: 'pending'
-      }
-    });
+    const [{ count: pendingUsers }] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(
+        and(
+          eq(users.companyId, user.companyId),
+          eq(users.status, "pending")
+        )
+      );
 
     return {
-      companyName: user.company.companyName,
-      companyId: user.company.id,
-      adminName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-      adminEmail: user.email,
-      totalUsers,
-      activeUsers,
-      pendingUsers,
+      companyName: user.companyName!,
+      companyId: user.companyId,
+      adminName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+      adminEmail: user.email!,
+      totalUsers: Number(totalUsers),
+      activeUsers: Number(activeUsers),
+      pendingUsers: Number(pendingUsers),
     };
   } catch (error) {
-    console.error('Error in getCompanyInfo:', error);
+    console.error("Error in getCompanyInfo:", error);
     return null;
   }
 }

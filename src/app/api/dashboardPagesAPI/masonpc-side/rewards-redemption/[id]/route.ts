@@ -2,10 +2,12 @@
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import { revalidateTag } from 'next/cache';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, rewardRedemptions, rewards, pointsLedger, masonPcSide } from '../../../../../../../drizzle'; 
+import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
+import { refreshCompanyCache } from '@/app/actions/cache';
 
 const allowedRoles = [
   'president', 'senior-general-manager', 'general-manager',
@@ -21,134 +23,110 @@ const redemptionUpdateSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } | Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const resolvedParams = await Promise.resolve(params);
-    const redemptionId = resolvedParams.id;
-
-    // --- 1. Auth & Role Check ---
+    const { id: redemptionId } = await params;
     const claims = await getTokenClaims();
-    if (!claims || !claims.sub) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true },
-    });
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
 
+    const currentUser = currentUserResult[0];
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // --- 2. Validate Input ---
     const body = await request.json();
     const parsed = redemptionUpdateSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.issues }, { status: 400 });
-    }
-    // NORMALIZE: Ensure we work with lowercase for logic but store uppercase
+    if (!parsed.success) return NextResponse.json({ error: 'Invalid input', details: parsed.error.issues }, { status: 400 });
+
     const newStatus = parsed.data.status.toLowerCase();
     const fulfillmentNotes = parsed.data.fulfillmentNotes || "";
 
-    // --- 3. Fetch Existing Record ---
-    // We need the mason's ID, the cost, and the reward ID for stock checks
-    const existingRecord = await prisma.rewardRedemption.findUnique({
-      where: { id: redemptionId },
-      include: {
-        mason: { select: { id: true, user: { select: { companyId: true } } } },
-        reward: { select: { id: true, stock: true } } // Fetch current stock
+    // Fetch Existing Record with multi-tenancy check join
+    const existingResult = await db
+      .select({
+        redemption: rewardRedemptions,
+        rewardStock: rewards.stock,
+        rewardItemName: rewards.itemName,
+        masonCompanyId: users.companyId
+      })
+      .from(rewardRedemptions)
+      .leftJoin(rewards, eq(rewardRedemptions.rewardId, rewards.id))
+      .leftJoin(masonPcSide, eq(rewardRedemptions.masonId, masonPcSide.id))
+      .leftJoin(users, eq(masonPcSide.userId, users.id))
+      .where(eq(rewardRedemptions.id, redemptionId))
+      .limit(1);
+
+    const record = existingResult[0];
+    if (!record) return NextResponse.json({ error: 'Record not found' }, { status: 404 });
+    if (record.masonCompanyId !== currentUser.companyId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+
+    const currentStatus = record.redemption.status.toLowerCase();
+    if (currentStatus === 'delivered') return NextResponse.json({ error: 'Cannot update a delivered order.' }, { status: 400 });
+
+    const finalResult = await db.transaction(async (tx) => {
+      // SCENARIO A: APPROVING (Placed -> Approved)
+      if (currentStatus === 'placed' && newStatus === 'approved') {
+        if ((record.rewardStock ?? 0) < record.redemption.quantity) {
+          throw new Error(`Insufficient stock for ${record.rewardItemName}.`);
+        }
+        await tx.update(rewards)
+          .set({ stock: sql`${rewards.stock} - ${record.redemption.quantity}` })
+          .where(eq(rewards.id, record.redemption.rewardId));
       }
-    });
-
-   if (!existingRecord) return NextResponse.json({ error: 'Record not found' }, { status: 404 });
-
-    const currentStatus = existingRecord.status.toLowerCase(); 
-    const { masonId, pointsDebited, quantity, rewardId } = existingRecord;
-
-    // Logic Gates: Match the App's restrictions
-    if (currentStatus === 'delivered') {
-        return NextResponse.json({ error: 'Cannot update a delivered order.' }, { status: 400 });
-    }
-
-    const result = await prisma.$transaction(async (tx) => {
-
-        // SCENARIO A: APPROVING (Placed -> Approved)
-        if (currentStatus === 'placed' && newStatus === 'approved') {
-            const rewardItem = await tx.rewards.findUnique({ where: { id: rewardId } });
-            
-            if (!rewardItem || rewardItem.stock < quantity) {
-                throw new Error(`Insufficient stock. Available: ${rewardItem?.stock ?? 0}`);
-            }
-
-            // Deduct Stock
-            await tx.rewards.update({
-                where: { id: rewardId },
-                data: { stock: { decrement: quantity } }
-            });
-        }
-
-        // SCENARIO B & C: REJECTING (Placed or Approved -> Rejected)
-        else if (newStatus === 'rejected') {
-            
-            // 1. Refund Points Ledger
-            await tx.pointsLedger.create({
-                data: {
-                    id: randomUUID(),
-                    masonId: masonId,
-                    sourceType: 'adjustment',
-                    // FIX: Use randomUUID here to avoid P2002 unique constraint error
-                    sourceId: randomUUID(), 
-                    points: pointsDebited,
-                    memo: `Refund for Order ${redemptionId.substring(0,8)}. Reason: ${fulfillmentNotes}`
-                }
-            });
-
-            // 2. Add back to Mason Balance
-            await tx.mason_PC_Side.update({
-                where: { id: masonId },
-                data: { pointsBalance: { increment: pointsDebited } }
-            });
-
-            // 3. Return Stock ONLY if it was previously deducted (Approved/Shipped)
-            if (currentStatus === 'approved' || currentStatus === 'shipped') {
-                await tx.rewards.update({
-                    where: { id: rewardId },
-                    data: { stock: { increment: quantity } }
-                });
-            }
-        }
-
-        // SCENARIO D: FINAL STATUS UPDATE
-        return await tx.rewardRedemption.update({
-            where: { id: redemptionId },
-            data: { 
-                status: newStatus.toUpperCase(), 
-                fulfillmentNotes: fulfillmentNotes,
-                updatedAt: new Date() 
-            }
+      // SCENARIO B & C: REJECTING (Placed or Approved -> Rejected)
+      else if (newStatus === 'rejected') {
+        // Refund Points Ledger
+        await tx.insert(pointsLedger).values({
+          id: randomUUID(),
+          masonId: record.redemption.masonId,
+          sourceType: 'adjustment',
+          sourceId: randomUUID(),
+          points: record.redemption.pointsDebited,
+          memo: `Refund for Order ${redemptionId.substring(0, 8)}. Reason: ${fulfillmentNotes}`,
+          createdAt: new Date().toISOString()
         });
+
+        // Add back to Mason Balance
+        await tx.update(masonPcSide)
+          .set({ pointsBalance: sql`${masonPcSide.pointsBalance} + ${record.redemption.pointsDebited}` })
+          .where(eq(masonPcSide.id, record.redemption.masonId));
+
+        // Return Stock if previously deducted
+        if (currentStatus === 'approved' || currentStatus === 'shipped') {
+          await tx.update(rewards)
+            .set({ stock: sql`${rewards.stock} + ${record.redemption.quantity}` })
+            .where(eq(rewards.id, record.redemption.rewardId));
+        }
+      }
+
+      const [updated] = await tx.update(rewardRedemptions)
+        .set({
+          status: newStatus.toUpperCase(),
+          fulfillmentNotes: fulfillmentNotes,
+          updatedAt: new Date().toISOString()
+        })
+        .where(eq(rewardRedemptions.id, redemptionId))
+        .returning();
+      
+      return updated;
     });
 
-    // --- 2. CACHE INVALIDATION ---
-    // The redemption list itself changed
-    revalidateTag(`rewards-redemption-${currentUser.companyId}`, 'max');
-
-    // The reward stock was updated (global cache, not company specific)
-    if (newStatus === 'approved' || newStatus === 'rejected') {
-        revalidateTag('rewards', 'max'); 
-    }
-
-    // Points were refunded, so invalidate Ledger and Mason PC
+    await refreshCompanyCache('rewards-redemption');
+    if (newStatus === 'approved' || newStatus === 'rejected') await refreshCompanyCache('rewards');
     if (newStatus === 'rejected') {
-        revalidateTag(`points-ledger-${currentUser.companyId}`, 'max');
-        revalidateTag(`mason-pc-${currentUser.companyId}`, 'max');
+        await refreshCompanyCache('points-ledger');
+        await refreshCompanyCache('mason-pc');
     }
 
-    return NextResponse.json({ success: true, data: result });
+    return NextResponse.json({ success: true, data: finalResult });
   } catch (error: any) {
-    console.error('Update Error:', error);
     return NextResponse.json({ error: error.message || 'Failed' }, { status: 500 });
   }
 }

@@ -3,7 +3,9 @@
 
 import { revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users } from '../../../drizzle'; 
+import { eq } from 'drizzle-orm';
 
 /**
  * Securely clears the Next.js cache for a specific data prefix for the current company.
@@ -14,10 +16,13 @@ export async function refreshCompanyCache(cachePrefix: string) {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) throw new Error('Unauthorized');
 
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { companyId: true },
-    });
+    const result = await db
+      .select({ companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
+
+    const currentUser = result[0];
 
     if (!currentUser) throw new Error('User not found');
 

@@ -10,9 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { getVerifiedDealersSchema } from '@/lib/shared-zod-schema';
+import { selectVerifiedDealersSchema } from '../../../../drizzle/zodSchemas';
 
-type VerifiedDealerRecord = z.infer<typeof getVerifiedDealersSchema>;
+type VerifiedDealerRecord = z.infer<typeof selectVerifiedDealersSchema>;
 
 const VERIFIED_DEALERS_API = `/api/dashboardPagesAPI/dealerManagement/verified-dealers`;
 
@@ -74,7 +74,7 @@ export default function ListVerifiedDealersPage() {
       const data = await response.json();
       
       // Validate using the schema you created for Verified Dealers
-      const validatedDealers = z.array(getVerifiedDealersSchema).parse(data);
+      const validatedDealers = z.array(selectVerifiedDealersSchema).parse(data);
       setDealers(validatedDealers);
       toast.success('Verified dealers loaded successfully!');
     } catch (e: any) {
@@ -194,13 +194,11 @@ export default function ListVerifiedDealersPage() {
         )
       }
     },
-    
-    { 
-      accessorKey: 'relatedSpName', 
-      header: 'SP Name',
-      cell: info => info.getValue() || '-'
-    },
-    
+    // { 
+    //   accessorKey: 'relatedSpName', 
+    //   header: 'SP Name',
+    //   cell: info => info.getValue() || '-'
+    // },
     { 
       header: 'Tax Info',
       cell: ({ row }) => {

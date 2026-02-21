@@ -1,14 +1,15 @@
 // src/app/api/dashboardPagesAPI/add-dealers/dealer-verify/bulk-verify/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { revalidateTag } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, dealers } from '../../../../../../../drizzle'; 
+import { eq, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
+import { refreshCompanyCache } from '@/app/actions/cache';
 
 // Roles allowed to perform verification
 const allowedRoles = [
-    'Admin',
     'president',
     'senior-general-manager',
     'general-manager',
@@ -33,10 +34,13 @@ export async function PATCH(request: NextRequest) {
         }
 
         // 2. Fetch User & Authorization
-        const currentUser = await prisma.user.findUnique({
-            where: { workosUserId: claims.sub },
-            select: { id: true, role: true, companyId: true }
-        });
+        const currentUserResult = await db
+            .select({ id: users.id, role: users.role, companyId: users.companyId })
+            .from(users)
+            .where(eq(users.workosUserId, claims.sub))
+            .limit(1);
+
+        const currentUser = currentUserResult[0];
 
         if (!currentUser || !allowedRoles.includes(currentUser.role)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -53,17 +57,17 @@ export async function PATCH(request: NextRequest) {
         const { ids } = validation.data;
 
         // 4. Security Step: Filter IDs to ensure they belong to the user's company
-        // We cannot blindly update ID matches because a user might send an ID from another company.
-        const validDealers = await prisma.dealer.findMany({
-            where: {
-                id: { in: ids },
-                user: {
-                    companyId: currentUser.companyId
-                },
-                verificationStatus: 'PENDING' // Only verify currently pending ones
-            },
-            select: { id: true }
-        });
+        const validDealers = await db
+            .select({ id: dealers.id })
+            .from(dealers)
+            .leftJoin(users, eq(dealers.userId, users.id))
+            .where(
+                and(
+                    inArray(dealers.id, ids),
+                    eq(users.companyId, currentUser.companyId),
+                    eq(dealers.verificationStatus, 'PENDING') // Only verify currently pending ones
+                )
+            );
 
         const validIds = validDealers.map(d => d.id);
 
@@ -72,19 +76,16 @@ export async function PATCH(request: NextRequest) {
         }
 
         // 5. Perform Bulk Update
-        const result = await prisma.dealer.updateMany({
-            where: {
-                id: { in: validIds }
-            },
-            data: {
-                verificationStatus: 'VERIFIED'
-            }
-        });
+        await db
+            .update(dealers)
+            .set({ verificationStatus: 'VERIFIED' })
+            .where(inArray(dealers.id, validIds));
 
-        revalidateTag(`dealers-${currentUser.companyId}`, 'max');
-        revalidateTag(`verified-dealers-${currentUser.companyId}`, 'max');
+        // Revalidate cache using the centralized Server Action
+        await refreshCompanyCache('dealers');
+        await refreshCompanyCache('verified-dealers');
 
-        return NextResponse.json({ message: 'Bulk verification successful', count: result.count }, { status: 200 });
+        return NextResponse.json({ message: 'Bulk verification successful', count: validIds.length }, { status: 200 });
 
     } catch (error: any) {
         console.error('Bulk verify error:', error);

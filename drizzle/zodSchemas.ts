@@ -1,0 +1,180 @@
+// drizzle/zodSchema.ts
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanentJourneyPlans, technicalSites, 
+    companies, ratings, dealerBrandMapping, brands, verifiedDealers, dailyVisitReports, 
+    salesmanLeaveApplications, salesmanAttendance, competitionReports, geoTracking, journeys, 
+    giftAllocationLogs, rewards, dailyTasks, salesOrders, masonPcSide, otpVerifications, 
+    authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
+    schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
+    siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
+    tallyRaw, logisticsIo,
+    aoi, aoiGridCell, satelliteScene, gridChangeScore, constructionSite, 
+    tsoVisit, highresScene, detectedBuilding, notifications, syncState, 
+    schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, 
+    projectionVsActualReports, collectionReports, emailReports, projectionReports, 
+    dealerTrendMetrics, salesPromoters, outstandingReports,
+    dealerFinancialSnapshot, dealerIntelligenceSnapshot, masonsOnMeetings, 
+    masonOnScheme } from "../drizzle";
+
+/* ========================= drizzle-zod insert schemas ========================= */
+export const insertCompanySchema = createInsertSchema(companies);
+export const insertUserSchema = createInsertSchema(users);
+export const insertDailyVisitReportSchema = createInsertSchema(dailyVisitReports);
+export const insertTechnicalVisitReportSchema = createInsertSchema(technicalVisitReports);
+export const insertPermanentJourneyPlanSchema = createInsertSchema(permanentJourneyPlans);
+export const insertDealerSchema = createInsertSchema(dealers);
+export const insertSalesmanAttendanceSchema = createInsertSchema(salesmanAttendance);
+export const insertSalesmanLeaveApplicationSchema = createInsertSchema(salesmanLeaveApplications);
+export const insertCompetitionReportSchema = createInsertSchema(competitionReports);
+export const insertDailyTaskSchema = createInsertSchema(dailyTasks);
+export const insertDealerReportsAndScoresSchema = createInsertSchema(dealerReportsAndScores);
+export const insertRatingSchema = createInsertSchema(ratings);
+export const insertSalesOrderSchema = createInsertSchema(salesOrders);
+export const insertBrandSchema = createInsertSchema(brands);
+export const insertDealerBrandMappingSchema = createInsertSchema(dealerBrandMapping);
+export const insertTsoMeetingSchema = createInsertSchema(tsoMeetings);
+export const insertauthSessionsSchema = createInsertSchema(authSessions);
+
+// journey + geotracking
+export const insertGeoTrackingSchema = createInsertSchema(geoTracking);
+export const insertJourneyOpsSchema = createInsertSchema(journeyOps);
+export const insertJourneysSchema = createInsertSchema(journeys);
+export const insertJourneyBreadcrumbsSchema = createInsertSchema(journeyBreadcrumbs);
+export const insertSyncStateSchema = createInsertSchema(syncState);
+
+// Changed giftInventory to rewards
+export const insertRewardsSchema = createInsertSchema(rewards);
+export const insertGiftAllocationLogSchema = createInsertSchema(giftAllocationLogs);
+export const insertTallyRawTableSchema = createInsertSchema(tallyRaw);
+
+// Modified masonPcSide schema
+export const insertMasonPcSideSchema = createInsertSchema(masonPcSide);
+export const insertOtpVerificationSchema = createInsertSchema(otpVerifications);
+export const insertSchemesOffersSchema = createInsertSchema(schemesOffers);
+export const insertMasonOnSchemeSchema = createInsertSchema(masonOnScheme);
+export const insertMasonsOnMeetingsSchema = createInsertSchema(masonsOnMeetings);
+
+export const insertRewardCategorySchema = createInsertSchema(rewardCategories);
+export const insertKycSubmissionSchema = createInsertSchema(kycSubmissions);
+export const insertTsoAssignmentSchema = createInsertSchema(tsoAssignments);
+export const insertBagLiftSchema = createInsertSchema(bagLifts);
+export const insertPointsLedgerSchema = createInsertSchema(pointsLedger);
+export const insertRewardRedemptionSchema = createInsertSchema(rewardRedemptions);
+export const insertTechnicalSiteSchema = createInsertSchema(technicalSites);
+export const insertSchemeSlabsSchema = createInsertSchema(schemeSlabs);
+export const insertMasonSlabAchievementSchema = createInsertSchema(masonSlabAchievements);
+export const insertNotificationSchema = createInsertSchema(notifications);
+
+// Joins
+export const insertDealerAssociatedMasonsSchema = createInsertSchema(dealerAssociatedMasons);
+export const insertSiteAssociatedDealersSchema = createInsertSchema(siteAssociatedDealers);
+export const insertSiteAssociatedMasonsSchema = createInsertSchema(siteAssociatedMasons);
+export const insertSiteAssociatedUsersSchema = createInsertSchema(siteAssociatedUsers);
+export const insertSchemeToRewardsSchema = createInsertSchema(schemeToRewards);
+
+// satellite tables
+export const insertAoiSchema = createInsertSchema(aoi);
+export const insertAoiGridCellSchema = createInsertSchema(aoiGridCell);
+export const insertSatelliteSceneSchema = createInsertSchema(satelliteScene);
+export const insertGridChangeScoreSchema = createInsertSchema(gridChangeScore);
+export const insertHighResScreenSchema = createInsertSchema(highresScene);
+export const insertDetectedBuildingSchema = createInsertSchema(detectedBuilding);
+export const insertConstructionSiteSchema = createInsertSchema(constructionSite);
+export const insertTsoVisitSchema = createInsertSchema(tsoVisit);
+
+// logistics
+export const insertLogisticsIOSchema = createInsertSchema(logisticsIo);
+
+//emailStuff
+export const insertEmailReportSchema = createInsertSchema(emailReports);
+export const insertCollectionReportsSchema = createInsertSchema(collectionReports);
+export const insertOutstandingReportsSchema = createInsertSchema(outstandingReports);
+export const insertVerifiedDealersSchema = createInsertSchema(verifiedDealers);
+export const insertProjectionVsActualReportsSchema = createInsertSchema(projectionVsActualReports);
+export const insertProjectionReportsSchema = createInsertSchema(projectionReports);
+export const insertDealerFinancialSnapshotSchema = createInsertSchema(dealerFinancialSnapshot);
+export const insertSalesPromotersSchema = createInsertSchema(salesPromoters);
+export const insertDealerTrendMetricsSchema = createInsertSchema(dealerTrendMetrics);
+export const insertDealerIntelligenceSnapshotSchema = createInsertSchema(dealerIntelligenceSnapshot);
+
+/* ================================= XXXXXXXXXXX ================================ */
+/* ========================= drizzle-zod select schemas ========================= */
+export const selectCompanySchema = createSelectSchema(companies);
+export const selectUserSchema = createSelectSchema(users);
+export const selectDailyVisitReportSchema = createSelectSchema(dailyVisitReports);
+export const selectTechnicalVisitReportSchema = createSelectSchema(technicalVisitReports);
+export const selectPermanentJourneyPlanSchema = createSelectSchema(permanentJourneyPlans);
+export const selectDealerSchema = createSelectSchema(dealers);
+export const selectSalesmanAttendanceSchema = createSelectSchema(salesmanAttendance);
+export const selectSalesmanLeaveApplicationSchema = createSelectSchema(salesmanLeaveApplications);
+export const selectCompetitionReportSchema = createSelectSchema(competitionReports);
+export const selectDailyTaskSchema = createSelectSchema(dailyTasks);
+export const selectDealerReportsAndScoresSchema = createSelectSchema(dealerReportsAndScores);
+export const selectRatingSchema = createSelectSchema(ratings);
+export const selectSalesOrderSchema = createSelectSchema(salesOrders);
+export const selectBrandSchema = createSelectSchema(brands);
+export const selectDealerBrandMappingSchema = createSelectSchema(dealerBrandMapping);
+export const selectTsoMeetingSchema = createSelectSchema(tsoMeetings);
+export const selectauthSessionsSchema = createSelectSchema(authSessions);
+
+// journey + geotracking
+export const selectGeoTrackingSchema = createSelectSchema(geoTracking);
+export const selectJourneyOpsSchema = createSelectSchema(journeyOps);
+export const selectJourneysSchema = createSelectSchema(journeys);
+export const selectJourneyBreadcrumbsSchema = createSelectSchema(journeyBreadcrumbs);
+export const selectSyncStateSchema = createSelectSchema(syncState);
+
+// Changed giftInventory to rewards
+export const selectRewardsSchema = createSelectSchema(rewards);
+export const selectGiftAllocationLogSchema = createSelectSchema(giftAllocationLogs);
+export const selectTallyRawTableSchema = createSelectSchema(tallyRaw);
+
+// Modified masonPcSide schema
+export const selectMasonPcSideSchema = createSelectSchema(masonPcSide);
+export const selectOtpVerificationSchema = createSelectSchema(otpVerifications);
+export const selectSchemesOffersSchema = createSelectSchema(schemesOffers);
+export const selectMasonOnSchemeSchema = createSelectSchema(masonOnScheme);
+export const selectMasonsOnMeetingsSchema = createSelectSchema(masonsOnMeetings);
+
+export const selectRewardCategorySchema = createSelectSchema(rewardCategories);
+export const selectKycSubmissionSchema = createSelectSchema(kycSubmissions);
+export const selectTsoAssignmentSchema = createSelectSchema(tsoAssignments);
+export const selectBagLiftSchema = createSelectSchema(bagLifts);
+export const selectPointsLedgerSchema = createSelectSchema(pointsLedger);
+export const selectRewardRedemptionSchema = createSelectSchema(rewardRedemptions);
+export const selectTechnicalSiteSchema = createSelectSchema(technicalSites);
+export const selectSchemeSlabsSchema = createSelectSchema(schemeSlabs);
+export const selectMasonSlabAchievementSchema = createSelectSchema(masonSlabAchievements);
+export const selectNotificationSchema = createSelectSchema(notifications);
+
+// Joins
+export const selectDealerAssociatedMasonsSchema = createSelectSchema(dealerAssociatedMasons);
+export const selectSiteAssociatedDealersSchema = createSelectSchema(siteAssociatedDealers);
+export const selectSiteAssociatedMasonsSchema = createSelectSchema(siteAssociatedMasons);
+export const selectSiteAssociatedUsersSchema = createSelectSchema(siteAssociatedUsers);
+export const selectSchemeToRewardsSchema = createSelectSchema(schemeToRewards);
+
+// satellite tables
+export const selectAoiSchema = createSelectSchema(aoi);
+export const selectAoiGridCellSchema = createSelectSchema(aoiGridCell);
+export const selectSatelliteSceneSchema = createSelectSchema(satelliteScene);
+export const selectGridChangeScoreSchema = createSelectSchema(gridChangeScore);
+export const selectHighResScreenSchema = createSelectSchema(highresScene);
+export const selectDetectedBuildingSchema = createSelectSchema(detectedBuilding);
+export const selectConstructionSiteSchema = createSelectSchema(constructionSite);
+export const selectTsoVisitSchema = createSelectSchema(tsoVisit);
+
+// logistics
+export const selectLogisticsIOSchema = createSelectSchema(logisticsIo);
+
+//emailStuff
+export const selectEmailReportSchema = createSelectSchema(emailReports);
+export const selectCollectionReportsSchema = createSelectSchema(collectionReports);
+export const selectOutstandingReportsSchema = createSelectSchema(outstandingReports);
+export const selectVerifiedDealersSchema = createSelectSchema(verifiedDealers);
+export const selectProjectionVsActualReportsSchema = createSelectSchema(projectionVsActualReports);
+export const selectProjectionReportsSchema = createSelectSchema(projectionReports);
+export const selectDealerFinancialSnapshotSchema = createSelectSchema(dealerFinancialSnapshot);
+export const selectSalesPromotersSchema = createSelectSchema(salesPromoters);
+export const selectDealerTrendMetricsSchema = createSelectSchema(dealerTrendMetrics);
+export const selectDealerIntelligenceSnapshotSchema = createSelectSchema(dealerIntelligenceSnapshot);

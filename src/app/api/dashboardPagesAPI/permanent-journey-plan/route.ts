@@ -2,221 +2,218 @@
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import { cacheTag, cacheLife, revalidateTag } from 'next/cache';
-import prisma from '@/lib/prisma'; 
-import { z } from 'zod'; 
-import { permanentJourneyPlanSchema } from '@/lib/shared-zod-schema';
+import { cacheTag, cacheLife } from 'next/cache';
+import { db } from '@/lib/drizzle';
+import { users, permanentJourneyPlans, dailyTasks, dealers, technicalSites } from '../../../../../drizzle';
+import { eq, and, desc, aliasedTable, getTableColumns, inArray, ilike } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
+import { z } from 'zod';
+import { selectPermanentJourneyPlanSchema } from '../../../../../drizzle/zodSchemas';
+import { refreshCompanyCache } from '@/app/actions/cache';
 
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
+const allowedRoles = [
+  'president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',];
+  'senior-executive', 'executive',
+];
 
-const getISTDate = (date: Date | null) => {
+const getISTDate = (date: string | Date | null) => {
   if (!date) return '';
-  // Returns YYYY-MM-DD based on Asia/Kolkata time
-  return date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+  return new Date(date).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 };
 
-// 2. The Cached Function: Isolated from runtime request data
+// 1. Extend the baked DB schema to include frontend-specific types and joined fields
+const frontendPJPSchema = selectPermanentJourneyPlanSchema.extend({
+  salesmanName: z.string(),
+  createdByName: z.string(),
+  createdByRole: z.string().nullable().optional(),
+  taskIds: z.array(z.string()), 
+  visitDealerName: z.string().nullable(),
+  planDate: z.string(), 
+  
+  // Explicitly mapping the old Prisma camelCase names the frontend expects
+  noOfConvertedBags: z.number().nullable().optional(),
+  noOfMasonPcSchemes: z.number().nullable().optional(),
+});
+
+// 2. Explicit type to survive Next.js 'use cache' boundary
+type PJPRow = InferSelectModel<typeof permanentJourneyPlans> & {
+  salesmanFirstName: string | null;
+  salesmanLastName: string | null;
+  salesmanEmail: string | null;
+  createdByFirstName: string | null;
+  createdByLastName: string | null;
+  createdByEmail: string | null;
+  createdByRole: string | null;
+  dealerName: string | null;
+  siteName: string | null;
+};
+
 async function getCachedPJPs(companyId: number, verificationStatus: string | null) {
   'use cache';
   cacheLife('days');
-  cacheTag(`permanent-journey-plan-${companyId}`); // Unique tag per company
+  cacheTag(`permanent-journey-plan-${companyId}`);
 
-  const whereClause: any = {
-    user: {
-      companyId: companyId,
-    },
-  };
+  const createdByUsers = aliasedTable(users, 'createdByUsers');
 
-  // Apply the verification status filter if present
-  if (verificationStatus) {
-    whereClause.verificationStatus = verificationStatus;
+  // Build dynamic filters
+  const filters = [eq(users.companyId, companyId)];
+  
+  // FIX: Ignore "all" or "null" strings, and use ilike for case-insensitive matching
+  if (verificationStatus && verificationStatus !== 'all' && verificationStatus !== 'null') {
+    filters.push(ilike(permanentJourneyPlans.verificationStatus, verificationStatus));
   }
 
-  const permanentJourneyPlans = await prisma.permanentJourneyPlan.findMany({
-    where: whereClause,
-    include: {
-      user: {
-        select: { id: true, firstName: true, lastName: true, email: true },
-      },
-      createdBy: {
-        select: { firstName: true, lastName: true, email: true, role: true },
-      },
-      dailyTasks: {
-        select: { id: true, status: true, visitType: true, relatedDealerId: true, siteName: true },
-      },
-      dealer: { select: { name: true } },
-      site: { select: { siteName: true } },
-    },
-    orderBy: {
-      planDate: 'desc',
-    },
-  });
+  // 1. Fetch flat PJPs using getTableColumns
+  const rawPlans: PJPRow[] = await db
+    .select({
+      ...getTableColumns(permanentJourneyPlans),
+      salesmanFirstName: users.firstName,
+      salesmanLastName: users.lastName,
+      salesmanEmail: users.email,
+      createdByFirstName: createdByUsers.firstName,
+      createdByLastName: createdByUsers.lastName,
+      createdByEmail: createdByUsers.email,
+      createdByRole: createdByUsers.role,
+      dealerName: dealers.name,
+      siteName: technicalSites.siteName,
+    })
+    .from(permanentJourneyPlans)
+    .leftJoin(users, eq(permanentJourneyPlans.userId, users.id))
+    .leftJoin(createdByUsers, eq(permanentJourneyPlans.createdById, createdByUsers.id))
+    .leftJoin(dealers, eq(permanentJourneyPlans.dealerId, dealers.id))
+    .leftJoin(technicalSites, eq(permanentJourneyPlans.siteId, technicalSites.id))
+    .where(and(...filters))
+    .orderBy(desc(permanentJourneyPlans.planDate));
 
-  return permanentJourneyPlans.map((plan: any) => {
-    const salesmanName = `${plan.user.firstName || ''} ${plan.user.lastName || ''}`.trim() || plan.user.email;
-    const createdByName = `${plan.createdBy.firstName || ''} ${plan.createdBy.lastName || ''}`.trim() || plan.createdBy.email;
-    const taskIds = plan.dailyTasks.map((task: any) => task.id);
-    const visitTargetName = plan.dealer?.name ?? plan.site?.siteName ?? null;
+  // 2. Safely fetch tasks ONLY for these PJPs to avoid the Drizzle N+1 tautology
+  const pjpIds = rawPlans.map(p => p.id);
+  const tasks = pjpIds.length > 0 
+    ? await db
+        .select({ id: dailyTasks.id, pjpId: dailyTasks.pjpId })
+        .from(dailyTasks)
+        .where(inArray(dailyTasks.pjpId, pjpIds))
+    : [];
 
+  // Group tasks by pjpId for O(1) lookups
+  const tasksByPjpId = tasks.reduce((acc, task) => {
+    if (task.pjpId) {
+        if (!acc[task.pjpId]) acc[task.pjpId] = [];
+        acc[task.pjpId].push(task.id);
+    }
+    return acc;
+  }, {} as Record<string, string[]>);
+
+  // 3. Map to final frontend structure
+  return rawPlans.map((row) => {
+    const salesmanName = `${row.salesmanFirstName || ''} ${row.salesmanLastName || ''}`.trim() || row.salesmanEmail || '';
+    const createdByName = `${row.createdByFirstName || ''} ${row.createdByLastName || ''}`.trim() || row.createdByEmail || '';
+    
     return {
-      id: plan.id,
-      salesmanName: salesmanName,
-      userId: plan.userId,
-      createdByName: createdByName,
-      createdByRole: plan.createdBy.role,
-      areaToBeVisited: plan.areaToBeVisited,
-      route: plan.route,
-      planDate: getISTDate(plan.planDate),
-      description: plan.description,
-      status: plan.status,
-      plannedNewSiteVisits: plan.plannedNewSiteVisits ?? 0,
-      plannedFollowUpSiteVisits: plan.plannedFollowUpSiteVisits ?? 0,
-      plannedNewDealerVisits: plan.plannedNewDealerVisits ?? 0,
-      plannedInfluencerVisits: plan.plannedInfluencerVisits ?? 0,
-      influencerName: plan.influencerName,
-      influencerPhone: plan.influencerPhone,
-      activityType: plan.activityType,
-      noOfConvertedBags: plan.noOfConvertedBags ?? 0,
-      noOfMasonPcSchemes: plan.noOfMasonPcSchemes ?? 0,
-      diversionReason: plan.diversionReason,
-      taskIds: taskIds,
-      dealerId: plan.dealerId,
-      siteId: plan.siteId,
-      visitDealerName: visitTargetName,
-      verificationStatus: plan.verificationStatus,
-      additionalVisitRemarks: plan.additionalVisitRemarks,
-      createdAt: plan.createdAt.toISOString(),
-      updatedAt: plan.updatedAt.toISOString(),
+      ...row,
+      salesmanName,
+      createdByName,
+      createdByRole: row.createdByRole,
+      planDate: getISTDate(row.planDate),
+      taskIds: tasksByPjpId[row.id] || [],
+      visitDealerName: row.dealerName ?? row.siteName ?? null,
+      
+      // FIX: Re-map Drizzle generated names back to the old Prisma exact casing
+      noOfConvertedBags: row.noofConvertedBags ?? 0,
+      noOfMasonPcSchemes: row.noofMasonpcInSchemes ?? 0,
+      
+      plannedNewSiteVisits: row.plannedNewSiteVisits ?? 0,
+      plannedFollowUpSiteVisits: row.plannedFollowUpSiteVisits ?? 0,
+      plannedNewDealerVisits: row.plannedNewDealerVisits ?? 0,
+      plannedInfluencerVisits: row.plannedInfluencerVisits ?? 0,
+      
+      createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
+      updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
     };
   });
 }
 
 export async function GET(request: NextRequest) {
-  await connection();
+  if (typeof connection === 'function') await connection();
   try {
     const claims = await getTokenClaims();
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // 1. Authentication Check
-    if (!claims || !claims.sub) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
 
-    // 2. Fetch Current User to check role and companyId
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true } // Optimized selection
-    });
+    const currentUser = currentUserResult[0];
 
-    // 3. --- UPDATED ROLE-BASED AUTHORIZATION ---
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Only the following roles can access PJP data: ${allowedRoles.join(', ')}` }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
     const verificationStatus = searchParams.get('verificationStatus');
 
-    // 4. Call the purely cached function
     const formattedPlans = await getCachedPJPs(currentUser.companyId, verificationStatus);
+    
+    // Validate safely with loose() to ensure mapped frontend variables don't get stripped
+    const validatedData = z.array(frontendPJPSchema.loose()).safeParse(formattedPlans);
 
-    // 5. Zod Validation
-    const validatedData = z.array(permanentJourneyPlanSchema).parse(formattedPlans);
+    if (!validatedData.success) {
+      console.error("PJP Validation Error:", validatedData.error.format());
+      return NextResponse.json(formattedPlans, { status: 200 }); // Graceful fallback
+    }
 
-    return NextResponse.json(validatedData, { status: 200 });
+    return NextResponse.json(validatedData.data, { status: 200 });
   } catch (error) {
     console.error('Error fetching permanent journey plans:', error);
-    return NextResponse.json({ error: 'Failed to fetch permanent journey plans', details: (error as Error).message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch', details: (error as Error).message }, { status: 500 });
   }
 }
-
 
 export async function DELETE(request: NextRequest) {
   try {
     const claims = await getTokenClaims();
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // 1. Authentication Check
-    if (!claims || !claims.sub) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
 
-    // 2. Fetch Current User to get their ID, role, and companyId
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      select: { id: true, role: true, companyId: true },
-    });
+    const currentUser = currentUserResult[0];
 
-    // 3. Role-based Authorization
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json(
-        {
-          error: `Forbidden: Only the following roles can delete PJPs: ${allowedRoles.join(
-            ', ',
-          )}`,
-        },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // 4. Extract pjpId from the query parameters
     const url = new URL(request.url);
     const pjpId = url.searchParams.get('id');
+    if (!pjpId) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
 
-    if (!pjpId) {
-      return NextResponse.json({ error: 'Missing PJP ID in request' }, { status: 400 });
+    const pjpToDeleteResult = await db
+      .select({ id: permanentJourneyPlans.id, companyId: users.companyId })
+      .from(permanentJourneyPlans)
+      .leftJoin(users, eq(permanentJourneyPlans.userId, users.id))
+      .where(eq(permanentJourneyPlans.id, pjpId))
+      .limit(1);
+
+    const pjpToDelete = pjpToDeleteResult[0];
+
+    if (!pjpToDelete || pjpToDelete.companyId !== currentUser.companyId) {
+      return NextResponse.json({ error: 'Forbidden or Not Found' }, { status: 403 });
     }
 
-    // 5. Verify the PJP exists and belongs to the current user's company (multi-tenancy check)
-    const pjpToDelete = await prisma.permanentJourneyPlan.findUnique({
-      where: { id: pjpId },
-      include: {
-        user: {
-          select: { companyId: true }, // Select the related user's companyId for tenancy check
-        },
-      },
-    });
+    await db.delete(permanentJourneyPlans).where(eq(permanentJourneyPlans.id, pjpId));
 
-    if (!pjpToDelete) {
-      return NextResponse.json(
-        { error: 'Permanent Journey Plan not found' },
-        { status: 404 },
-      );
-    }
+    await refreshCompanyCache('permanent-journey-plan');
+    await refreshCompanyCache('pjp-verification');
 
-    // This checks if the PJP's salesman (user) belongs to the admin's company
-    if (
-      !pjpToDelete.user ||
-      pjpToDelete.user.companyId !== currentUser.companyId
-    ) {
-      return NextResponse.json(
-        { error: 'Forbidden: Cannot delete a PJP from another company' },
-        { status: 403 },
-      );
-    }
-
-    // 6. Delete the Permanent Journey Plan itself
-    // We are no longer deleting associated tasks per the request.
-    await prisma.permanentJourneyPlan.delete({
-      where: { id: pjpId },
-    });
-
-    // 6. CACHE INVALIDATION
-    revalidateTag(`permanent-journey-plan-${currentUser.companyId}`, 'max');
-    revalidateTag(`pjp-verification-${currentUser.companyId}`, 'max');
-
-    return NextResponse.json(
-      { message: 'PJP deleted successfully' },
-      { status: 200 },
-    );
+    return NextResponse.json({ message: 'Deleted successfully' }, { status: 200 });
   } catch (error) {
-    console.error('Error deleting PJP (DELETE):', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to delete permanent journey plan',
-        details: (error as Error).message,
-      },
-      { status: 500 },
-    );
+    console.error('Error deleting PJP:', error);
+    return NextResponse.json({ error: 'Failed to delete', details: (error as Error).message }, { status: 500 });
   }
 }

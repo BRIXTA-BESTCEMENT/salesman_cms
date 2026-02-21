@@ -2,122 +2,89 @@
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
-import { Prisma, PrismaClient } from '../../../../../../../prisma/generated/client';
+import { db } from '@/lib/drizzle';
+import { users } from '../../../../../../../drizzle';
+import { eq, and, asc, aliasedTable } from 'drizzle-orm';
+import type { InferSelectModel } from "drizzle-orm";
 import { ROLE_HIERARCHY } from '@/lib/roleHierarchy';
+import { z } from 'zod';
+import { selectUserSchema } from '../../../../../../../drizzle/zodSchemas';
 
-// Define the roles that are allowed to view the Team Overview page.
-// This list includes all roles except 'junior-executive' and 'executive'.
 const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive',];
 
+type UserRow = InferSelectModel<typeof users>;
+
 export async function GET(request: NextRequest) {
   await connection();
   try {
-    // 1. Get the claims from the JWT.
     const claims = await getTokenClaims();
+    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // 2. Authentication Check: Ensure a user is logged in.
-    if (!claims || !claims.sub) {
-      console.log('Unauthorized access: No claims or subject found.');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
 
-    // 3. Fetch the current user to get their role and companyId.
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-      include: { company: true },
-    });
+    const currentUser = currentUserResult[0];
 
-    // 4. Role-Based Authorization Check: Ensure the user has the correct role.
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      console.log(`Forbidden access: User with role '${currentUser?.role}' attempted to access team overview.`);
-      return NextResponse.json(
-        { error: `Forbidden: Only the following roles can view this page: ${allowedRoles.join(', ')}` },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: `Forbidden` }, { status: 403 });
     }
 
-    // Read and validate role filter from query string
     const roleParam = request.nextUrl.searchParams.get('role') ?? undefined;
-    const roleFilter =
-      roleParam && roleParam !== 'all' && ROLE_HIERARCHY.includes(roleParam) ? roleParam : undefined;
+    const roleFilter = roleParam && roleParam !== 'all' && ROLE_HIERARCHY.includes(roleParam) ? roleParam : undefined;
 
-    const whereClause: any = {
-      companyId: currentUser.companyId,
-    };
-    if (roleFilter) {
-      whereClause.role = roleFilter;
-    }
-    // 5. Fetch all users within the same company as the current user.
-    // The include block is updated to use the correct relation names from your schema: 'reportsTo' and 'reports'.
-    const teamMembers = await prisma.user.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        area: true, // You may need area/region for display/future filtering
-        region: true,
-        reportsToId: true,
-  
-        isTechnicalRole: true, 
-        reportsTo: true, // Includes the manager's data
-        reports: true, // Includes the list of direct reports
-      },
-      orderBy: {
-        firstName: 'asc',
-      },
-    });
+    // Self-join aliases for hierarchy
+    const managers = aliasedTable(users, 'managers');
+    const reports = aliasedTable(users, 'reports');
+    const conditions = [
+      eq(users.companyId, currentUser.companyId),
+      ...(roleFilter ? [eq(users.role, roleFilter)] : []),
+    ];
 
-    // 6. Format the data for the frontend table.
-    const formattedTeamData = teamMembers.map((member:any) => {
-      // Create the managedBy string from the manager's first and last name using the 'reportsTo' relation.
-      const managedBy = member.reportsTo
-        ? `${member.reportsTo.firstName || ''} ${member.reportsTo.lastName || ''}`.trim()
-        : 'none';
+    const teamMembers: {
+      member: UserRow;
+      managerFirstName: string | null;
+      managerLastName: string | null;
+    }[] = await db
+      .select({
+        member: users,
+        managerFirstName: managers.firstName,
+        managerLastName: managers.lastName,
+      })
+      .from(users)
+      .leftJoin(managers, eq(users.reportsToId, managers.id))
+      .where(and(...conditions))
+      .orderBy(asc(users.firstName));
 
-      // Create a comma-separated string of direct report names using the 'reports' relation.
-      const manages = member.reports
-        .map((report:any) => `${report.firstName || ''} ${report.lastName || ''}`.trim())
-        .filter(Boolean) // Filter out any empty strings
-        .join(', ') || 'None';
+    // Fetch reports in a separate step to avoid massive Cartesian products from double-joins
+    const formattedTeamData = await Promise.all(teamMembers.map(async ({ member, managerFirstName, managerLastName }) => {
+      const directReports = await db
+        .select({ id: users.id, firstName: users.firstName, lastName: users.lastName, role: users.role })
+        .from(users)
+        .where(eq(users.reportsToId, member.id));
 
-      // Create a structured array of objects for the popover
-      const managesReports = member.reports.map((report:any) => ({
-        name: `${report.firstName || ''} ${report.lastName || ''}`.trim(),
-        role: report.role,
-      }));
-
-      const managesIds = member.reports.map((report:any) => report.id);
+      const managedBy = managerFirstName ? `${managerFirstName} ${managerLastName || ''}`.trim() : 'none';
+      const manages = directReports.map(r => `${r.firstName || ''} ${r.lastName || ''}`.trim()).filter(Boolean).join(', ') || 'None';
 
       return {
-        id: member.id,
+        ...member,
         name: `${member.firstName || ''} ${member.lastName || ''}`.trim(),
-        role: member.role,
         managedBy,
         manages,
-        managesReports,
+        managesReports: directReports.map(r => ({ name: `${r.firstName || ''} ${r.lastName || ''}`.trim(), role: r.role })),
         managedById: member.reportsToId,
-        managesIds,
-        isTechnicalRole: member.isTechnicalRole,
+        managesIds: directReports.map(r => r.id),
       };
-    });
+    }));
 
-    // 7. Return the formatted data.
-    return NextResponse.json(formattedTeamData, { status: 200 });
+    return NextResponse.json(z.array(selectUserSchema.loose()).parse(formattedTeamData), { status: 200 });
 
-  } catch (error) {
-    console.error('Error fetching team data:', error);
-    // Handle specific Prisma errors if needed, otherwise return a generic server error.
-    if (error instanceof PrismaClient) {
-      return NextResponse.json({ error: 'Database error' }, { status: 500 });
-    }
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }

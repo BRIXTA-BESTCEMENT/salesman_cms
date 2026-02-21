@@ -2,12 +2,13 @@
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users, masonOnScheme, masonPcSide } from '../../../../../../drizzle'; 
+import { eq, and, desc } from 'drizzle-orm';
 import { z } from 'zod';
-// Assuming the schema is in the same shared file
-import { masonOnSchemeSchema } from '@/lib/shared-zod-schema'; 
+// Use Drizzle-baked schema
+import { selectMasonOnSchemeSchema } from '../../../../../../drizzle/zodSchemas'; 
 
-// Re-using the allowed roles from your sample. Adjust as needed.
 const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
@@ -17,60 +18,47 @@ export async function GET() {
   await connection();
   try {
     const claims = await getTokenClaims();
-
-    // 1. Authentication Check
     if (!claims || !claims.sub) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch Current User to check role and companyId
-    const currentUser = await prisma.user.findUnique({
-      where: { workosUserId: claims.sub },
-    });
+    const currentUserResult = await db
+      .select({ id: users.id, role: users.role, companyId: users.companyId })
+      .from(users)
+      .where(eq(users.workosUserId, claims.sub))
+      .limit(1);
 
-    // 3. Authorization Check
+    const currentUser = currentUserResult[0];
+
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Only allowed roles can access this data.` }, { status: 403 });
+      return NextResponse.json({ error: `Forbidden: Insufficient permissions.` }, { status: 403 });
     }
 
-    // 4. Fetch MasonOnScheme Records
-    // We filter by the companyId of the user associated with the MASON
-    const schemeRecords = await prisma.masonOnScheme.findMany({
-      where: {
-        mason: {
-          user: {
-            companyId: currentUser.companyId,
-          },
-        },
-      },
-      orderBy: {
-        enrolledAt: 'desc', // Get the most recent enrollments first
-      },
-      take: 1000, 
-    });
+    const records = await db
+      .select({
+        masonId: masonOnScheme.masonId,
+        schemeId: masonOnScheme.schemeId,
+        enrolledAt: masonOnScheme.enrolledAt,
+        status: masonOnScheme.status,
+      })
+      .from(masonOnScheme)
+      .leftJoin(masonPcSide, eq(masonOnScheme.masonId, masonPcSide.id))
+      .leftJoin(users, eq(masonPcSide.userId, users.id))
+      .where(eq(users.companyId, currentUser.companyId))
+      .orderBy(desc(masonOnScheme.enrolledAt))
+      .limit(1000);
 
-    // 5. Format the data to match the Zod schema
-    const formattedRecords = schemeRecords.map(record => ({
-      masonId: record.masonId,
-      schemeId: record.schemeId,
-      enrolledAt: record.enrolledAt?.toISOString() ?? null, // Convert DateTime to ISO string or null
-      status: record.status,
+    const formattedRecords = records.map(record => ({
+      ...record,
+      enrolledAt: record.enrolledAt ? new Date(record.enrolledAt).toISOString() : null,
     }));
 
-    // 6. Validate the data against the Zod schema
-    const validatedRecords = z.array(masonOnSchemeSchema).parse(formattedRecords);
+    const validatedRecords = z.array(selectMasonOnSchemeSchema).parse(formattedRecords);
 
     return NextResponse.json(validatedRecords, { status: 200 });
     
-  } catch (error) {
-    console.error('Error fetching masons-on-schemes data:', error);
-    // Handle Zod validation errors specifically
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.message }, { status: 400 });
-    }
-    // Return a 500 status with a generic error message
-    return NextResponse.json({ error: 'Failed to fetch masons-on-schemes data' }, { status: 500 });
-  } finally {
-    // await prisma.$disconnect();
+  } catch (error: any) {
+    console.error('Error fetching masons-on-schemes:', error);
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
   }
 }

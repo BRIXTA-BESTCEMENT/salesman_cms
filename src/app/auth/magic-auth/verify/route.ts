@@ -1,7 +1,9 @@
 // src/app/api/auth/magic-auth/verify/route.ts
 import { WorkOS } from '@workos-inc/node';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { db } from '@/lib/drizzle';
+import { users } from '../../../../../drizzle'; 
+import { eq, and } from 'drizzle-orm';
 
 // --- START: IP UTILITY ---
 function getIpAddress(request: NextRequest): string | undefined {
@@ -75,23 +77,30 @@ export const POST = async (request: NextRequest) => {
                 }
 
                 // 3. Update Local Database
-                const pendingUser = await prisma.user.findFirst({
-                    where: {
-                        email: user.email,
-                        status: 'pending',
-                        inviteToken: invitationToken
-                    }
-                });
+                const pendingUserResult = await db
+                    .select({ id: users.id })
+                    .from(users)
+                    .where(
+                        and(
+                            eq(users.email, user.email),
+                            eq(users.status, 'pending'),
+                            eq(users.inviteToken, invitationToken)
+                        )
+                    )
+                    .limit(1);
+
+                const pendingUser = pendingUserResult[0];
 
                 if (pendingUser) {
-                    await prisma.user.update({
-                        where: { id: pendingUser.id },
-                        data: {
+                    await db
+                        .update(users)
+                        .set({
                             workosUserId: user.id,
                             status: 'active',
                             inviteToken: null,
-                        }
-                    });
+                        })
+                        .where(eq(users.id, pendingUser.id));
+                        
                     console.log(`Successfully accepted invitation for local user ID ${pendingUser.id} and linked WorkOS ID ${user.id}`);
                 }
             }
