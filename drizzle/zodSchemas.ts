@@ -14,7 +14,7 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
     dealerTrendMetrics, salesPromoters, outstandingReports,
     dealerFinancialSnapshot, dealerIntelligenceSnapshot, masonsOnMeetings, 
-    masonOnScheme } from "../drizzle";
+    masonOnScheme } from "../drizzle/index";
 
 /* ========================= drizzle-zod insert schemas ========================= */
 export const insertCompanySchema = createInsertSchema(companies);
