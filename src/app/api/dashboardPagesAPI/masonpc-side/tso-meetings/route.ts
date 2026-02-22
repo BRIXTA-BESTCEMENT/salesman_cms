@@ -13,6 +13,16 @@ const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'senior-manager', 'manager', 'assistant-manager',
   'senior-executive',];
 
+const responseSchema = z.array(
+  selectTsoMeetingSchema.extend({
+    totalExpenses: z.number().nullable(), 
+    creatorName: z.string(),
+    role: z.string(),
+    area: z.string(),
+    region: z.string(),
+  })
+);
+
 export async function GET() {
   await connection();
   try {
@@ -56,17 +66,13 @@ export async function GET() {
       role: creator.role ?? '',
       area: creator.area ?? '',
       region: creator.region ?? '',
-      createdAt: meeting.createdAt
-        ? new Date(meeting.createdAt).toISOString()
-        : '',
-      updatedAt: meeting.updatedAt
-        ? new Date(meeting.updatedAt).toISOString()
-        : '',
+      createdAt: meeting.createdAt ?? null,
+      updatedAt: meeting.updatedAt ?? null,
       date: meeting.date ?? null,
+      meetImageUrl: meeting.meetImageUrl ?? '',
     }));
 
-    // Use .loose() to allow the extra creator metadata fields
-    const validatedMeetings = z.array(selectTsoMeetingSchema.loose()).parse(formattedMeetings);
+    const validatedMeetings = responseSchema.parse(formattedMeetings);
 
     return NextResponse.json(validatedMeetings, { status: 200 });
 

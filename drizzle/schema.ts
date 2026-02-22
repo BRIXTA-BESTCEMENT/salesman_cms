@@ -647,6 +647,7 @@ export const tsoMeetings = pgTable("tso_meetings", {
 	accountJsbJud: varchar("account_jsb_jud", { length: 100 }),
 	totalExpenses: numeric("total_expenses", { precision: 12, scale:  2 }),
 	billSubmitted: boolean("bill_submitted").default(false),
+	meetImageUrl: varchar("meet_image_url", { length: 300 }),
 }, (table) => [
 	index("idx_meeting_site_id").using("btree", table.siteId.asc().nullsLast().op("uuid_ops")),
 	index("idx_tso_meetings_created_by_user_id").using("btree", table.createdByUserId.asc().nullsLast().op("int4_ops")),

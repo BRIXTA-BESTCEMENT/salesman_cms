@@ -43,6 +43,13 @@
       "when": 1771702440556,
       "tag": "0005_certain_yellowjacket",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771743862504,
+      "tag": "0006_wooden_oracle",
+      "breakpoints": true
     }
   ]
 }
