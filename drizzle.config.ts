@@ -4,10 +4,8 @@ import * as dotenv from 'dotenv';
 // This finds your .env file
 dotenv.config({ path: '.env.local' }); 
 
-const DATABASE_URL = process.env.DATABASE_URL;
-
-if (!DATABASE_URL) {
-  console.warn('⚠️ DATABASE_URL is not set. Using a dummy connection string for build phase.');
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not set in .env.local file');
 }
 
 export default defineConfig({
@@ -16,9 +14,11 @@ export default defineConfig({
   
   // This tells Drizzle where to put the migration files
   out: './drizzle/migrations', 
+  
   dialect: 'postgresql',
   dbCredentials: {
-    url: DATABASE_URL || "postgres://dummy:dummy@localhost:5432/dummy",
+    // This securely reads your database connection string
+    url: process.env.DATABASE_URL,
   },
   verbose: true,
   strict: true,
