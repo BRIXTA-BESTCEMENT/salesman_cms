@@ -5,14 +5,13 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     giftAllocationLogs, rewards, dailyTasks, salesOrders, masonPcSide, otpVerifications, 
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
-    siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tallyRaw, logisticsIo,
+    siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
+    outstandingReports,masonsOnMeetings, tallyRaw, logisticsIo, masonOnScheme,
     aoi, aoiGridCell, satelliteScene, gridChangeScore, constructionSite, 
-    tsoVisit, highresScene, detectedBuilding, notifications, syncState, tsoAssignments,
+    tsoVisit, highresScene, detectedBuilding, notifications, syncState, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, 
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
-    dealerTrendMetrics, salesPromoters, outstandingReports,
-    dealerFinancialSnapshot, dealerIntelligenceSnapshot, masonsOnMeetings, 
-    masonOnScheme } from "./schema";
+} from "./schema";
 
 export const dealerReportsAndScoresRelations = relations(dealerReportsAndScores, ({one}) => ({
 	dealer: one(dealers, {
@@ -128,7 +127,6 @@ export const usersRelations = relations(users, ({one, many}) => ({
 	}),
 	projectionReports: many(projectionReports),
 	verifiedDealers: many(verifiedDealers),
-	salesPromoters: many(salesPromoters),
 }));
 
 export const permanentJourneyPlansRelations = relations(permanentJourneyPlans, ({one, many}) => ({
@@ -209,7 +207,6 @@ export const verifiedDealersRelations = relations(verifiedDealers, ({one, many})
 	projectionVsActualReports: many(projectionVsActualReports),
 	collectionReports: many(collectionReports),
 	projectionReports: many(projectionReports),
-	dealerTrendMetrics: many(dealerTrendMetrics),
 	user: one(users, {
 		fields: [verifiedDealers.userId],
 		references: [users.id]
@@ -219,8 +216,6 @@ export const verifiedDealersRelations = relations(verifiedDealers, ({one, many})
 		references: [dealers.id]
 	}),
 	outstandingReports: many(outstandingReports),
-	dealerFinancialSnapshots: many(dealerFinancialSnapshot),
-	dealerIntelligenceSnapshots: many(dealerIntelligenceSnapshot),
 }));
 
 export const dailyVisitReportsRelations = relations(dailyVisitReports, ({one, many}) => ({
@@ -747,20 +742,6 @@ export const projectionReportsRelations = relations(projectionReports, ({one}) =
 	}),
 }));
 
-export const dealerTrendMetricsRelations = relations(dealerTrendMetrics, ({one}) => ({
-	verifiedDealer: one(verifiedDealers, {
-		fields: [dealerTrendMetrics.dealerId],
-		references: [verifiedDealers.id]
-	}),
-}));
-
-export const salesPromotersRelations = relations(salesPromoters, ({one}) => ({
-	user: one(users, {
-		fields: [salesPromoters.userId],
-		references: [users.id]
-	}),
-}));
-
 export const outstandingReportsRelations = relations(outstandingReports, ({one}) => ({
 	verifiedDealer: one(verifiedDealers, {
 		fields: [outstandingReports.verifiedDealerId],
@@ -777,20 +758,6 @@ export const outstandingReportsRelations = relations(outstandingReports, ({one})
 	emailReport: one(emailReports, {
 		fields: [outstandingReports.emailReportId],
 		references: [emailReports.id]
-	}),
-}));
-
-export const dealerFinancialSnapshotRelations = relations(dealerFinancialSnapshot, ({one}) => ({
-	verifiedDealer: one(verifiedDealers, {
-		fields: [dealerFinancialSnapshot.dealerId],
-		references: [verifiedDealers.id]
-	}),
-}));
-
-export const dealerIntelligenceSnapshotRelations = relations(dealerIntelligenceSnapshot, ({one}) => ({
-	verifiedDealer: one(verifiedDealers, {
-		fields: [dealerIntelligenceSnapshot.dealerId],
-		references: [verifiedDealers.id]
 	}),
 }));
 
