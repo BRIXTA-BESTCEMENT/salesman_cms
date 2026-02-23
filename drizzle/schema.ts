@@ -832,7 +832,7 @@ export const siteAssociatedUsers = pgTable("_SiteAssociatedUsers", {
 		}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
-// ------ Geotracking Stuff ------
+// ------ Geotracking ------
 export const geoTracking = pgTable("geo_tracking", {
 	id: text().primaryKey().notNull(),
 	userId: integer("user_id").notNull(),
@@ -979,7 +979,7 @@ export const syncState = pgTable("sync_state", {
 	check("one_row_only", sql`id = 1`),
 ]);
 
-// ------ Logistics Stuff -------
+// ------ Logistics -------
 export const logisticsIo = pgTable("logistics_io", {
 	id: text().primaryKey().notNull(),
 	zone: varchar({ length: 255 }),
@@ -1018,7 +1018,7 @@ export const logisticsIo = pgTable("logistics_io", {
 	gateOutBillNos: text("gate_out_bill_nos").array(),
 });
 
-// ----- Email Reports stuff ------
+// ----- Email Reports ------
 export const projectionVsActualReports = pgTable("projection_vs_actual_reports", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
 	reportDate: date("report_date").notNull(),
@@ -1219,7 +1219,7 @@ export const emailReports = pgTable("email_reports", {
   index("idx_email_reports_message").on(t.messageId),
 ]);
 
-// ------- Mason PC stuff --------
+// ------- Mason PC --------
 export const masonPcSide = pgTable("mason_pc_side", {
 	id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
 	name: varchar({ length: 100 }).notNull(),
@@ -1567,243 +1567,4 @@ export const giftAllocationLogs = pgTable("gift_allocation_logs", {
 			foreignColumns: [rewards.id],
 			name: "fk_gift_allocation_logs_reward_id"
 		}),
-]);
-
-// ----- Tally Stuff ------
-export const tallyRaw = pgTable("tally_raw", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	collectionName: text("collection_name").notNull(),
-	rawData: jsonb("raw_data").notNull(),
-	syncedAt: timestamp("synced_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-});
-
-// ------- satellite stuff --------
-export const aoi = pgTable("aoi", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	name: text().notNull(),
-	type: text().notNull(),
-	centerLat: doublePrecision("center_lat").notNull(),
-	centerLon: doublePrecision("center_lon").notNull(),
-	radiusKm: doublePrecision("radius_km").notNull(),
-	boundaryGeojson: jsonb("boundary_geojson"),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	unique("aoi_name_key").on(table.name),
-]);
-
-export const aoiGridCell = pgTable("aoi_grid_cell", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	aoiId: uuid("aoi_id").notNull(),
-	cellRow: integer("cell_row").notNull(),
-	cellCol: integer("cell_col").notNull(),
-	centroidLat: doublePrecision("centroid_lat").notNull(),
-	centroidLon: doublePrecision("centroid_lon").notNull(),
-	geometryGeojson: jsonb("geometry_geojson").notNull(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_aoi_grid_cell_aoi").using("btree", table.aoiId.asc().nullsLast().op("uuid_ops")),
-	foreignKey({
-			columns: [table.aoiId],
-			foreignColumns: [aoi.id],
-			name: "aoi_grid_cell_aoi_id_fkey"
-		}).onDelete("cascade"),
-	unique("aoi_grid_cell_aoi_id_cell_row_cell_col_key").on(table.aoiId, table.cellRow, table.cellCol),
-]);
-
-export const satelliteScene = pgTable("satellite_scene", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	aoiId: uuid("aoi_id").notNull(),
-	provider: text().notNull(),
-	stacId: text("stac_id").notNull(),
-	stacCollection: text("stac_collection").notNull(),
-	acquisitionDatetime: timestamp("acquisition_datetime", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	cloudCoverPercent: doublePrecision("cloud_cover_percent"),
-	bboxMinLon: doublePrecision("bbox_min_lon").notNull(),
-	bboxMinLat: doublePrecision("bbox_min_lat").notNull(),
-	bboxMaxLon: doublePrecision("bbox_max_lon").notNull(),
-	bboxMaxLat: doublePrecision("bbox_max_lat").notNull(),
-	crsEpsg: integer("crs_epsg"),
-	nativeResolutionM: doublePrecision("native_resolution_m"),
-	r2Bucket: text("r2_bucket").notNull(),
-	r2Prefix: text("r2_prefix").notNull(),
-	redBandKey: text("red_band_key").notNull(),
-	nirBandKey: text("nir_band_key").notNull(),
-	greenBandKey: text("green_band_key"),
-	blueBandKey: text("blue_band_key"),
-	rgbPreviewKey: text("rgb_preview_key"),
-	stacProperties: jsonb("stac_properties"),
-	stacAssets: jsonb("stac_assets"),
-	isDownloaded: boolean("is_downloaded").default(false).notNull(),
-	isProcessed: boolean("is_processed").default(false).notNull(),
-	isDeletedFromR2: boolean("is_deleted_from_r2").default(false).notNull(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_sat_scene_aoi_time").using("btree", table.aoiId.asc().nullsLast().op("timestamptz_ops"), table.acquisitionDatetime.asc().nullsLast().op("timestamptz_ops")),
-	foreignKey({
-			columns: [table.aoiId],
-			foreignColumns: [aoi.id],
-			name: "satellite_scene_aoi_id_fkey"
-		}).onDelete("cascade"),
-]);
-
-export const gridChangeScore = pgTable("grid_change_score", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	aoiId: uuid("aoi_id").notNull(),
-	gridCellId: uuid("grid_cell_id").notNull(),
-	earlierSceneId: uuid("earlier_scene_id").notNull(),
-	laterSceneId: uuid("later_scene_id").notNull(),
-	t0AcquisitionDatetime: timestamp("t0_acquisition_datetime", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	t1AcquisitionDatetime: timestamp("t1_acquisition_datetime", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	ndviDropMean: doublePrecision("ndvi_drop_mean"),
-	ndviDropFraction: doublePrecision("ndvi_drop_fraction"),
-	changeScore: doublePrecision("change_score"),
-	isHot: boolean("is_hot").default(false).notNull(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_grid_change_aoi_cell").using("btree", table.aoiId.asc().nullsLast().op("timestamptz_ops"), table.gridCellId.asc().nullsLast().op("uuid_ops"), table.t1AcquisitionDatetime.asc().nullsLast().op("uuid_ops")),
-	foreignKey({
-			columns: [table.aoiId],
-			foreignColumns: [aoi.id],
-			name: "grid_change_score_aoi_id_fkey"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.gridCellId],
-			foreignColumns: [aoiGridCell.id],
-			name: "grid_change_score_grid_cell_id_fkey"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.earlierSceneId],
-			foreignColumns: [satelliteScene.id],
-			name: "grid_change_score_earlier_scene_id_fkey"
-		}),
-	foreignKey({
-			columns: [table.laterSceneId],
-			foreignColumns: [satelliteScene.id],
-			name: "grid_change_score_later_scene_id_fkey"
-		}),
-]);
-
-export const tsoVisit = pgTable("tso_visit", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	siteId: uuid("site_id").notNull(),
-	visitedAt: timestamp("visited_at", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	visitOutcome: text("visit_outcome").notNull(),
-	comments: text(),
-	photoUrls: text("photo_urls").array(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	tsoId: integer("tso_id").notNull(),
-}, (table) => [
-	index("idx_tso_visit_site").using("btree", table.siteId.asc().nullsLast().op("timestamptz_ops"), table.visitedAt.asc().nullsLast().op("timestamptz_ops")),
-	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [constructionSite.id],
-			name: "tso_visit_site_id_fkey"
-		}).onDelete("cascade"),
-]);
-
-export const highresScene = pgTable("highres_scene", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	aoiId: uuid("aoi_id").notNull(),
-	gridCellId: uuid("grid_cell_id"),
-	provider: text().notNull(),
-	acquisitionDatetime: timestamp("acquisition_datetime", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	resolutionM: doublePrecision("resolution_m").notNull(),
-	bboxMinLon: doublePrecision("bbox_min_lon").notNull(),
-	bboxMinLat: doublePrecision("bbox_min_lat").notNull(),
-	bboxMaxLon: doublePrecision("bbox_max_lon").notNull(),
-	bboxMaxLat: doublePrecision("bbox_max_lat").notNull(),
-	r2Bucket: text("r2_bucket").notNull(),
-	r2Key: text("r2_key").notNull(),
-	rawMetadataJson: jsonb("raw_metadata_json"),
-	isDownloaded: boolean("is_downloaded").default(false).notNull(),
-	isProcessed: boolean("is_processed").default(false).notNull(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_highres_aoi_time").using("btree", table.aoiId.asc().nullsLast().op("timestamptz_ops"), table.acquisitionDatetime.asc().nullsLast().op("timestamptz_ops")),
-	foreignKey({
-			columns: [table.aoiId],
-			foreignColumns: [aoi.id],
-			name: "highres_scene_aoi_id_fkey"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.gridCellId],
-			foreignColumns: [aoiGridCell.id],
-			name: "highres_scene_grid_cell_id_fkey"
-		}).onDelete("set null"),
-]);
-
-export const detectedBuilding = pgTable("detected_building", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	highresSceneId: uuid("highres_scene_id").notNull(),
-	aoiId: uuid("aoi_id").notNull(),
-	gridCellId: uuid("grid_cell_id"),
-	centroidLat: doublePrecision("centroid_lat").notNull(),
-	centroidLon: doublePrecision("centroid_lon").notNull(),
-	footprintGeojson: jsonb("footprint_geojson").notNull(),
-	areaSqM: doublePrecision("area_sq_m").notNull(),
-	detectionConfidence: doublePrecision("detection_confidence"),
-	status: text().default('auto_detected').notNull(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_detected_building_aoi").using("btree", table.aoiId.asc().nullsLast().op("uuid_ops")),
-	foreignKey({
-			columns: [table.highresSceneId],
-			foreignColumns: [highresScene.id],
-			name: "detected_building_highres_scene_id_fkey"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.aoiId],
-			foreignColumns: [aoi.id],
-			name: "detected_building_aoi_id_fkey"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.gridCellId],
-			foreignColumns: [aoiGridCell.id],
-			name: "detected_building_grid_cell_id_fkey"
-		}).onDelete("set null"),
-]);
-
-export const constructionSite = pgTable("construction_site", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	aoiId: uuid("aoi_id").notNull(),
-	gridCellId: uuid("grid_cell_id"),
-	sourceType: text("source_type").notNull(),
-	sourceBuildingId: uuid("source_building_id"),
-	lat: doublePrecision().notNull(),
-	lon: doublePrecision().notNull(),
-	geomGeojson: jsonb("geom_geojson"),
-	estimatedAreaSqM: doublePrecision("estimated_area_sq_m"),
-	firstSeenDate: date("first_seen_date").notNull(),
-	lastSeenDate: date("last_seen_date").notNull(),
-	status: text().default('new').notNull(),
-	verifiedByTsoId: uuid("verified_by_tso_id"),
-	verifiedAt: timestamp("verified_at", { precision: 6, withTimezone: true, mode: 'string' }),
-	linkedDealerId: uuid("linked_dealer_id"),
-	notes: text(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_site_aoi_status").using("btree", table.aoiId.asc().nullsLast().op("text_ops"), table.status.asc().nullsLast().op("uuid_ops"), table.firstSeenDate.asc().nullsLast().op("date_ops")),
-	foreignKey({
-			columns: [table.aoiId],
-			foreignColumns: [aoi.id],
-			name: "construction_site_aoi_id_fkey"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.gridCellId],
-			foreignColumns: [aoiGridCell.id],
-			name: "construction_site_grid_cell_id_fkey"
-		}).onDelete("set null"),
-	foreignKey({
-			columns: [table.sourceBuildingId],
-			foreignColumns: [detectedBuilding.id],
-			name: "construction_site_source_building_id_fkey"
-		}).onDelete("set null"),
 ]);

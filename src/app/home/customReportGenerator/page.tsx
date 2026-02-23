@@ -181,6 +181,9 @@ export default function CustomReportGeneratorPage() {
 
   const handleTableChange = (tableId: string) => {
     setSelectedTableId(tableId);
+    // Reset filters when switching tables
+    setFilters([]);
+
     if (!checkedColumns[tableId]) {
       const columnsForTable = reportColumns
         .filter(c => c.table === tableId)
@@ -484,7 +487,11 @@ export default function CustomReportGeneratorPage() {
 
             {/* B. Filtering */}
             <DataFilter
-              availableColumns={reportColumns}
+              availableColumns={
+                selectedTable ? selectedTable.columns.map(col => (
+                    { table: selectedTableId, column: col }
+                  )) : []
+              }
               filters={filters}
               setFilters={setFilters}
             />

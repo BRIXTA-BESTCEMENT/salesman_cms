@@ -7,9 +7,7 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
     siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
-    outstandingReports,masonsOnMeetings, tallyRaw, logisticsIo, masonOnScheme,
-    aoi, aoiGridCell, satelliteScene, gridChangeScore, constructionSite, 
-    tsoVisit, highresScene, detectedBuilding, notifications, syncState, 
+    outstandingReports,masonsOnMeetings,logisticsIo, masonOnScheme, notifications, syncState, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, 
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
 } from "../drizzle/index";
@@ -46,7 +44,6 @@ export const insertSyncStateSchema = createInsertSchema(syncState);
 // Changed giftInventory to rewards
 export const insertRewardsSchema = createInsertSchema(rewards);
 export const insertGiftAllocationLogSchema = createInsertSchema(giftAllocationLogs);
-export const insertTallyRawTableSchema = createInsertSchema(tallyRaw);
 
 // Modified masonPcSide schema
 export const insertMasonPcSideSchema = createInsertSchema(masonPcSide);
@@ -72,16 +69,6 @@ export const insertSiteAssociatedDealersSchema = createInsertSchema(siteAssociat
 export const insertSiteAssociatedMasonsSchema = createInsertSchema(siteAssociatedMasons);
 export const insertSiteAssociatedUsersSchema = createInsertSchema(siteAssociatedUsers);
 export const insertSchemeToRewardsSchema = createInsertSchema(schemeToRewards);
-
-// satellite tables
-export const insertAoiSchema = createInsertSchema(aoi);
-export const insertAoiGridCellSchema = createInsertSchema(aoiGridCell);
-export const insertSatelliteSceneSchema = createInsertSchema(satelliteScene);
-export const insertGridChangeScoreSchema = createInsertSchema(gridChangeScore);
-export const insertHighResScreenSchema = createInsertSchema(highresScene);
-export const insertDetectedBuildingSchema = createInsertSchema(detectedBuilding);
-export const insertConstructionSiteSchema = createInsertSchema(constructionSite);
-export const insertTsoVisitSchema = createInsertSchema(tsoVisit);
 
 // logistics
 export const insertLogisticsIOSchema = createInsertSchema(logisticsIo);
@@ -126,7 +113,6 @@ export const selectSyncStateSchema = createSelectSchema(syncState);
 // Changed giftInventory to rewards
 export const selectRewardsSchema = createSelectSchema(rewards);
 export const selectGiftAllocationLogSchema = createSelectSchema(giftAllocationLogs);
-export const selectTallyRawTableSchema = createSelectSchema(tallyRaw);
 
 // Modified masonPcSide schema
 export const selectMasonPcSideSchema = createSelectSchema(masonPcSide);
@@ -152,16 +138,6 @@ export const selectSiteAssociatedDealersSchema = createSelectSchema(siteAssociat
 export const selectSiteAssociatedMasonsSchema = createSelectSchema(siteAssociatedMasons);
 export const selectSiteAssociatedUsersSchema = createSelectSchema(siteAssociatedUsers);
 export const selectSchemeToRewardsSchema = createSelectSchema(schemeToRewards);
-
-// satellite tables
-export const selectAoiSchema = createSelectSchema(aoi);
-export const selectAoiGridCellSchema = createSelectSchema(aoiGridCell);
-export const selectSatelliteSceneSchema = createSelectSchema(satelliteScene);
-export const selectGridChangeScoreSchema = createSelectSchema(gridChangeScore);
-export const selectHighResScreenSchema = createSelectSchema(highresScene);
-export const selectDetectedBuildingSchema = createSelectSchema(detectedBuilding);
-export const selectConstructionSiteSchema = createSelectSchema(constructionSite);
-export const selectTsoVisitSchema = createSelectSchema(tsoVisit);
 
 // logistics
 export const selectLogisticsIOSchema = createSelectSchema(logisticsIo);

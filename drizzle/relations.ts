@@ -6,9 +6,7 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
     siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
-    outstandingReports,masonsOnMeetings, tallyRaw, logisticsIo, masonOnScheme,
-    aoi, aoiGridCell, satelliteScene, gridChangeScore, constructionSite, 
-    tsoVisit, highresScene, detectedBuilding, notifications, syncState, 
+    outstandingReports,masonsOnMeetings, masonOnScheme, notifications, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, 
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
 } from "./schema";
@@ -537,111 +535,6 @@ export const siteAssociatedUsersRelations = relations(siteAssociatedUsers, ({one
 		fields: [siteAssociatedUsers.b],
 		references: [users.id]
 	}),
-}));
-
-export const aoiGridCellRelations = relations(aoiGridCell, ({one, many}) => ({
-	aoi: one(aoi, {
-		fields: [aoiGridCell.aoiId],
-		references: [aoi.id]
-	}),
-	gridChangeScores: many(gridChangeScore),
-	highresScenes: many(highresScene),
-	detectedBuildings: many(detectedBuilding),
-	constructionSites: many(constructionSite),
-}));
-
-export const aoiRelations = relations(aoi, ({many}) => ({
-	aoiGridCells: many(aoiGridCell),
-	satelliteScenes: many(satelliteScene),
-	gridChangeScores: many(gridChangeScore),
-	highresScenes: many(highresScene),
-	detectedBuildings: many(detectedBuilding),
-	constructionSites: many(constructionSite),
-}));
-
-export const satelliteSceneRelations = relations(satelliteScene, ({one, many}) => ({
-	aoi: one(aoi, {
-		fields: [satelliteScene.aoiId],
-		references: [aoi.id]
-	}),
-	gridChangeScores_earlierSceneId: many(gridChangeScore, {
-		relationName: "gridChangeScore_earlierSceneId_satelliteScene_id"
-	}),
-	gridChangeScores_laterSceneId: many(gridChangeScore, {
-		relationName: "gridChangeScore_laterSceneId_satelliteScene_id"
-	}),
-}));
-
-export const gridChangeScoreRelations = relations(gridChangeScore, ({one}) => ({
-	aoi: one(aoi, {
-		fields: [gridChangeScore.aoiId],
-		references: [aoi.id]
-	}),
-	aoiGridCell: one(aoiGridCell, {
-		fields: [gridChangeScore.gridCellId],
-		references: [aoiGridCell.id]
-	}),
-	satelliteScene_earlierSceneId: one(satelliteScene, {
-		fields: [gridChangeScore.earlierSceneId],
-		references: [satelliteScene.id],
-		relationName: "gridChangeScore_earlierSceneId_satelliteScene_id"
-	}),
-	satelliteScene_laterSceneId: one(satelliteScene, {
-		fields: [gridChangeScore.laterSceneId],
-		references: [satelliteScene.id],
-		relationName: "gridChangeScore_laterSceneId_satelliteScene_id"
-	}),
-}));
-
-export const tsoVisitRelations = relations(tsoVisit, ({one}) => ({
-	constructionSite: one(constructionSite, {
-		fields: [tsoVisit.siteId],
-		references: [constructionSite.id]
-	}),
-}));
-
-export const constructionSiteRelations = relations(constructionSite, ({one, many}) => ({
-	tsoVisits: many(tsoVisit),
-	aoi: one(aoi, {
-		fields: [constructionSite.aoiId],
-		references: [aoi.id]
-	}),
-	aoiGridCell: one(aoiGridCell, {
-		fields: [constructionSite.gridCellId],
-		references: [aoiGridCell.id]
-	}),
-	detectedBuilding: one(detectedBuilding, {
-		fields: [constructionSite.sourceBuildingId],
-		references: [detectedBuilding.id]
-	}),
-}));
-
-export const highresSceneRelations = relations(highresScene, ({one, many}) => ({
-	aoi: one(aoi, {
-		fields: [highresScene.aoiId],
-		references: [aoi.id]
-	}),
-	aoiGridCell: one(aoiGridCell, {
-		fields: [highresScene.gridCellId],
-		references: [aoiGridCell.id]
-	}),
-	detectedBuildings: many(detectedBuilding),
-}));
-
-export const detectedBuildingRelations = relations(detectedBuilding, ({one, many}) => ({
-	highresScene: one(highresScene, {
-		fields: [detectedBuilding.highresSceneId],
-		references: [highresScene.id]
-	}),
-	aoi: one(aoi, {
-		fields: [detectedBuilding.aoiId],
-		references: [aoi.id]
-	}),
-	aoiGridCell: one(aoiGridCell, {
-		fields: [detectedBuilding.gridCellId],
-		references: [aoiGridCell.id]
-	}),
-	constructionSites: many(constructionSite),
 }));
 
 export const notificationsRelations = relations(notifications, ({one}) => ({

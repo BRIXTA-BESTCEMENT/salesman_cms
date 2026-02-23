@@ -153,7 +153,7 @@ export function DataFilter({ availableColumns, filters, setFilters }: FilterBuil
                         variant={"outline"}
                         id="date"
                         className={cn(
-                          "w-full h-10 justify-start text-left font-normal px-3 border-input bg-background hover:bg-accent",
+                          "w-full justify-start text-left font-normal h-10",
                           !dateRangeValue?.from && "text-muted-foreground"
                         )}
                       >
