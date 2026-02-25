@@ -5,7 +5,8 @@ import {
     CalendarCheck, PencilRuler, ChartNoAxesCombined, MapPin, Award, Star, Boxes,
     Construction, UsersRound, Gift, HandCoins, ScrollText, UserCheck, Users,
     Building2, ShoppingBag,
-    Truck
+    Truck,
+    ListChecks
 } from 'lucide-react';
 
 export interface TableColumn {
@@ -95,9 +96,18 @@ export const tablesMetadata: TableMeta[] = [
         ],
     },
     {
+        id: 'dailyTasks',
+        title: 'PJPs (Sales Side)',
+        icon: ListTodo,
+        columns: [
+            'id', 'pjpBatchId', 'salesmanName', 'relatedDealerName', 'dealerMobile',
+            'zone', 'area', 'route', 'objective', 'visitType', 'requiredVisitCount', 'week',
+            'taskDate', 'status', 'createdAt', 'updatedAt'],
+    },
+    {
         id: 'permanentJourneyPlans',
-        title: 'Permanent Journey Plans (PJP)',
-        icon: Car,
+        title: 'PJPs (Technical Side)',
+        icon: ListChecks,
         columns: [
             'id', 'planDate', 'assignedSalesmanName', 'areaToBeVisited', 'route', 'status', 'plannedNewSiteVisits',
             'plannedFollowUpSiteVisits', 'plannedNewDealerVisits', 'plannedInfluencerVisits', 'influencerName', 'influencerPhone',
@@ -123,12 +133,6 @@ export const tablesMetadata: TableMeta[] = [
     //         'orderTotal', 'estimatedDelivery', 'remarks',
     //         'createdAt', 'updatedAt',
     //     ],
-    // },
-    // {
-    //     id: 'dailyTasks',
-    //     title: 'Daily Tasks',
-    //     icon: ListTodo,
-    //     columns: ['id', 'taskDate', 'visitType', 'siteName', 'description', 'status', 'pjpId', 'assignedToName', 'assignedByName', 'relatedDealerName', 'createdAt'],
     // },
     // {
     //     id: 'competitionReports',
@@ -193,16 +197,16 @@ export const tablesMetadata: TableMeta[] = [
             'id', 'itemName', 'pointCost', 'totalAvailableQuantity', 'stock', 'isActive', 'createdAt', 'updatedAt'
         ],
     },
-    {
-        id: 'giftAllocationLogs',
-        title: 'Gift Allocation Logs',
-        icon: HandCoins,
-        columns: [
-            'id', 'itemName', 'salesmanName', 'salesmanEmail', 'transactionType',
-            'quantity', 'sourceUserName', 'destinationUserName', 'technicalVisitReportId',
-            'dealerVisitReportId', 'createdAt'
-        ],
-    },
+    // {
+    //     id: 'giftAllocationLogs',
+    //     title: 'Gift Allocation Logs',
+    //     icon: HandCoins,
+    //     columns: [
+    //         'id', 'itemName', 'salesmanName', 'salesmanEmail', 'transactionType',
+    //         'quantity', 'sourceUserName', 'destinationUserName', 'technicalVisitReportId',
+    //         'dealerVisitReportId', 'createdAt'
+    //     ],
+    // },
     {
         id: 'masonPCSide',
         title: 'Masons & Contractors',
@@ -238,12 +242,12 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Logistics Operations (Gate/WB/Store)',
         icon: Truck,
         columns: [
-            'id', 'sourceName', 'zone', 'district', 'destination', 'purpose', 'typeOfMaterials', 'vehicleNumber', 'noOfInvoice', 
-             'invoiceNos', 'billNos', 'storeDate', 'storeTime', 
-             'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime', 
-             'wbInDate', 'wbInTime', 'wbOutDate', 'wbOutTime', 
-             'gateOutDate', 'gateOutTime', 'gateOutNoOfInvoice', 'gateOutInvoiceNos', 'gateOutBillNos',
-             'createdAt', 'updatedAt'
+            'id', 'sourceName', 'zone', 'district', 'destination', 'purpose', 'typeOfMaterials', 'vehicleNumber', 'noOfInvoice',
+            'invoiceNos', 'billNos', 'storeDate', 'storeTime',
+            'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime',
+            'wbInDate', 'wbInTime', 'wbOutDate', 'wbOutTime',
+            'gateOutDate', 'gateOutTime', 'gateOutNoOfInvoice', 'gateOutInvoiceNos', 'gateOutBillNos',
+            'createdAt', 'updatedAt'
         ],
     },
     // {

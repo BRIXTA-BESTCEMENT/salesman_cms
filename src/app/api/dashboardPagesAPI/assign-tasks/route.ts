@@ -1,11 +1,14 @@
+// src/app/api/dashboardPageAPI/assign-tasks/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dealers, dailyTasks } from '../../../../../drizzle/schema'; 
+// Ensure verifiedDealers is imported here
+import { users, dealers, verifiedDealers, dailyTasks } from '../../../../../drizzle/schema';
 import { getTableColumns, eq, and, ilike, inArray, desc, asc } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectDailyTaskSchema } from '../../../../../drizzle/zodSchemas'; 
+import { selectDailyTaskSchema } from '../../../../../drizzle/zodSchemas';
+import crypto from 'crypto'; // Needed to generate the missing IDs
 
 const allowedAssignerRoles = [
   'president', 'senior-general-manager', 'general-manager',
@@ -18,7 +21,6 @@ const allowedAssigneeRoles = [
   'senior-manager', 'manager', 'assistant-manager', 'senior-executive', 'executive', 'junior-executive'
 ];
 
-// Simplified assign schema since verifiedDealerIds are no longer separate in daily_tasks
 const assignSchema = z.object({
   salesmanId: z.number().int(),
   dateRange: z.object({
@@ -30,7 +32,6 @@ const assignSchema = z.object({
   message: "Select at least one dealer",
 });
 
-// Extend the baked DB schema
 const apiResponseTaskSchema = selectDailyTaskSchema.extend({
   salesmanName: z.string(),
   relatedDealerName: z.string().nullable().optional(),
@@ -63,20 +64,49 @@ export async function GET(request: NextRequest) {
       const zone = searchParams.get('zone');
       const area = searchParams.get('area');
 
-      // Fetch Dealers 
-      const fetchedDealers = await db
+      // 1. Fetch Regular Dealers
+      const regularDealersQuery = db
         .select({ id: dealers.id, name: dealers.name, region: dealers.region, area: dealers.area })
         .from(dealers)
-        .innerJoin(users, eq(dealers.userId, users.id))
         .where(
           and(
-            eq(users.companyId, currentUser.companyId),
-            zone && zone !== 'all' ? ilike(dealers.region, zone) : undefined,
-            area && area !== 'all' ? ilike(dealers.area, area) : undefined
+            zone && zone !== 'all' ? ilike(dealers.region, `%${zone}%`) : undefined,
+            area && area !== 'all' ? ilike(dealers.area, `%${area}%`) : undefined
           )
         );
 
-      return NextResponse.json({ dealers: fetchedDealers }, { status: 200 });
+      // 2. Fetch Verified Dealers (Adding wildcards for safety)
+      const verifiedDealersQuery = db
+        .select({
+          id: verifiedDealers.id,
+          name: verifiedDealers.dealerPartyName,
+          region: verifiedDealers.zone,
+          area: verifiedDealers.area
+        })
+        .from(verifiedDealers)
+        .where(
+          and(
+            zone && zone !== 'all' ? ilike(verifiedDealers.zone, `%${zone}%`) : undefined,
+            area && area !== 'all' ? ilike(verifiedDealers.area, `%${area}%`) : undefined
+          )
+        );
+
+      // Execute both simultaneously
+      const [fetchedRegularDealers, fetchedVerifiedDealers] = await Promise.all([
+        regularDealersQuery,
+        verifiedDealersQuery
+      ]);
+
+      const formattedVerifiedDealers = fetchedVerifiedDealers.map(vd => ({
+        id: vd.id.toString(),
+        name: vd.name,
+        region: vd.region,
+        area: vd.area
+      }));
+
+      const combinedDealers = [...fetchedRegularDealers, ...formattedVerifiedDealers];
+
+      return NextResponse.json({ dealers: combinedDealers }, { status: 200 });
     }
 
     // --- Action: Initial Page Load ---
@@ -99,16 +129,21 @@ export async function GET(request: NextRequest) {
       )
       .orderBy(asc(users.firstName));
 
+    // For the initial page load filters, we also need to get distinct zones/areas from both tables
     const distinctDealers = await db
       .selectDistinct({ region: dealers.region, area: dealers.area })
       .from(dealers)
       .innerJoin(users, eq(dealers.userId, users.id))
       .where(eq(users.companyId, currentUser.companyId));
 
-    const uniqueZones = Array.from(new Set(distinctDealers.map(d => d.region))).filter(Boolean).sort();
-    const uniqueAreas = Array.from(new Set(distinctDealers.map(d => d.area))).filter(Boolean).sort();
+    const distinctVerifiedDealers = await db
+      .selectDistinct({ region: verifiedDealers.zone, area: verifiedDealers.area })
+      .from(verifiedDealers);
 
-    // Fetch tasks mapped to new schema
+    const allDistinct = [...distinctDealers, ...distinctVerifiedDealers];
+    const uniqueZones = Array.from(new Set(allDistinct.map(d => d.region))).filter(Boolean).sort();
+    const uniqueAreas = Array.from(new Set(allDistinct.map(d => d.area))).filter(Boolean).sort();
+
     const dailyTasksRaw = await db
       .select({
         ...getTableColumns(dailyTasks),
@@ -127,7 +162,6 @@ export async function GET(request: NextRequest) {
     const formattedTasks = dailyTasksRaw.map((task: any) => ({
       ...task,
       salesmanName: `${task.userFirstName || ''} ${task.userLastName || ''}`.trim() || task.userEmail || 'Unknown',
-      // Prefer the snapshot, fallback to the relation, then N/A
       relatedDealerName: task.dealerNameSnapshot || task.dealerNameFromRelation || 'N/A',
     }));
 
@@ -141,7 +175,7 @@ export async function GET(request: NextRequest) {
       salesmen: assignableSalesmen,
       uniqueZones,
       uniqueAreas,
-      tasks: validatedTasks.success ? validatedTasks.data : formattedTasks 
+      tasks: validatedTasks.success ? validatedTasks.data : formattedTasks
     }, { status: 200 });
 
   } catch (error) {
@@ -176,7 +210,6 @@ export async function POST(request: NextRequest) {
 
     const { salesmanId, dateRange, dealerIds } = parsedBody.data;
 
-    // --- Date Parsing ---
     const startDate = new Date(dateRange.from);
     const endDate = new Date(dateRange.to);
     const datesToAssign: Date[] = [];
@@ -190,27 +223,53 @@ export async function POST(request: NextRequest) {
 
     if (datesToAssign.length === 0) return NextResponse.json({ message: "Invalid date range" }, { status: 400 });
 
-    const dealerInfos = dealerIds.length > 0
-      ? await db
-        .select({ 
-          id: dealers.id, 
-          name: dealers.name, 
+    // Separate string UUIDs (Regular Dealers) from numeric Strings (Verified Dealers)
+    const numericIds = dealerIds.filter(id => /^\d+$/.test(id)).map(Number);
+    const stringIds = dealerIds.filter(id => !/^\d+$/.test(id));
+
+    let regularDealerInfos: any[] = [];
+    if (stringIds.length > 0) {
+      regularDealerInfos = await db
+        .select({
+          id: dealers.id,
+          name: dealers.name,
           mobile: dealers.phoneNo,
           region: dealers.region,
           area: dealers.area
         })
         .from(dealers)
-        .where(inArray(dealers.id, dealerIds))
-      : [];
+        .where(inArray(dealers.id, stringIds));
+    }
+
+    let verifiedDealerInfos: any[] = [];
+    if (numericIds.length > 0) {
+      verifiedDealerInfos = await db
+        .select({
+          id: verifiedDealers.id,
+          name: verifiedDealers.dealerPartyName,
+          mobile: verifiedDealers.contactNo1,
+          region: verifiedDealers.zone,
+          area: verifiedDealers.area
+        })
+        .from(verifiedDealers)
+        .where(inArray(verifiedDealers.id, numericIds));
+    }
+
+    // Unify them back into one array
+    const allDealerInfos = [
+      ...regularDealerInfos,
+      ...verifiedDealerInfos.map(vd => ({ ...vd, id: vd.id.toString() }))
+    ];
 
     const totalDays = datesToAssign.length;
     const tasksToCreate = [];
 
-    for (let i = 0; i < dealerInfos.length; i++) {
-      const dealer = dealerInfos[i];
+    for (let i = 0; i < allDealerInfos.length; i++) {
+      const dealer = allDealerInfos[i];
       const assignedDate = datesToAssign[i % totalDays];
 
       tasksToCreate.push({
+        id: crypto.randomUUID(), // <-- Fixes the "null value in column id" error
         userId: salesmanId,
         dealerId: dealer.id,
         dealerNameSnapshot: dealer.name || "Unknown",
@@ -221,7 +280,6 @@ export async function POST(request: NextRequest) {
         visitType: "Dealer Visit",
         objective: "Bulk assigned via Admin Dashboard",
         status: "Assigned",
-        // PJP batch tracking can be added here later if needed
       });
     }
 
