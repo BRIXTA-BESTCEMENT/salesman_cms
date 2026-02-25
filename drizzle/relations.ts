@@ -205,14 +205,6 @@ export const verifiedDealersRelations = relations(verifiedDealers, ({one, many})
 	projectionVsActualReports: many(projectionVsActualReports),
 	collectionReports: many(collectionReports),
 	projectionReports: many(projectionReports),
-	user: one(users, {
-		fields: [verifiedDealers.userId],
-		references: [users.id]
-	}),
-	dealer: one(dealers, {
-		fields: [verifiedDealers.dealerId],
-		references: [dealers.id]
-	}),
 	outstandingReports: many(outstandingReports),
 }));
 

@@ -379,8 +379,8 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number) {
   if (rawReports.length === 0) return [];
   const pjpIds = rawReports.map(r => r.id);
 
-  const tasks = await db.select({ id: dailyTasks.id, pjpId: dailyTasks.pjpId })
-    .from(dailyTasks).where(inArray(dailyTasks.pjpId, pjpIds));
+  const tasks = await db.select({ id: dailyTasks.id, pjpId: dailyTasks.id })
+    .from(dailyTasks).where(inArray(dailyTasks.id, pjpIds));
 
   const tasksByPjpId = tasks.reduce((acc, t) => {
     if (t.pjpId) {
@@ -463,42 +463,53 @@ export async function getFlattenedCompetitionReports(companyId: number) {
 }
 
 export async function getFlattenedDailyTasks(companyId: number) {
-  const assignedByUsers = aliasedTable(users, 'assignedBy');
-
   const rawReports = await db
     .select({
       ...getTableColumns(dailyTasks),
       salesmanFirstName: users.firstName,
       salesmanLastName: users.lastName,
       salesmanEmail: users.email,
-      creatorFirstName: assignedByUsers.firstName,
-      creatorLastName: assignedByUsers.lastName,
-      creatorEmail: assignedByUsers.email,
       dealerNameStr: dealers.name,
     })
     .from(dailyTasks)
     .leftJoin(users, eq(dailyTasks.userId, users.id))
-    .leftJoin(assignedByUsers, eq(dailyTasks.assignedByUserId, assignedByUsers.id))
-    .leftJoin(dealers, eq(dailyTasks.relatedDealerId, dealers.id))
+    .leftJoin(dealers, eq(dailyTasks.dealerId, dealers.id))
     .where(eq(users.companyId, companyId))
     .orderBy(desc(dailyTasks.taskDate));
 
   return rawReports.map((r) => ({
     id: r.id,
-    visitType: r.visitType,
-    relatedDealerId: r.relatedDealerId ?? null,
-    siteName: r.siteName ?? null,
-    description: r.description ?? null,
+    pjpBatchId: r.pjpBatchId ?? null,
+    visitType: r.visitType ?? null,
+
+    // Dealer Details
+    dealerId: r.dealerId ?? null,
+    dealerName: r.dealerNameStr ?? r.dealerNameSnapshot ?? null,
+    dealerMobile: r.dealerMobile ?? null,
+
+    // Routing & Location
+    zone: r.zone ?? null,
+    area: r.area ?? null,
+    route: r.route ?? null,
+
+    // Task Specifics
+    objective: r.objective ?? null,
+    requiredVisitCount: r.requiredVisitCount ?? null,
+    week: r.week ?? null,
     status: r.status,
-    pjpId: r.pjpId ?? null,
+
+    // Dates
     taskDate: formatDateIST(r.taskDate) || '',
     createdAt: formatDateTimeIST(r.createdAt),
     updatedAt: formatDateTimeIST(r.updatedAt),
-    assignedSalesmanName: formatUserName({ firstName: r.salesmanFirstName, lastName: r.salesmanLastName, email: r.salesmanEmail }),
+
+    // Assigned User Details
+    assignedSalesmanName: formatUserName({
+      firstName: r.salesmanFirstName,
+      lastName: r.salesmanLastName,
+      email: r.salesmanEmail
+    }),
     assignedSalesmanEmail: r.salesmanEmail || '',
-    creatorName: formatUserName({ firstName: r.creatorFirstName, lastName: r.creatorLastName, email: r.creatorEmail }),
-    creatorEmail: r.creatorEmail || '',
-    relatedDealerName: r.dealerNameStr ?? null,
   }));
 }
 
