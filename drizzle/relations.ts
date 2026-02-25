@@ -327,26 +327,9 @@ export const dailyTasksRelations = relations(dailyTasks, ({one}) => ({
 		references: [users.id],
 		relationName: "dailyTasks_userId_users_id"
 	}),
-	user_assignedByUserId: one(users, {
-		fields: [dailyTasks.assignedByUserId],
-		references: [users.id],
-		relationName: "dailyTasks_assignedByUserId_users_id"
-	}),
 	dealer: one(dealers, {
-		fields: [dailyTasks.relatedDealerId],
+		fields: [dailyTasks.dealerId],
 		references: [dealers.id]
-	}),
-	permanentJourneyPlan: one(permanentJourneyPlans, {
-		fields: [dailyTasks.pjpId],
-		references: [permanentJourneyPlans.id]
-	}),
-	technicalSite: one(technicalSites, {
-		fields: [dailyTasks.siteId],
-		references: [technicalSites.id]
-	}),
-	verifiedDealer: one(verifiedDealers, {
-		fields: [dailyTasks.relatedVerifiedDealerId],
-		references: [verifiedDealers.id]
 	}),
 }));
 

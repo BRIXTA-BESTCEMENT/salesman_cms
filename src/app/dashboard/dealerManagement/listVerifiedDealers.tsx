@@ -12,7 +12,33 @@ import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { selectVerifiedDealersSchema } from '../../../../drizzle/zodSchemas';
 
-type VerifiedDealerRecord = z.infer<typeof selectVerifiedDealersSchema>;
+// --- EXTEND THE DRIZZLE SCHEMA ---
+// Use .partial() because the backend API omits fields like `userId`, `brandSelling`, etc.
+const extendedVerifiedDealersSchema = selectVerifiedDealersSchema.partial().extend({
+    id: z.number(), // Ensure ID is strictly a string for DataTableReusable
+    dealerPartyName: z.string().optional().catch("Unknown"),
+    alias: z.string().nullable().optional(),
+    zone: z.string().nullable().optional(),
+    area: z.string().nullable().optional(),
+    district: z.string().nullable().optional(),
+    state: z.string().nullable().optional(),
+    pinCode: z.string().nullable().optional(),
+    contactNo1: z.string().nullable().optional(),
+    contactNo2: z.string().nullable().optional(),
+    email: z.string().nullable().optional(),
+    contactPerson: z.string().nullable().optional(),
+    creditLimit: z.coerce.number().nullable().optional(),
+    salesManNameRaw: z.string().nullable().optional(),
+    gstNo: z.string().nullable().optional(),
+    panNo: z.string().nullable().optional(),
+    dealerSegment: z.string().nullable().optional(),
+    
+    // Coerce timestamps that Drizzle expects as Date objects back from strings
+    createdAt: z.string().nullable().optional(),
+    updatedAt: z.string().nullable().optional(),
+});
+
+type VerifiedDealerRecord = z.infer<typeof extendedVerifiedDealersSchema>;
 
 const VERIFIED_DEALERS_API = `/api/dashboardPagesAPI/dealerManagement/verified-dealers`;
 
@@ -59,7 +85,7 @@ export default function ListVerifiedDealersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterZone, setFilterZone] = useState<string>('all');
   const [filterArea, setFilterArea] = useState<string>('all');
-  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterSegment, setFilterSegment] = useState<string>('all');
 
   // --- Fetch Data ---
   const fetchVerifiedDealers = useCallback(async () => {
@@ -73,8 +99,8 @@ export default function ListVerifiedDealersPage() {
       }
       const data = await response.json();
       
-      // Validate using the schema you created for Verified Dealers
-      const validatedDealers = z.array(selectVerifiedDealersSchema).parse(data);
+      // Parse using our new tolerant schema
+      const validatedDealers = z.array(extendedVerifiedDealersSchema).parse(data);
       setDealers(validatedDealers);
       toast.success('Verified dealers loaded successfully!');
     } catch (e: any) {
@@ -108,9 +134,9 @@ export default function ListVerifiedDealersPage() {
     return Array.from(areas).sort();
   }, [dealers, filterZone]);
 
-  const uniqueCategories = useMemo(() => {
-    const categories = new Set(dealers.map(d => d.dealerCategory).filter(Boolean) as string[]);
-    return Array.from(categories).sort();
+  const uniqueSegments = useMemo(() => {
+    const segments = new Set(dealers.map(d => d.dealerSegment).filter(Boolean) as string[]);
+    return Array.from(segments).sort();
   }, [dealers]);
 
   // --- Client-side filtering ---
@@ -118,40 +144,40 @@ export default function ListVerifiedDealersPage() {
     return dealers.filter(d => {
       const nameMatch = !searchQuery || 
         (d.dealerPartyName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (d.dealerCode || '').toLowerCase().includes(searchQuery.toLowerCase());
+        (d.alias || '').toLowerCase().includes(searchQuery.toLowerCase());
       
       const zoneMatch = filterZone === 'all' || d.zone === filterZone;
       const areaMatch = filterArea === 'all' || d.area === filterArea;
-      const categoryMatch = filterCategory === 'all' || d.dealerCategory === filterCategory;
+      const segmentMatch = filterSegment === 'all' || d.dealerSegment === filterSegment;
       
-      return nameMatch && zoneMatch && areaMatch && categoryMatch;
+      return nameMatch && zoneMatch && areaMatch && segmentMatch;
     });
-  }, [dealers, searchQuery, filterZone, filterArea, filterCategory]);
+  }, [dealers, searchQuery, filterZone, filterArea, filterSegment]);
 
   // --- Table columns ---
   const columns: ColumnDef<VerifiedDealerRecord>[] = [
     { 
       accessorKey: 'dealerPartyName', 
       header: 'Dealer Name', 
-      cell: info => <span className="font-semibold">{info.getValue() as string || '-'}</span> 
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="font-semibold">{row.original.dealerPartyName || '-'}</span>
+          {row.original.alias && <span className="text-xs text-muted-foreground">Alias: {row.original.alias}</span>}
+        </div>
+      )
     },
     { 
-      accessorKey: 'dealerCode', 
-      header: 'Code',
-      cell: info => info.getValue() || '-'
-    },
-    { 
-      accessorKey: 'dealerCategory', 
-      header: 'Category',
+      accessorKey: 'dealerSegment', 
+      header: 'Segment',
       cell: info => info.getValue() || '-'
     },
     
-    // Combined Location Column (Zone + Area + Address)
+    // Combined Location Column (Zone + Area + District + State)
     {
       header: 'Location',
-      accessorKey: 'address', // Used for sorting fallback
+      accessorKey: 'district', // Fallback for sorting
       cell: ({ row }) => {
-        const { zone, area, address, pinCode } = row.original;
+        const { zone, area, district, state, pinCode } = row.original;
 
         return (
           <div className="flex flex-col min-w-[180px] text-xs space-y-1">
@@ -159,8 +185,8 @@ export default function ListVerifiedDealersPage() {
               <MapPin className="h-3 w-3" />
               <span>{zone || '-'} / {area || '-'}</span>
             </div>
-            <div className="text-foreground truncate max-w-[250px]" title={address || ''}>
-              {address || 'No Address'} {pinCode ? `- ${pinCode}` : ''}
+            <div className="text-foreground truncate max-w-[250px]">
+              {[district, state, pinCode].filter(Boolean).join(', ') || 'No Address Details'}
             </div>
           </div>
         );
@@ -170,35 +196,32 @@ export default function ListVerifiedDealersPage() {
     { 
       header: 'Contact Info',
       cell: ({ row }) => {
-        const { contactNo1, contactNo2, email } = row.original;
+        const { contactNo1, contactNo2, email, contactPerson } = row.original;
         return (
           <div className="flex flex-col text-xs space-y-1 min-w-[150px]">
+             {contactPerson && <div>Person: <span className="font-medium">{contactPerson}</span></div>}
              {contactNo1 && <div>Primary: <span className="font-medium">{contactNo1}</span></div>}
              {contactNo2 && <div>Alt: <span className="text-muted-foreground">{contactNo2}</span></div>}
              {email && <div className="text-blue-600 truncate max-w-[150px]" title={email}>{email}</div>}
-             {!contactNo1 && !contactNo2 && !email && <span className="text-gray-400 italic">No Contact Info</span>}
+             {!contactNo1 && !contactNo2 && !email && !contactPerson && <span className="text-gray-400 italic">No Contact Info</span>}
           </div>
         )
       }
     },
 
     { 
-      header: 'Firm Details',
+      header: 'Sales & Financials',
       cell: ({ row }) => {
-        const { natureOfFirm, ownerProprietorName } = row.original;
+        const { creditLimit, salesManNameRaw } = row.original;
         return (
           <div className="flex flex-col text-xs space-y-1 min-w-[150px]">
-             <div className="truncate" title={natureOfFirm || ''}>Type: <span className="font-medium">{natureOfFirm || '-'}</span></div>
-             <div className="truncate" title={ownerProprietorName || ''}>Owner: <span className="text-muted-foreground">{ownerProprietorName || '-'}</span></div>
+             <div className="truncate" title={salesManNameRaw || ''}>Salesman: <span className="font-medium">{salesManNameRaw || '-'}</span></div>
+             <div>Credit Limit: <span className="text-muted-foreground">{creditLimit ? `₹${creditLimit}` : '-'}</span></div>
           </div>
         )
       }
     },
-    // { 
-    //   accessorKey: 'relatedSpName', 
-    //   header: 'SP Name',
-    //   cell: info => info.getValue() || '-'
-    // },
+    
     { 
       header: 'Tax Info',
       cell: ({ row }) => {
@@ -210,24 +233,7 @@ export default function ListVerifiedDealersPage() {
           </div>
         )
       }
-    },
-    
-    // Optional Link to Regular Dealer Reference
-    // {
-    //   accessorKey: 'dealer',
-    //   header: 'Linked Reference',
-    //   cell: ({ row }) => {
-    //     const dealer = row.original.dealer;
-    //     return dealer ? (
-    //       <div className="flex flex-col text-xs space-y-1 min-w-[120px]">
-    //         <span className="font-medium truncate" title={dealer.name}>{dealer.name}</span>
-    //         <span className={`px-2 py-0.5 rounded text-[10px] w-fit ${dealer.verificationStatus === 'VERIFIED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-    //           {dealer.verificationStatus}
-    //         </span>
-    //       </div>
-    //     ) : <span className="text-gray-400 text-xs italic">Unlinked</span>;
-    //   }
-    // }
+    }
   ];
 
   // --- Loading / Error gates ---
@@ -250,7 +256,7 @@ export default function ListVerifiedDealersPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Verified Dealers Registry</h1>
         <RefreshDataButton 
-          cachePrefix="verified-dealers" 
+          cachePrefix="verified-dealers-list" 
           onRefresh={fetchVerifiedDealers} 
         />
       </div>
@@ -264,7 +270,7 @@ export default function ListVerifiedDealersPage() {
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Name or Code..."
+              placeholder="Name or Alias..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-8 h-9"
@@ -272,12 +278,12 @@ export default function ListVerifiedDealersPage() {
           </div>
         </div>
 
-        {/* 2. Category Filter */}
+        {/* 2. Segment Filter */}
         {renderSelectFilter(
-          'Category',
-          filterCategory,
-          setFilterCategory,
-          uniqueCategories,
+          'Segment',
+          filterSegment,
+          setFilterSegment,
+          uniqueSegments,
           loading
         )}
 

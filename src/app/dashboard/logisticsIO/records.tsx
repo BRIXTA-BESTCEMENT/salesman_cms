@@ -26,10 +26,9 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { selectLogisticsIOSchema } from '../../../../drizzle/zodSchemas'; 
 
-import { logisticsIOSchema } from '@/lib/shared-zod-schema';
-
-type LogisticsRecord = z.infer<typeof logisticsIOSchema>;
+type LogisticsRecord = z.infer<typeof selectLogisticsIOSchema>;
 
 const API_URL = `/api/dashboardPagesAPI/logistics-io`;
 
@@ -105,7 +104,7 @@ export default function LogisticsIOList() {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
-      const validatedData = z.array(logisticsIOSchema).parse(data);
+      const validatedData = z.array(selectLogisticsIOSchema).parse(data);
       setRecords(validatedData);
 
       const sources = new Set<string>();

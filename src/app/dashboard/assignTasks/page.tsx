@@ -22,13 +22,16 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { IconCalendar, IconCheck, IconX, IconSearch, IconLoader3 } from "@tabler/icons-react";
 import { DataTableReusable } from '@/components/data-table-reusable';
-import { dailyTaskSchema } from "@/lib/shared-zod-schema";
+
+// Note: Ensure your local dailyTaskSchema matches the new schema if you are validating here.
+import { selectDailyTaskSchema } from '../../../../drizzle/zodSchemas';
 import { z } from "zod";
 
 // Types
 type Salesman = { id: number; firstName: string | null; lastName: string | null; email: string; salesmanLoginId: string | null; area: string | null; region: string | null; };
-type UnifiedDealer = { id: string | number; name: string; region: string | null; area: string | null; isVerified: boolean; };
-type DailyTaskRecord = z.infer<typeof dailyTaskSchema>;
+// UnifiedDealer now only needs a string ID since we are only querying the `dealers` table
+type UnifiedDealer = { id: string; name: string; region: string | null; area: string | null; };
+type DailyTaskRecord = z.infer<typeof selectDailyTaskSchema> & { salesmanName?: string; relatedDealerName?: string; assignedByUserName?: string };
 
 export default function AssignTasksPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -51,8 +54,9 @@ export default function AssignTasksPage() {
   const [selectedZone, setSelectedZone] = useState<string>("all");
   const [selectedArea, setSelectedArea] = useState<string>("all");
   const [areaSearch, setAreaSearch] = useState<string>("");
-  const [dealerTypeFilter, setDealerTypeFilter] = useState<string>("all"); // 'all', 'regular', 'verified'
-  const [selectedDealerIdentifiers, setSelectedDealerIdentifiers] = useState<string[]>([]);
+  
+  // Array of string IDs (no more verified/regular prefixes)
+  const [selectedDealerIds, setSelectedDealerIds] = useState<string[]>([]);
 
   const apiURI = `/api/dashboardPagesAPI/assign-tasks`;
 
@@ -99,15 +103,15 @@ export default function AssignTasksPage() {
   // --- 2. Dynamic Dealer Fetching ---
   const fetchDealersBasedOnFilters = async () => {
     setIsFetchingDealers(true);
-    setDealers([]); // Clear old list
-    setSelectedDealerIdentifiers([]); // Reset selections on new search
+    setDealers([]); 
+    setSelectedDealerIds([]); 
 
     try {
       const params = new URLSearchParams({
         action: 'fetch_dealers',
         zone: selectedZone,
         area: selectedArea,
-        type: dealerTypeFilter
+        // Dealer type filter removed since backend only queries the unified dealers table now
       });
 
       const response = await fetch(`${apiURI}?${params.toString()}`);
@@ -136,12 +140,11 @@ export default function AssignTasksPage() {
 
   // --- 4. Selection Logic ---
   const handleSelectAll = () => {
-    // We prefix the ID with the type so MultiSelect can handle strings seamlessly
-    const allIdentifiers = dealers.map(d => d.isVerified ? `verified|${d.id}` : `regular|${d.id}`);
-    const isAllSelected = allIdentifiers.every(id => selectedDealerIdentifiers.includes(id));
+    const allIds = dealers.map(d => d.id);
+    const isAllSelected = allIds.every(id => selectedDealerIds.includes(id));
 
-    if (isAllSelected) setSelectedDealerIdentifiers([]);
-    else setSelectedDealerIdentifiers(allIdentifiers);
+    if (isAllSelected) setSelectedDealerIds([]);
+    else setSelectedDealerIds(allIds);
   };
 
   // --- 5. Submit Handler ---
@@ -149,24 +152,15 @@ export default function AssignTasksPage() {
     e.preventDefault();
     if (!selectedSalesmanId) { toast.error("Please select a salesman."); return; }
     if (!dateRange?.from || !dateRange?.to) { toast.error("Please select a date range."); return; }
-    if (selectedDealerIdentifiers.length === 0) { toast.error("Please select at least one dealer."); return; }
+    if (selectedDealerIds.length === 0) { toast.error("Please select at least one dealer."); return; }
 
     setIsSubmitting(true);
     try {
-      // Decode the identifiers back into their native IDs and arrays
-      const regularDealerIds = selectedDealerIdentifiers
-        .filter(id => id.startsWith('regular|'))
-        .map(id => id.split('|')[1]);
-
-      const verifiedDealerIds = selectedDealerIdentifiers
-        .filter(id => id.startsWith('verified|'))
-        .map(id => parseInt(id.split('|')[1]));
-
+      // Simplified payload structure
       const payload = {
         salesmanId: parseInt(selectedSalesmanId),
         dateRange: { from: dateRange.from.toISOString(), to: dateRange.to.toISOString() },
-        regularDealerIds,
-        verifiedDealerIds
+        dealerIds: selectedDealerIds 
       };
 
       const response = await fetch(apiURI, {
@@ -185,7 +179,7 @@ export default function AssignTasksPage() {
 
       // Reset Form State
       setSelectedSalesmanId("");
-      setSelectedDealerIdentifiers([]);
+      setSelectedDealerIds([]);
       setDealers([]);
       setDateRange(undefined);
 
@@ -201,7 +195,6 @@ export default function AssignTasksPage() {
     { accessorKey: 'taskDate', header: 'Date' },
     { accessorKey: 'relatedDealerName', header: 'Dealer' },
     { accessorKey: 'status', header: 'Status' },
-    { accessorKey: 'assignedByUserName', header: 'Assigned By' },
   ];
 
   if (loading) return <div className="p-10 text-center">Loading Data...</div>;
@@ -223,24 +216,21 @@ export default function AssignTasksPage() {
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="grid gap-5 py-2">
-
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>1. Salesman</Label>
                 <Select value={selectedSalesmanId} onValueChange={setSelectedSalesmanId}>
                   <SelectTrigger><SelectValue placeholder="Select salesman..." /></SelectTrigger>
                   <SelectContent>
-                    {/* Search Input inside the dropdown */}
                     <div className="p-2 sticky top-0 bg-background z-10 border-b">
                       <Input
                         placeholder="Search name or ID..."
                         value={salesmanSearch}
                         onChange={(e) => setSalesmanSearch(e.target.value)}
-                        onKeyDown={(e) => e.stopPropagation()} // Prevents spacebar from closing the dropdown
+                        onKeyDown={(e) => e.stopPropagation()} 
                         className="h-8"
                       />
                     </div>
-                    {/* Map over filtered list instead of all salesmen */}
                     {filteredSalesmen.length === 0 ? (
                       <div className="p-2 text-sm text-center text-muted-foreground">No salesman found</div>
                     ) : (
@@ -274,8 +264,7 @@ export default function AssignTasksPage() {
 
             <div className="bg-secondary/30 p-4 rounded-lg border space-y-4">
               <Label className="text-md font-semibold text-primary">3. Filters</Label>
-              <div className="grid grid-cols-3 gap-4">
-                {/* --- ZONE FILTER --- */}
+              <div className="grid grid-cols-2 gap-4">
                 <Select value={selectedZone} onValueChange={(val) => { setSelectedZone(val); setSelectedArea("all"); }}>
                   <SelectTrigger><SelectValue placeholder="Zone" /></SelectTrigger>
                   <SelectContent>
@@ -284,37 +273,24 @@ export default function AssignTasksPage() {
                   </SelectContent>
                 </Select>
 
-                {/* --- AREA FILTER WITH SEARCH --- */}
                 <Select value={selectedArea} onValueChange={setSelectedArea}>
                   <SelectTrigger><SelectValue placeholder="Area" /></SelectTrigger>
                   <SelectContent>
-                    {/* Sticky Search Input */}
                     <div className="p-2 sticky top-0 bg-background z-10 border-b">
                       <Input 
                         placeholder="Search area..." 
                         value={areaSearch}
                         onChange={(e) => setAreaSearch(e.target.value)}
-                        onKeyDown={(e) => e.stopPropagation()} // Prevents spacebar from closing dropdown
+                        onKeyDown={(e) => e.stopPropagation()}
                         className="h-8"
                       />
                     </div>
                     <SelectItem value="all">All Areas</SelectItem>
-                    {/* Map over filtered list */}
                     {filteredAreasList.length === 0 ? (
                       <div className="p-2 text-sm text-center text-muted-foreground">No area found</div>
                     ) : (
                       filteredAreasList.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)
                     )}
-                  </SelectContent>
-                </Select>
-
-                {/* --- DEALER TYPE FILTER --- */}
-                <Select value={dealerTypeFilter} onValueChange={setDealerTypeFilter}>
-                  <SelectTrigger><SelectValue placeholder="Dealer Type" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="regular">Regular Only</SelectItem>
-                    <SelectItem value="verified">Verified Only</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -338,7 +314,7 @@ export default function AssignTasksPage() {
                 <Label>4. Select Dealers to Distribute ({dealers.length} available)</Label>
                 {dealers.length > 0 && (
                   <Button type="button" variant="ghost" size="sm" className="h-6 text-xs text-primary" onClick={handleSelectAll}>
-                    {dealers.every(d => selectedDealerIdentifiers.includes(d.isVerified ? `verified|${d.id}` : `regular|${d.id}`)) ? (
+                    {dealers.every(d => selectedDealerIds.includes(d.id)) ? (
                       <span className="flex items-center"><IconX className="w-3 h-3 mr-1" /> Deselect All</span>
                     ) : (
                       <span className="flex items-center"><IconCheck className="w-3 h-3 mr-1" /> Select All</span>
@@ -349,11 +325,11 @@ export default function AssignTasksPage() {
 
               <MultiSelect
                 options={dealers.map(d => ({
-                  label: `${d.name} ${d.isVerified ? '(Verified)' : ''}`,
-                  value: d.isVerified ? `verified|${d.id}` : `regular|${d.id}`,
+                  label: d.name,
+                  value: d.id,
                 }))}
-                selectedValues={selectedDealerIdentifiers}
-                onValueChange={setSelectedDealerIdentifiers}
+                selectedValues={selectedDealerIds}
+                onValueChange={setSelectedDealerIds}
                 placeholder={dealers.length === 0 ? "Apply filters to search..." : "Select dealers to assign..."}
                 disabled={dealers.length === 0}
               />
@@ -361,7 +337,7 @@ export default function AssignTasksPage() {
 
             <DialogFooter className="mt-4 pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={isSubmitting || selectedDealerIdentifiers.length === 0}>
+              <Button type="submit" disabled={isSubmitting || selectedDealerIds.length === 0}>
                 {isSubmitting ? "Generating Plan..." : "Generate Plan"}
               </Button>
             </DialogFooter>

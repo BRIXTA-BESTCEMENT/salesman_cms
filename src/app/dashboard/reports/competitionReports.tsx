@@ -22,11 +22,22 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DataTableReusable } from '@/components/data-table-reusable';
-import { competitionReportSchema } from '@/lib/shared-zod-schema'
-//import { BASE_URL } from '@/lib/Reusable-constants';
+import { selectCompetitionReportSchema } from '../../../../drizzle/zodSchemas';
 
-// Infer the TypeScript type from the Zod schema
-type CompetitionReport = z.infer<typeof competitionReportSchema>;
+// --- EXTEND THE DRIZZLE SCHEMA ---
+// Add the relational fields and type coercions that your API returns
+const extendedCompetitionReportSchema = selectCompetitionReportSchema.extend({
+  salesmanName: z.string().optional().catch("Unknown"),
+  // Drizzle's numeric/decimal types often return as strings; coerce it to a number
+  avgSchemeCost: z.coerce.number().optional().catch(0),
+  // Handle cases where the API might still be mapping 'reportDate' to 'date'
+  date: z.string().optional(),
+  // Remarks is nullable in Drizzle, ensure it falls back gracefully
+  remarks: z.string().nullable().optional().transform(val => val || ""),
+});
+
+// Infer the TypeScript type from the EXTENDED schema
+type CompetitionReport = z.infer<typeof extendedCompetitionReportSchema>;
 
 export default function CompetitionReportsPage() {
   const [reports, setReports] = useState<CompetitionReport[]>([]);
@@ -41,24 +52,26 @@ export default function CompetitionReportsPage() {
     setLoading(true);
     setError(null);
     try {
-      // Use the new, correct API endpoint
       const response = await fetch(`/api/dashboardPagesAPI/reports/competition-reports`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: CompetitionReport[] = await response.json();
-      // Validate and ensure the required 'id' property exists for DataTableReusable
+      const data: any[] = await response.json();
+      
       const validatedData = data.map((item) => {
         try {
-          const validated = competitionReportSchema.parse(item);
-          // Assuming the schema includes an 'id' or we can use a unique field like 'date' + 'salesmanName' as fallback ID
-          return { ...validated, id: (validated as any).id?.toString() || `${validated.salesmanName}-${validated.date}` }; 
+          // Parse using the extended schema
+          const validated = extendedCompetitionReportSchema.parse(item);
+          return { 
+            ...validated, 
+            id: validated.id?.toString() || `${validated.salesmanName}-${validated.reportDate}` 
+          }; 
         } catch (e) {
           console.error("Validation error for item:", item, e);
-          toast.error("Invalid report data received from server.");
           return null;
         }
-      }).filter(Boolean) as CompetitionReport[]; // Remove nulls
+      }).filter(Boolean) as CompetitionReport[]; 
+
       setReports(validatedData);
       toast.success("Competition reports loaded successfully!");
     } catch (e: any) {
@@ -74,38 +87,43 @@ export default function CompetitionReportsPage() {
     fetchReports();
   }, [fetchReports]);
 
-
   // --- Filtering Logic ---
   const filteredReports = useMemo(() => {
     const q = searchQuery.toLowerCase();
 
     return reports.filter((report) => {
       const matchesSearch =
-        report.salesmanName.toLowerCase().includes(q) ||
+        (report.salesmanName || '').toLowerCase().includes(q) ||
         report.brandName.toLowerCase().includes(q) ||
-        report.remarks.toLowerCase().includes(q);
+        (report.remarks || '').toLowerCase().includes(q);
       return matchesSearch;
     });
   }, [reports, searchQuery]);
-
 
   const handleViewReport = (report: CompetitionReport) => {
     setSelectedReport(report);
     setIsViewModalOpen(true);
   };
 
-  // --- 3. Define Columns for Competition Report DataTable (KEPT) ---
+  // --- Define Columns ---
   const competitionReportColumns: ColumnDef<CompetitionReport>[] = [
     { accessorKey: "salesmanName", header: "Salesman" },
     { accessorKey: "brandName", header: "Competitor Brand" },
-    { accessorKey: "date", header: "Report Date" },
+    { 
+      id: "reportDate", 
+      header: "Report Date",
+      // Fallback in case your API sends 'date' instead of the raw table's 'reportDate'
+      cell: ({ row }) => <span>{row.original.date || row.original.reportDate}</span>
+    },
     { accessorKey: "billing", header: "Billing" },
     { accessorKey: "nod", header: "NOD" },
     { accessorKey: "retail", header: "Retail Channel" },
     { accessorKey: "schemesYesNo", header: "Schemes?" },
     { accessorKey: "avgSchemeCost", header: "Avg Scheme Cost (₹)" },
-    { accessorKey: "remarks", header: "Remarks",
-      cell: ({ row }) => <span className="max-w-[250px] truncate block">{row.original.remarks}</span>,
+    { 
+      accessorKey: "remarks", 
+      header: "Remarks",
+      cell: ({ row }) => <span className="max-w-[250px] truncate block">{row.original.remarks || 'N/A'}</span>,
     },
     {
       id: "actions",
@@ -202,7 +220,7 @@ export default function CompetitionReportsPage() {
               </div>
               <div>
                 <Label htmlFor="date">Report Date</Label>
-                <Input id="date" value={selectedReport.date} readOnly />
+                <Input id="date" value={selectedReport.date || selectedReport.reportDate} readOnly />
               </div>
               <div>
                 <Label htmlFor="billing">Billing</Label>
@@ -222,12 +240,12 @@ export default function CompetitionReportsPage() {
               </div>
               <div>
                 <Label htmlFor="avgSchemeCost">Avg Scheme Cost (₹)</Label>
-                {/* Ensure avgSchemeCost is a number before toFixed if necessary, assuming Zod handles this */}
-                <Input id="avgSchemeCost" value={selectedReport.avgSchemeCost.toFixed(2)} readOnly />
+                {/* Safe coercion in Zod guarantees this is a number now */}
+                <Input id="avgSchemeCost" value={(selectedReport.avgSchemeCost ?? 0).toFixed(2)} readOnly />
               </div>
               <div className="col-span-1">
                 <Label htmlFor="remarks">Remarks</Label>
-                <Textarea id="remarks" value={selectedReport.remarks} readOnly className="h-24" />
+                <Textarea id="remarks" value={selectedReport.remarks || "No remarks provided."} readOnly className="h-24" />
               </div>
             </div>
             <DialogFooter>

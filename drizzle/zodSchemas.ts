@@ -8,7 +8,7 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
     siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
     outstandingReports,masonsOnMeetings,logisticsIo, masonOnScheme, notifications, syncState, 
-    schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, 
+    schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, salesPromoters,
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
 } from "../drizzle/index";
 
@@ -22,6 +22,7 @@ export const insertDailyVisitReportSchema = createInsertSchema(dailyVisitReports
 export const insertTechnicalVisitReportSchema = createInsertSchema(technicalVisitReports);
 export const insertPermanentJourneyPlanSchema = createInsertSchema(permanentJourneyPlans);
 export const insertDealerSchema = createInsertSchema(dealers);
+export const insertSalesPromoterSchema = createInsertSchema(salesPromoters);
 export const insertSalesmanAttendanceSchema = createInsertSchema(salesmanAttendance);
 export const insertSalesmanLeaveApplicationSchema = createInsertSchema(salesmanLeaveApplications);
 export const insertCompetitionReportSchema = createInsertSchema(competitionReports);
@@ -91,6 +92,7 @@ export const selectDailyVisitReportSchema = createSelectSchema(dailyVisitReports
 export const selectTechnicalVisitReportSchema = createSelectSchema(technicalVisitReports);
 export const selectPermanentJourneyPlanSchema = createSelectSchema(permanentJourneyPlans);
 export const selectDealerSchema = createSelectSchema(dealers);
+export const selectSalesPromoterSchema = createSelectSchema(salesPromoters);
 export const selectSalesmanAttendanceSchema = createSelectSchema(salesmanAttendance);
 export const selectSalesmanLeaveApplicationSchema = createSelectSchema(salesmanLeaveApplications);
 export const selectCompetitionReportSchema = createSelectSchema(competitionReports);
@@ -101,7 +103,7 @@ export const selectSalesOrderSchema = createSelectSchema(salesOrders);
 export const selectBrandSchema = createSelectSchema(brands);
 export const selectDealerBrandMappingSchema = createSelectSchema(dealerBrandMapping);
 export const selectTsoMeetingSchema = createSelectSchema(tsoMeetings);
-export const selectauthSessionsSchema = createSelectSchema(authSessions);
+export const selectAuthSessionsSchema = createSelectSchema(authSessions);
 
 // journey + geotracking
 export const selectGeoTrackingSchema = createSelectSchema(geoTracking);

@@ -5,45 +5,74 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { z } from 'zod';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { toast } from 'sonner';
+
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input'; // Added Shadcn Input import
 import { Search, Loader2 } from 'lucide-react';
-import { dealerScoreSchema } from '@/lib/shared-zod-schema';
-//import { BASE_URL } from '@/lib/Reusable-constants';
 
-type DealerScore = z.infer<typeof dealerScoreSchema>;
+// Assuming standard naming convention from your previous files
+import { selectDealerReportsAndScoresSchema } from '../../../../drizzle/zodSchemas';
+
+// --- EXTEND THE DRIZZLE SCHEMA ---
+// Coerce numerics safely and add joined relational fields from the backend
+const extendedDealerScoreSchema = selectDealerReportsAndScoresSchema.partial().extend({
+  id: z.string().optional(),
+  dealerName: z.string().optional().catch("Unknown Dealer"),
+  
+  // Coerce all Postgres numerics/decimals to JS numbers
+  dealerScore: z.coerce.number().optional().catch(0),
+  trustWorthinessScore: z.coerce.number().optional().catch(0),
+  creditWorthinessScore: z.coerce.number().optional().catch(0),
+  orderHistoryScore: z.coerce.number().optional().catch(0),
+  visitFrequencyScore: z.coerce.number().optional().catch(0),
+  
+  // Additional joined fields
+  lastUpdatedDate: z.string().optional().catch("N/A"),
+  area: z.string().nullable().optional().catch(null),
+  region: z.string().nullable().optional().catch(null),
+  type: z.string().nullable().optional().catch(null),
+});
+
+// Strictly type the ID as a string so DataTableReusable doesn't complain
+type DealerScore = Omit<z.infer<typeof extendedDealerScoreSchema>, 'id'> & { id: string };
 
 const columnHelper = createColumnHelper<DealerScore>();
 
 const columns: ColumnDef<DealerScore, any>[] = [
   columnHelper.accessor('dealerName', {
     header: 'Dealer Name',
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() || 'N/A',
   }),
   columnHelper.accessor('dealerScore', {
     header: 'Overall Score',
-    cell: (info) => info.getValue().toFixed(2),
+    cell: (info) => (info.getValue() ?? 0).toFixed(2),
   }),
   columnHelper.accessor('trustWorthinessScore', {
     header: 'Trust Score',
-    cell: (info) => info.getValue().toFixed(2),
+    cell: (info) => (info.getValue() ?? 0).toFixed(2),
   }),
   columnHelper.accessor('creditWorthinessScore', {
     header: 'Credit Score',
-    cell: (info) => info.getValue().toFixed(2),
+    cell: (info) => (info.getValue() ?? 0).toFixed(2),
   }),
   columnHelper.accessor('orderHistoryScore', {
     header: 'Order History Score',
-    cell: (info) => info.getValue().toFixed(2),
+    cell: (info) => (info.getValue() ?? 0).toFixed(2),
   }),
   columnHelper.accessor('visitFrequencyScore', {
     header: 'Visit Frequency Score',
-    cell: (info) => info.getValue().toFixed(2),
+    cell: (info) => (info.getValue() ?? 0).toFixed(2),
   }),
   columnHelper.accessor('lastUpdatedDate', {
     header: 'Last Updated',
-    cell: (info) => info.getValue(),
+    cell: (info) => {
+      const val = info.getValue();
+      // Format cleanly if it's a valid date string
+      if (!val || val === "N/A") return 'N/A';
+      return new Date(val).toLocaleDateString();
+    },
   }),
 ];
 
@@ -91,7 +120,7 @@ export default function DealerScores() {
   const [regionFilter, setRegionFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
 
-  // Available options (from your APIs)
+  // Available options
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
@@ -100,7 +129,7 @@ export default function DealerScores() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [typeError, setTypeError] = useState<string | null>(null);
 
-  // Fetch dealer scores (KEPT)
+  // Fetch dealer scores
   const fetchScores = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -108,10 +137,10 @@ export default function DealerScores() {
       const res = await fetch(`/api/dashboardPagesAPI/scores-ratings?type=dealer`);
       if (!res.ok) throw new Error('Failed to fetch dealer scores');
       const raw = await res.json();
-      // Ensure data has a UniqueIdentifier 'id' for DataTableReusable
-      const validated = z.array(dealerScoreSchema).parse(raw).map(d => ({
+      
+      const validated = z.array(extendedDealerScoreSchema).parse(raw).map(d => ({
         ...d,
-        id: (d as any).id?.toString() || d.dealerName, // Assuming 'id' exists or using dealerName as fallback ID
+        id: d.id?.toString() || d.dealerName || `${Math.random()}`, 
       })) as DealerScore[];
 
       setData(validated);
@@ -124,7 +153,7 @@ export default function DealerScores() {
     }
   }, []);
 
-  // Fetch locations (KEPT)
+  // Fetch locations
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     setLocationError(null);
@@ -144,7 +173,7 @@ export default function DealerScores() {
     }
   }, []);
 
-  // Fetch dealer types (KEPT)
+  // Fetch dealer types
   const fetchTypes = useCallback(async () => {
     setIsLoadingTypes(true);
     setTypeError(null);
@@ -152,7 +181,6 @@ export default function DealerScores() {
       const res = await fetch(`/api/dashboardPagesAPI/dealerManagement/dealer-types`);
       if (!res.ok) throw new Error('Failed to fetch dealer types');
       const j = await res.json();
-      // endpoint returns { type: [...] }
       const types = Array.isArray(j.type) ? j.type.filter(Boolean) : [];
       setAvailableTypes(types);
     } catch (err: any) {
@@ -173,27 +201,21 @@ export default function DealerScores() {
     const q = (searchQuery || '').toLowerCase().trim();
 
     return data.filter(d => {
-      // Search on dealerName if provided
-      const name = (d.dealerName || '').toString().toLowerCase();
+      // Search on dealerName
+      const name = (d.dealerName || '').toLowerCase();
       const matchesSearch = !q || name.includes(q);
 
-      // area/region/type fields may or may not exist on the DealerScore object.
-      const rowArea = ((d as any).area || '').toString().trim().toLowerCase();
-      const rowRegion = ((d as any).region || '').toString().trim().toLowerCase();
-      const rowType = ((d as any).type || (d as any).dealerType || '').toString().trim().toLowerCase();
+      const rowArea = (d.area || '').trim().toLowerCase();
+      const rowRegion = (d.region || '').trim().toLowerCase();
+      const rowType = (d.type || '').trim().toLowerCase();
 
       const areaMatch = areaFilter === 'all' || (rowArea && rowArea === areaFilter.toLowerCase());
       const regionMatch = regionFilter === 'all' || (rowRegion && rowRegion === regionFilter.toLowerCase());
       const typeMatch = typeFilter === 'all' || (rowType && rowType === typeFilter.toLowerCase());
 
-      // If the row doesn't have area/region/type at all, treat the filter as matching only when filter is 'all'
-      const areaFieldPresent = Boolean((d as any).area);
-      const regionFieldPresent = Boolean((d as any).region);
-      const typeFieldPresent = Boolean((d as any).type || (d as any).dealerType);
-
-      const areaCond = !areaFieldPresent ? areaFilter === 'all' : areaMatch;
-      const regionCond = !regionFieldPresent ? regionFilter === 'all' : regionMatch;
-      const typeCond = !typeFieldPresent ? typeFilter === 'all' : typeMatch;
+      const areaCond = !d.area ? areaFilter === 'all' : areaMatch;
+      const regionCond = !d.region ? regionFilter === 'all' : regionMatch;
+      const typeCond = !d.type ? typeFilter === 'all' : typeMatch;
 
       return matchesSearch && areaCond && regionCond && typeCond;
     });
@@ -215,12 +237,11 @@ export default function DealerScores() {
               <label className="text-sm font-medium text-muted-foreground">Search Dealer</label>
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
+                <Input
                   placeholder="Dealer name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  // Tailwind classes for input need to be checked/adjusted based on your CSS setup
-                  className="pl-8 h-9 input bg-input rounded-md w-full border border-input/30" 
+                  className="pl-8 h-9" 
                 />
               </div>
             </div>

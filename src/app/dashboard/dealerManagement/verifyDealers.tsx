@@ -24,10 +24,22 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { DataTableReusable } from '@/components/data-table-reusable';
-import { dealerVerificationSchema } from '@/lib/shared-zod-schema';
-import { BASE_URL } from '@/lib/Reusable-constants';
+import { selectDealerSchema } from '../../../../drizzle/zodSchemas';
 
-type DealerRecord = z.infer<typeof dealerVerificationSchema>;
+const extendedDealerSchema = selectDealerSchema.partial().extend({
+    id: z.string(), // Ensure ID is always a string for DataTableReusable
+    name: z.string().optional().catch("Unknown"),
+    phoneNo: z.string().optional().catch("N/A"),
+    region: z.string().nullable().optional(),
+    nameOfFirm: z.string().nullable().optional(),
+    underSalesPromoterName: z.string().nullable().optional(),
+    gstinNo: z.string().nullable().optional(),
+    tradeLicNo: z.string().nullable().optional(),
+    dealerPicUrl: z.string().nullable().optional(),
+    shopPicUrl: z.string().nullable().optional(),
+});
+
+type DealerRecord = z.infer<typeof extendedDealerSchema>;
 
 const renderSelectFilter = (
     label: string,
@@ -97,7 +109,7 @@ export default function VerifyDealersPage() {
 
             const dealersArray = Array.isArray(data) ? data : data.dealers;
 
-            const validatedDealers = z.array(dealerVerificationSchema).parse(dealersArray);
+            const validatedDealers = z.array(extendedDealerSchema).parse(dealersArray);
             setPendingDealers(validatedDealers);
             toast.success(`Loaded ${validatedDealers.length} pending dealers.`, { duration: 2000 });
         } catch (e: any) {

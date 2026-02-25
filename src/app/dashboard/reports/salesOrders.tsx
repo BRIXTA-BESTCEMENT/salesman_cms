@@ -8,14 +8,39 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { salesOrderSchema } from '@/lib/shared-zod-schema'
 
 // UI Components for Filtering
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Loader2 } from 'lucide-react';
-//import { BASE_URL } from '@/lib/Reusable-constants';
+import { selectSalesOrderSchema } from '../../../../drizzle/zodSchemas';
+
+// --- EXTEND THE DRIZZLE SCHEMA ---
+const extendedSalesOrderSchema = selectSalesOrderSchema.extend({
+  // Joined relational fields
+  salesmanName: z.string().optional().catch("Unknown"),
+  salesmanRole: z.string().optional().catch("N/A"),
+  dealerName: z.string().nullable().optional(),
+  dealerType: z.string().nullable().optional(),
+  dealerPhone: z.string().nullable().optional(),
+  dealerAddress: z.string().nullable().optional(),
+  area: z.string().nullable().optional(),
+  region: z.string().nullable().optional(),
+  paymentAmount: z.coerce.number().nullable().optional().catch(null),
+  receivedPayment: z.coerce.number().nullable().optional().catch(null),
+  pendingPayment: z.coerce.number().nullable().optional().catch(null),
+  orderQty: z.coerce.number().nullable().optional().catch(null),
+  itemPrice: z.coerce.number().nullable().optional().catch(null),
+  discountPercentage: z.coerce.number().nullable().optional().catch(null),
+  itemPriceAfterDiscount: z.coerce.number().nullable().optional().catch(null),
+  orderTotal: z.coerce.number().optional().catch(0),
+  estimatedDelivery: z.string().nullable().optional(),
+  remarks: z.string().nullable().optional(),
+});
+
+// SalesOrder type is extended from the custom extended schema
+type SalesOrder = z.infer<typeof extendedSalesOrderSchema>;
 
 // --- CONSTANTS AND TYPES ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -29,8 +54,6 @@ interface RolesResponse {
   roles: string[];
 }
 
-// SalesOrder type is extended from the schema inference
-type SalesOrder = z.infer<typeof salesOrderSchema>;
 
 // Column definitions for the sales order table
 const columnHelper = createColumnHelper<SalesOrder>();
@@ -51,14 +74,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'User ID',
     cell: info => info.getValue() ?? '-',
   }),
-  // columnHelper.accessor('dvrId', {
-  //   header: 'DVR ID',
-  //   cell: info => info.getValue() ?? '-',
-  // }),
-  // columnHelper.accessor('pjpId', {
-  //   header: 'PJP ID',
-  //   cell: info => info.getValue() ?? '-',
-  // }),
 
   // Denormalized display
   columnHelper.accessor('salesmanName', {
@@ -134,7 +149,7 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
   }),
   columnHelper.accessor('estimatedDelivery', {
     header: 'Delivery ETA',
-    cell: info => dateStr(info.getValue()), // alias of deliveryDate from API
+    cell: info => dateStr(info.getValue() || info.row.original.deliveryDate), // fallback alias
     meta: { filterType: 'date' },
   }),
   columnHelper.accessor('deliveryArea', {
@@ -235,12 +250,12 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
   // Timestamps
   columnHelper.accessor('createdAt', {
     header: 'Created On',
-    cell: info => new Date(info.getValue()).toLocaleDateString(),
+    cell: info => info.getValue() ? new Date(info.getValue() as string).toLocaleDateString() : '-',
     meta: { filterType: 'date' },
   }),
   columnHelper.accessor('updatedAt', {
     header: 'Updated On',
-    cell: info => new Date(info.getValue()).toLocaleDateString(),
+    cell: info => info.getValue() ? new Date(info.getValue() as string).toLocaleDateString() : '-',
     meta: { filterType: 'date' },
   }),
 ];
@@ -324,11 +339,12 @@ export default function SalesOrdersTable() {
         const errorData = await response.json();
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
-      const orders: SalesOrder[] = await response.json();
-      // Ensure data structure matches expected SalesOrder type and has 'id'
-      const validatedOrders = z.array(salesOrderSchema).parse(orders).map(order => ({
+      const orders: any[] = await response.json();
+      
+      // Ensure data structure matches expected extended schema
+      const validatedOrders = z.array(extendedSalesOrderSchema).parse(orders).map(order => ({
         ...order,
-        id: order.id.toString(), // Ensure id is UniqueIdentifier string
+        id: order.id?.toString() || `${Math.random()}`, 
       })) as SalesOrder[];
 
       setData(validatedOrders);

@@ -31,8 +31,7 @@ import { DataTableReusable } from '@/components/data-table-reusable';
 // Define the valid regions and areas
 import { dealerTypes, brands } from '@/lib/Reusable-constants'
 import { useDealerLocations } from '@/components/reusable-dealer-locations';
-import { getDealersSchema} from '@/lib/shared-zod-schema';
-import { BASE_URL } from '@/lib/Reusable-constants';
+import { selectDealerSchema } from '../../../../drizzle/zodSchemas';
 
 // Schema for form submission, which transforms string inputs to numbers.
 const addDealerFormSchema = z.object({
@@ -59,7 +58,7 @@ const addDealerFormSchema = z.object({
     remarks: z.string().nullable().optional(),
 });
 
-type DealerRecord = z.infer<typeof getDealersSchema>;
+type DealerRecord = z.infer<typeof selectDealerSchema>;
 
 export default function AddAndListDealersPage() {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -112,7 +111,7 @@ export default function AddAndListDealersPage() {
                 throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
             }
             const data = await response.json();
-            const validatedDealers = z.array(getDealersSchema).parse(data);
+            const validatedDealers = z.array(selectDealerSchema).parse(data);
             setDealers(validatedDealers);
             toast.success('Verified dealers loaded successfully!');
         } catch (e: any) {

@@ -170,7 +170,7 @@ export async function PUT(request: NextRequest) {
             .where(eq(dealers.id, dealerId));
 
         await refreshCompanyCache('dealers');
-        await refreshCompanyCache('verified-dealers');
+        await refreshCompanyCache('verified-dealers-list');
 
         return NextResponse.json({ message: `Dealer status updated to ${verificationStatus}` }, { status: 200 });
 

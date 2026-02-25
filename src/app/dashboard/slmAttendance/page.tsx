@@ -39,11 +39,39 @@ import {
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { cn } from '@/lib/utils';
-import { salesmanAttendanceSchema } from '@/lib/shared-zod-schema';
+import { selectSalesmanAttendanceSchema } from '../../../../drizzle/zodSchemas';
 import SyncLocationBtn from '@/app/home/customReportGenerator/syncLocationBtn';
-//import { BASE_URL } from '@/lib/Reusable-constants';
 
-type SalesmanAttendanceReport = z.infer<typeof salesmanAttendanceSchema>;
+const extendedSalesmanAttendanceSchema = selectSalesmanAttendanceSchema.extend({
+  // Relational Joins
+  salesmanName: z.string().optional().catch("Unknown"),
+  salesmanRole: z.string().optional().catch("N/A"),
+  area: z.string().nullable().optional().catch("N/A"),
+  region: z.string().nullable().optional().catch("N/A"),
+
+  // Aliases from old Prisma schema
+  date: z.string().optional(),
+  location: z.string().optional(),
+  inTime: z.string().nullable().optional(),
+  outTime: z.string().nullable().optional(),
+
+  // Coerce Postgres numerics/decimals to JS numbers
+  inTimeLatitude: z.coerce.number().nullable().optional().catch(null),
+  inTimeLongitude: z.coerce.number().nullable().optional().catch(null),
+  inTimeAccuracy: z.coerce.number().nullable().optional().catch(null),
+  inTimeSpeed: z.coerce.number().nullable().optional().catch(null),
+  inTimeHeading: z.coerce.number().nullable().optional().catch(null),
+  inTimeAltitude: z.coerce.number().nullable().optional().catch(null),
+  
+  outTimeLatitude: z.coerce.number().nullable().optional().catch(null),
+  outTimeLongitude: z.coerce.number().nullable().optional().catch(null),
+  outTimeAccuracy: z.coerce.number().nullable().optional().catch(null),
+  outTimeSpeed: z.coerce.number().nullable().optional().catch(null),
+  outTimeHeading: z.coerce.number().nullable().optional().catch(null),
+  outTimeAltitude: z.coerce.number().nullable().optional().catch(null),
+});
+
+type SalesmanAttendanceReport = z.infer<typeof extendedSalesmanAttendanceSchema>;
 
 // --- API Endpoints and Types for Filters ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -153,7 +181,7 @@ export default function SlmAttendancePage() {
       const validatedData = data.map((item) => {
         try {
           // Add ID property needed by DataTableReusable (assuming ID is available in schema)
-          const validated = salesmanAttendanceSchema.parse(item);
+          const validated = extendedSalesmanAttendanceSchema.parse(item);
           return { ...validated, id: validated.id.toString() };
         } catch (e) {
           console.error("Validation error for item:", item, e);
@@ -228,8 +256,9 @@ export default function SlmAttendancePage() {
     const todayStr = format(new Date(), 'yyyy-MM-dd'); // Matches standard DB date format
 
     const reportsForToday = attendanceReports.filter(report => {
-      // If report.date is ISO or YYYY-MM-DD, we ensure it matches today
-      const reportDate = format(new Date(report.date), 'yyyy-MM-dd');
+      const rawDate = report.date || report.attendanceDate;
+      if (!rawDate) return false;
+      const reportDate = format(new Date(rawDate), 'yyyy-MM-dd');
       return reportDate === todayStr;
     });
 
@@ -387,10 +416,12 @@ export default function SlmAttendancePage() {
     { accessorKey: "role", header: "User Company Role" },
     { accessorKey: "salesmanRole", header: "User Role" },
     {
-      accessorKey: 'date',
+      id: 'date',
       header: 'Report Date',
       cell: ({ row }) => {
-        const date = new Date(row.original.date);
+        const rawDate = row.original.date || row.original.attendanceDate;
+        if (!rawDate) return <div>N/A</div>;
+        const date = new Date(rawDate);
         const formattedDate = new Intl.DateTimeFormat('en-IN', {
           year: 'numeric',
           month: 'numeric',
@@ -401,15 +432,18 @@ export default function SlmAttendancePage() {
       },
     },
     {
-      accessorKey: "location",
+      id: "location",
       header: "Location",
-      cell: ({ row }) => (
-        <LocationCell
-          locationName={row.original.location}
-          lat={row.original.inTimeLatitude}
-          lng={row.original.inTimeLongitude}
-        />
-      ),
+      cell: ({ row }) => {
+        const locationStr = row.original.location || row.original.locationName || 'Unknown';
+        return (
+          <LocationCell
+            locationName={locationStr}
+            lat={row.original.inTimeLatitude || 0.0}
+            lng={row.original.inTimeLongitude || 0.0}
+          />
+        )
+      },
     },
     {
       accessorKey: 'inTime',

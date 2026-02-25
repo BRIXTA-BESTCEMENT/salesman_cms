@@ -18,9 +18,51 @@ import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { Badge } from '@/components/ui/badge';
 
-import { technicalSiteSchema } from '@/lib/shared-zod-schema';
+import { selectTechnicalSiteSchema } from '../../../../drizzle/zodSchemas';
 
-type TechnicalSiteRecord = z.infer<typeof technicalSiteSchema>;
+// --- NESTED RELATIONAL SCHEMAS ---
+const associatedUserSchema = z.object({
+  id: z.union([z.string(), z.number()]).optional(),
+  name: z.string().optional().catch("Unknown"),
+  role: z.string().optional().catch(""),
+});
+
+const associatedDealerSchema = z.object({
+  id: z.union([z.string(), z.number()]).optional(),
+  name: z.string().optional().catch("Unknown"),
+  area: z.string().nullable().optional().catch(""),
+});
+
+const associatedMasonSchema = z.object({
+  id: z.union([z.string(), z.number()]).optional(),
+  name: z.string().optional().catch("Unknown"),
+});
+
+const siteBagLiftSchema = z.object({
+  bagCount: z.coerce.number().catch(0),
+  pointsCredited: z.coerce.number().catch(0),
+});
+
+// --- EXTEND THE DRIZZLE SCHEMA ---
+const extendedTechnicalSiteSchema = selectTechnicalSiteSchema.extend({
+  // Coerce coordinates
+  latitude: z.coerce.number().nullable().optional().catch(null),
+  longitude: z.coerce.number().nullable().optional().catch(null),
+
+  // Fallback for nullable images
+  imageUrl: z.string().nullable().optional(),
+
+  // Relational Arrays (catch ensures it never crashes if API omits them)
+  associatedUsers: z.array(associatedUserSchema).optional().catch([]),
+  associatedDealers: z.array(associatedDealerSchema).optional().catch([]),
+  associatedMasons: z.array(associatedMasonSchema).optional().catch([]),
+  bagLifts: z.array(siteBagLiftSchema).optional().catch([]),
+});
+
+// Create strict type ensuring 'id' is a string for DataTableReusable
+type TechnicalSiteRecord = Omit<z.infer<typeof extendedTechnicalSiteSchema>, 'id'> & { 
+  id: string; 
+};
 
 const API_URL = `/api/dashboardPagesAPI/technical-sites`;
 
@@ -51,8 +93,12 @@ export default function ListSitesPage() {
       }
       const data = await response.json();
 
-      // Parse with Zod
-      const validatedSites = z.array(technicalSiteSchema).parse(data);
+      // Parse with the extended Zod schema to capture relations
+      const validatedSites = z.array(extendedTechnicalSiteSchema).parse(data).map(site => ({
+        ...site,
+        id: site.id?.toString() || `${Math.random()}`
+      })) as TechnicalSiteRecord[];
+      
       setSites(validatedSites);
 
       // Extract unique regions and stages for filters
@@ -178,55 +224,9 @@ export default function ListSitesPage() {
           <Badge variant="outline" className="w-fit bg-blue-50 text-blue-700 border-blue-200">
             {row.original.stageOfConstruction || 'N/A'}
           </Badge>
-          {/* <div className="text-xs text-muted-foreground flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            <span>Start: {formatDate(row.original.constructionStartDate)}</span>
-          </div>
-          <div className="text-xs text-muted-foreground pl-4">
-             End: {formatDate(row.original.constructionEndDate)}
-          </div> */}
         </div>
       )
     },
-
-    // 5. Status Flags (Converted / Follow Up)
-    // {
-    //   header: 'Status',
-    //   id: 'statusFlags',
-    //   cell: ({ row }) => (
-    //     <div className="flex flex-col gap-2">
-    //       <div className="flex items-center gap-2 text-xs" title="Converted Site?">
-    //          {row.original.convertedSite ? (
-    //            <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">Converted</Badge>
-    //          ) : (
-    //            <Badge variant="secondary" className="text-gray-500">Prospect</Badge>
-    //          )}
-    //       </div>
-    //       {row.original.needFollowUp && (
-    //         <Badge variant="destructive" className="flex w-fit items-center gap-1 text-[10px] px-1 py-0 h-5">
-    //           <AlertCircle className="h-3 w-3" /> Follow Up
-    //         </Badge>
-    //       )}
-    //     </div>
-    //   )
-    // },
-
-    // 6. Visit Stats (First/Last)
-    // {
-    //   header: 'Visits',
-    //   cell: ({ row }) => (
-    //     <div className="flex flex-col text-xs min-w-[100px]">
-    //       <div className="flex justify-between">
-    //         <span className="text-muted-foreground">First:</span>
-    //         <span>{formatDate(row.original.firstVistDate)}</span>
-    //       </div>
-    //       <div className="flex justify-between mt-1">
-    //         <span className="text-muted-foreground">Last:</span>
-    //         <span className="font-medium">{formatDate(row.original.lastVisitDate)}</span>
-    //       </div>
-    //     </div>
-    //   )
-    // },
 
     // 7. Key Person (Secondary Contact)
     {

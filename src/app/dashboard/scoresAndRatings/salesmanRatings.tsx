@@ -8,14 +8,33 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { salesmanRatingSchema } from '@/lib/shared-zod-schema';
 
 // UI Components for Filtering
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-//import { BASE_URL } from '@/lib/Reusable-constants';
+
+// Import base schema from Drizzle
+import { selectRatingSchema } from '../../../../drizzle/zodSchemas';
+
+// --- EXTEND THE DRIZZLE SCHEMA ---
+const extendedSalesmanRatingSchema = selectRatingSchema.partial().extend({
+  id: z.union([z.string(), z.number()]).optional(),
+  salesPersonName: z.string().optional().catch("Unknown"),
+  area: z.string().nullable().optional().catch("N/A"),
+  region: z.string().nullable().optional().catch("N/A"),
+  // Safely coerce rating from string to number
+  rating: z.coerce.number().optional().catch(0),
+  // Joined relational field for filtering
+  salesmanRole: z.string().nullable().optional().catch("N/A"),
+});
+
+// Enforce that `id` is strictly a string for DataTableReusable
+type SalesmanRating = Omit<z.infer<typeof extendedSalesmanRatingSchema>, 'id'> & { 
+  id: string 
+};
+
 
 // --- CONSTANTS AND TYPES ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -29,48 +48,40 @@ interface RolesResponse {
   roles: string[];
 }
 
-// Infer the TypeScript type from the Zod schema and extend it
-type SalesmanRating = z.infer<typeof salesmanRatingSchema> & {
-  salesmanRole: string; // Assumed key for role filtering
-};
-
-
 // Column helper to define the columns for the data table
 const columnHelper = createColumnHelper<SalesmanRating>();
 
-// --- COLUMN DEFINITIONS (PRESERVED AS IS) ---
+// --- COLUMN DEFINITIONS ---
 const columns: ColumnDef<SalesmanRating, any>[] = [
-  // Define columns for the table, including headers and cell rendering
   columnHelper.accessor('salesPersonName', {
     header: 'Sales Person Name',
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() || 'N/A',
   }),
   columnHelper.accessor('area', {
     header: 'Area',
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() || 'N/A',
   }),
   columnHelper.accessor('region', {
     header: 'Region',
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() || 'N/A',
   }),
   columnHelper.accessor('rating', {
     header: 'Rating',
     cell: (info) => {
       const rating = info.getValue();
-      // Ensure rating is treated as a number for comparison
-      const numRating = Number(rating);
+      const numRating = Number(rating) || 0;
       const ratingClass = numRating >= 4 ? 'bg-green-500' : numRating >= 3 ? 'bg-yellow-500' : 'bg-red-500';
       const ratingText = numRating >= 4 ? 'BEST' : numRating >= 3 ? 'FAIR' : 'ALARMING';
       return (
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white ${ratingClass}`}>
-          {ratingText}
+          {ratingText} ({numRating.toFixed(1)})
         </span>
       );
     },
   }),
 ];
 
-// Helper function to render the Select filter component (PRESERVED AS IS)
+// Helper function to render the Select filter component 
 const renderSelectFilter = (
   label: string,
   value: string,
@@ -149,10 +160,10 @@ export default function SalesmanRatings() {
         throw new Error('Failed to fetch salesman ratings');
       }
       const rawData = await response.json();
-      // Validate and ensure data has a UniqueIdentifier 'id' for DataTableReusable
-      const validatedData = z.array(salesmanRatingSchema).parse(rawData).map(d => ({
+      
+      const validatedData = z.array(extendedSalesmanRatingSchema).parse(rawData).map(d => ({
         ...d,
-        id: (d as any).id?.toString() || d.salesPersonName, // Assuming 'id' exists or using name as fallback ID
+        id: d.id?.toString() || d.salesPersonName || `${Math.random()}`, 
       })) as SalesmanRating[];
 
       setData(validatedData);
@@ -215,19 +226,19 @@ export default function SalesmanRatings() {
     return data.filter((rating) => {
       // 1. Salesman Name Search
       const searchMatch = !lowerCaseSearch ||
-        rating.salesPersonName?.toLowerCase().includes(lowerCaseSearch);
+        (rating.salesPersonName || '').toLowerCase().includes(lowerCaseSearch);
 
-      // 2. Role Filter (assumes 'salesmanRole' field exists in the data)
+      // 2. Role Filter
       const roleMatch = roleFilter === 'all' ||
-        rating.salesmanRole?.toLowerCase() === roleFilter.toLowerCase();
+        (rating.salesmanRole || '').toLowerCase() === roleFilter.toLowerCase();
 
       // 3. Area Filter 
       const areaMatch = areaFilter === 'all' ||
-        rating.area?.toLowerCase() === areaFilter.toLowerCase();
+        (rating.area || '').toLowerCase() === areaFilter.toLowerCase();
 
       // 4. Region Filter 
       const regionMatch = regionFilter === 'all' ||
-        rating.region?.toLowerCase() === regionFilter.toLowerCase();
+        (rating.region || '').toLowerCase() === regionFilter.toLowerCase();
 
       // Combine all conditions
       return searchMatch && roleMatch && areaMatch && regionMatch;

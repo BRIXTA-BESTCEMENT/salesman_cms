@@ -80,15 +80,15 @@ export function ReportsTabs({
         {canSeeCompetition && (
           <TabsTrigger value="competitionReport">Competition Report</TabsTrigger>
         )}
-        {canSeeDvrVpjp && (
+        {/* {canSeeDvrVpjp && (
           <TabsTrigger value="dvrVpjp">DVR V PJP</TabsTrigger>
-        )}
+        )} */}
         {/* {canSeeTvrVpjp && (
           <TabsTrigger value="tvrVpjp">TVR V PJP</TabsTrigger>
         )} */}
-        {canSeeSalesVdvr && (
+        {/* {canSeeSalesVdvr && (
           <TabsTrigger value="salesVdvr">Sales V DVR</TabsTrigger>
-        )}
+        )} */}
       </TabsList>
 
       {/* --- Tab Content --- */}
@@ -112,21 +112,21 @@ export function ReportsTabs({
           <CompetitionReportsPage />
         </TabsContent>
       )}
-      {canSeeDvrVpjp && (
+      {/* {canSeeDvrVpjp && (
         <TabsContent value="dvrVpjp" className="space-y-4">
           <DvrPjpReportPage />
         </TabsContent>
-      )}
+      )} */}
       {/* {canSeeTvrVpjp && (
         <TabsContent value="TvrVpjp" className="space-y-4">
           <TvrPjpReportPage />
         </TabsContent>
       )} */}
-      {canSeeSalesVdvr && (
+      {/* {canSeeSalesVdvr && (
         <TabsContent value="salesVdvr" className="space-y-4">
           <SalesDVRReportPage />
         </TabsContent>
-      )}
+      )} */}
     </Tabs>
   );
 }

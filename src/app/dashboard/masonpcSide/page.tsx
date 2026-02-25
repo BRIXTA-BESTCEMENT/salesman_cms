@@ -53,14 +53,12 @@ export async function MasonPcDynamicContent() {
   const canSeeMasonPc = hasPermission(roleToCheck, 'masonpcSide.masonpc');
   const canSeeTsoMeetings = hasPermission(roleToCheck, 'masonpcSide.tsoMeetings');
   const canSeeSchemesOffers = hasPermission(roleToCheck, 'masonpcSide.schemesOffers');
-  const canSeeMasonOnSchemes = hasPermission(roleToCheck, 'masonpcSide.masonOnSchemes');
-  const canSeeMasonOnMeetings = hasPermission(roleToCheck, 'masonpcSide.masonOnMeetings');
   const canSeeBagsLift = hasPermission(roleToCheck, 'masonpcSide.bagsLift');
   const canSeePointsLedger = hasPermission(roleToCheck, 'masonpcSide.pointsLedger');
   const canSeeRewardsRedemption = hasPermission(roleToCheck, 'masonpcSide.rewardsRedemption');
 
   // Check if the user can see any of the tabs
-  const canSeeAnything = canSeeMasonPc || canSeeTsoMeetings || canSeeSchemesOffers || canSeeMasonOnSchemes || canSeeMasonOnMeetings || canSeeBagsLift || canSeePointsLedger || canSeeRewardsRedemption;
+  const canSeeAnything = canSeeMasonPc || canSeeTsoMeetings || canSeeSchemesOffers || canSeeBagsLift || canSeePointsLedger || canSeeRewardsRedemption;
 
   // 3. Handle users who can't see anything
   if (!canSeeAnything) {
@@ -82,8 +80,6 @@ export async function MasonPcDynamicContent() {
         canSeeMasonPc={canSeeMasonPc}
         canSeeTsoMeetings={canSeeTsoMeetings}
         canSeeSchemesOffers={canSeeSchemesOffers}
-        canSeeMasonOnSchemes={canSeeMasonOnSchemes}
-        canSeeMasonOnMeetings={canSeeMasonOnMeetings}
         canSeeBagsLift={canSeeBagsLift}
         canSeePointsLedger={canSeePointsLedger}
         canSeeRewardsRedemption={canSeeRewardsRedemption}

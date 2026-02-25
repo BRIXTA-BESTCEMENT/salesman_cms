@@ -91,9 +91,9 @@ async function getCachedPJPs(companyId: number, verificationStatus: string | nul
   const pjpIds = rawPlans.map(p => p.id);
   const tasks = pjpIds.length > 0 
     ? await db
-        .select({ id: dailyTasks.id, pjpId: dailyTasks.pjpId })
+        .select({ id: dailyTasks.id, pjpId: dailyTasks.id })
         .from(dailyTasks)
-        .where(inArray(dailyTasks.pjpId, pjpIds))
+        .where(inArray(dailyTasks.id, pjpIds))
     : [];
 
   // Group tasks by pjpId for O(1) lookups

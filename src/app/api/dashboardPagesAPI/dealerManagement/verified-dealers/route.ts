@@ -1,11 +1,10 @@
-// src/app/api/dashboardPagesAPI/dealerManagement/verified-dealers/route.ts
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dealers, verifiedDealers } from '../../../../../../drizzle'; 
-import { eq, or, isNull, desc, getTableColumns } from 'drizzle-orm';
+import { users, verifiedDealers } from '../../../../../../drizzle/schema'; // Adjusted to remove 'dealers'
+import { eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectVerifiedDealersSchema } from '../../../../../../drizzle/zodSchemas'; 
 
@@ -17,56 +16,23 @@ const allowedRoles = [
   'senior-executive', 'executive', 'junior-executive'
 ];
 
-// Extend the baked DB schema to strictly type the nested dealer object
-const frontendVerifiedDealerSchema = selectVerifiedDealersSchema.extend({
-    dealer: z.object({
-        id: z.string(),
-        name: z.string(),
-        verificationStatus: z.string()
-    }).nullable()
-});
+// We no longer need to extend the schema with the nested dealer object 
+// since the dealerId foreign key was removed.
+const frontendVerifiedDealerSchema = selectVerifiedDealersSchema;
 
 // 1. Create the cached function
-async function getCachedVerifiedDealers(companyId: number) {
+async function getCachedVerifiedDealers() {
     'use cache';
     cacheLife('days');
-    cacheTag(`verified-dealers-${companyId}`); 
+    cacheTag(`verified-dealers-list`); // Removed companyId scoping since direct relation is gone
 
-    // Use getTableColumns to keep the output flat and avoid TS 'never' errors
+    // Select directly from the verifiedDealers table
     const results = await db
-        .select({
-            ...getTableColumns(verifiedDealers),
-            parentDealerId: dealers.id,
-            parentDealerName: dealers.name,
-            parentDealerStatus: dealers.verificationStatus
-        })
+        .select()
         .from(verifiedDealers)
-        // Join users to check the company ID filter
-        .leftJoin(users, eq(verifiedDealers.userId, users.id))
-        // Join dealers to fetch the nested dealer info
-        .leftJoin(dealers, eq(verifiedDealers.dealerId, dealers.id))
-        .where(
-            or(
-                isNull(verifiedDealers.userId),
-                eq(users.companyId, companyId)
-            )
-        )
         .orderBy(desc(verifiedDealers.id));
 
-    // Map the flattened result back into the nested structure the frontend expects
-    return results.map(row => {
-        // Destructure to separate the joined columns from the base verifiedDealer columns
-        const { parentDealerId, parentDealerName, parentDealerStatus, ...vd } = row;
-        
-        return {
-            ...vd,
-            dealer: parentDealerId ? {
-                id: parentDealerId,
-                name: parentDealerName || 'Unknown',
-                verificationStatus: parentDealerStatus || 'PENDING'
-            } : null
-        };
-    });
+    return results;
 }
 
 export async function GET() {
@@ -98,7 +64,7 @@ export async function GET() {
         }
 
         // 4. --- FETCH FROM CACHE ---
-        const formattedDealers = await getCachedVerifiedDealers(currentUser.companyId);
+        const formattedDealers = await getCachedVerifiedDealers();
 
         // 5. Validate the formatted data against the strictly extended Drizzle-Zod schema
         const validatedDealers = z.array(frontendVerifiedDealerSchema).safeParse(formattedDealers);

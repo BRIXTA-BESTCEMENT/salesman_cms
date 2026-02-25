@@ -5,7 +5,7 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { IconFilter, IconRefresh, IconSearch, IconListDetails, IconTrendingUp, IconCurrencyRupee } from '@tabler/icons-react';
-import { Calendar, Gauge, BarChart } from 'lucide-react'; // Added imports
+import { Calendar, Gauge, BarChart } from 'lucide-react'; 
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import {
   calculateChange,
   type SalesRecord,
   type DVRRecord,
+  MoMComparisonMetrics,
 } from '@/components/data-comparison-calculation';
 
 /* =========================
@@ -50,49 +51,72 @@ const salesColumns: ColumnDef<SalesRecord>[] = [
     cell: ({ row }) => <span className="font-mono text-xs">{row.original.orderDate}</span>,
     enableHiding: false,
   },
-  { accessorKey: 'salesmanName', header: 'Salesman', cell: ({ row }) => <div className="font-medium text-sm">{row.original.salesmanName}</div> },
-  { accessorKey: 'region', header: 'Region', cell: ({ row }) => <Badge variant="outline">{row.original.region || 'N/A'}</Badge> },
-  { accessorKey: 'area', header: 'Area', cell: ({ row }) => <Badge variant="outline">{row.original.area || 'N/A'}</Badge> },
-  { accessorKey: 'dealerName', header: 'Dealer', cell: ({ row }) => <span className="text-sm">{row.original.dealerName}</span> },
+  { id: 'salesmanName', header: 'Salesman', cell: ({ row }) => <div className="font-medium text-sm">{(row.original as any).salesmanName || 'N/A'}</div> },
+  { id: 'region', header: 'Region', cell: ({ row }) => <Badge variant="outline">{(row.original as any).region || 'N/A'}</Badge> },
+  { id: 'area', header: 'Area', cell: ({ row }) => <Badge variant="outline">{(row.original as any).area || 'N/A'}</Badge> },
+  { id: 'dealerName', header: 'Dealer', cell: ({ row }) => <span className="text-sm">{(row.original as any).dealerName || 'N/A'}</span> },
   {
-    accessorKey: 'dealerType',
+    id: 'dealerType',
     header: 'Type',
-    cell: ({ row }) => <Badge className="bg-sky-500/10 text-sky-600 hover:bg-sky-500/20">{row.original.dealerType}</Badge>,
+    cell: ({ row }) => <Badge className="bg-sky-500/10 text-sky-600 hover:bg-sky-500/20">{(row.original as any).dealerType || 'N/A'}</Badge>,
   },
   {
-    accessorKey: 'orderTotal',
+    id: 'orderTotal',
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="justify-end text-right w-full">
         Order Total
         <IconFilter className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="text-right font-semibold text-primary">{formatCurrency(row.original.orderTotal)}</div>,
+    cell: ({ row }) => {
+        const val = (row.original as any).orderTotal;
+        return <div className="text-right font-semibold text-primary">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
+    }
   },
   {
-    accessorKey: 'receivedPayment',
+    id: 'receivedPayment',
     header: 'Received',
-    cell: ({ row }) => <div className="text-right text-sm text-green-600">{formatCurrency(row.original.receivedPayment ?? 0)}</div>,
+    cell: ({ row }) => {
+        const val = (row.original as any).receivedPayment;
+        return <div className="text-right text-sm text-green-600">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
+    }
   },
   {
-    accessorKey: 'pendingPayment',
+    id: 'pendingPayment',
     header: 'Pending',
-    cell: ({ row }) => <div className="text-right text-sm text-red-600">{formatCurrency(row.original.pendingPayment ?? 0)}</div>,
+    cell: ({ row }) => {
+        const val = (row.original as any).pendingPayment;
+        return <div className="text-right text-sm text-red-600">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
+    }
   },
-  { accessorKey: 'orderQty', header: 'Qty', cell: ({ row }) => <div className="text-center font-mono text-sm">{row.original.orderQty ?? 0}</div> },
+  { id: 'orderQty', header: 'Qty', cell: ({ row }) => <div className="text-center font-mono text-sm">{(row.original as any).orderQty ?? 0}</div> },
   { accessorKey: 'paymentMode', header: 'Payment Mode', cell: ({ row }) => <span className="text-xs text-gray-300">{row.original.paymentMode ?? '—'}</span>, enableSorting: false },
   { accessorKey: 'orderPartyName', header: 'Party Name', enableSorting: false, enableHiding: true },
 ];
 
-// --- DVR Columns (Copied from dvr-pjp.tsx for consistency) ---
+// --- DVR Columns ---
 const dvrColumns: ColumnDef<DVRRecord>[] = [
-  { accessorKey: 'reportDate', header: 'Report Date', cell: ({ row }) => new Date(row.original.reportDate).toLocaleDateString() },
-  { accessorKey: 'salesmanName', header: 'Salesman' },
-  { accessorKey: 'dealerName', header: 'Dealer Visited' },
-  { accessorKey: 'dealerType', header: 'Type', cell: ({ row }) => <Badge variant="outline">{row.original.dealerType}</Badge> },
+  { accessorKey: 'reportDate', header: 'Report Date', cell: ({ row }) => row.original.reportDate ? new Date(row.original.reportDate).toLocaleDateString() : 'N/A' },
+  { id: 'salesmanName', header: 'Salesman', cell: ({row}) => (row.original as any).salesmanName || 'N/A' },
+  { id: 'dealerName', header: 'Dealer Visited', cell: ({row}) => (row.original as any).dealerName || 'N/A' },
+  { accessorKey: 'dealerType', header: 'Type', cell: ({ row }) => <Badge variant="outline">{row.original.dealerType || 'N/A'}</Badge> },
   { accessorKey: 'location', header: 'Location' },
-  { accessorKey: 'todayOrderMt', header: 'Order (MT)', cell: ({ row }) => row.original.todayOrderMt.toFixed(2) },
-  { accessorKey: 'todayCollectionRupees', header: 'Collection (₹)', cell: ({ row }) => `₹${row.original.todayCollectionRupees.toLocaleString('en-IN')}` },
+  { 
+      id: 'todayOrderMt', 
+      header: 'Order (MT)', 
+      cell: ({ row }) => {
+          const val = (row.original as any).todayOrderMt;
+          return (typeof val === 'number' ? val : 0).toFixed(2);
+      }
+  },
+  { 
+      id: 'todayCollectionRupees', 
+      header: 'Collection (₹)', 
+      cell: ({ row }) => {
+          const val = (row.original as any).todayCollectionRupees;
+          return `₹${(typeof val === 'number' ? val : 0).toLocaleString('en-IN')}`;
+      }
+  },
 ];
 
 
@@ -110,10 +134,8 @@ const TIME_PERIOD_OPTIONS = [
    Component
 ========================= */
 export default function SalesDVRReportPage() {
-  // Pull raw arrays from the working endpoints via client hook
   const { loading, error, sales, dvrs, refetch } = useDvrPjpData(365);
 
-  // UI filters
   const [timePeriod, setTimePeriod] = React.useState('30');
   const [salesmanFilter, setSalesmanFilter] = React.useState<string[]>([]);
   const [regionFilter, setRegionFilter] = React.useState<string[]>([]);
@@ -135,12 +157,17 @@ export default function SalesDVRReportPage() {
     const dealerTypes = new Set<string>();
 
     (sales ?? []).forEach(d => {
-      if (d.salesmanName) salesmen.add(d.salesmanName);
-      if (d.region) regions.add(d.region);
-      if (d.area) areas.add(d.area);
-      if (d.dealerType) dealerTypes.add(d.dealerType);
+      const name = (d as any).salesmanName;
+      const reg = (d as any).region;
+      const ar = (d as any).area;
+      const type = (d as any).dealerType;
+
+      if (name) salesmen.add(name);
+      if (reg) regions.add(reg);
+      if (ar) areas.add(ar);
+      if (type) dealerTypes.add(type);
     });
-    // Also check DVRs for dealer types
+    
     (dvrs ?? []).forEach(d => {
       if (d.dealerType) dealerTypes.add(d.dealerType);
     });
@@ -181,10 +208,10 @@ export default function SalesDVRReportPage() {
   const filteredSalesData = React.useMemo(() => {
     let temp = [...salesInWindow];
 
-    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes(r.salesmanName));
-    if (regionFilter.length) temp = temp.filter(r => regionFilter.includes(r.region));
-    if (areaFilter.length) temp = temp.filter(r => areaFilter.includes(r.area));
-    if (dealerTypeFilter.length) temp = temp.filter(r => dealerTypeFilter.includes(r.dealerType));
+    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes((r as any).salesmanName));
+    if (regionFilter.length) temp = temp.filter(r => regionFilter.includes((r as any).region));
+    if (areaFilter.length) temp = temp.filter(r => areaFilter.includes((r as any).area));
+    if (dealerTypeFilter.length) temp = temp.filter(r => dealerTypeFilter.includes((r as any).dealerType));
 
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
@@ -196,13 +223,11 @@ export default function SalesDVRReportPage() {
     return temp;
   }, [salesInWindow, salesmanFilter, regionFilter, areaFilter, dealerTypeFilter, searchTerm]);
 
-  // Apply filters to DVRs as well for consistency
   const filteredDvrData = React.useMemo(() => {
     let temp = [...dvrsInWindow];
 
-    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes(r.salesmanName));
-    // Note: DVRs don't have region/area in this schema, but do have dealerType
-    if (dealerTypeFilter.length) temp = temp.filter(r => dealerTypeFilter.includes(r.dealerType));
+    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes((r as any).salesmanName));
+    if (dealerTypeFilter.length) temp = temp.filter(r => dealerTypeFilter.includes((r as any).dealerType));
 
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
@@ -217,7 +242,7 @@ export default function SalesDVRReportPage() {
      Analytics (Sales vs DVR)
   ========================= */
   const totalSalesValue = React.useMemo(() => calculateTotalSalesValue(filteredSalesData), [filteredSalesData]);
-  const totalVisits = filteredDvrData.length; // Use filtered DVRs
+  const totalVisits = filteredDvrData.length; 
   const salesPerVisit = totalVisits > 0 ? totalSalesValue / totalVisits : 0;
 
   const mom = React.useMemo(() => {
@@ -478,7 +503,7 @@ export default function SalesDVRReportPage() {
                 {filteredSalesData.length > 0 ? (
                   <DataTableReusable
                     columns={salesColumns}
-                    data={filteredSalesData}
+                    data={filteredSalesData as any}
                     enableRowDragging={false}
                     onRowOrderChange={() => {}}
                   />
@@ -502,7 +527,7 @@ export default function SalesDVRReportPage() {
                 {filteredDvrData.length > 0 ? (
                   <DataTableReusable
                     columns={dvrColumns}
-                    data={filteredDvrData}
+                    data={filteredDvrData as any}
                     enableRowDragging={false}
                     onRowOrderChange={() => {}}
                   />

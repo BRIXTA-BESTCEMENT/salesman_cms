@@ -21,7 +21,7 @@ import { format, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { bagLiftSchema } from '@/lib/shared-zod-schema';
+import { selectBagLiftSchema } from '../../../../drizzle/zodSchemas'; 
 
 // UI Components
 import { Input } from '@/components/ui/input';
@@ -63,7 +63,7 @@ interface RolesResponse {
 }
 
 // Type for data coming from the API
-type BagLiftRecord = z.infer<typeof bagLiftSchema> & {
+type BagLiftRecord = z.infer<typeof selectBagLiftSchema> & {
   masonName: string;
   dealerName: string | null;
   approverName: string | null;

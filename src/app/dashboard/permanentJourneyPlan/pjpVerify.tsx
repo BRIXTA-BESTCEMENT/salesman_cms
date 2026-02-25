@@ -31,7 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Zone } from '@/lib/Reusable-constants';
 import { Calendar } from "@/components/ui/calendar"; // The actual UI component
 // Combobox / Searchable Dropdown Imports
@@ -59,14 +59,30 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-import {
-  permanentJourneyPlanVerificationSchema,
-  type PermanentJourneyPlanVerificationSchema,
-  type PjpModificationSchema
-} from '@/lib/shared-zod-schema';
+import { selectPermanentJourneyPlanSchema } from '../../../../drizzle/zodSchemas';
 
-type PermanentJourneyPlanVerification = PermanentJourneyPlanVerificationSchema;
-interface PJPModificationState extends PjpModificationSchema { id: string; }
+// --- EXTEND THE DRIZZLE SCHEMA ---
+const extendedVerificationSchema = selectPermanentJourneyPlanSchema.extend({
+  salesmanName: z.string().optional().catch("Unknown"),
+  salesmanRegion: z.string().optional().catch("Unknown"),
+  visitDealerName: z.string().nullable().optional(),
+  influencerName: z.string().nullable().optional(),
+  influencerPhone: z.string().nullable().optional(),
+  activityType: z.string().nullable().optional(),
+  route: z.string().nullable().optional(),
+  additionalVisitRemarks: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  // Safely coerce numbers that might come as strings from DB aggregations
+  noOfConvertedBags: z.coerce.number().optional().catch(0),
+  noOfMasonPcSchemes: z.coerce.number().optional().catch(0),
+  plannedNewSiteVisits: z.coerce.number().optional().catch(0),
+  plannedFollowUpSiteVisits: z.coerce.number().optional().catch(0),
+  plannedNewDealerVisits: z.coerce.number().optional().catch(0),
+  plannedInfluencerVisits: z.coerce.number().optional().catch(0),
+});
+
+type PermanentJourneyPlanVerification = z.infer<typeof extendedVerificationSchema>;
+interface PJPModificationState extends PermanentJourneyPlanVerification { id: string; }
 
 // --- TYPES FOR DROPDOWNS ---
 interface OptionItem {
@@ -187,7 +203,7 @@ export default function PJPVerifyPage() {
     try {
       const response = await fetch(`${API_BASE}/pjp-verification`);
       const data = await response.json();
-      setPendingPJPs(z.array(permanentJourneyPlanVerificationSchema).parse(data.plans || data));
+      setPendingPJPs(z.array(extendedVerificationSchema).parse(data.plans || data));
     } catch (e: any) { toast.error("Error loading verification queue."); } finally { setLoading(false); }
   }, []);
 
@@ -267,7 +283,7 @@ export default function PJPVerifyPage() {
   // --- FILTER LOGIC ---
   const filteredPJPs = useMemo(() => {
     return pendingPJPs.filter(pjp => {
-      const matchesSearch = pjp.salesmanName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch = (pjp.salesmanName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         pjp.areaToBeVisited.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesSalesman = selectedSalesmanFilter === 'all' || pjp.salesmanName === selectedSalesmanFilter;
       const matchesRegion = selectedRegionFilter === 'all' || selectedRegionFilter === 'All Zone' || pjp.salesmanRegion === selectedRegionFilter;
@@ -445,7 +461,10 @@ export default function PJPVerifyPage() {
                 </SelectTrigger>
                 <SelectContent className=" border-slate-800 text-white">
                   <SelectItem value="all">All Salesmen</SelectItem>
-                  {Array.from(new Set(pendingPJPs.map(p => p.salesmanName))).sort().map(n => (
+                  {Array.from(new Set(pendingPJPs.map(p => p.salesmanName)))
+                    .filter((name): name is string => Boolean(name))
+                    .sort()
+                    .map(n => (
                     <SelectItem key={n} value={n}>{n}</SelectItem>
                   ))}
                 </SelectContent>

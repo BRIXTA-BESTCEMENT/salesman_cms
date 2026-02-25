@@ -27,13 +27,9 @@ const DATE_FILTERS = [
 ];
 
 export default function TvrPjpReportPage() {
-  // --- States ---
   const [days, setDays] = React.useState<string>('30');
-
-  // Client-side fetch + compute (uses ONLY VERIFIED PJPs internally)
   const { loading, error, filteredPjps, filteredTvrs, analytics } = useTvrPjpData(Number(days));
 
-  // --- New Filter States ---
   const [salesmanFilter, setSalesmanFilter] = React.useState<string[]>([]);
   const [areaFilter, setAreaFilter] = React.useState<string[]>([]);
   const [visitCategoryFilter, setVisitCategoryFilter] = React.useState<string[]>([]);
@@ -43,19 +39,21 @@ export default function TvrPjpReportPage() {
     if (error) toast.error('Data Load Error', { description: error });
   }, [error]);
 
-  // --- Unique filter options (derived from date-filtered data) ---
   const uniqueOptions = React.useMemo(() => {
     const salesmen = new Set<string>();
     const areas = new Set<string>();
     const categories = new Set<string>();
 
     (filteredPjps ?? []).forEach(d => {
-      if (d.salesmanName) salesmen.add(d.salesmanName);
+      const pjpName = (d as any).salesmanName;
+      if (pjpName) salesmen.add(pjpName);
       if (d.areaToBeVisited) areas.add(d.areaToBeVisited);
     });
     (filteredTvrs ?? []).forEach(t => {
-      if (t.salesmanName) salesmen.add(t.salesmanName);
-      if (t.area) areas.add(t.area);
+      const tvrName = (t as any).salesmanName;
+      const tvrArea = (t as any).area;
+      if (tvrName) salesmen.add(tvrName);
+      if (tvrArea) areas.add(tvrArea);
       if (t.visitCategory) categories.add(t.visitCategory);
     });
 
@@ -66,13 +64,15 @@ export default function TvrPjpReportPage() {
     };
   }, [filteredPjps, filteredTvrs]);
 
-  // --- Apply client-side filters ---
   const finalFilteredPjps = React.useMemo(() => {
     if (!filteredPjps) return [];
     let temp = [...filteredPjps];
 
-    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes(r.salesmanName));
-    if (areaFilter.length) temp = temp.filter(r => areaFilter.includes(r.areaToBeVisited));
+    if (salesmanFilter.length) temp = temp.filter(r => {
+        const name = (r as any).salesmanName;
+        return name && salesmanFilter.includes(name);
+    });
+    if (areaFilter.length) temp = temp.filter(r => r.areaToBeVisited && areaFilter.includes(r.areaToBeVisited));
 
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
@@ -87,9 +87,15 @@ export default function TvrPjpReportPage() {
     if (!filteredTvrs) return [];
     let temp = [...filteredTvrs];
 
-    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes(r.salesmanName));
-    if (areaFilter.length) temp = temp.filter(r => areaFilter.includes(r.area ?? ''));
-    if (visitCategoryFilter.length) temp = temp.filter(r => visitCategoryFilter.includes(r.visitCategory ?? ''));
+    if (salesmanFilter.length) temp = temp.filter(r => {
+        const name = (r as any).salesmanName;
+        return name && salesmanFilter.includes(name);
+    });
+    if (areaFilter.length) temp = temp.filter(r => {
+        const area = (r as any).area;
+        return area && areaFilter.includes(area);
+    });
+    if (visitCategoryFilter.length) temp = temp.filter(r => r.visitCategory && visitCategoryFilter.includes(r.visitCategory));
 
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
@@ -100,19 +106,17 @@ export default function TvrPjpReportPage() {
     return temp;
   }, [filteredTvrs, salesmanFilter, areaFilter, visitCategoryFilter, searchTerm]);
 
-
-  // --- Chart data (uses FINAL filtered data) ---
   const chartData = React.useMemo(() => {
     if (!finalFilteredPjps || !finalFilteredTvrs) return [];
     const map = new Map<string, { name: string; tvrs: number; pjps: number }>();
 
-    finalFilteredTvrs.forEach((d) => {
-      const key = d.date; // TVR uses 'date'
+    finalFilteredTvrs.forEach((d: any) => {
+      const key = d.date || d.reportDate; 
       if (!map.has(key)) map.set(key, { name: key, tvrs: 0, pjps: 0 });
       map.get(key)!.tvrs += 1;
     });
 
-    finalFilteredPjps.forEach((p) => {
+    finalFilteredPjps.forEach((p: any) => {
       const key = p.planDate;
       if (!map.has(key)) map.set(key, { name: key, tvrs: 0, pjps: 0 });
       map.get(key)!.pjps += 1;
@@ -123,39 +127,39 @@ export default function TvrPjpReportPage() {
     );
   }, [finalFilteredPjps, finalFilteredTvrs]);
 
-  // Columns — PJP
   const pjpColumns: ColumnDef<PJPRecord>[] = React.useMemo(() => [
-    { accessorKey: 'planDate', header: 'Plan Date', cell: ({ row }) => new Date(row.original.planDate).toLocaleDateString() },
-    { accessorKey: 'salesmanName', header: 'Salesman' },
+    { accessorKey: 'planDate', header: 'Plan Date', cell: ({ row }) => row.original.planDate ? new Date(row.original.planDate).toLocaleDateString() : 'N/A' },
+    { id: 'salesmanName', header: 'Salesman', cell: ({ row }) => (row.original as any).salesmanName || 'N/A' },
     { accessorKey: 'areaToBeVisited', header: 'Area' },
-    { accessorKey: 'visitDealerName', header: 'Target (Site/Dealer)' },
+    { id: 'visitDealerName', header: 'Target (Site/Dealer)', cell: ({ row }) => (row.original as any).visitDealerName || 'N/A' },
     {
-      accessorKey: 'verificationStatus',
+      id: 'verificationStatus',
       header: 'Verification',
       cell: ({ row }) => {
-        const status = row.original.verificationStatus;
+        const status = (row.original as any).verificationStatus;
         const className = status === 'VERIFIED'
             ? 'bg-green-600 hover:bg-green-700 text-white'
             : status === 'PENDING'
               ? 'bg-yellow-500 hover:bg-yellow-600 text-black'
               : 'bg-red-600 hover:bg-red-700 text-white';
-        return <Badge className={className}>{status}</Badge>;
+        return <Badge className={className}>{status || 'N/A'}</Badge>;
       },
     },
   ], []);
 
-  // Columns — TVR (Technical Visit Report)
   const tvrColumns: ColumnDef<TVRRecord>[] = React.useMemo(() => [
-    { accessorKey: 'date', header: 'Visit Date', cell: ({ row }) => new Date(row.original.date).toLocaleDateString() },
-    { accessorKey: 'salesmanName', header: 'Salesman' },
+    { id: 'date', header: 'Visit Date', cell: ({ row }) => {
+        const d = (row.original as any).date || row.original.reportDate;
+        return d ? new Date(d).toLocaleDateString() : 'N/A';
+    }},
+    { id: 'salesmanName', header: 'Salesman', cell: ({ row }) => (row.original as any).salesmanName || 'N/A' },
     { accessorKey: 'siteNameConcernedPerson', header: 'Site / Concerned Person' },
     { accessorKey: 'visitCategory', header: 'Category', cell: ({ row }) => row.original.visitCategory ? <Badge variant="outline">{row.original.visitCategory}</Badge> : '-' },
-    { accessorKey: 'area', header: 'Area' },
+    { id: 'area', header: 'Area', cell: ({ row }) => (row.original as any).area || 'N/A' },
     { accessorKey: 'siteVisitStage', header: 'Stage' },
-    { accessorKey: 'isConverted', header: 'Converted?', cell: ({ row }) => row.original.isConverted ? <Badge className="bg-green-600">Yes</Badge> : <Badge variant="secondary">No</Badge> },
+    { id: 'isConverted', header: 'Converted?', cell: ({ row }) => (row.original as any).isConverted ? <Badge className="bg-green-600">Yes</Badge> : <Badge variant="secondary">No</Badge> },
   ], []);
 
-  // Error UI
   if (error) {
     return (
       <div className="p-8 space-y-4">
@@ -245,13 +249,12 @@ export default function TvrPjpReportPage() {
 
       {loading && <div className="text-center py-16 text-white font-semibold">Loading TVR vs PJP data...</div>}
 
-      {/* --- KPIs (Uses analytics object but FINAL counts) --- */}
+      {/* --- KPIs --- */}
       {!loading && analytics && filteredTvrs && filteredPjps && (
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold border-b pb-2">Key Performance Indicators</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Target Achievement */}
             <Card className="shadow-lg hover:shadow-xl transition-shadow border-primary/50">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-lg font-medium">Target Achievement (TVR vs PJP)</CardTitle>
@@ -267,7 +270,6 @@ export default function TvrPjpReportPage() {
               </CardContent>
             </Card>
 
-            {/* MoM Cards (from analytics hook) */}
             {analytics.momMetrics.find((m) => m.metric.includes('TVR')) && (
               <MoMMetricCard metricData={analytics.momMetrics.find((m) => m.metric.includes('TVR'))!} />
             )}
@@ -276,7 +278,7 @@ export default function TvrPjpReportPage() {
             )}
           </div>
 
-          {/* Trend Chart (uses FINAL filtered data) */}
+          {/* Trend Chart */}
           <div className="pt-6">
             <ChartAreaInteractive
               data={chartData}
@@ -287,7 +289,7 @@ export default function TvrPjpReportPage() {
 
           <Separator className="my-8" />
 
-          {/* Tables (uses FINAL filtered data) */}
+          {/* Tables */}
           <h2 className="text-2xl font-semibold border-b pb-2 pt-4">Transactional Data (Last {days} Days)</h2>
 
           <div className="space-y-8">
@@ -302,7 +304,7 @@ export default function TvrPjpReportPage() {
                 {finalFilteredTvrs.length > 0 ? (
                   <DataTableReusable
                     columns={tvrColumns}
-                    data={finalFilteredTvrs}
+                    data={finalFilteredTvrs as any} 
                     enableRowDragging={false}
                     onRowOrderChange={() => { }}
                   />
@@ -325,7 +327,7 @@ export default function TvrPjpReportPage() {
                 {finalFilteredPjps.length > 0 ? (
                   <DataTableReusable
                     columns={pjpColumns}
-                    data={finalFilteredPjps}
+                    data={finalFilteredPjps as any} 
                     enableRowDragging={false}
                     onRowOrderChange={() => { }}
                   />

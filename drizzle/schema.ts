@@ -179,26 +179,47 @@ export const dealers = pgTable("dealers", {
 
 export const verifiedDealers = pgTable("verified_dealers", {
   id: serial("id").primaryKey(),
-  dealerCode: varchar("dealer_code", { length: 255 }),
-  dealerCategory: varchar("dealer_category", { length: 255 }),
-  isSubdealer: boolean("is_subdealer"),
-  dealerPartyName: varchar("dealer_party_name", { length: 255 }),
-  zone: varchar("zone", { length: 255 }),
-  area: varchar("area", { length: 255 }),
+  dealerPartyName: varchar("dealer_party_name", { length: 255 }).notNull(),
+  alias: varchar("alias", { length: 255 }),
+  gstNo: varchar("gst_no", { length: 50 }),
+  panNo: varchar("pan_no", { length: 50 }),
+  zone: varchar("zone", { length: 120 }),
+  district: varchar("district", { length: 120 }),
+  area: varchar("area", { length: 120 }),
+  state: varchar("state", { length: 100 }),
+  pinCode: varchar("pin_code", { length: 20 }),
   contactNo1: varchar("contact_no1", { length: 20 }),
   contactNo2: varchar("contact_no2", { length: 20 }),
   email: varchar("email", { length: 255 }),
-  address: text("address"),
-  pinCode: varchar("pin_code", { length: 20 }),
-  relatedSpName: varchar("related_sp_name", { length: 255 }),
-  ownerProprietorName: varchar("owner_proprietor_name", { length: 255 }),
-  natureOfFirm: varchar("nature_of_firm", { length: 255 }),
-  gstNo: varchar("gst_no", { length: 50 }),
-  panNo: varchar("pan_no", { length: 50 }),
+  contactPerson: varchar("contact_person", { length: 255 }),
+  dealerSegment: varchar("dealer_segment", { length: 255 }),
+  salesPromoterId: integer("sales_promoter_id").references(() => salesPromoters.id, { onDelete: "set null" }),
+  salesManNameRaw: varchar("sales_man_name_raw", { length: 255 }),
+  creditLimit: numeric("credit_limit", { precision: 14, scale: 2 }),
+  securityBlankChequeNo: varchar("security_blank_cheque_no", { length: 255 }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (t) => [
+  index("idx_verified_zone").on(t.zone),
+  index("idx_verified_district").on(t.district),
+  index("idx_verified_pincode").on(t.pinCode),
+  index("idx_verified_sales_promoter").on(t.salesPromoterId),
+  index("idx_verified_segment").on(t.dealerSegment),
+  index("idx_verified_gst").on(t.gstNo),
+  index("idx_verified_mobile").on(t.contactNo1),
+]);
 
-  // Foreign Keys 
-  userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
-  dealerId: varchar("dealer_id", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
+export const salesPromoters = pgTable("sales_promoters", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  mobile: varchar("mobile", { length: 20 }),
+  email: varchar("email", { length: 255 }),
+  zone: varchar("zone", { length: 120 }),
+  district: varchar("district", { length: 120 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export const permanentJourneyPlans = pgTable("permanent_journey_plans", {
@@ -259,63 +280,30 @@ export const permanentJourneyPlans = pgTable("permanent_journey_plans", {
 ]);
 
 export const dailyTasks = pgTable("daily_tasks", {
-	id: varchar({ length: 255 }).primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
-	assignedByUserId: integer("assigned_by_user_id").notNull(),
-	taskDate: date("task_date").notNull(),
-	visitType: varchar("visit_type", { length: 50 }).notNull(),
-	relatedDealerId: varchar("related_dealer_id", { length: 255 }),
-	siteName: varchar("site_name", { length: 255 }),
-	description: varchar({ length: 500 }),
-	status: varchar({ length: 50 }).default('Assigned').notNull(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	pjpId: varchar("pjp_id", { length: 255 }),
-	siteId: uuid("site_id"),
-	dealerName: varchar("dealer_name", { length: 255 }),
-	dealerCategory: varchar("dealer_category", { length: 50 }),
-	pjpCycle: varchar("pjp_cycle", { length: 50 }),
-	relatedVerifiedDealerId: integer("related_verified_dealer_id"),
-}, (table) => [
-	index("idx_daily_tasks_assigned_by_user_id").using("btree", table.assignedByUserId.asc().nullsLast().op("int4_ops")),
-	index("idx_daily_tasks_date_user").using("btree", table.taskDate.asc().nullsLast().op("int4_ops"), table.userId.asc().nullsLast().op("int4_ops")),
-	index("idx_daily_tasks_pjp_id").using("btree", table.pjpId.asc().nullsLast().op("text_ops")),
-	index("idx_daily_tasks_related_dealer_id").using("btree", table.relatedDealerId.asc().nullsLast().op("text_ops")),
-	index("idx_daily_tasks_related_verified_dealer_id").using("btree", table.relatedVerifiedDealerId.asc().nullsLast().op("int4_ops")),
-	index("idx_daily_tasks_site_id").using("btree", table.siteId.asc().nullsLast().op("uuid_ops")),
-	index("idx_daily_tasks_status").using("btree", table.status.asc().nullsLast().op("text_ops")),
-	index("idx_daily_tasks_task_date").using("btree", table.taskDate.asc().nullsLast().op("date_ops")),
-	index("idx_daily_tasks_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "daily_tasks_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
-	foreignKey({
-			columns: [table.assignedByUserId],
-			foreignColumns: [users.id],
-			name: "daily_tasks_assigned_by_user_id_fkey"
-		}).onUpdate("cascade"),
-	foreignKey({
-			columns: [table.relatedDealerId],
-			foreignColumns: [dealers.id],
-			name: "daily_tasks_related_dealer_id_fkey"
-		}).onUpdate("cascade").onDelete("set null"),
-	foreignKey({
-			columns: [table.pjpId],
-			foreignColumns: [permanentJourneyPlans.id],
-			name: "daily_tasks_pjp_id_fkey"
-		}).onUpdate("cascade").onDelete("set null"),
-	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [technicalSites.id],
-			name: "daily_tasks_site_id_fkey"
-		}).onDelete("set null"),
-	foreignKey({
-			columns: [table.relatedVerifiedDealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "daily_tasks_related_verified_dealer_id_fkey"
-		}).onUpdate("cascade").onDelete("set null"),
+  id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
+  pjpBatchId: uuid("pjp_batch_id"),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  dealerId: varchar("dealer_id", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
+  dealerNameSnapshot: varchar("dealer_name_snapshot", { length: 255 }),
+  dealerMobile: varchar("dealer_mobile", { length: 20 }),
+  zone: varchar("zone", { length: 120 }),
+  area: varchar("area", { length: 120 }),
+  route: text("route"),
+  objective: varchar("objective", { length: 255 }),
+  visitType: varchar("visit_type", { length: 100 }),
+  requiredVisitCount: integer("required_visit_count"),
+  week: varchar("week", { length: 50 }),
+  taskDate: date("task_date").notNull(),
+  status: varchar("status", { length: 50 }).default("Assigned").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()).defaultNow().notNull(),
+}, (t) => [
+  index("idx_daily_tasks_user").on(t.userId),
+  index("idx_daily_tasks_dealer").on(t.dealerId),
+  index("idx_daily_tasks_date").on(t.taskDate),
+  index("idx_daily_tasks_zone").on(t.zone),
+  index("idx_daily_tasks_week").on(t.week),
+  index("idx_daily_tasks_pjp_batch").on(t.pjpBatchId),
 ]);
 
 export const dailyVisitReports = pgTable("daily_visit_reports", {

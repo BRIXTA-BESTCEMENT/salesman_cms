@@ -4,9 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MasonPcPage from '@/app/dashboard/masonpcSide/masonpc';
 import TsoMeetingsPage from '@/app/dashboard/masonpcSide/tsoMeetings';
 import SchemesOffersPage from '@/app/dashboard/masonpcSide/schemesOffers';
-import MasonOnSchemesPage from '@/app/dashboard/masonpcSide/masonOnSchemes';
-import MasonOnMeetingsPage from '@/app/dashboard/masonpcSide/masonOnMeetings';
-
 import BagsLiftPage from '@/app/dashboard/masonpcSide/bagsLift';
 import PointsLedgerPage from '@/app/dashboard/masonpcSide/pointsLedger';
 import RewardsRedemptionPage from '@/app/dashboard/masonpcSide/rewardRedemption';
@@ -17,8 +14,6 @@ interface MasonPcTabsProps {
   canSeeMasonPc: boolean;
   canSeeTsoMeetings: boolean;
   canSeeSchemesOffers: boolean;
-  canSeeMasonOnSchemes: boolean;
-  canSeeMasonOnMeetings: boolean;
   canSeeBagsLift: boolean;
   canSeePointsLedger: boolean;
   canSeeRewardsRedemption: boolean;
@@ -28,8 +23,6 @@ export function MasonPcTabs({
   canSeeMasonPc,
   canSeeTsoMeetings,
   canSeeSchemesOffers,
-  canSeeMasonOnSchemes,
-  canSeeMasonOnMeetings,
   canSeeBagsLift,
   canSeePointsLedger,
   canSeeRewardsRedemption,
@@ -40,8 +33,6 @@ export function MasonPcTabs({
   if (canSeeMasonPc) defaultTab = "masonPc";
   else if (canSeeTsoMeetings) defaultTab = "tsoMeetings";
   else if (canSeeSchemesOffers) defaultTab = "schemesOffers";
-  else if (canSeeMasonOnSchemes) defaultTab = "masonOnSchemes";
-  else if (canSeeMasonOnMeetings) defaultTab = "masonOnMeetings";
   else if (canSeeBagsLift) defaultTab = "bagsLift";
   else if (canSeePointsLedger) defaultTab = "pointsLedger";
   else if (canSeeRewardsRedemption) defaultTab = "rewardsRedemption";
@@ -65,12 +56,6 @@ export function MasonPcTabs({
         {canSeeSchemesOffers && (
           <TabsTrigger value="schemesOffers">Schemes & Offers</TabsTrigger>
         )}
-         {/* {canSeeMasonOnSchemes && (
-          <TabsTrigger value="masonOnSchemes">Mason on Schemes</TabsTrigger>
-        )}
-         {canSeeMasonOnMeetings && (
-          <TabsTrigger value="masonOnMeetings">Mason on Meetings</TabsTrigger>
-        )} */}
         {canSeeRewardsRedemption && (
           <TabsTrigger value="rewardsRedemption">Rewards Redemption</TabsTrigger>
         )}
@@ -97,16 +82,6 @@ export function MasonPcTabs({
           <PointsLedgerPage />
         </TabsContent>
       )}
-      {/* {canSeeMasonOnSchemes && (
-        <TabsContent value="masonOnSchemes" className="space-y-4">
-          <MasonOnSchemesPage />
-        </TabsContent>
-      )}
-      {canSeeMasonOnMeetings && (
-        <TabsContent value="masonOnMeetings" className="space-y-4">
-          <MasonOnMeetingsPage />
-        </TabsContent>
-      )} */}
       {canSeeTsoMeetings && (
         <TabsContent value="tsoMeetings" className="space-y-4">
           <TsoMeetingsPage />

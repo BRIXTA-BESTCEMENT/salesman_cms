@@ -16,7 +16,6 @@ import {
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { technicalVisitReportSchema } from '@/lib/shared-zod-schema';
 
 // UI Components
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
@@ -34,6 +32,29 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { selectTechnicalVisitReportSchema } from '../../../../drizzle/zodSchemas';
+
+// --- EXTEND THE DRIZZLE SCHEMA ---
+const extendedTechnicalVisitReportSchema = selectTechnicalVisitReportSchema.extend({
+  salesmanName: z.string().optional().catch("Unknown"),
+  role: z.string().optional().catch("N/A"),
+  date: z.string().optional(),
+  timeSpentinLoc: z.string().nullable().optional(), 
+  latitude: z.coerce.number().nullable().optional().catch(null),
+  longitude: z.coerce.number().nullable().optional().catch(null),
+  constAreaSqFt: z.coerce.number().nullable().optional().catch(null),
+  currentBrandPrice: z.coerce.number().nullable().optional().catch(null),
+  siteStock: z.coerce.number().nullable().optional().catch(null),
+  estRequirement: z.coerce.number().nullable().optional().catch(null),
+  conversionQuantityValue: z.coerce.number().nullable().optional().catch(null),
+  siteVisitBrandInUse: z.array(z.string()).nullable().optional().transform(v => v || []),
+  influencerType: z.array(z.string()).nullable().optional().transform(v => v || []),
+  isConverted: z.boolean().nullable().optional(),
+  isTechService: z.boolean().nullable().optional(),
+  isSchemeEnrolled: z.boolean().nullable().optional(),
+});
+
+type TechnicalVisitReport = z.infer<typeof extendedTechnicalVisitReportSchema>;
 
 // --- CONSTANTS AND TYPES ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -46,15 +67,6 @@ interface LocationsResponse {
 interface RolesResponse {
   roles: string[];
 }
-
-type TechnicalVisitReport = z.infer<typeof technicalVisitReportSchema> & {
-  salesmanName: string;
-  role: string;
-  area: string;
-  region: string;
-  latitude?: number | null;
-  longitude?: number | null;
-};
 
 const CUSTOMER_TYPE_OPTIONS = [
   'IHB/Site',
@@ -176,7 +188,7 @@ export default function TechnicalVisitReportsPage() {
       const rawData: TechnicalVisitReport[] = await response.json();
       const validatedData = rawData.map((item) => {
         try {
-          const validated = technicalVisitReportSchema.parse(item);
+          const validated = extendedTechnicalVisitReportSchema.parse(item);
           return { ...validated, id: (validated as any).id?.toString() || `${Math.random()}` } as TechnicalVisitReport;
         } catch (e) {
           console.error("Validation error:", item, e);
@@ -227,7 +239,7 @@ export default function TechnicalVisitReportsPage() {
   const filteredReports = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return technicalReports.filter((report) => {
-      const usernameMatch = !searchQuery || report.salesmanName.toLowerCase().includes(q) || report.siteNameConcernedPerson?.toLowerCase().includes(q);
+      const usernameMatch = !searchQuery || (report.salesmanName || '').toLowerCase().includes(q) || report.siteNameConcernedPerson?.toLowerCase().includes(q);
       const customerTypeMatch = customerTypeFilter === 'all' || report.customerType === customerTypeFilter;
       const roleMatch = roleFilter === 'all' || report.role?.toLowerCase() === roleFilter.toLowerCase();
       const areaMatch = areaFilter === 'all' || report.area?.toLowerCase() === areaFilter.toLowerCase();
@@ -266,7 +278,7 @@ export default function TechnicalVisitReportsPage() {
       header: "Site / Party Name",
       cell: ({ row }) => (
         <div className="flex flex-col max-w-[180px]">
-          <span className="font-semibold text-sm truncate" title={row.original.siteNameConcernedPerson || row.original.associatedPartyName}>
+          <span className="font-semibold text-sm truncate" title={row.original.siteNameConcernedPerson || row.original.associatedPartyName || ''}>
             {row.original.siteNameConcernedPerson || row.original.associatedPartyName}
           </span>
           <span className="text-xs text-muted-foreground">{row.original.phoneNo}</span>

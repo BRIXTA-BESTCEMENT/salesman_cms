@@ -17,7 +17,6 @@ import { IconCalendar } from '@tabler/icons-react';
 // Utilities
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { journeyOpTrackingSchema } from '@/lib/shared-zod-schema';
 import { DateRange } from "react-day-picker";
 import { cn } from '@/lib/utils';
 import {
@@ -29,16 +28,55 @@ import {
   endOfMonth,
 } from "date-fns";
 
-//import { BASE_URL } from '@/lib/Reusable-constants';
+import { selectJourneyOpsSchema } from '../../../../drizzle/zodSchemas';
+
+// --- EXTEND THE DRIZZLE SCHEMA ---
+// We make the base partial so Zod doesn't crash if the API flattens the response 
+// and removes strict base fields like `payload` or `serverSeq`.
+const extendedJourneyOpsSchema = selectJourneyOpsSchema.partial().extend({
+  id: z.string().optional(),
+  serverSeq: z.coerce.bigint().optional(),
+  salesmanName: z.string().nullable().optional().catch("Unknown"),
+  salesmanRole: z.string().nullable().optional().catch("N/A"),
+  role: z.string().nullable().optional().catch("N/A"),
+  area: z.string().nullable().optional().catch("N/A"),
+  region: z.string().nullable().optional().catch("N/A"),
+  employeeId: z.string().nullable().optional(),
+  workosOrganizationId: z.string().nullable().optional(),
+
+  // Flattened Payload Tracking Data (Coerce numerics safely)
+  latitude: z.coerce.number().nullable().optional().catch(null),
+  longitude: z.coerce.number().nullable().optional().catch(null),
+  recordedAt: z.string().nullable().optional(),
+  totalDistanceTravelled: z.coerce.number().nullable().optional().catch(0),
+  locationType: z.string().nullable().optional(),
+  activityType: z.string().nullable().optional(),
+  appState: z.string().nullable().optional(),
+  accuracy: z.coerce.number().nullable().optional().catch(null),
+  speed: z.coerce.number().nullable().optional().catch(null),
+  heading: z.coerce.number().nullable().optional().catch(null),
+  altitude: z.coerce.number().nullable().optional().catch(null),
+  batteryLevel: z.coerce.number().nullable().optional().catch(null),
+  isCharging: z.boolean().nullable().optional(),
+  networkStatus: z.string().nullable().optional(),
+  ipAddress: z.string().nullable().optional(),
+  siteName: z.string().nullable().optional(),
+  checkInTime: z.string().nullable().optional(),
+  checkOutTime: z.string().nullable().optional(),
+  isActive: z.boolean().nullable().optional(),
+  destLat: z.coerce.number().nullable().optional().catch(null),
+  destLng: z.coerce.number().nullable().optional().catch(null),
+});
 
 // --- CONSTANTS AND TYPES ---
-type GeoTrack = z.infer<typeof journeyOpTrackingSchema> & {
-  salesmanRole?: string;
-  role?: string;
-  area?: string;
-  region?: string;
+type GeoTrack = z.infer<typeof extendedJourneyOpsSchema>;
+type DisplayGeoTrack = Omit<GeoTrack, 'id'> & 
+{ 
+  id: string;
+  displayDate: string; 
+  displayCheckInTime: string; 
+  displayCheckOutTime: string 
 };
-type DisplayGeoTrack = GeoTrack & { displayDate: string; displayCheckInTime: string; displayCheckOutTime: string };
 
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
 const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
@@ -194,9 +232,8 @@ export default function SalesmanGeoTrackingPage() {
       const validatedData = rawData
         .map((item: unknown) => {
           try {
-            // Ensure data passed to reusable table has an 'id' property (if not from schema, assume one exists or map unique field)
-            const validated = journeyOpTrackingSchema.parse(item) as GeoTrack;
-            return { ...validated } as DisplayGeoTrack; // Using journeyId as UniqueIdentifier
+            const validated = extendedJourneyOpsSchema.parse(item) as GeoTrack;
+            return { ...validated } as DisplayGeoTrack; 
           } catch (e) {
             console.error('Data validation failed for item:', item, 'ZodError', e);
             return null;
@@ -269,7 +306,10 @@ export default function SalesmanGeoTrackingPage() {
       // 5. Date Filter
       let matchesDate = true;
       if (dateRange && dateRange.from) {
-        const trackDate = new Date(track.recordedAt);
+        const targetDate = track.recordedAt || track.createdAt;
+        if (!targetDate) return false;
+
+        const trackDate = new Date(targetDate);
         const fromDate = new Date(dateRange.from);
         const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
 
@@ -304,7 +344,9 @@ export default function SalesmanGeoTrackingPage() {
       const distance = track.totalDistanceTravelled;
       if (typeof distance !== 'number' || isNaN(distance)) return;
 
-      const date = new Date(track.recordedAt);
+      const dateStr = track.recordedAt || track.createdAt;
+      if (!dateStr) return;
+      const date = new Date(dateStr);
 
       total += distance;
 

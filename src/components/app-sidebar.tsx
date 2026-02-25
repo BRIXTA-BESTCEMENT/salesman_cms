@@ -90,11 +90,6 @@ const menuItems: MenuItem[] = [
         url: "/dashboard/usersAndTeam",
         permission: ITEM_PERMISSIONS["Users & Team"]
       },
-      // {
-      //   title: "Assign Tasks",
-      //   url: "/dashboard/assignTasks",
-      //   permission: ITEM_PERMISSIONS["Assign Tasks"]
-      // },
       {
         title: "Dealers",
         url: "/dashboard/dealerManagement",
@@ -111,7 +106,12 @@ const menuItems: MenuItem[] = [
         permission: ITEM_PERMISSIONS["Reports"]
       },
       {
-        title: "Permanent Journey Plan",
+        title: "PJPs (Sales Side)", // Assign Tasks hander
+        url: "/dashboard/assignTasks",
+        permission: ITEM_PERMISSIONS["Assign Tasks"]
+      },
+      {
+        title: "PJPs (Technical Side)", // Permanent Journey Plan handler
         url: "/dashboard/permanentJourneyPlan",
         permission: ITEM_PERMISSIONS["Permanent Journey Plan"]
       },

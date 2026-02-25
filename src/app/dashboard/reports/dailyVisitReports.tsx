@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -13,15 +13,28 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { dailyVisitReportSchema } from '@/lib/shared-zod-schema';
 import { Search, Loader2 } from 'lucide-react';
-//import { BASE_URL } from '@/lib/Reusable-constants';
+import { selectDailyVisitReportSchema } from '../../../../drizzle/zodSchemas';
 
-type DailyVisitReport = z.infer<typeof dailyVisitReportSchema> & {
-  role: string;
-  area: string;
-  region: string;
-};
+// --- EXTEND THE DRIZZLE SCHEMA ---
+const extendedDailyVisitReportSchema = selectDailyVisitReportSchema.extend({
+  salesmanName: z.string().optional().catch("Unknown"),
+  role: z.string().optional().catch("N/A"),
+  area: z.string().optional().catch("N/A"),
+  region: z.string().optional().catch("N/A"),
+  dealerName: z.string().nullable().optional(),
+  subDealerName: z.string().nullable().optional(),
+  latitude: z.coerce.number().optional().catch(0),
+  longitude: z.coerce.number().optional().catch(0),
+  dealerTotalPotential: z.coerce.number().optional().catch(0),
+  dealerBestPotential: z.coerce.number().optional().catch(0),
+  todayOrderMt: z.coerce.number().optional().catch(0),
+  todayCollectionRupees: z.coerce.number().optional().catch(0),
+  overdueAmount: z.coerce.number().nullable().optional().catch(0),
+  brandSelling: z.array(z.string()).nullable().optional().catch([]),
+});
+
+type DailyVisitReport = z.infer<typeof extendedDailyVisitReportSchema>;
 
 // API Endpoints for filter options
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -115,17 +128,17 @@ export default function DailyVisitReportsPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data: DailyVisitReport[] = await response.json();
+      const data: any[] = await response.json();
       const validated = data.map((item) => {
         try {
-          // Add ID property needed by DataTableReusable
-          const validatedItem = dailyVisitReportSchema.parse(item) as DailyVisitReport;
+          // Use the extended schema
+          const validatedItem = extendedDailyVisitReportSchema.parse(item);
           return {
             ...validatedItem,
-            id: (validatedItem as any).id?.toString() || `${validatedItem.salesmanName}-${validatedItem.reportDate}-${Math.random()}`
-          } as DailyVisitReport;
+            id: validatedItem.id?.toString() || `${validatedItem.salesmanName}-${validatedItem.reportDate}-${Math.random()}`
+          };
         } catch (e) {
-          console.error('Validation error on report item:', e);
+          console.error('Validation error on report item:', e, item);
           return null;
         }
       }).filter(Boolean) as DailyVisitReport[];
@@ -139,7 +152,6 @@ export default function DailyVisitReportsPage() {
       setLoading(false);
     }
   }, [router]);
-
 
   /**
    * Fetches unique areas and regions for the filter dropdowns.
@@ -237,7 +249,7 @@ export default function DailyVisitReportsPage() {
   // Define columns (Including the fixed Role, Area, Region accessors)
   const dailyVisitReportColumns: ColumnDef<DailyVisitReport, any>[] = [
     { accessorKey: 'salesmanName', header: 'Salesman' },
-    { accessorKey: 'role', header: 'Role' }, // Uses 'role' accessor
+    { accessorKey: 'role', header: 'Role' },
     { accessorKey: 'area', header: 'Area' },
     { accessorKey: 'region', header: 'Region(Zone)' },
     { accessorKey: 'reportDate', header: 'Date' },
@@ -246,17 +258,25 @@ export default function DailyVisitReportsPage() {
     { accessorKey: 'subDealerName', header: 'Sub Dealer Name', cell: info => info.getValue() || 'N/A' },
     { accessorKey: 'location', header: 'Location' },
     { accessorKey: 'visitType', header: 'Visit Type' },
-    { accessorKey: 'todayOrderMt', header: 'Order (MT)', cell: info => info.getValue().toFixed(2) },
-    { accessorKey: 'todayCollectionRupees', header: 'Collection (₹)', cell: info => info.getValue().toFixed(2) },
+    { 
+      accessorKey: 'todayOrderMt', 
+      header: 'Order (MT)', 
+      cell: info => (info.getValue() ?? 0).toFixed(2) 
+    },
+    { 
+      accessorKey: 'todayCollectionRupees', 
+      header: 'Collection (₹)', 
+      cell: info => (info.getValue() ?? 0).toFixed(2) 
+    },
     {
       accessorKey: 'overdueAmount',
       header: 'Overdue (₹)',
-      cell: info => info.getValue() ? info.getValue().toFixed(2) : '0.00'
+      cell: info => (info.getValue() ?? 0).toFixed(2)
     },
     {
       accessorKey: 'feedbacks',
       header: 'Feedbacks',
-      cell: info => <span className="max-w-[250px] truncate block">{info.getValue()}</span>
+      cell: info => <span className="max-w-[250px] truncate block">{info.getValue() || 'N/A'}</span>
     }
   ];
 
@@ -305,7 +325,7 @@ export default function DailyVisitReportsPage() {
             isLoadingRoles
           )}
 
-          {/* 3. Area Filter (Commented out in original but kept for display) */}
+          {/* 3. Area Filter */}
           {renderSelectFilter(
             'Area',
             areaFilter,
@@ -314,7 +334,7 @@ export default function DailyVisitReportsPage() {
             isLoadingLocations
           )}
 
-          {/* 4. Region Filter (Commented out in original but kept for display) */}
+          {/* 4. Region Filter */}
           {renderSelectFilter(
             'Region(Zone)',
             regionFilter,

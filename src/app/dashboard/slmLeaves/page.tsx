@@ -25,10 +25,24 @@ import { IconCalendar } from '@tabler/icons-react';
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
-import { salesmanLeaveApplicationSchema } from '@/lib/shared-zod-schema';
-//import { BASE_URL } from '@/lib/Reusable-constants';
+import { selectSalesmanLeaveApplicationSchema } from '../../../../drizzle/zodSchemas';
 
-type SalesmanLeaveApplication = z.infer<typeof salesmanLeaveApplicationSchema>;
+// --- EXTEND THE DRIZZLE SCHEMA ---
+// Add the relational joined fields and ensure dates don't break validation
+const extendedSalesmanLeaveApplicationSchema = selectSalesmanLeaveApplicationSchema.extend({
+  salesmanName: z.string().optional().catch("Unknown"),
+  salesmanRole: z.string().optional().catch("N/A"),
+  role: z.string().optional().catch("N/A"), // Fallback if API uses 'role' instead
+  area: z.string().nullable().optional().catch("N/A"),
+  region: z.string().nullable().optional().catch("N/A"),
+  // Handle cases where dates might come through as stringified Timestamps
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+
+type SalesmanLeaveApplication = Omit<z.infer<typeof extendedSalesmanLeaveApplicationSchema>, 'id'> & { 
+  id: string 
+};
 
 // --- API Endpoints and Types for Filters ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -183,7 +197,7 @@ export default function SlmLeavesPage() {
       const validatedData = data.map((item) => {
         try {
           // Use id as UniqueIdentifier for DataTableReusable
-          const validated = salesmanLeaveApplicationSchema.parse(item);
+          const validated = extendedSalesmanLeaveApplicationSchema.parse(item);
           return { ...validated, id: validated.id.toString() } as SalesmanLeaveApplication;
         } catch (e) {
           console.error("Validation error for item:", item, e);
@@ -247,7 +261,7 @@ export default function SlmLeavesPage() {
     setCurrentAction({
       id: app.id,
       type: type,
-      salesmanName: app.salesmanName
+      salesmanName: app.salesmanName || "Unknown"
     });
     setActionRemarks(""); // Reset remarks
     setIsDialogOpen(true);

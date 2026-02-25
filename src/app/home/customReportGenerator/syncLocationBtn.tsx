@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 
 interface ReportRow {
   id: string;
-  location: string;
-  inTimeLatitude?: number;
-  inTimeLongitude?: number;
+  location?: string | null;
+  locationName?: string | null;
+  inTimeLatitude?: number | null;
+  inTimeLongitude?: number | null;
 }
 
 export default function SyncLocationBtn({ 

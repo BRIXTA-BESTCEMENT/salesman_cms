@@ -6,16 +6,15 @@ import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { 
-  Search, Loader2, Badge as BadgeIcon, XCircle, CheckCircle2, 
+import {
+  Search, Loader2, Badge as BadgeIcon, XCircle, CheckCircle2,
   Eye, User, Calendar, MapPin, Store, Users, ExternalLink,
   Wallet, Gift, Camera, Image as ImageIcon
 } from 'lucide-react';
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
-// Import the schema for this page
-import { tsoMeetingSchema } from '@/lib/shared-zod-schema';
+import { selectTsoMeetingSchema } from '../../../../drizzle/zodSchemas';
 
 // UI Components
 import { Input } from '@/components/ui/input';
@@ -35,24 +34,24 @@ import {
 
 // API Endpoints
 const TSO_MEETINGS_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/tso-meetings`;
-const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`; 
-const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`; 
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
 interface LocationsResponse {
   areas: string[];
   regions: string[];
 }
 interface RolesResponse {
-    roles: string[]; 
+  roles: string[];
 }
 
 // Extend the inferred type to include the creator's info
-type TsoMeeting = z.infer<typeof tsoMeetingSchema> & {
-    creatorName: string; 
-    role: string;        
-    area: string;        
-    region: string;
-    meetImageUrl: string;      
+type TsoMeeting = z.infer<typeof selectTsoMeetingSchema> & {
+  creatorName: string;
+  role: string;
+  area: string;
+  region: string;
+  meetImageUrl: string;
 };
 
 // --- HELPER FUNCTIONS ---
@@ -102,13 +101,15 @@ const formatDate = (dateString: string | null | undefined) => {
   }
 };
 
-const formatCurrency = (value: number | null | undefined) => {
-    if (value === null || value === undefined) return 'N/A';
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-    }).format(value);
+const formatCurrency = (value: number | string | null | undefined) => {
+  if (value === null || value === undefined) return 'N/A';
+  const numericValue = typeof value === 'string' ? Number(value) : value;
+  if (isNaN(numericValue)) return 'N/A';
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(numericValue);
 };
 
 // --- REUSABLE READ-ONLY FIELD ---
@@ -146,10 +147,10 @@ export default function TsoMeetingsPage() {
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
-  
+
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
   const [isLoadingRoles, setIsLoadingRoles] = useState(true);
-  
+
   const [locationError, setLocationError] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
 
@@ -160,8 +161,8 @@ export default function TsoMeetingsPage() {
     try {
       const response = await fetch(TSO_MEETINGS_API_ENDPOINT);
       if (!response.ok) {
-         if (response.status === 401) { router.push('/login'); return; }
-         if (response.status === 403) { router.push('/dashboard'); return; }
+        if (response.status === 401) { router.push('/login'); return; }
+        if (response.status === 403) { router.push('/dashboard'); return; }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: TsoMeeting[] = await response.json();
@@ -196,7 +197,7 @@ export default function TsoMeetingsPage() {
     try {
       const response = await fetch(ROLES_API_ENDPOINT);
       if (response.ok) {
-        const data: RolesResponse = await response.json(); 
+        const data: RolesResponse = await response.json();
         setAvailableRoles(Array.isArray(data.roles) ? data.roles.filter(Boolean) : []);
       }
     } catch (err: any) {
@@ -216,10 +217,10 @@ export default function TsoMeetingsPage() {
   const filteredMeetings = useMemo(() => {
     return tsoMeetings.filter((meeting) => {
       const creatorNameMatch = !searchQuery || meeting.creatorName.toLowerCase().includes(searchQuery.toLowerCase());
-      const roleMatch = roleFilter === 'all' || meeting.role?.toLowerCase() === roleFilter.toLowerCase(); 
-      const areaMatch = areaFilter === 'all' || meeting.area?.toLowerCase() === areaFilter.toLowerCase(); 
+      const roleMatch = roleFilter === 'all' || meeting.role?.toLowerCase() === roleFilter.toLowerCase();
+      const areaMatch = areaFilter === 'all' || meeting.area?.toLowerCase() === areaFilter.toLowerCase();
       const regionMatch = regionFilter === 'all' || meeting.region?.toLowerCase() === regionFilter.toLowerCase();
-      
+
       return creatorNameMatch && roleMatch && areaMatch && regionMatch;
     });
   }, [tsoMeetings, searchQuery, roleFilter, areaFilter, regionFilter]);
@@ -228,20 +229,20 @@ export default function TsoMeetingsPage() {
   const tsoMeetingColumns = useMemo<ColumnDef<TsoMeeting>[]>(() => [
     { accessorKey: "creatorName", header: "Creator" },
     { accessorKey: "role", header: "Role" },
-    { 
-      accessorKey: "type", 
+    {
+      accessorKey: "type",
       header: "Type",
       cell: ({ row }) => <Badge variant="outline">{row.original.type}</Badge>
     },
-    { 
-      accessorKey: "date", 
+    {
+      accessorKey: "date",
       header: "Date",
-      cell: ({ row }) => formatDate(row.original.date) 
+      cell: ({ row }) => formatDate(row.original.date)
     },
     { accessorKey: "market", header: "Market" },
     { accessorKey: "zone", header: "Zone" },
-    { 
-      accessorKey: "dealerName", 
+    {
+      accessorKey: "dealerName",
       header: "Dealer",
       cell: ({ row }) => (
         <div className="flex flex-col">
@@ -251,8 +252,8 @@ export default function TsoMeetingsPage() {
       )
     },
     { accessorKey: "participantsCount", header: "Participants" },
-    { 
-      accessorKey: "totalExpenses", 
+    {
+      accessorKey: "totalExpenses",
       header: () => <div className="text-right">Expenses</div>,
       cell: ({ row }) => <span className="font-semibold text-right block">{formatCurrency(row.original.totalExpenses)}</span>
     },
@@ -328,7 +329,7 @@ export default function TsoMeetingsPage() {
           {renderSelectFilter('Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
           {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
           {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
-          
+
           <Button
             variant="ghost"
             onClick={() => {
@@ -350,8 +351,8 @@ export default function TsoMeetingsPage() {
           ) : (
             <DataTableReusable
               columns={tsoMeetingColumns}
-              data={filteredMeetings} 
-              enableRowDragging={false} 
+              data={filteredMeetings}
+              enableRowDragging={false}
             />
           )}
         </div>
@@ -361,7 +362,7 @@ export default function TsoMeetingsPage() {
       {selectedReport && (
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
           <DialogContent className="sm:max-w-[850px] max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
-            
+
             {/* Header with Color Coding */}
             <div className="px-6 py-4 border-b bg-muted/20 border-l-[6px] border-l-indigo-500">
               <DialogTitle className="text-xl flex items-center justify-between">
@@ -417,7 +418,7 @@ export default function TsoMeetingsPage() {
                   <InfoField label="Participants" value={selectedReport.participantsCount} icon={Users} />
                   <InfoField label="Gift Type" value={selectedReport.giftType} icon={Gift} />
                   <InfoField label="Account" value={selectedReport.accountJsbJud} />
-                  
+
                   <div className="flex flex-col space-y-1.5">
                     <Label className="text-xs font-medium text-muted-foreground">Total Expenses</Label>
                     <div className="text-sm font-bold p-2 text-white rounded-md border flex items-center">

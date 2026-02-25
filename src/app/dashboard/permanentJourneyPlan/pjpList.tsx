@@ -28,7 +28,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
@@ -41,9 +40,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { permanentJourneyPlanSchema } from '@/lib/shared-zod-schema';
+import { selectPermanentJourneyPlanSchema } from '../../../../drizzle/zodSchemas';
 
-type PermanentJourneyPlan = z.infer<typeof permanentJourneyPlanSchema>;
+const extendedPjpSchema = selectPermanentJourneyPlanSchema.extend({
+  salesmanName: z.string().optional().catch("Unknown"),
+  createdByName: z.string().optional().catch("Unknown"),
+  createdByRole: z.string().optional().catch("N/A"),
+  visitDealerName: z.string().nullable().optional(),
+  influencerName: z.string().nullable().optional(),
+  influencerPhone: z.string().nullable().optional(),
+  activityType: z.string().nullable().optional(),
+  route: z.string().nullable().optional(),
+  // Drizzle numbers sometimes come as strings from Postgres aggregations/joins, coerce them safely
+  noofConvertedBags: z.coerce.number().optional().catch(0),
+  noofMasonpcInSchemes: z.coerce.number().optional().catch(0),
+  plannedNewSiteVisits: z.coerce.number().optional().catch(0),
+  plannedFollowUpSiteVisits: z.coerce.number().optional().catch(0),
+  plannedNewDealerVisits: z.coerce.number().optional().catch(0),
+  plannedInfluencerVisits: z.coerce.number().optional().catch(0),
+});
+
+type PermanentJourneyPlan = z.infer<typeof extendedPjpSchema>;
 
 // --- REUSABLE READ-ONLY FIELD ---
 const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: string, value: React.ReactNode, icon?: any, fullWidth?: boolean }) => (
@@ -80,7 +97,7 @@ export default function PJPListPage() {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data: any[] = await response.json();
       const validatedData = data.map((item) => {
-        const validated = permanentJourneyPlanSchema.parse(item);
+        const validated = extendedPjpSchema.parse(item);
         return { ...validated, id: validated.id.toString() };
       });
       setPjps(validatedData);
@@ -108,12 +125,12 @@ export default function PJPListPage() {
     return {
       // Today Stats
       todayCount: todaysPlans.length,
-      todayBags: todaysPlans.reduce((acc, curr) => acc + (curr.noOfConvertedBags || 0), 0),
+      todayBags: todaysPlans.reduce((acc, curr) => acc + (curr.noofConvertedBags || 0), 0),
       todaySites: todaysPlans.reduce((acc, curr) => acc + (curr.plannedNewSiteVisits || 0) + (curr.plannedFollowUpSiteVisits || 0), 0),
 
       // Total Stats
       totalCount: pjps.length,
-      totalBags: pjps.reduce((acc, curr) => acc + (curr.noOfConvertedBags || 0), 0),
+      totalBags: pjps.reduce((acc, curr) => acc + (curr.noofConvertedBags || 0), 0),
       totalSites: pjps.reduce((acc, curr) => acc + (curr.plannedNewSiteVisits || 0) + (curr.plannedFollowUpSiteVisits || 0), 0)
     };
   }, [pjps]);
@@ -333,7 +350,10 @@ export default function PJPListPage() {
               <SelectTrigger><SelectValue placeholder="All" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Salesmen</SelectItem>
-                {Array.from(new Set(pjps.map(p => p.salesmanName))).map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+                {Array.from(new Set(pjps.map(p => p.salesmanName)))
+                .filter((name): name is string => Boolean(name))
+                .map(n => <SelectItem key={n} value={n}>{n}</SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -386,8 +406,8 @@ export default function PJPListPage() {
               {/* 2. Business Values */}
               <Card className="bg-primary/5 border-primary/10">
                 <CardContent className="p-4 grid grid-cols-2 gap-4">
-                  <InfoField label="Conversion Target (Bags)" value={`${selectedPjp.noOfConvertedBags} Bags`} icon={Target} />
-                  <InfoField label="Scheme Enrolments" value={selectedPjp.noOfMasonPcSchemes} icon={Users} />
+                  <InfoField label="Conversion Target (Bags)" value={`${selectedPjp.noofConvertedBags} Bags`} icon={Target} />
+                  <InfoField label="Scheme Enrolments" value={selectedPjp.noofMasonpcInSchemes} icon={Users} />
                 </CardContent>
               </Card>
 

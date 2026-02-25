@@ -11,14 +11,13 @@ import {
 
 // Reusable Components
 import { DataTableReusable } from '@/components/data-table-reusable';
-import { schemesOffersSchema } from '@/lib/shared-zod-schema';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AddSchemesRewards } from '@/components/add-schemes-rewards';
+import { selectSchemesOffersSchema } from '../../../../drizzle/zodSchemas';
 
 // Types
 type RewardRecord = {
@@ -33,7 +32,7 @@ type RewardRecord = {
   schemeIds: string[];
 };
 
-type SchemeOffer = z.infer<typeof schemesOffersSchema>;
+type SchemeOffer = z.infer<typeof selectSchemesOffersSchema>;
 
 type CategoryOption = { id: number; name: string; };
 

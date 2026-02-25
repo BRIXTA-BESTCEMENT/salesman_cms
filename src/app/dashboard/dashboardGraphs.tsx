@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { ChartAreaInteractive } from '@/components/chart-area-reusable';
-import { BASE_URL } from '@/lib/Reusable-constants';
 
 import {
   RawGeoTrackingRecord,
@@ -45,8 +44,10 @@ const geoTrackingColumns: ColumnDef<RawGeoTrackingRecord>[] = [
   {
     accessorKey: 'recordedAt',
     header: 'Last Ping',
-    cell: ({ row }) =>
-      new Date(row.original.recordedAt).toLocaleString('en-IN', {
+    cell: ({ row }) => {
+      const targetDate = row.original.recordedAt || row.original.createdAt;
+      if (!targetDate) return 'N/A';
+      return new Date(targetDate).toLocaleString('en-IN', {
         year: 'numeric',
         month: 'numeric',
         day: 'numeric',
@@ -55,15 +56,16 @@ const geoTrackingColumns: ColumnDef<RawGeoTrackingRecord>[] = [
         second: '2-digit',
         hour12: true,
         timeZone: 'Asia/Kolkata',
-      }),
+      })
+    },
   },
   {
     accessorKey: 'totalDistanceTravelled',
     header: 'Distance (km)',
     cell: ({ row }) => `${row.original.totalDistanceTravelled?.toFixed(2) ?? '0.00'} km`,
   },
-  { accessorKey: 'employeeId', header: 'Employee ID' },
-  { accessorKey: 'locationType', header: 'Location Type' },
+  { accessorKey: 'employeeId', header: 'Employee ID', cell: info => info.getValue() || 'N/A' },
+  { accessorKey: 'locationType', header: 'Location Type', cell: info => info.getValue() || 'N/A' },
 ];
 
 const dailyReportsColumns: ColumnDef<RawDailyVisitReportRecord>[] = [
@@ -89,7 +91,7 @@ const salesOrderColumns: ColumnDef<RawSalesOrderReportRecord>[] = [
   {
     accessorKey: 'orderDate',
     header: 'Order Date',
-    cell: ({ row }) => row.original.orderDate, // already YYYY-MM-DD from API
+    cell: ({ row }) => row.original.orderDate,
     meta: { filterType: 'date' },
   },
   { accessorKey: 'dealerName', header: 'Dealer' },
@@ -122,7 +124,6 @@ const salesOrderColumns: ColumnDef<RawSalesOrderReportRecord>[] = [
   },
   { accessorKey: 'paymentMode', header: 'Payment Mode' },
 
-  // Optional: show price and discount columns since you “want all the fields”
   {
     accessorKey: 'itemPrice',
     header: 'Item Price (₹)',
@@ -144,17 +145,16 @@ const salesOrderColumns: ColumnDef<RawSalesOrderReportRecord>[] = [
   { accessorKey: 'itemType', header: 'Item Type' },
   { accessorKey: 'itemGrade', header: 'Item Grade' },
 
-  // Timestamps
   {
     accessorKey: 'createdAt',
     header: 'Created On',
-    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString('en-IN'),
+    cell: ({ row }) => row.original.createdAt ? new Date(row.original.createdAt).toLocaleDateString('en-IN') : '-',
     meta: { filterType: 'date' },
   },
   {
     accessorKey: 'updatedAt',
     header: 'Updated On',
-    cell: ({ row }) => new Date(row.original.updatedAt).toLocaleDateString('en-IN'),
+    cell: ({ row }) => row.original.updatedAt ? new Date(row.original.updatedAt).toLocaleDateString('en-IN') : '-',
     meta: { filterType: 'date' },
   },
 ];
@@ -199,9 +199,21 @@ export default function DashboardGraphs() {
         usersRes.json(),
       ]);
 
-      const validatedGeo = rawGeoTrackingSchema.array().parse(geoData);
-      const validatedDaily = rawDailyVisitReportSchema.array().parse(dailyData);
-      const validatedSales = rawSalesOrderSchema.array().parse(salesData);
+      // Enforce `id` mappings so DataTableReusable doesn't throw a TypeScript error
+      const validatedGeo = rawGeoTrackingSchema.array().parse(geoData).map(d => ({
+        ...d,
+        id: d.id?.toString() || d.opId?.toString() || `${Math.random()}`
+      })) as RawGeoTrackingRecord[];
+
+      const validatedDaily = rawDailyVisitReportSchema.array().parse(dailyData).map(d => ({
+        ...d,
+        id: d.id?.toString() || `${Math.random()}`
+      })) as RawDailyVisitReportRecord[];
+
+      const validatedSales = rawSalesOrderSchema.array().parse(salesData).map(d => ({
+        ...d,
+        id: d.id?.toString() || `${Math.random()}`
+      })) as RawSalesOrderReportRecord[];
 
       setRawGeoTrackingRecords(validatedGeo);
       setRawDailyReports(validatedDaily);
@@ -256,14 +268,16 @@ export default function DashboardGraphs() {
   }, [rawDailyReports, selectedRole]);
 
   const geoGraphData: GeoTrackingData[] = useMemo(() => {
-    // --- CHANGED: Use raw records directly ---
     let filtered = rawGeoTrackingRecords;
     if (selectedSalesman !== 'all') filtered = filtered.filter(r => r.salesmanName === selectedSalesman);
     
     const agg: Record<string, number> = {};
     filtered.forEach(item => {
-      // Aggregate total distance per day
-      const key = new Date(item.recordedAt).toISOString().slice(0, 10);
+      // Aggregate total distance per day (Fallback to createdAt if recordedAt is null)
+      const dateStr = item.recordedAt || item.createdAt;
+      if (!dateStr) return;
+      
+      const key = new Date(dateStr).toISOString().slice(0, 10);
       agg[key] = (agg[key] || 0) + (item.totalDistanceTravelled ?? 0);
     });
     return Object.keys(agg).sort().map(k => ({ name: k, distance: agg[k] }));
@@ -285,8 +299,8 @@ export default function DashboardGraphs() {
     if (selectedSalesman !== 'all') filtered = filtered.filter(r => r.salesmanName === selectedSalesman);
     const agg: Record<string, number> = {};
     filtered.forEach(item => {
-      const key = item.orderDate; // already YYYY-MM-DD
-      const qty = typeof item.orderQty === 'string' ? parseFloat(item.orderQty as any) : (item.orderQty ?? 0);
+      const key = item.orderDate; 
+      const qty = item.orderQty ?? 0;
       agg[key] = (agg[key] || 0) + (isNaN(qty) ? 0 : qty);
     });
     return Object.keys(agg).sort().map(k => ({ name: k, quantity: agg[k] }));

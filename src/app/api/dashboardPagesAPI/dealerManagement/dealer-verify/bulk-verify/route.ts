@@ -83,7 +83,7 @@ export async function PATCH(request: NextRequest) {
 
         // Revalidate cache using the centralized Server Action
         await refreshCompanyCache('dealers');
-        await refreshCompanyCache('verified-dealers');
+        await refreshCompanyCache('verified-dealers-list');
 
         return NextResponse.json({ message: 'Bulk verification successful', count: validIds.length }, { status: 200 });
 

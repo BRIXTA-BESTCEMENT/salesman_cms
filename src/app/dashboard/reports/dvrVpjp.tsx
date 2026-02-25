@@ -17,49 +17,15 @@ import { MultiSelect } from '@/components/multi-select';
 
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { ChartAreaInteractive } from '@/components/chart-area-reusable';
-import { useDvrPjpData } from '@/components/data-comparison-calculation';
 
-// --- Types aligned with shared Zod schemas + helper hook ---
-interface PJPRecord {
-  id: string;
-  salesmanName: string;
-  planDate: string; // YYYY-MM-DD
-  areaToBeVisited: string;
-  description?: string | null;
-  // UPDATED: Relaxed type from union to string to match incoming data
-  verificationStatus: string; 
-  status: string;             
-  visitDealerName?: string | null;
-  // UPDATED: Added siteId to match incoming data structure
-  siteId?: string | null; 
-}
-
-interface DVRRecord {
-  id: string;
-  salesmanName: string;
-  role: string;
-  reportDate: string; // YYYY-MM-DD
-  dealerType: string; // present in shared schema
-  dealerName: string | null;
-  subDealerName: string | null;
-  location: string;        // present in shared schema
-  latitude: number;        // present in shared schema
-  longitude: number;       // present in shared schema
-  todayOrderMt: number;
-  todayCollectionRupees: number;
-}
-
-interface MoMComparisonMetrics {
-  metric: string;
-  thisMonthValue: number;
-  lastMonthValue: number;
-  changePercentage: number;
-}
-
-interface DVRvPJPAnalytics {
-  targetAchievementPercentage: number;
-  momMetrics: MoMComparisonMetrics[];
-}
+// Import the validated, safely coerced types directly from your central calculator file
+import { 
+  useDvrPjpData, 
+  PJPRecord, 
+  DVRRecord, 
+  MoMComparisonMetrics, 
+  DVRvPJPAnalytics 
+} from '@/components/data-comparison-calculation';
 
 const DATE_FILTERS = [
   { value: '7', label: 'Last 7 Days' },
@@ -92,11 +58,15 @@ export default function DvrPjpReportPage() {
     const dealerTypes = new Set<string>();
 
     (filteredPjps ?? []).forEach(d => {
-      if (d.salesmanName) salesmen.add(d.salesmanName);
+      // Cast safely since base Drizzle schema makes salesmanName optional
+      const pjpName = (d as any).salesmanName;
+      if (pjpName) salesmen.add(pjpName);
       if (d.areaToBeVisited) areas.add(d.areaToBeVisited);
     });
+    
     (filteredDvrs ?? []).forEach(d => {
-      if (d.salesmanName) salesmen.add(d.salesmanName);
+      const dvrName = (d as any).salesmanName;
+      if (dvrName) salesmen.add(dvrName);
       if (d.dealerType) dealerTypes.add(d.dealerType);
     });
 
@@ -112,8 +82,12 @@ export default function DvrPjpReportPage() {
     if (!filteredPjps) return [];
     let temp = [...filteredPjps];
 
-    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes(r.salesmanName));
-    if (areaFilter.length) temp = temp.filter(r => areaFilter.includes(r.areaToBeVisited));
+    if (salesmanFilter.length) temp = temp.filter(r => {
+        const name = (r as any).salesmanName;
+        return name && salesmanFilter.includes(name);
+    });
+    
+    if (areaFilter.length) temp = temp.filter(r => r.areaToBeVisited && areaFilter.includes(r.areaToBeVisited));
 
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
@@ -128,8 +102,11 @@ export default function DvrPjpReportPage() {
     if (!filteredDvrs) return [];
     let temp = [...filteredDvrs];
 
-    if (salesmanFilter.length) temp = temp.filter(r => salesmanFilter.includes(r.salesmanName));
-    if (dealerTypeFilter.length) temp = temp.filter(r => dealerTypeFilter.includes(r.dealerType));
+    if (salesmanFilter.length) temp = temp.filter(r => {
+        const name = (r as any).salesmanName;
+        return name && salesmanFilter.includes(name);
+    });
+    if (dealerTypeFilter.length) temp = temp.filter(r => r.dealerType && dealerTypeFilter.includes(r.dealerType));
 
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
@@ -165,31 +142,43 @@ export default function DvrPjpReportPage() {
 
   // Columns — PJP
   const pjpColumns: ColumnDef<PJPRecord>[] = React.useMemo(() => [
-    { accessorKey: 'planDate', header: 'Plan Date', cell: ({ row }) => new Date(row.original.planDate).toLocaleDateString() },
-    { accessorKey: 'salesmanName', header: 'Salesman' },
+    { 
+      accessorKey: 'planDate', 
+      header: 'Plan Date', 
+      cell: ({ row }) => {
+        const d = row.original.planDate;
+        return d ? new Date(d).toLocaleDateString() : 'N/A';
+      }
+    },
+    // Map dynamically because salesmanName is technically an extended field not on base PJPRecord yet
+    { 
+        id: 'salesmanName', 
+        header: 'Salesman',
+        cell: ({ row }) => (row.original as any).salesmanName || 'N/A'
+    },
     { accessorKey: 'areaToBeVisited', header: 'Area' },
     { accessorKey: 'visitDealerName', header: 'Dealer' },
     {
       accessorKey: 'status',
       header: 'Plan Status',
       cell: ({ row }) => {
-        const status = row.original.status;
+        const status = (row.original as any).status;
 
         const className =
-          status === 'APPROVED'
+          status === 'APPROVED' || status === 'COMPLETED'
             ? 'bg-green-600 hover:bg-green-700 text-white'
             : status === 'PENDING'
               ? 'bg-yellow-500 hover:bg-yellow-600 text-black'
               : 'bg-red-600 hover:bg-red-700 text-white';
 
-        return <Badge className={className}>{status}</Badge>;
+        return <Badge className={className}>{status || 'N/A'}</Badge>;
       },
     },
     {
       accessorKey: 'verificationStatus',
       header: 'Verification',
       cell: ({ row }) => {
-        const status = row.original.verificationStatus;
+        const status = (row.original as any).verificationStatus;
 
         const className =
           status === 'VERIFIED'
@@ -198,20 +187,50 @@ export default function DvrPjpReportPage() {
               ? 'bg-yellow-500 hover:bg-yellow-600 text-black'
               : 'bg-red-600 hover:bg-red-700 text-white';
 
-        return <Badge className={className}>{status}</Badge>;
+        return <Badge className={className}>{status || 'N/A'}</Badge>;
       },
     },
   ], []);
 
   // Columns — DVR (aligned to shared schema)
   const dvrColumns: ColumnDef<DVRRecord>[] = React.useMemo(() => [
-    { accessorKey: 'reportDate', header: 'Report Date', cell: ({ row }) => new Date(row.original.reportDate).toLocaleDateString() },
-    { accessorKey: 'salesmanName', header: 'Salesman' },
-    { accessorKey: 'dealerName', header: 'Dealer Visited' },
-    { accessorKey: 'dealerType', header: 'Type', cell: ({ row }) => <Badge variant="outline">{row.original.dealerType}</Badge> },
+    { 
+      accessorKey: 'reportDate', 
+      header: 'Report Date', 
+      cell: ({ row }) => {
+        const d = row.original.reportDate;
+        return d ? new Date(d).toLocaleDateString() : 'N/A';
+      }
+    },
+    { 
+        id: 'salesmanName', 
+        header: 'Salesman',
+        cell: ({ row }) => (row.original as any).salesmanName || 'N/A'
+    },
+    { 
+        id: 'dealerName', 
+        header: 'Dealer Visited',
+        cell: ({ row }) => (row.original as any).dealerName || 'N/A'
+    },
+    { accessorKey: 'dealerType', header: 'Type', cell: ({ row }) => <Badge variant="outline">{row.original.dealerType || 'N/A'}</Badge> },
     { accessorKey: 'location', header: 'Location' },
-    { accessorKey: 'todayOrderMt', header: 'Order (MT)', cell: ({ row }) => row.original.todayOrderMt.toFixed(2) },
-    { accessorKey: 'todayCollectionRupees', header: 'Collection (₹)', cell: ({ row }) => `₹${row.original.todayCollectionRupees.toLocaleString('en-IN')}` },
+    // Use fallback ?? 0 before calling .toFixed() to satisfy TypeScript
+    { 
+        id: 'todayOrderMt', 
+        header: 'Order (MT)', 
+        cell: ({ row }) => {
+            const val = (row.original as any).todayOrderMt;
+            return (typeof val === 'number' ? val : 0).toFixed(2);
+        }
+    },
+    { 
+        id: 'todayCollectionRupees', 
+        header: 'Collection (₹)', 
+        cell: ({ row }) => {
+            const val = (row.original as any).todayCollectionRupees;
+            return `₹${(typeof val === 'number' ? val : 0).toLocaleString('en-IN')}`;
+        }
+    },
   ], []);
 
   // Error UI
@@ -363,7 +382,7 @@ export default function DvrPjpReportPage() {
                 {finalFilteredDvrs.length > 0 ? (
                   <DataTableReusable
                     columns={dvrColumns}
-                    data={finalFilteredDvrs}
+                    data={finalFilteredDvrs as any} // Cast safely since we defined columns dynamically
                     enableRowDragging={false}
                     onRowOrderChange={() => { }}
                   />
@@ -386,7 +405,7 @@ export default function DvrPjpReportPage() {
                 {finalFilteredPjps.length > 0 ? (
                   <DataTableReusable
                     columns={pjpColumns}
-                    data={finalFilteredPjps}
+                    data={finalFilteredPjps as any} // Cast safely since we defined columns dynamically
                     enableRowDragging={false}
                     onRowOrderChange={() => { }}
                   />
