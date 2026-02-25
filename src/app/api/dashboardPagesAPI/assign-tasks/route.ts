@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
       .leftJoin(dealers, eq(dailyTasks.dealerId, dealers.id))
       .where(eq(users.companyId, currentUser.companyId))
       .orderBy(desc(dailyTasks.createdAt))
-      .limit(200);
+      .limit(10000);
 
     const formattedTasks = dailyTasksRaw.map((task: any) => ({
       ...task,
