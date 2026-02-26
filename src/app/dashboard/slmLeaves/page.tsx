@@ -318,7 +318,7 @@ export default function SlmLeavesPage() {
     { accessorKey: "endDate", header: "End Date" },
     {
       accessorKey: "reason", header: "Reason",
-      cell: ({ row }) => <span className="max-w-[250px] truncate block">{row.original.reason}</span>,
+      cell: ({ row }) => <span className="max-w-[250px]">{row.original.reason}</span>,
     },
     {
       accessorKey: "status",

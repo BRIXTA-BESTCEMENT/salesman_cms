@@ -100,7 +100,7 @@ export const tablesMetadata: TableMeta[] = [
         title: 'PJPs (Sales Side)',
         icon: ListTodo,
         columns: [
-            'id', 'pjpBatchId', 'salesmanName', 'relatedDealerName', 'dealerMobile',
+            'id', 'pjpBatchId', 'assignedSalesmanName', 'assignedSalesmanEmail', 'dealerName', 'dealerMobile',
             'zone', 'area', 'route', 'objective', 'visitType', 'requiredVisitCount', 'week',
             'taskDate', 'status', 'createdAt', 'updatedAt'],
     },

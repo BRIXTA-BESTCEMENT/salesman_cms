@@ -27,8 +27,14 @@ const assignSchema = z.object({
     from: z.string(),
     to: z.string(),
   }),
-  dealerIds: z.array(z.string()).optional().default([]),
-}).refine(data => data.dealerIds.length > 0, {
+  dealerDetails: z.array(z.object({
+    dealerId: z.string(),
+    objective: z.string().optional().default(""),
+    visitType: z.string().optional().default("Dealer Visit"),
+    requiredVisitCount: z.number().int().optional().default(1),
+    route: z.string().optional().default("")
+  }))
+}).refine(data => data.dealerDetails.length > 0, {
   message: "Select at least one dealer",
 });
 
@@ -208,7 +214,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Invalid Input', errors: parsedBody.error.format() }, { status: 400 });
     }
 
-    const { salesmanId, dateRange, dealerIds } = parsedBody.data;
+    const { salesmanId, dateRange, dealerDetails } = parsedBody.data;
 
     const startDate = new Date(dateRange.from);
     const endDate = new Date(dateRange.to);
@@ -222,6 +228,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (datesToAssign.length === 0) return NextResponse.json({ message: "Invalid date range" }, { status: 400 });
+
+    const dealerIds = dealerDetails.map(d => d.dealerId);
 
     // Separate string UUIDs (Regular Dealers) from numeric Strings (Verified Dealers)
     const numericIds = dealerIds.filter(id => /^\d+$/.test(id)).map(Number);
@@ -268,8 +276,10 @@ export async function POST(request: NextRequest) {
       const dealer = allDealerInfos[i];
       const assignedDate = datesToAssign[i % totalDays];
 
+      const customConfig = dealerDetails.find(d => d.dealerId === dealer.id);
+
       tasksToCreate.push({
-        id: crypto.randomUUID(), // <-- Fixes the "null value in column id" error
+        id: crypto.randomUUID(),
         userId: salesmanId,
         dealerId: dealer.id,
         dealerNameSnapshot: dealer.name || "Unknown",
@@ -277,8 +287,10 @@ export async function POST(request: NextRequest) {
         zone: dealer.region || null,
         area: dealer.area || null,
         taskDate: assignedDate.toISOString().split('T')[0],
-        visitType: "Dealer Visit",
-        objective: "Bulk assigned via Admin Dashboard",
+        visitType: customConfig?.visitType || "Dealer Visit",
+        objective: customConfig?.objective || "Routine check-in",
+        requiredVisitCount: customConfig?.requiredVisitCount || 1,
+        route: customConfig?.route || null,
         status: "Assigned",
       });
     }
