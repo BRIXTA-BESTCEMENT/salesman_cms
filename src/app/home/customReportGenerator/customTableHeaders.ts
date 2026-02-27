@@ -54,7 +54,7 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Daily Visit Reports',
         icon: CalendarCheck,
         columns: [
-            'id', 'reportDate', 'dealerType', 'dealerName', 'subDealerName', 'location',
+            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'dealerType', 'dealerName', 'subDealerName', 'location',
             'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
             'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
             'todayCollectionRupees', 'overdueAmount', 'feedbacks', 'solutionBySalesperson',
@@ -67,8 +67,8 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Technical Visit Reports',
         icon: PencilRuler,
         columns: [
-            'id', 'reportDate', 'customerType', 'visitType', 'siteVisitType', 'visitCategory',
-            'salesmanName', 'salesmanEmail', 'siteNameConcernedPerson', 'phoneNo',
+            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'customerType', 
+            'siteNameConcernedPerson', 'phoneNo', 'visitType', 'siteVisitType', 'visitCategory',
             'marketName', 'siteAddress', 'region', 'area', 'latitude', 'longitude',
             'siteVisitStage', 'constAreaSqFt', 'siteVisitBrandInUse', 'currentBrandPrice',
             'siteStock', 'estRequirement',
