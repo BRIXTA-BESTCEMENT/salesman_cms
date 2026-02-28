@@ -10,7 +10,6 @@ import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectJourneyOpsSchema } from '../../../../../drizzle/zodSchemas';
 
-// Roles allowed to view tracking
 const allowedRoles = [
   'president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
@@ -18,9 +17,8 @@ const allowedRoles = [
   'senior-executive',
 ];
 
-// 1. Extend the baked DB schema to explicitly type the JSONB extracted fields
 const frontendTrackingSchema = selectJourneyOpsSchema.extend({
-  id: z.string(), // explicitly mapping the opId to a string ID
+  id: z.string(), 
   salesmanName: z.string(),
   employeeId: z.string().nullable().optional(),
   workosOrganizationId: z.string().nullable().optional(),
@@ -28,7 +26,6 @@ const frontendTrackingSchema = selectJourneyOpsSchema.extend({
   area: z.string(),
   region: z.string(),
   
-  // Extracted JSON payload fields mapped to strict types
   latitude: z.number(),
   longitude: z.number(),
   totalDistanceTravelled: z.number(),
@@ -55,7 +52,6 @@ const frontendTrackingSchema = selectJourneyOpsSchema.extend({
   updatedAt: z.string(),
 });
 
-// 2. Explicit type to survive Next.js 'use cache' boundary collapse
 type TrackingRow = InferSelectModel<typeof journeyOps> & {
   userFirstName: string | null;
   userLastName: string | null;
@@ -67,11 +63,12 @@ type TrackingRow = InferSelectModel<typeof journeyOps> & {
   companyWorkosOrgId: string | null;
 };
 
-// 3. The Cached Function
 async function getCachedTracking(companyId: number, startDateParam: string | null, endDateParam: string | null) {
   'use cache';
   cacheLife('minutes');
-  cacheTag(`slm-geotracking-${companyId}`);
+  
+  const filterKey = `${startDateParam}-${endDateParam}`;
+  cacheTag(`slm-geotracking-${companyId}-${filterKey}`);
 
   const filters = [eq(users.companyId, companyId)];
 
@@ -87,7 +84,6 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
     filters.push(lte(journeyOps.createdAt, end.toISOString()));
   }
 
-  // Use getTableColumns to flatten the query and bypass TS inference bugs
   const results: TrackingRow[] = await db
     .select({
       ...getTableColumns(journeyOps),
@@ -105,15 +101,14 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
     .leftJoin(companies, eq(users.companyId, companies.id))
     .where(and(...filters))
     .orderBy(desc(journeyOps.createdAt))
-    .limit(startDateParam ? 1000 : 350);
+    .limit(startDateParam ? 2000 : 500); // Higher limit if a specific date range is requested
 
   return results.map((row) => {
-    // Safely extract from the JSONB payload
     const payload = (row.payload && typeof row.payload === 'object') ? row.payload as any : {};
 
     return {
       ...row,
-      id: String(row.opId), // Convert bigint to string safely for the frontend
+      id: String(row.opId), // Convert BigInt to string to prevent JSON serialization errors
       salesmanName: row.userFirstName && row.userLastName ? `${row.userFirstName} ${row.userLastName}` : row.userEmail || 'Unknown',
       employeeId: row.userSalesmanLoginId ?? null,
       workosOrganizationId: row.companyWorkosOrgId ?? null,
@@ -121,7 +116,6 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
       area: row.userArea ?? '',
       region: row.userRegion ?? '',
       
-      // JSON Payload extraction
       latitude: Number(payload.latitude) || 0,
       longitude: Number(payload.longitude) || 0,
       totalDistanceTravelled: Number(payload.totalDistance) || 0,
@@ -156,12 +150,10 @@ export async function GET(request: NextRequest) {
   try {
     const claims = await getTokenClaims();
 
-    // 1. Authentication
     if (!claims || !claims.sub) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch User & Company via Drizzle
     const currentUserResult = await db
       .select({ id: users.id, role: users.role, companyId: users.companyId })
       .from(users)
@@ -174,27 +166,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // 3. Date Filters
     const searchParams = request.nextUrl.searchParams;
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
 
     const formattedReports = await getCachedTracking(currentUser.companyId, startDateParam, endDateParam);
 
-    // 4. Validate using extended schema safely
     const validatedData = z.array(frontendTrackingSchema).safeParse(formattedReports);
 
     if (!validatedData.success) {
       console.error("Tracking Geo Validation Error:", validatedData.error.format());
       
-      // Fallback response with bigint sanitizer
       const safeDataFallback = JSON.parse(
         JSON.stringify(formattedReports, (_, v) => typeof v === "bigint" ? Number(v) : v)
       );
       return NextResponse.json(safeDataFallback, { status: 200 });
     }
 
-    // Pass the strictly validated data through the bigint JSON stringifier safely
     const safeData = JSON.parse(
       JSON.stringify(validatedData.data, (_, v) =>
         typeof v === "bigint" ? Number(v) : v

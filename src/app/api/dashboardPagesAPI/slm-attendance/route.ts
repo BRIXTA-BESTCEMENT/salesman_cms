@@ -5,7 +5,7 @@ import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users, salesmanAttendance } from '../../../../../drizzle'; 
-import { eq, and, gte, lte, desc, getTableColumns } from 'drizzle-orm';
+import { eq, and, or, ilike, gte, lte, desc, getTableColumns, count, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectSalesmanAttendanceSchema } from '../../../../../drizzle/zodSchemas'; 
@@ -17,7 +17,6 @@ const allowedRoles = [
   'senior-executive'
 ];
 
-// 1. Extend the baked DB schema for strict frontend typing
 const frontendAttendanceSchema = selectSalesmanAttendanceSchema.extend({
   salesmanName: z.string(),
   date: z.string(),
@@ -25,7 +24,6 @@ const frontendAttendanceSchema = selectSalesmanAttendanceSchema.extend({
   inTime: z.string().nullable(),
   outTime: z.string().nullable(),
   
-  // Override decimals/numerics from Postgres strings to JS numbers
   inTimeLatitude: z.number().nullable(),
   inTimeLongitude: z.number().nullable(),
   inTimeAccuracy: z.number().nullable(),
@@ -39,16 +37,14 @@ const frontendAttendanceSchema = selectSalesmanAttendanceSchema.extend({
   outTimeHeading: z.number().nullable(),
   outTimeAltitude: z.number().nullable(),
   
-  // Timestamps & Joined Data
   createdAt: z.string(),
   updatedAt: z.string(),
   salesmanRole: z.string(),
   area: z.string(),
   region: z.string(),
-  role: z.string().nullable().optional(), // Preserved from old Prisma logic
+  role: z.string().nullable().optional(), 
 });
 
-// 2. Explicit type to survive Next.js 'use cache' boundary collapse
 type AttendanceRow = InferSelectModel<typeof salesmanAttendance> & {
   userFirstName: string | null;
   userLastName: string | null;
@@ -58,13 +54,39 @@ type AttendanceRow = InferSelectModel<typeof salesmanAttendance> & {
   userRegion: string | null;
 };
 
-// 3. The Cached Function
-async function getCachedAttendance(companyId: number, startDateParam: string | null, endDateParam: string | null) {
+async function getCachedAttendance(
+  companyId: number, 
+  page: number,
+  pageSize: number,
+  search: string | null,
+  jobTitle: string | null,
+  companyRole: string | null,
+  area: string | null,
+  region: string | null,
+  startDateParam: string | null, 
+  endDateParam: string | null
+) {
   'use cache';
   cacheLife('hours'); 
-  cacheTag(`salesman-attendance-${companyId}`); 
+  
+  const filterKey = `${search}-${jobTitle}-${companyRole}-${area}-${region}-${startDateParam}-${endDateParam}`;
+  cacheTag(`salesman-attendance-${companyId}-${page}-${filterKey}`); 
 
-  const filters = [eq(users.companyId, companyId)];
+  const filters: SQL[] = [eq(users.companyId, companyId)];
+
+  if (search) {
+    const searchCondition = or(
+      ilike(users.firstName, `%${search}%`),
+      ilike(users.lastName, `%${search}%`),
+      ilike(salesmanAttendance.locationName, `%${search}%`)
+    );
+    if (searchCondition) filters.push(searchCondition);
+  }
+
+  if (jobTitle && jobTitle !== 'all') filters.push(eq(users.role, jobTitle));
+  if (companyRole && companyRole !== 'all') filters.push(eq(salesmanAttendance.role, companyRole));
+  if (area && area !== 'all') filters.push(eq(users.area, area));
+  if (region && region !== 'all') filters.push(eq(users.region, region));
 
   if (startDateParam) {
     const start = new Date(startDateParam);
@@ -75,7 +97,8 @@ async function getCachedAttendance(companyId: number, startDateParam: string | n
     filters.push(lte(salesmanAttendance.attendanceDate, end.toISOString()));
   }
 
-  // Use getTableColumns to flatten the query natively
+  const whereClause = and(...filters);
+
   const attendanceRecords: AttendanceRow[] = await db
     .select({
       ...getTableColumns(salesmanAttendance),
@@ -88,10 +111,20 @@ async function getCachedAttendance(companyId: number, startDateParam: string | n
     })
     .from(salesmanAttendance)
     .leftJoin(users, eq(salesmanAttendance.userId, users.id))
-    .where(and(...filters))
-    .orderBy(desc(salesmanAttendance.attendanceDate));
+    .where(whereClause)
+    .orderBy(desc(salesmanAttendance.attendanceDate), desc(salesmanAttendance.createdAt))
+    .limit(pageSize)
+    .offset(page * pageSize);
 
-  return attendanceRecords.map((row) => {
+  const totalCountResult = await db
+    .select({ count: count() })
+    .from(salesmanAttendance)
+    .leftJoin(users, eq(salesmanAttendance.userId, users.id))
+    .where(whereClause);
+
+  const totalCount = Number(totalCountResult[0].count);
+
+  const formattedData = attendanceRecords.map((row) => {
     const salesmanName = [row.userFirstName, row.userLastName]
       .filter(Boolean).join(' ') || row.userEmail || 'N/A';
     
@@ -105,7 +138,6 @@ async function getCachedAttendance(companyId: number, startDateParam: string | n
       inTime: row.inTimeTimestamp ? new Date(row.inTimeTimestamp).toISOString() : null,
       outTime: row.outTimeTimestamp ? new Date(row.outTimeTimestamp).toISOString() : null,
       
-      // Handle Numeric string to Number conversion for Drizzle
       inTimeLatitude: toNum(row.inTimeLatitude) ?? 0,
       inTimeLongitude: toNum(row.inTimeLongitude) ?? 0,
       inTimeAccuracy: toNum(row.inTimeAccuracy),
@@ -124,9 +156,11 @@ async function getCachedAttendance(companyId: number, startDateParam: string | n
       salesmanRole: row.userRole ?? '',
       area: row.userArea ?? '',
       region: row.userRegion ?? '',
-      role: row.role ?? row.userRole ?? '', // Fallback to user role if table role is missing
+      role: row.role ?? row.userRole ?? '', 
     };
   });
+
+  return { data: formattedData, totalCount };
 }
 
 export async function GET(request: NextRequest) {
@@ -135,12 +169,10 @@ export async function GET(request: NextRequest) {
   try {
     const claims = await getTokenClaims();
 
-    // 1. Authentication Check
     if (!claims || !claims.sub) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch Current User lookup
     const currentUserResult = await db
       .select({ id: users.id, role: users.role, companyId: users.companyId })
       .from(users)
@@ -149,28 +181,54 @@ export async function GET(request: NextRequest) {
 
     const currentUser = currentUserResult[0];
 
-    // 3. Authorization Check
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const searchParams = request.nextUrl.searchParams;
+    const page = Number(searchParams.get('page') ?? 0);
+    const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
+
+    const search = searchParams.get('search');
+    const jobTitle = searchParams.get('jobTitle');
+    const companyRole = searchParams.get('companyRole');
+    const area = searchParams.get('area');
+    const region = searchParams.get('region');
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
 
-    // 4. Fetch from Cache
-    const formattedRecords = await getCachedAttendance(currentUser.companyId, startDateParam, endDateParam);
+    const result = await getCachedAttendance(
+      currentUser.companyId, 
+      page, 
+      pageSize, 
+      search, 
+      jobTitle, 
+      companyRole, 
+      area, 
+      region, 
+      startDateParam, 
+      endDateParam
+    );
 
-    // 5. Safe Parse Zod Validation using strictly extended schema
-    const validatedData = z.array(frontendAttendanceSchema).safeParse(formattedRecords);
+    const validatedData = z.array(frontendAttendanceSchema).safeParse(result.data);
 
     if (!validatedData.success) {
       console.error("Attendance Validation Error:", validatedData.error.format());
-      // Graceful fallback to raw mapped data to prevent total UI collapse
-      return NextResponse.json(formattedRecords, { status: 200 }); 
+      return NextResponse.json({
+        data: result.data,
+        totalCount: result.totalCount,
+        page,
+        pageSize
+      }, { status: 200 }); 
     }
 
-    return NextResponse.json(validatedData.data, { status: 200 });
+    return NextResponse.json({
+      data: validatedData.data,
+      totalCount: result.totalCount,
+      page,
+      pageSize
+    }, { status: 200 });
+
   } catch (error) {
     console.error('Error fetching salesman attendance:', error);
     return NextResponse.json({ 

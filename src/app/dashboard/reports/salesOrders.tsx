@@ -1,7 +1,7 @@
 // app/dashboard/reports/salesOrders.tsx
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { toast } from 'sonner';
@@ -9,16 +9,14 @@ import { z } from 'zod';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 
-// UI Components for Filtering
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { Search, Loader2 } from 'lucide-react';
 import { selectSalesOrderSchema } from '../../../../drizzle/zodSchemas';
 
-// --- EXTEND THE DRIZZLE SCHEMA ---
 const extendedSalesOrderSchema = selectSalesOrderSchema.extend({
-  // Joined relational fields
   salesmanName: z.string().optional().catch("Unknown"),
   salesmanRole: z.string().optional().catch("N/A"),
   dealerName: z.string().nullable().optional(),
@@ -39,10 +37,8 @@ const extendedSalesOrderSchema = selectSalesOrderSchema.extend({
   remarks: z.string().nullable().optional(),
 });
 
-// SalesOrder type is extended from the custom extended schema
 type SalesOrder = z.infer<typeof extendedSalesOrderSchema>;
 
-// --- CONSTANTS AND TYPES ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
 const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
@@ -54,8 +50,6 @@ interface RolesResponse {
   roles: string[];
 }
 
-
-// Column definitions for the sales order table
 const columnHelper = createColumnHelper<SalesOrder>();
 
 const num = (v: number | null | undefined) =>
@@ -64,7 +58,6 @@ const num = (v: number | null | undefined) =>
 const dateStr = (v: string | null | undefined) => v || '-';
 
 export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
-  // IDs & foreign keys
   columnHelper.accessor('id', {
     header: 'Order ID',
     cell: info => info.getValue(),
@@ -74,8 +67,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'User ID',
     cell: info => info.getValue() ?? '-',
   }),
-
-  // Denormalized display
   columnHelper.accessor('salesmanName', {
     header: 'Salesman',
     cell: info => info.getValue(),
@@ -110,8 +101,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Region',
     cell: info => info.getValue(),
   }),
-
-  // Business fields (raw)
   columnHelper.accessor('orderDate', {
     header: 'Order Date',
     cell: info => dateStr(info.getValue()),
@@ -122,8 +111,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     cell: info => info.getValue(),
     meta: { filterType: 'search' },
   }),
-
-  // Party details
   columnHelper.accessor('partyPhoneNo', {
     header: 'Party Phone',
     cell: info => info.getValue() ?? '-',
@@ -140,8 +127,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Party Address',
     cell: info => info.getValue() ?? '-',
   }),
-
-  // Delivery details
   columnHelper.accessor('deliveryDate', {
     header: 'Delivery Date',
     cell: info => dateStr(info.getValue()),
@@ -149,7 +134,7 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
   }),
   columnHelper.accessor('estimatedDelivery', {
     header: 'Delivery ETA',
-    cell: info => dateStr(info.getValue() || info.row.original.deliveryDate), // fallback alias
+    cell: info => dateStr(info.getValue() || info.row.original.deliveryDate),
     meta: { filterType: 'date' },
   }),
   columnHelper.accessor('deliveryArea', {
@@ -168,8 +153,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Delivery PIN',
     cell: info => info.getValue() ?? '-',
   }),
-
-  // Payment
   columnHelper.accessor('paymentMode', {
     header: 'Payment Mode',
     cell: info => info.getValue() ?? '-',
@@ -195,8 +178,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Pending (₹)',
     cell: info => num(info.getValue()),
   }),
-
-  // Order qty & unit
   columnHelper.accessor('orderQty', {
     header: 'Quantity',
     cell: info => {
@@ -209,8 +190,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Unit',
     cell: info => info.getValue() ?? '-',
   }),
-
-  // Pricing & discounts
   columnHelper.accessor('itemPrice', {
     header: 'Item Price (₹)',
     cell: info => num(info.getValue()),
@@ -226,8 +205,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Price After Discount (₹)',
     cell: info => num(info.getValue()),
   }),
-
-  // Product classification
   columnHelper.accessor('itemType', {
     header: 'Item Type',
     cell: info => info.getValue() ?? '-',
@@ -236,8 +213,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Item Grade',
     cell: info => info.getValue() ?? '-',
   }),
-
-  // Computed/convenience
   columnHelper.accessor('orderTotal', {
     header: 'Order Total (₹)',
     cell: info => num(info.getValue()),
@@ -246,8 +221,6 @@ export const salesOrderColumns: ColumnDef<SalesOrder, any>[] = [
     header: 'Remarks',
     cell: info => info.getValue() ?? '-',
   }),
-
-  // Timestamps
   columnHelper.accessor('createdAt', {
     header: 'Created On',
     cell: info => info.getValue() ? new Date(info.getValue() as string).toLocaleDateString() : '-',
@@ -268,9 +241,9 @@ const renderSelectFilter = (
   isLoading: boolean = false
 ) => (
   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
+      <SelectTrigger className="h-9 bg-background border-input">
         {isLoading ? (
           <div className="flex flex-row items-center space-x-2">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -281,7 +254,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -292,21 +265,18 @@ const renderSelectFilter = (
   </div>
 );
 
-
-// Component
 export default function SalesOrdersTable() {
   const router = useRouter();
   const [data, setData] = useState<SalesOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Filter States ---
-  const [searchQuery, setSearchQuery] = useState(''); // Salesman or Dealer Name search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
 
-  // --- Filter Options States ---
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
@@ -317,14 +287,34 @@ export default function SalesOrdersTable() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
 
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
 
-  // --- Data Fetching Functions ---
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter]);
 
   const fetchSalesOrders = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/dashboardPagesAPI/reports/sales-orders`);
+      const url = new URL(`/api/dashboardPagesAPI/reports/sales-orders`, window.location.origin);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (roleFilter !== 'all') url.searchParams.append('role', roleFilter);
+      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
+      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+
+      const response = await fetch(url.toString());
+      
       if (!response.ok) {
         if (response.status === 401) {
           toast.error('You are not authenticated. Redirecting to login.');
@@ -339,9 +329,12 @@ export default function SalesOrdersTable() {
         const errorData = await response.json();
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
-      const orders: any[] = await response.json();
+
+      const result = await response.json();
+      const orders: any[] = result.data || [];
       
-      // Ensure data structure matches expected extended schema
+      setTotalCount(result.totalCount || 0);
+      
       const validatedOrders = z.array(extendedSalesOrderSchema).parse(orders).map(order => ({
         ...order,
         id: order.id?.toString() || `${Math.random()}`, 
@@ -356,183 +349,128 @@ export default function SalesOrdersTable() {
     } finally {
       setIsLoading(false);
     }
-  }, [router]);
+  }, [router, page, pageSize, debouncedSearchQuery, roleFilter, areaFilter, regionFilter]);
 
-  /**
-   * Fetches unique areas and regions for the filter dropdowns.
-   */
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     setLocationError(null);
     try {
       const response = await fetch(LOCATION_API_ENDPOINT);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      
       const data: LocationsResponse = await response.json();
-
       const safeAreas = Array.isArray(data.areas) ? data.areas.filter(Boolean) : [];
       const safeRegions = Array.isArray(data.regions) ? data.regions.filter(Boolean) : [];
 
       setAvailableAreas(safeAreas);
       setAvailableRegions(safeRegions);
-
     } catch (err: any) {
       console.error('Failed to fetch filter locations:', err);
       setLocationError('Failed to load Area/Region filters.');
-      toast.error('Failed to load location filters.');
     } finally {
       setIsLoadingLocations(false);
     }
   }, []);
 
-  /**
-   * Fetches unique roles for the filter dropdowns.
-   */
   const fetchRoles = useCallback(async () => {
     setIsLoadingRoles(true);
     setRoleError(null);
     try {
       const response = await fetch(ROLES_API_ENDPOINT);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      
       const data: RolesResponse = await response.json();
       const roles = data.roles && Array.isArray(data.roles) ? data.roles : [];
-
       const safeRoles = roles.filter(Boolean);
 
       setAvailableRoles(safeRoles);
     } catch (err: any) {
       console.error('Failed to fetch filter roles:', err);
       setRoleError('Failed to load Role filters.');
-      toast.error('Failed to load role filters.');
     } finally {
       setIsLoadingRoles(false);
     }
   }, []);
 
-  // Initial data loads
   useEffect(() => {
     fetchSalesOrders();
+  }, [fetchSalesOrders]);
+
+  useEffect(() => {
     fetchLocations();
     fetchRoles();
-  }, [fetchSalesOrders, fetchLocations, fetchRoles]);
-
-  const filteredOrders = useMemo(() => {
-    const lowerCaseSearch = searchQuery.toLowerCase();
-
-    return data.filter((order) => {
-      // 1. Search Filter (Salesman Name OR Dealer Name)
-      const salesmanMatch = order.salesmanName?.toLowerCase().includes(lowerCaseSearch);
-      const dealerMatch = order.dealerName?.toLowerCase().includes(lowerCaseSearch);
-      const searchMatch = !lowerCaseSearch || salesmanMatch || dealerMatch;
-
-      // 2. Role Filter 
-      const roleMatch = roleFilter === 'all' ||
-        order.salesmanRole?.toLowerCase() === roleFilter.toLowerCase();
-
-      // 3. Area Filter 
-      const areaMatch = areaFilter === 'all' ||
-        order.area?.toLowerCase() === areaFilter.toLowerCase();
-
-      // 4. Region Filter 
-      const regionMatch = regionFilter === 'all' ||
-        order.region?.toLowerCase() === regionFilter.toLowerCase();
-
-      // Combine all conditions
-      return searchMatch && roleMatch && areaMatch && regionMatch;
-    });
-  }, [data, searchQuery, roleFilter, areaFilter, regionFilter]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-        <p className="text-gray-500">Loading sales orders...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center text-red-500 py-8">
-        Error loading sales orders: {error}
-        <Button onClick={fetchSalesOrders} className="ml-4">Retry</Button>
-      </div>
-    );
-  }
+  }, [fetchLocations, fetchRoles]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Sales Orders</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-bold tracking-tight">Sales Orders</h2>
+            <Badge variant="outline" className="text-base px-4 py-1">
+              Total Reports: {totalCount}
+            </Badge>
+          </div>
           <RefreshDataButton
             cachePrefix="sales-orders"
             onRefresh={fetchSalesOrders}
           />
         </div>
 
-        {/* --- Filter Components --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6">
-          {/* 1. Username/Dealer Search Input */}
+        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm mb-6">
           <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Salesman/Dealer Search</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Salesman / Dealer</label>
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9"
+                className="pl-8 h-9 bg-background border-input"
               />
             </div>
           </div>
 
-          {/* 2. Role Filter */}
-          {renderSelectFilter(
-            'Role',
-            roleFilter,
-            (v) => { setRoleFilter(v); },
-            availableRoles,
-            isLoadingRoles
-          )}
+          {renderSelectFilter('Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
+          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
+          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
 
-          {/* 3. Area Filter */}
-          {renderSelectFilter(
-            'Area',
-            areaFilter,
-            (v) => { setAreaFilter(v); },
-            availableAreas,
-            isLoadingLocations
-          )}
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchQuery('');
+              setRoleFilter('all');
+              setAreaFilter('all');
+              setRegionFilter('all');
+            }}
+            className="mb-0.5 text-muted-foreground hover:text-destructive"
+          >
+            Clear Filters
+          </Button>
 
-          {/* 4. Region Filter */}
-          {renderSelectFilter(
-            'Region',
-            regionFilter,
-            (v) => { setRegionFilter(v); },
-            availableRegions,
-            isLoadingLocations
-          )}
-
-          {/* Display filter option errors if any */}
-          {locationError && <p className="text-xs text-red-500 w-full">Location Filter Error: {locationError}</p>}
-          {roleError && <p className="text-xs text-red-500 w-full">Role Filter Error: {roleError}</p>}
+          {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>}
+          {roleError && <p className="text-xs text-red-500 w-full mt-2">Role Filter Error: {roleError}</p>}
         </div>
-        {/* --- End Filter Components --- */}
 
-        {/* Data Table */}
-        <div className="bg-card p-6 rounded-lg border border-border">
-          {filteredOrders.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+              <p className="text-muted-foreground">Loading sales orders...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-8">
+              Error loading sales orders: {error}
+              <Button onClick={fetchSalesOrders} className="ml-4">Retry</Button>
+            </div>
+          ) : data.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">
               No sales orders found matching the selected filters.
             </div>
           ) : (
             <DataTableReusable
               columns={salesOrderColumns}
-              data={filteredOrders}
+              data={data}
               enableRowDragging={false}
               onRowOrderChange={() => { }}
             />

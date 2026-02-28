@@ -1,11 +1,11 @@
 // src/app/api/dashboardPagesAPI/routes/daily-visit-reports/route.ts
 import 'server-only';
-import { connection, NextResponse } from 'next/server';
+import { connection, NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dailyVisitReports, dealers } from '../../../../../../drizzle';
-import { eq, desc, and, aliasedTable, getTableColumns } from 'drizzle-orm';
+import { eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod'; 
 import { selectDailyVisitReportSchema } from '../../../../../../drizzle/zodSchemas'; 
@@ -17,9 +17,8 @@ const allowedRoles = [
   'senior-executive', 'executive'
 ];
 
-// 1. Extend the baked DB schema to strictly type the joined and formatted fields
 const frontendDVRSchema = selectDailyVisitReportSchema.extend({
-  id: z.string(), // Specifically extended since your map function casts it to String()
+  id: z.string(), 
   salesmanName: z.string(),
   role: z.string(),
   area: z.string(),
@@ -27,7 +26,6 @@ const frontendDVRSchema = selectDailyVisitReportSchema.extend({
   dealerName: z.string().nullable().optional(),
   subDealerName: z.string().nullable().optional(),
   
-  // Overriding decimal/numeric types from DB strings to JS numbers
   latitude: z.number(),
   longitude: z.number(),
   dealerTotalPotential: z.number(),
@@ -36,7 +34,6 @@ const frontendDVRSchema = selectDailyVisitReportSchema.extend({
   todayCollectionRupees: z.number(),
   overdueAmount: z.number().nullable(),
   
-  // Formatting standardizations
   reportDate: z.string(),
   checkInTime: z.string(),
   checkOutTime: z.string().nullable(),
@@ -44,7 +41,6 @@ const frontendDVRSchema = selectDailyVisitReportSchema.extend({
   updatedAt: z.string(),
 });
 
-// 2. Explicit type to survive Next.js 'use cache' boundary collapse
 type DVRRow = InferSelectModel<typeof dailyVisitReports> & {
   userFirstName: string | null;
   userLastName: string | null;
@@ -56,16 +52,43 @@ type DVRRow = InferSelectModel<typeof dailyVisitReports> & {
   subDealerNameStr: string | null;
 };
 
-// 3. The Cached Function
-async function getCachedDailyVisitReports(companyId: number) {
+async function getCachedDailyVisitReports(
+  companyId: number,
+  page: number,
+  pageSize: number,
+  search: string | null,
+  role: string | null,
+  area: string | null,
+  region: string | null
+) {
   'use cache';
   cacheLife('hours');
-  cacheTag(`daily-visit-reports-${companyId}`);
+  
+  // Unique cache tag based on active filters
+  const filterKey = `${search}-${role}-${area}-${region}`;
+  cacheTag(`daily-visit-reports-${companyId}-${page}-${filterKey}`);
 
-  // Create an alias for subDealers since they reference the same dealers table
   const subDealers = aliasedTable(dealers, 'subDealers');
 
-  // Use getTableColumns and explicit typing to prevent `never[]`
+  // Strictly type as SQL[] to prevent undefined errors in and()
+  const filters: SQL[] = [eq(users.companyId, companyId)];
+
+  if (search) {
+    const searchCondition = or(
+      ilike(users.firstName, `%${search}%`),
+      ilike(users.lastName, `%${search}%`),
+      ilike(dealers.name, `%${search}%`),
+      ilike(subDealers.name, `%${search}%`)
+    );
+    if (searchCondition) filters.push(searchCondition);
+  }
+  
+  if (role) filters.push(eq(users.role, role));
+  if (area) filters.push(eq(users.area, area));
+  if (region) filters.push(eq(users.region, region));
+
+  const whereClause = and(...filters);
+
   const results: DVRRow[] = await db
     .select({
       ...getTableColumns(dailyVisitReports),
@@ -82,10 +105,23 @@ async function getCachedDailyVisitReports(companyId: number) {
     .leftJoin(users, eq(dailyVisitReports.userId, users.id))
     .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
     .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
-    .where(eq(users.companyId, companyId))
-    .orderBy(desc(dailyVisitReports.reportDate));
+    .where(whereClause)
+    .orderBy(desc(dailyVisitReports.reportDate))
+    .limit(pageSize)
+    .offset(page * pageSize);
 
-  return results.map((row) => {
+  // Total count for pagination
+  const totalCountResult = await db
+    .select({ count: count() })
+    .from(dailyVisitReports)
+    .leftJoin(users, eq(dailyVisitReports.userId, users.id))
+    .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
+    .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
+    .where(whereClause);
+
+  const totalCount = Number(totalCountResult[0].count);
+
+  const formatted = results.map((row) => {
     const toNum = (v: any) => (v == null ? null : Number(v));
     const salesmanName = `${row.userFirstName || ''} ${row.userLastName || ''}`.trim() || row.userEmail || 'Unknown';
 
@@ -100,7 +136,6 @@ async function getCachedDailyVisitReports(companyId: number) {
       dealerName: row.dealerNameStr ?? null,
       subDealerName: row.subDealerNameStr ?? null,
       
-      // Convert Drizzle numeric strings back to numbers for the frontend
       latitude: toNum(row.latitude) ?? 0,
       longitude: toNum(row.longitude) ?? 0,
       dealerTotalPotential: toNum(row.dealerTotalPotential) ?? 0,
@@ -109,27 +144,26 @@ async function getCachedDailyVisitReports(companyId: number) {
       todayCollectionRupees: toNum(row.todayCollectionRupees) ?? 0,
       overdueAmount: toNum(row.overdueAmount),
       
-      // Handle timestamp formatting
       checkInTime: row.checkInTime ? new Date(row.checkInTime).toISOString() : '',
       checkOutTime: row.checkOutTime ? new Date(row.checkOutTime).toISOString() : null,
       createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
       updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
     };
   });
+
+  return { data: formatted, totalCount };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
   
   try {
     const claims = await getTokenClaims();
 
-    // 1. Authentication Check
     if (!claims || !claims.sub) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch Current User lookup
     const currentUserResult = await db
       .select({ id: users.id, role: users.role, companyId: users.companyId })
       .from(users)
@@ -138,24 +172,48 @@ export async function GET() {
 
     const currentUser = currentUserResult[0];
 
-    // 3. Role-based Authorization
     if (!currentUser || !allowedRoles.includes(currentUser.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // 4. Call the cached function
-    const formattedReports = await getCachedDailyVisitReports(currentUser.companyId);
+    const { searchParams } = new URL(request.url);
+    const page = Number(searchParams.get('page') ?? 0);
+    // Hard cap at 500
+    const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
+    
+    const search = searchParams.get('search');
+    const role = searchParams.get('role');
+    const area = searchParams.get('area');
+    const region = searchParams.get('region');
 
-    // 5. Validate using strictly extended Schema instead of `.loose()`
-    const validatedReports = z.array(frontendDVRSchema).safeParse(formattedReports);
+    const result = await getCachedDailyVisitReports(
+      currentUser.companyId,
+      page,
+      pageSize,
+      search,
+      role,
+      area,
+      region
+    );
+
+    const validatedReports = z.array(frontendDVRSchema).safeParse(result.data);
 
     if (!validatedReports.success) {
       console.error('DVR Validation Error:', validatedReports.error.format());
-      // Graceful fallback: return the formatted data directly so the UI doesn't crash on an unexpected null
-      return NextResponse.json(formattedReports, { status: 200 });
+      return NextResponse.json({
+        data: result.data,
+        totalCount: result.totalCount,
+        page,
+        pageSize
+      }, { status: 200 });
     }
 
-    return NextResponse.json(validatedReports.data, { status: 200 });
+    return NextResponse.json({
+      data: validatedReports.data,
+      totalCount: result.totalCount,
+      page,
+      pageSize
+    }, { status: 200 });
   } catch (error) {
     console.error('Error fetching daily visit reports:', error);
     return NextResponse.json({ 

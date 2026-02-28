@@ -12,27 +12,19 @@ import { DateRange } from "react-day-picker";
 // Import your Shadcn UI components
 import { Button } from '@/components/ui/button';
 import { IconCheck, IconX, IconCalendar } from '@tabler/icons-react';
-import { ExternalLink, Users, CheckCircle2, RefreshCw } from 'lucide-react';
+import { ExternalLink, Users, CheckCircle2, RefreshCw, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
+  Card, CardContent, CardHeader, CardTitle,
 } from "@/components/ui/card";
 
 // Import the reusable DataTable
@@ -43,26 +35,22 @@ import { selectSalesmanAttendanceSchema } from '../../../../drizzle/zodSchemas';
 import SyncLocationBtn from '@/app/home/customReportGenerator/syncLocationBtn';
 
 const extendedSalesmanAttendanceSchema = selectSalesmanAttendanceSchema.extend({
-  // Relational Joins
   salesmanName: z.string().optional().catch("Unknown"),
   salesmanRole: z.string().optional().catch("N/A"),
   area: z.string().nullable().optional().catch("N/A"),
   region: z.string().nullable().optional().catch("N/A"),
-
-  // Aliases from old Prisma schema
   date: z.string().optional(),
   location: z.string().optional(),
   inTime: z.string().nullable().optional(),
   outTime: z.string().nullable().optional(),
 
-  // Coerce Postgres numerics/decimals to JS numbers
   inTimeLatitude: z.coerce.number().nullable().optional().catch(null),
   inTimeLongitude: z.coerce.number().nullable().optional().catch(null),
   inTimeAccuracy: z.coerce.number().nullable().optional().catch(null),
   inTimeSpeed: z.coerce.number().nullable().optional().catch(null),
   inTimeHeading: z.coerce.number().nullable().optional().catch(null),
   inTimeAltitude: z.coerce.number().nullable().optional().catch(null),
-  
+
   outTimeLatitude: z.coerce.number().nullable().optional().catch(null),
   outTimeLongitude: z.coerce.number().nullable().optional().catch(null),
   outTimeAccuracy: z.coerce.number().nullable().optional().catch(null),
@@ -73,7 +61,6 @@ const extendedSalesmanAttendanceSchema = selectSalesmanAttendanceSchema.extend({
 
 type SalesmanAttendanceReport = z.infer<typeof extendedSalesmanAttendanceSchema>;
 
-// --- API Endpoints and Types for Filters ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
 const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
@@ -85,7 +72,6 @@ interface RolesResponse {
   roles: string[];
 }
 
-// Helper function to render the Select filter component (KEPT)
 const renderSelectFilter = (
   label: string,
   value: string,
@@ -107,7 +93,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -124,19 +110,19 @@ export default function SlmAttendancePage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  // --- Filter States ---
+  const [page, setPage] = React.useState(0);
+  const [pageSize] = React.useState(500);
+  const [totalCount, setTotalCount] = React.useState(0);
+
   const [searchQuery, setSearchQuery] = React.useState("");
-
-  const [jobTitleFilter, setJobTitleFilter] = React.useState('all'); // e.g., executive, manager
-  const [companyCategoryFilter, setCompanyCategoryFilter] = React.useState('all'); // SALES, TECHNICAL
-
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
+  const [jobTitleFilter, setJobTitleFilter] = React.useState('all');
+  const [companyCategoryFilter, setCompanyCategoryFilter] = React.useState('all');
   const [areaFilter, setAreaFilter] = React.useState('all');
   const [regionFilter, setRegionFilter] = React.useState('all');
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
 
-  // --- Filter Options States (KEPT) ---
   const [availableJobTitles, setAvailableJobTitles] = React.useState<string[]>([]);
-  const [availableRoles, setAvailableRoles] = React.useState<string[]>([]); // user's company role
   const [availableAreas, setAvailableAreas] = React.useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = React.useState<string[]>([]);
 
@@ -145,21 +131,37 @@ export default function SlmAttendancePage() {
   const [locationError, setLocationError] = React.useState<string | null>(null);
   const [roleError, setRoleError] = React.useState<string | null>(null);
 
-  // Modal states (KEPT)
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
   const [selectedReport, setSelectedReport] = React.useState<SalesmanAttendanceReport | null>(null);
 
-  // --- Data Fetching Logic (KEPT) ---
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  React.useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, jobTitleFilter, companyCategoryFilter, areaFilter, regionFilter, dateRange]);
+
   const fetchAttendanceReports = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const url = new URL(`/api/dashboardPagesAPI/slm-attendance`, window.location.origin);
-      if (dateRange?.from) {
-        url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
-      }
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (jobTitleFilter !== 'all') url.searchParams.append('jobTitle', jobTitleFilter);
+      if (companyCategoryFilter !== 'all') url.searchParams.append('companyRole', companyCategoryFilter);
+      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
+      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+
+      if (dateRange?.from) url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
       if (dateRange?.to) {
         url.searchParams.append('endDate', format(dateRange.to, 'yyyy-MM-dd'));
+      } else if (dateRange?.from) {
+        url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
       const response = await fetch(url.toString());
@@ -177,10 +179,13 @@ export default function SlmAttendancePage() {
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: SalesmanAttendanceReport[] = await response.json();
-      const validatedData = data.map((item) => {
+
+      const result = await response.json();
+      const data = result.data || result;
+      setTotalCount(result.totalCount || 0);
+
+      const validatedData = data.map((item: any) => {
         try {
-          // Add ID property needed by DataTableReusable (assuming ID is available in schema)
           const validated = extendedSalesmanAttendanceSchema.parse(item);
           return { ...validated, id: validated.id.toString() };
         } catch (e) {
@@ -198,7 +203,7 @@ export default function SlmAttendancePage() {
     } finally {
       setLoading(false);
     }
-  }, [dateRange, router]);
+  }, [page, pageSize, debouncedSearchQuery, jobTitleFilter, companyCategoryFilter, areaFilter, regionFilter, dateRange, router]);
 
   const fetchLocations = React.useCallback(async () => {
     setIsLoadingLocations(true);
@@ -211,8 +216,8 @@ export default function SlmAttendancePage() {
       const safeAreas = Array.isArray(data.areas) ? data.areas.filter(Boolean) : [];
       const safeRegions = Array.isArray(data.regions) ? data.regions.filter(Boolean) : [];
 
-      setAvailableAreas(safeAreas);
-      setAvailableRegions(safeRegions);
+      setAvailableAreas(safeAreas.sort());
+      setAvailableRegions(safeRegions.sort());
 
     } catch (err: any) {
       console.error('Failed to fetch filter locations:', err);
@@ -231,7 +236,7 @@ export default function SlmAttendancePage() {
       const data: RolesResponse = await response.json();
 
       const rolesList = data.roles && Array.isArray(data.roles) ? data.roles.filter(Boolean) : [];
-      setAvailableJobTitles(rolesList);
+      setAvailableJobTitles(rolesList.sort());
 
     } catch (err: any) {
       console.error('Failed to fetch filter roles:', err);
@@ -240,7 +245,6 @@ export default function SlmAttendancePage() {
       setIsLoadingRoles(false);
     }
   }, []);
-
 
   React.useEffect(() => {
     fetchAttendanceReports();
@@ -251,9 +255,8 @@ export default function SlmAttendancePage() {
     fetchRoles();
   }, [fetchLocations, fetchRoles]);
 
-  // --- Summary Card Calculations ---
   const todayStats = React.useMemo(() => {
-    const todayStr = format(new Date(), 'yyyy-MM-dd'); // Matches standard DB date format
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
 
     const reportsForToday = attendanceReports.filter(report => {
       const rawDate = report.date || report.attendanceDate;
@@ -263,70 +266,28 @@ export default function SlmAttendancePage() {
     });
 
     return {
-      // Checked in today
       present: reportsForToday.filter(r => r.inTime).length,
-      // Checked in AND Checked out today
       completed: reportsForToday.filter(r => r.inTime && r.outTime).length
     };
   }, [attendanceReports]);
 
-  // --- Filtering Logic ---
-  const filteredReports = React.useMemo(() => {
-    const lowerCaseSearch = (searchQuery || '').toLowerCase();
-
-    return attendanceReports.filter((report) => {
-      // 1. Search Filter
-      const matchesSearch =
-        !lowerCaseSearch ||
-        (report.salesmanName && report.salesmanName.toLowerCase().includes(lowerCaseSearch)) ||
-        (report.date && report.date.toLowerCase().includes(lowerCaseSearch)) ||
-        (report.location && report.location.toLowerCase().includes(lowerCaseSearch));
-
-      // 2. User Role (Designation: Executive, Manager, etc.)
-      // Based on your columns: salesmanRole contains the designation
-      const reportDesignation = report.salesmanRole || '';
-      const matchesJobTitle = jobTitleFilter === 'all' ||
-        reportDesignation.toLowerCase() === jobTitleFilter.toLowerCase();
-
-      // 3. Company Role (Category: SALES, TECHNICAL)
-      // Based on your columns: role contains the category
-      const reportCategory = report.role || '';
-      const matchesCategory = companyCategoryFilter === 'all' ||
-        reportCategory.toUpperCase() === companyCategoryFilter.toUpperCase();
-
-      // 4. Area & Region Filter (Safety added)
-      // If the record doesn't have 'area' or 'region' properties, we only filter if the user selected 'all'
-      const reportArea = (report as any).area || '';
-      const areaMatch = areaFilter === 'all' ||
-        (reportArea && reportArea.toLowerCase() === areaFilter.toLowerCase());
-
-      const reportRegion = (report as any).region || '';
-      const regionMatch = regionFilter === 'all' ||
-        (reportRegion && reportRegion.toLowerCase() === regionFilter.toLowerCase());
-
-      return matchesSearch && matchesJobTitle && matchesCategory && areaMatch && regionMatch;
-    });
-  }, [attendanceReports, searchQuery, jobTitleFilter, companyCategoryFilter, areaFilter, regionFilter]);
   const handleViewReport = (report: SalesmanAttendanceReport) => {
     setSelectedReport(report);
     setIsViewModalOpen(true);
   };
 
-  // Helper Component for Reverse Geocoding
   const LocationCell = ({ locationName, lat, lng }: { locationName: string, lat?: number, lng?: number }) => {
     const [address, setAddress] = React.useState(locationName);
     const [isFetching, setIsFetching] = React.useState(false);
 
-    // We define the fetch logic as a reusable function
     const fetchAddress = React.useCallback(async () => {
       if (!lat || !lng) return;
 
       setIsFetching(true);
       try {
-        // Nominatim requires a User-Agent, though browsers send one automatically.
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
           headers: {
-            'Accept-Language': 'en-US,en;q=0.9', // Request English results
+            'Accept-Language': 'en-US,en;q=0.9',
           }
         });
 
@@ -338,31 +299,23 @@ export default function SlmAttendancePage() {
         }
       } catch (error) {
         console.warn("Geocoding failed for:", lat, lng);
-        // We keep the address as "Live Location" so the user can try again
       } finally {
         setIsFetching(false);
       }
     }, [lat, lng]);
 
     React.useEffect(() => {
-      // Only attempt auto-fetch if it's a raw "Live Location"
       if ((locationName === 'Live Location' || locationName === 'Live Location (GPS Only)') && lat && lng) {
-
-        // 🟢 STAGGER LOGIC: Random delay between 0ms and 3000ms
-        // This prevents hitting the API rate limit when loading 50 rows at once
         const delay = Math.random() * 3000;
-
         const timer = setTimeout(() => {
           fetchAddress();
         }, delay);
-
         return () => clearTimeout(timer);
       } else {
         setAddress(locationName);
       }
     }, [locationName, lat, lng, fetchAddress]);
 
-    // Check if we are still showing the placeholder text
     const isGenericAddress = address.includes('Live Location');
 
     return (
@@ -370,20 +323,16 @@ export default function SlmAttendancePage() {
         <span className="truncate block text-xs sm:text-sm" title={address}>
           {address}
         </span>
-
-        {/* Show Loader while fetching */}
         {isFetching && (
           <Loader2 className="h-3 w-3 animate-spin text-muted-foreground shrink-0" />
         )}
-
-        {/* Show Refresh Button ONLY if we aren't fetching AND it's still a generic address */}
         {!isFetching && isGenericAddress && lat && lng && (
           <Button
             variant="ghost"
             size="icon"
             className="h-6 w-6 text-muted-foreground hover:text-primary"
             onClick={(e) => {
-              e.stopPropagation(); // Prevent row click
+              e.stopPropagation();
               fetchAddress();
             }}
             title="Retry fetching address"
@@ -395,7 +344,6 @@ export default function SlmAttendancePage() {
     );
   };
 
-  // --- NEW: Helper function to format time in IST (KEPT) ---
   const formatTimeIST = (isoString: string | null | undefined) => {
     if (!isoString) return 'N/A';
     try {
@@ -403,17 +351,20 @@ export default function SlmAttendancePage() {
         hour: 'numeric',
         minute: 'numeric',
         hour12: true,
-        timeZone: 'Asia/Kolkata', // Forcibly format in Indian Standard Time
+        timeZone: 'Asia/Kolkata',
       }).format(new Date(isoString));
     } catch (e) {
-      return 'Invalid Date'; // Fallback for any error
+      return 'Invalid Date';
     }
   };
 
-  // --- Columns Definition (FIXED CELL RETURNS) ---
+  const handleSalesmanAttendanceOrderChange = (newOrder: SalesmanAttendanceReport[]) => {
+    console.log("New salesman attendance report order:", newOrder.map(r => r.id));
+  };
+
   const salesmanAttendanceColumns: ColumnDef<SalesmanAttendanceReport>[] = [
     { accessorKey: "salesmanName", header: "Salesman" },
-    { accessorKey: "role", header: "User Company Role" },
+    { accessorKey: "role", header: "Company Role" },
     { accessorKey: "salesmanRole", header: "User Role" },
     {
       id: 'date',
@@ -448,7 +399,7 @@ export default function SlmAttendancePage() {
     {
       accessorKey: 'inTime',
       header: 'In Time',
-      cell: ({ row }) => ( // ADDED PARENTHESES TO IMPLICITLY RETURN SPAN
+      cell: ({ row }) => (
         <span>
           {row.original.inTime
             ? formatTimeIST(row.original.inTime)
@@ -459,7 +410,7 @@ export default function SlmAttendancePage() {
     {
       accessorKey: 'outTime',
       header: 'Out Time',
-      cell: ({ row }) => ( // ADDED PARENTHESES TO IMPLICITLY RETURN SPAN
+      cell: ({ row }) => (
         <span>
           {row.original.outTime
             ? formatTimeIST(row.original.outTime)
@@ -520,33 +471,16 @@ export default function SlmAttendancePage() {
     },
   ];
 
-  const handleSalesmanAttendanceOrderChange = (newOrder: SalesmanAttendanceReport[]) => {
-    console.log("New salesman attendance report order:", newOrder.map(r => r.id));
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-        <p>Loading salesman attendance reports...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center text-red-500 min-h-screen pt-10">
-        Error: {error}
-        <Button onClick={fetchAttendanceReports} className="ml-4">Retry</Button>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Salesman Attendance Reports</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-bold tracking-tight">Salesman Attendance</h2>
+            <Badge variant="outline" className="text-base px-4 py-1">
+              Total Records: {totalCount}
+            </Badge>
+          </div>
 
           <div className="flex items-center gap-3">
             <SyncLocationBtn
@@ -564,11 +498,10 @@ export default function SlmAttendancePage() {
           </div>
         </div>
 
-        {/* --- Summary Cards Section --- */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card className="shadow-sm border-border bg-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Today Present</CardTitle>
+              <CardTitle className="text-sm font-medium">Today Present (This Page)</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -593,11 +526,9 @@ export default function SlmAttendancePage() {
           </Card>
         </div>
 
-        {/* --- Filters Section --- */}
         <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
 
-            {/* Row 1: Primary Controls */}
             <div className="flex flex-col space-y-1.5">
               <label className="text-sm font-medium text-muted-foreground">Report Duration</label>
               <div className="flex gap-2">
@@ -622,55 +553,42 @@ export default function SlmAttendancePage() {
               </div>
             </div>
 
-            {/* Corrected Row 2: Roles */}
-            {/* User Role = executive/manager etc */}
-            {renderSelectFilter(
-              'User Role',
-              jobTitleFilter,
-              setJobTitleFilter,
-              availableJobTitles, // Now correctly populated
-              isLoadingRoles
-            )}
-
-            {/* Company Role = SALES / TECHNICAL */}
-            {renderSelectFilter(
-              'Company Role',
-              companyCategoryFilter,
-              setCompanyCategoryFilter,
-              ['SALES', 'TECHNICAL'],
-              false
-            )}
-
-            {/* Row 3: Geography */}
+            {renderSelectFilter('User Role', jobTitleFilter, setJobTitleFilter, availableJobTitles, isLoadingRoles)}
+            {renderSelectFilter('Company Role', companyCategoryFilter, setCompanyCategoryFilter, ['SALES', 'TECHNICAL'], false)}
             {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
             {renderSelectFilter('Region (Zone)', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
 
           </div>
           {(locationError || roleError) && <p className="text-xs text-red-500 mt-4 italic">⚠️ Failed to load some filter options.</p>}
         </div>
-        {/* --- End Filters Section --- */}
 
-        {/* Data Table Section */}
-        <div className="bg-card p-6 rounded-lg border border-border">
-          {filteredReports.length === 0 && !loading && !error ? (
-            <div className="text-center text-gray-500 py-8">No salesman attendance reports found matching the filters.</div>
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
+          {loading && attendanceReports.length === 0 ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+              <p className="text-muted-foreground">Loading salesman attendance...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-12 flex flex-col items-center">
+              <p>Error: {error}</p>
+              <Button onClick={fetchAttendanceReports} variant="outline" className="mt-4">Retry</Button>
+            </div>
+          ) : attendanceReports.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">No salesman attendance reports found matching the filters.</div>
           ) : (
-            <>
-              <DataTableReusable
-                columns={salesmanAttendanceColumns}
-                data={filteredReports}
-                enableRowDragging={false}
-                onRowOrderChange={handleSalesmanAttendanceOrderChange}
-              />
-            </>
+            <DataTableReusable
+              columns={salesmanAttendanceColumns}
+              data={attendanceReports}
+              enableRowDragging={false}
+              onRowOrderChange={handleSalesmanAttendanceOrderChange}
+            />
           )}
         </div>
       </div>
 
-      {/* --- Modal Logic (Unchanged) --- */}
       {selectedReport && (
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-background">
             <DialogHeader>
               <DialogTitle>Salesman Attendance Details</DialogTitle>
               <DialogDescription>
@@ -680,32 +598,30 @@ export default function SlmAttendancePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
               <div>
                 <Label htmlFor="salesmanName">Salesman Name</Label>
-                <Input id="salesmanName" value={selectedReport.salesmanName} readOnly />
+                <Input id="salesmanName" value={selectedReport.salesmanName} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="date">Date</Label>
-                <Input id="date" value={selectedReport.date} readOnly />
+                <Input id="date" value={selectedReport.date} readOnly className="bg-muted/50" />
               </div>
               <div className="md:col-span-2">
                 <Label htmlFor="location">Location</Label>
-                <Textarea id="location" value={selectedReport.location} readOnly className="h-auto" />
+                <Textarea id="location" value={selectedReport.location} readOnly className="h-auto bg-muted/50" />
               </div>
 
-              {/* In-Time Details */}
               <div className="md:col-span-2 text-lg font-semibold border-t pt-4 mt-4">In-Time Details</div>
               <div>
                 <Label htmlFor="inTime">In Time</Label>
-                <Input id="inTime" value={formatTimeIST(selectedReport.inTime) || 'N/A'} readOnly />
+                <Input id="inTime" value={formatTimeIST(selectedReport.inTime) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="inTimeImage">Image Captured</Label>
-                <Input id="inTimeImage" value={selectedReport.inTimeImageCaptured ? 'Yes' : 'No'} readOnly />
+                <Input id="inTimeImage" value={selectedReport.inTimeImageCaptured ? 'Yes' : 'No'} readOnly className="bg-muted/50" />
               </div>
               {selectedReport.inTimeImageUrl && (
                 <div className="md:col-span-2">
                   <Label htmlFor="inTimeImageUrl">Image URL</Label>
-                  <div id="inTimeImageUrl" className="mt-2 border p-2 rounded-md bg-muted/50">
-                    {/* Link to open original image */}
+                  <div id="inTimeImageUrl" className="mt-2 border p-2 rounded-md bg-muted/30">
                     <a
                       href={selectedReport.inTimeImageUrl}
                       target="_blank"
@@ -724,27 +640,26 @@ export default function SlmAttendancePage() {
               )}
               <div>
                 <Label htmlFor="inTimeLatitude">Latitude</Label>
-                <Input id="inTimeLatitude" value={selectedReport.inTimeLatitude?.toFixed(7) || 'N/A'} readOnly />
+                <Input id="inTimeLatitude" value={selectedReport.inTimeLatitude?.toFixed(7) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="inTimeLongitude">Longitude</Label>
-                <Input id="inTimeLongitude" value={selectedReport.inTimeLongitude?.toFixed(7) || 'N/A'} readOnly />
+                <Input id="inTimeLongitude" value={selectedReport.inTimeLongitude?.toFixed(7) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
 
-              {/* Out-Time Details */}
               <div className="md:col-span-2 text-lg font-semibold border-t pt-4 mt-4">Out-Time Details</div>
               <div>
                 <Label htmlFor="outTime">Out Time</Label>
-                <Input id="outTime" value={formatTimeIST(selectedReport.outTime) || 'N/A (Still In)'} readOnly />
+                <Input id="outTime" value={formatTimeIST(selectedReport.outTime) || 'N/A (Still In)'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="outTimeImage">Image Captured</Label>
-                <Input id="outTimeImage" value={selectedReport.outTimeImageCaptured ? 'Yes' : 'No'} readOnly />
+                <Input id="outTimeImage" value={selectedReport.outTimeImageCaptured ? 'Yes' : 'No'} readOnly className="bg-muted/50" />
               </div>
               {selectedReport.outTimeImageUrl && (
                 <div className="md:col-span-2">
                   <Label htmlFor="outTimeImageUrl">Image URL</Label>
-                  <div id="outTimeImageUrl" className="mt-2 border p-2 rounded-md bg-muted/50">
+                  <div id="outTimeImageUrl" className="mt-2 border p-2 rounded-md bg-muted/30">
                     <a
                       href={selectedReport.outTimeImageUrl}
                       target="_blank"
@@ -763,27 +678,27 @@ export default function SlmAttendancePage() {
               )}
               <div>
                 <Label htmlFor="outTimeLatitude">Latitude</Label>
-                <Input id="outTimeLatitude" value={selectedReport.outTimeLatitude?.toFixed(7) || 'N/A'} readOnly />
+                <Input id="outTimeLatitude" value={selectedReport.outTimeLatitude?.toFixed(7) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="outTimeLongitude">Longitude</Label>
-                <Input id="outTimeLongitude" value={selectedReport.outTimeLongitude?.toFixed(7) || 'N/A'} readOnly />
+                <Input id="outTimeLongitude" value={selectedReport.outTimeLongitude?.toFixed(7) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="outTimeAccuracy">Accuracy (m)</Label>
-                <Input id="outTimeAccuracy" value={selectedReport.outTimeAccuracy?.toFixed(2) || 'N/A'} readOnly />
+                <Input id="outTimeAccuracy" value={selectedReport.outTimeAccuracy?.toFixed(2) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="outTimeSpeed">Speed (m/s)</Label>
-                <Input id="outTimeSpeed" value={selectedReport.outTimeSpeed?.toFixed(2) || 'N/A'} readOnly />
+                <Input id="outTimeSpeed" value={selectedReport.outTimeSpeed?.toFixed(2) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="outTimeHeading">Heading (°)</Label>
-                <Input id="outTimeHeading" value={selectedReport.outTimeHeading?.toFixed(2) || 'N/A'} readOnly />
+                <Input id="outTimeHeading" value={selectedReport.outTimeHeading?.toFixed(2) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label htmlFor="outTimeAltitude">Altitude (m)</Label>
-                <Input id="outTimeAltitude" value={selectedReport.outTimeAltitude?.toFixed(2) || 'N/A'} readOnly />
+                <Input id="outTimeAltitude" value={selectedReport.outTimeAltitude?.toFixed(2) || 'N/A'} readOnly className="bg-muted/50" />
               </div>
             </div>
             <DialogFooter>

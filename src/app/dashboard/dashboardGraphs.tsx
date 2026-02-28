@@ -68,24 +68,6 @@ const geoTrackingColumns: ColumnDef<RawGeoTrackingRecord>[] = [
   { accessorKey: 'locationType', header: 'Location Type', cell: info => info.getValue() || 'N/A' },
 ];
 
-const dailyReportsColumns: ColumnDef<RawDailyVisitReportRecord>[] = [
-  { accessorKey: 'salesmanName', header: 'Salesman' },
-  { accessorKey: 'role', header: 'Role' },
-  { accessorKey: 'reportDate', header: 'Report Date' },
-  { accessorKey: 'dealerName', header: 'Dealer Name', cell: info => info.getValue() || 'N/A' },
-  { accessorKey: 'visitType', header: 'Visit Type' },
-  {
-    accessorKey: 'todayCollectionRupees',
-    header: 'Collection (₹)',
-    cell: ({ row }) => `₹${row.original.todayCollectionRupees?.toFixed(2) ?? 'N/A'}`,
-  },
-  {
-    accessorKey: 'feedbacks',
-    header: 'Feedbacks',
-    cell: info => <span className="max-w-[250px] truncate block">{info.getValue() as string}</span>,
-  },
-];
-
 const salesOrderColumns: ColumnDef<RawSalesOrderReportRecord>[] = [
   { accessorKey: 'salesmanName', header: 'Salesman' },
   {
@@ -179,11 +161,11 @@ export default function DashboardGraphs() {
     setLoading(true);
     setError(null);
     try {
-
+      // Added pageSize=1000 so the graphs have a larger historical dataset to plot
       const [geoRes, dailyRes, salesRes, usersRes] = await Promise.all([
-        fetch(`/api/dashboardPagesAPI/slm-geotracking`, { cache: 'no-store' }),
-        fetch(`/api/dashboardPagesAPI/reports/daily-visit-reports`, { cache: 'no-store' }),
-        fetch(`/api/dashboardPagesAPI/reports/sales-orders`, { cache: 'no-store' }),
+        fetch(`/api/dashboardPagesAPI/slm-geotracking?pageSize=1000`, { cache: 'no-store' }),
+        fetch(`/api/dashboardPagesAPI/reports/daily-visit-reports?pageSize=1000`, { cache: 'no-store' }),
+        fetch(`/api/dashboardPagesAPI/reports/sales-orders?pageSize=1000`, { cache: 'no-store' }),
         fetch(`/api/dashboardPagesAPI/users-and-team/users`, { cache: 'no-store' }),
       ]);
 
@@ -199,18 +181,21 @@ export default function DashboardGraphs() {
         usersRes.json(),
       ]);
 
+      // Helper to extract data from the new paginated { data, totalCount } API structures
+      const extractData = (res: any) => Array.isArray(res) ? res : (res.data || []);
+
       // Enforce `id` mappings so DataTableReusable doesn't throw a TypeScript error
-      const validatedGeo = rawGeoTrackingSchema.array().parse(geoData).map(d => ({
+      const validatedGeo = rawGeoTrackingSchema.array().parse(extractData(geoData)).map(d => ({
         ...d,
         id: d.id?.toString() || d.opId?.toString() || `${Math.random()}`
       })) as RawGeoTrackingRecord[];
 
-      const validatedDaily = rawDailyVisitReportSchema.array().parse(dailyData).map(d => ({
+      const validatedDaily = rawDailyVisitReportSchema.array().parse(extractData(dailyData)).map(d => ({
         ...d,
         id: d.id?.toString() || `${Math.random()}`
       })) as RawDailyVisitReportRecord[];
 
-      const validatedSales = rawSalesOrderSchema.array().parse(salesData).map(d => ({
+      const validatedSales = rawSalesOrderSchema.array().parse(extractData(salesData)).map(d => ({
         ...d,
         id: d.id?.toString() || `${Math.random()}`
       })) as RawSalesOrderReportRecord[];
@@ -323,7 +308,6 @@ export default function DashboardGraphs() {
         <TabsTrigger value="graphs">Graphs</TabsTrigger>
         <TabsTrigger value="geo-table">Geo-Tracking Table</TabsTrigger>
         <TabsTrigger value="sales-orders-table">Sales Orders Table</TabsTrigger>
-        <TabsTrigger value="daily-reports-table">Daily Reports Table</TabsTrigger>
       </TabsList>
 
       {/* Filters */}
@@ -406,7 +390,7 @@ export default function DashboardGraphs() {
             <CardDescription>Most recent geo-tracking data.</CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTableReusable columns={geoTrackingColumns} data={rawGeoTrackingRecords} />
+            <DataTableReusable columns={geoTrackingColumns} data={rawGeoTrackingRecords} enableRowDragging={false} />
           </CardContent>
         </Card>
       </TabsContent>
@@ -418,22 +402,11 @@ export default function DashboardGraphs() {
             <CardDescription>All sales orders submitted by the team.</CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTableReusable columns={salesOrderColumns} data={rawSalesOrders} />
+            <DataTableReusable columns={salesOrderColumns} data={rawSalesOrders} enableRowDragging={false} />
           </CardContent>
         </Card>
       </TabsContent>
-
-      <TabsContent value="daily-reports-table">
-        <Card>
-          <CardHeader>
-            <CardTitle>Daily Visit Reports Table</CardTitle>
-            <CardDescription>All submitted daily visit reports.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DataTableReusable columns={dailyReportsColumns} data={rawDailyReports} />
-          </CardContent>
-        </Card>
-      </TabsContent>
+      
     </Tabs>
   );
 }

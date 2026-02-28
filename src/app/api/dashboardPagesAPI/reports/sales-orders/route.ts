@@ -1,11 +1,11 @@
 // src/app/api/dashboardPagesAPI/reports/sales-orders/route.ts
 import 'server-only';
-import { connection, NextResponse } from 'next/server';
+import { connection, NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dealers, salesOrders } from '../../../../../../drizzle';
-import { eq, desc, and, getTableColumns } from 'drizzle-orm';
+import { eq, desc, and, or, ilike, getTableColumns, count, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectSalesOrderSchema } from '../../../../../../drizzle/zodSchemas';
@@ -17,7 +17,6 @@ const allowedRoles = [
   'senior-executive', 'executive', 'junior-executive'
 ];
 
-// 1. Extend the baked DB schema to strictly type the calculated and joined fields
 const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
   salesmanName: z.string(),
   salesmanRole: z.string(),
@@ -28,7 +27,6 @@ const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
   area: z.string(),
   region: z.string(),
   
-  // Strict numeric typing for the frontend, overriding Drizzle's string decimals
   orderQty: z.number().nullable(),
   itemPrice: z.number().nullable(),
   discountPercentage: z.number().nullable(),
@@ -38,7 +36,6 @@ const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
   pendingPayment: z.number().nullable(),
   orderTotal: z.number(),
   
-  // Date string overrides
   orderDate: z.string(),
   deliveryDate: z.string().nullable(),
   receivedPaymentDate: z.string().nullable(),
@@ -48,7 +45,6 @@ const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
   remarks: z.string().nullable().optional(),
 });
 
-// 2. Explicit type to survive Next.js 'use cache' boundary collapse
 type SalesOrderRow = InferSelectModel<typeof salesOrders> & {
   userFirstName: string | null;
   userLastName: string | null;
@@ -62,13 +58,38 @@ type SalesOrderRow = InferSelectModel<typeof salesOrders> & {
   dealerRegion: string | null;
 };
 
-// 3. The Cached Function
-async function getCachedSalesOrders(companyId: number) {
+async function getCachedSalesOrders(
+  companyId: number,
+  page: number,
+  pageSize: number,
+  search: string | null,
+  role: string | null,
+  area: string | null,
+  region: string | null
+) {
   'use cache';
   cacheLife('hours');
-  cacheTag(`sales-orders-${companyId}`);
+  
+  const filterKey = `${search}-${role}-${area}-${region}`;
+  cacheTag(`sales-orders-${companyId}-${page}-${filterKey}`);
 
-  // Use getTableColumns and explicit typing to prevent `never[]`
+  const filters: SQL[] = [eq(users.companyId, companyId)];
+
+  if (search) {
+    const searchCondition = or(
+      ilike(users.firstName, `%${search}%`),
+      ilike(users.lastName, `%${search}%`),
+      ilike(dealers.name, `%${search}%`)
+    );
+    if (searchCondition) filters.push(searchCondition);
+  }
+  
+  if (role) filters.push(eq(users.role, role));
+  if (area) filters.push(eq(dealers.area, area));
+  if (region) filters.push(eq(dealers.region, region));
+
+  const whereClause = and(...filters);
+
   const results: SalesOrderRow[] = await db
     .select({
       ...getTableColumns(salesOrders),
@@ -86,10 +107,21 @@ async function getCachedSalesOrders(companyId: number) {
     .from(salesOrders)
     .leftJoin(users, eq(salesOrders.userId, users.id))
     .leftJoin(dealers, eq(salesOrders.dealerId, dealers.id))
-    .where(eq(users.companyId, companyId))
-    .orderBy(desc(salesOrders.createdAt));
+    .where(whereClause)
+    .orderBy(desc(salesOrders.createdAt))
+    .limit(pageSize)
+    .offset(page * pageSize);
 
-  return results.map((row) => {
+  const totalCountResult = await db
+    .select({ count: count() })
+    .from(salesOrders)
+    .leftJoin(users, eq(salesOrders.userId, users.id))
+    .leftJoin(dealers, eq(salesOrders.dealerId, dealers.id))
+    .where(whereClause);
+
+  const totalCount = Number(totalCountResult[0].count);
+
+  const formatted = results.map((row) => {
     const toNum = (v: any) => (v == null ? null : Number(v));
     const toDate = (d: any) => (d ? new Date(d).toISOString().split('T')[0] : null);
 
@@ -134,9 +166,11 @@ async function getCachedSalesOrders(companyId: number) {
       updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
     };
   });
+
+  return { data: formatted, totalCount };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
   
   try {
@@ -161,18 +195,43 @@ export async function GET() {
       );
     }
 
-    const formatted = await getCachedSalesOrders(currentUser.companyId);
+    const { searchParams } = new URL(request.url);
+    const page = Number(searchParams.get('page') ?? 0);
+    const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
+    
+    const search = searchParams.get('search');
+    const role = searchParams.get('role');
+    const area = searchParams.get('area');
+    const region = searchParams.get('region');
 
-    // Strictly parse using the extended schema instead of .loose()
-    const validated = z.array(frontendSalesOrderSchema).safeParse(formatted);
+    const result = await getCachedSalesOrders(
+      currentUser.companyId,
+      page,
+      pageSize,
+      search,
+      role,
+      area,
+      region
+    );
+
+    const validated = z.array(frontendSalesOrderSchema).safeParse(result.data);
 
     if (!validated.success) {
         console.error("Sales Orders Validation Error:", validated.error.format());
-        // Return unvalidated data gracefully so the frontend table doesn't break
-        return NextResponse.json(formatted, { status: 200 }); 
+        return NextResponse.json({
+          data: result.data,
+          totalCount: result.totalCount,
+          page,
+          pageSize
+        }, { status: 200 }); 
     }
 
-    return NextResponse.json(validated.data, { status: 200 });
+    return NextResponse.json({
+      data: validated.data,
+      totalCount: result.totalCount,
+      page,
+      pageSize
+    }, { status: 200 });
   } catch (error) {
     console.error('Error fetching sales orders:', error);
     return NextResponse.json(

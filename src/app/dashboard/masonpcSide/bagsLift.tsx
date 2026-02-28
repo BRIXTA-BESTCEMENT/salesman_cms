@@ -6,49 +6,29 @@ import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
-  IndianRupee,
-  MapPin,
-  Search,
-  Loader2,
-  Check,
-  X,
-  Eye,
-  ExternalLink,
-  CalendarIcon
+  IndianRupee, MapPin, Search, Loader2, Check, X, Eye, ExternalLink, CalendarIcon
 } from 'lucide-react';
 import { format, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
+import { DateRange } from "react-day-picker";
 
-// Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { selectBagLiftSchema } from '../../../../drizzle/zodSchemas'; 
 
-// UI Components
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-// Shadcn DatePicker imports
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { IconCalendar } from '@tabler/icons-react';
 
-// --- CONSTANTS AND TYPES ---
 const BAG_LIFT_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/bags-lift`;
 const BAG_LIFT_ACTION_API_BASE = `/api/dashboardPagesAPI/masonpc-side/bags-lift`;
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
@@ -62,25 +42,26 @@ interface RolesResponse {
   roles: string[];
 }
 
-// Type for data coming from the API
-type BagLiftRecord = z.infer<typeof selectBagLiftSchema> & {
-  masonName: string;
-  dealerName: string | null;
-  approverName: string | null;
-  associatedSalesmanName?: string | null;
-  siteKeyPersonName?: string | null;
-  siteKeyPersonPhone?: string | null;
-  siteName?: string | null;
-  siteAddress?: string | null;
-  verificationSiteImageUrl?: string | null;
-  verificationProofImageUrl?: string | null;
-  role: string;
-  area: string;
-  region: string;
-};
+const extendedSchema = selectBagLiftSchema.loose().extend({
+  masonName: z.string(),
+  dealerName: z.string().nullable().optional(),
+  approverName: z.string().nullable().optional(),
+  associatedSalesmanName: z.string().nullable().optional(),
+  siteKeyPersonName: z.string().nullable().optional(),
+  siteKeyPersonPhone: z.string().nullable().optional(),
+  siteName: z.string().nullable().optional(),
+  siteAddress: z.string().nullable().optional(),
+  verificationSiteImageUrl: z.string().nullable().optional(),
+  verificationProofImageUrl: z.string().nullable().optional(),
+  role: z.string().optional().catch("N/A"),
+  area: z.string().optional().catch("N/A"),
+  region: z.string().optional().catch("N/A"),
+  purchaseDate: z.string(),
+  createdAt: z.string(),
+  approvedAt: z.string().nullable().optional(),
+});
 
-
-// --- HELPER FUNCTIONS ---
+type BagLiftRecord = z.infer<typeof extendedSchema>;
 
 const formatIndianNumber = (num: number) => {
   return new Intl.NumberFormat('en-IN').format(num);
@@ -94,7 +75,7 @@ const renderSelectFilter = (
   isLoading: boolean = false
 ) => (
   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
       <SelectTrigger className="h-9 w-full bg-background border-input">
         {isLoading ? (
@@ -107,7 +88,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -145,49 +126,67 @@ const getStatusBadgeVariant = (status: string) => {
   }
 };
 
-
-// --- MAIN COMPONENT ---
-
 export default function BagsLiftPage() {
   const [bagLiftRecords, setBagLiftRecords] = React.useState<BagLiftRecord[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Filter States ---
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
-
-  // --- Date Filter States ---
-  const [dateFilterStart, setDateFilterStart] = useState<string>('');
-  const [dateFilterEnd, setDateFilterEnd] = useState<string>('');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   const statusOptions = ['pending', 'approved', 'rejected'];
 
-  // --- Filter Options States ---
-  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
-  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
-
   const [locationError, setLocationError] = useState<string | null>(null);
-  const [roleError, setRoleError] = useState<string | null>(null);
 
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<BagLiftRecord | null>(null);
   const [isUpdatingId, setIsUpdatingId] = useState<string | null>(null);
 
+  // Debounce Search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  // --- Data Fetching Functions ---
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, statusFilter, areaFilter, regionFilter, dateRange]);
+
+
   const fetchBagLiftRecords = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(BAG_LIFT_API_ENDPOINT);
+      const url = new URL(BAG_LIFT_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (statusFilter !== 'all') url.searchParams.append('status', statusFilter);
+      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
+      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+
+      if (dateRange?.from) url.searchParams.append('fromDate', format(dateRange.from, "yyyy-MM-dd"));
+      if (dateRange?.to) {
+        url.searchParams.append('toDate', format(dateRange.to, "yyyy-MM-dd"));
+      } else if (dateRange?.from) {
+        url.searchParams.append('toDate', format(dateRange.from, "yyyy-MM-dd"));
+      }
+
+      const response = await fetch(url.toString());
       if (!response.ok) {
         if (response.status === 401) {
           toast.error('You are not authenticated. Redirecting to login.');
@@ -201,8 +200,17 @@ export default function BagsLiftPage() {
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: BagLiftRecord[] = await response.json();
-      setBagLiftRecords(data);
+      const result = await response.json();
+      const data: any[] = result.data || result;
+      
+      setTotalCount(result.totalCount || 0);
+
+      const validatedData = data.map(item => {
+          const v = extendedSchema.parse(item);
+          return { ...v, id: v.id.toString() } as BagLiftRecord;
+      });
+
+      setBagLiftRecords(validatedData);
       toast.success("Bag Lift records loaded successfully!");
     } catch (error: any) {
       console.error("Failed to fetch Bag Lift records:", error);
@@ -211,7 +219,7 @@ export default function BagsLiftPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [page, pageSize, debouncedSearchQuery, statusFilter, areaFilter, regionFilter, dateRange]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -222,8 +230,8 @@ export default function BagsLiftPage() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data: LocationsResponse = await response.json();
-      setAvailableAreas(Array.isArray(data.areas) ? data.areas.filter(Boolean) : []);
-      setAvailableRegions(Array.isArray(data.regions) ? data.regions.filter(Boolean) : []);
+      setAvailableAreas(Array.isArray(data.areas) ? data.areas.filter(Boolean).sort() : []);
+      setAvailableRegions(Array.isArray(data.regions) ? data.regions.filter(Boolean).sort() : []);
     } catch (err: any) {
       console.error('Failed to fetch filter locations:', err);
       setLocationError('Failed to load Area/Region filters.');
@@ -232,30 +240,13 @@ export default function BagsLiftPage() {
     }
   }, []);
 
-  const fetchRoles = useCallback(async () => {
-    setIsLoadingRoles(true);
-    setRoleError(null);
-    try {
-      const response = await fetch(ROLES_API_ENDPOINT);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data: RolesResponse = await response.json();
-      const roles = data.roles && Array.isArray(data.roles) ? data.roles : [];
-      setAvailableRoles(roles.filter(Boolean));
-    } catch (err: any) {
-      console.error('Failed to fetch filter roles:', err);
-      setRoleError('Failed to load Role filters.');
-    } finally {
-      setIsLoadingRoles(false);
-    }
-  }, []);
-
   React.useEffect(() => {
     fetchBagLiftRecords();
+  }, [fetchBagLiftRecords]);
+
+  React.useEffect(() => {
     fetchLocations();
-    fetchRoles();
-  }, [fetchBagLiftRecords, fetchLocations, fetchRoles]);
+  }, [fetchLocations]);
 
   const openViewModal = (record: BagLiftRecord) => {
     setSelectedRecord(record);
@@ -288,54 +279,23 @@ export default function BagsLiftPage() {
     }
   };
 
-  // --- Filtering Logic ---
-  const filteredRecords = useMemo(() => {
-    return bagLiftRecords.filter((record) => {
-      const nameMatch = !searchQuery || record.masonName.toLowerCase().includes(searchQuery.toLowerCase());
-      const statusMatch = statusFilter === 'all' || record.status.toLowerCase() === statusFilter.toLowerCase();
-      const roleMatch = roleFilter === 'all' || record.role?.toLowerCase() === roleFilter.toLowerCase();
-      const areaMatch = areaFilter === 'all' || record.area?.toLowerCase() === areaFilter.toLowerCase();
-      const regionMatch = regionFilter === 'all' || record.region?.toLowerCase() === regionFilter.toLowerCase();
-
-      // Date Filter
-      let dateMatch = true;
-      if (record.purchaseDate) {
-        const recordDate = new Date(record.purchaseDate);
-        if (dateFilterStart) {
-          const startDate = startOfDay(new Date(dateFilterStart));
-          if (isBefore(recordDate, startDate)) dateMatch = false;
-        }
-        if (dateMatch && dateFilterEnd) {
-          const endDate = endOfDay(new Date(dateFilterEnd));
-          if (isAfter(recordDate, endDate)) dateMatch = false;
-        }
-      } else if (dateFilterStart || dateFilterEnd) {
-        // If filters are active but record has no date
-        dateMatch = false;
-      }
-
-      return nameMatch && statusMatch && roleMatch && areaMatch && regionMatch && dateMatch;
-    });
-  }, [bagLiftRecords, searchQuery, statusFilter, roleFilter, areaFilter, regionFilter, dateFilterStart, dateFilterEnd]);
-
-  // --- Counter Calculations ---
+  // --- Counter Calculations (Reflecting current page payload for dynamic updates) ---
   const stats = useMemo(() => {
-    const totalBags = filteredRecords.reduce((acc, curr) => acc + (Number(curr.bagCount) || 0), 0);
-    const pointsPending = filteredRecords
+    const totalBags = bagLiftRecords.reduce((acc, curr) => acc + (Number(curr.bagCount) || 0), 0);
+    const pointsPending = bagLiftRecords
       .filter(r => r.status.toLowerCase() === 'pending')
       .reduce((acc, curr) => acc + (Number(curr.pointsCredited) || 0), 0);
-    const pointsApproved = filteredRecords
+    const pointsApproved = bagLiftRecords
       .filter(r => r.status.toLowerCase() === 'approved')
       .reduce((acc, curr) => acc + (Number(curr.pointsCredited) || 0), 0);
 
     return { totalBags, pointsPending, pointsApproved };
-  }, [filteredRecords]);
+  }, [bagLiftRecords]);
 
-  // --- 3. Define Columns for Bag Lift DataTable ---
   const bagLiftColumns: ColumnDef<BagLiftRecord>[] = [
     { accessorKey: "masonName", header: "Mason Name" },
     { accessorKey: "phoneNumber", header: "Mason Phone" },
-    { accessorKey: "dealerName", header: "Associated Dealer" },
+    { accessorKey: "dealerName", header: "Associated Dealer", cell: info => info.getValue() || '-' },
     {
       accessorKey: "purchaseDate",
       header: "Purchase Date",
@@ -356,7 +316,6 @@ export default function BagsLiftPage() {
         </Badge>
       ),
     },
-    // Approver Name with Fallback to Associated Salesman
     {
       id: "approverName",
       header: "Approved By",
@@ -364,7 +323,6 @@ export default function BagsLiftPage() {
         const actualApprover = row.original.approverName;
         const associatedSalesman = row.original.associatedSalesmanName;
 
-        // Logic: Show Actual Approver if exists, OR show Associated Salesman
         const displayName = actualApprover || associatedSalesman;
         const isAssociated = !actualApprover && associatedSalesman;
 
@@ -385,8 +343,8 @@ export default function BagsLiftPage() {
       header: "Approved On",
       cell: ({ row }) => formatDate(row.original.approvedAt)
     },
-    { accessorKey: "area", header: "Area" },
-    { accessorKey: "region", header: "Region(Zone)" },
+    { accessorKey: "area", header: "Area", cell: info => info.getValue() || '-' },
+    { accessorKey: "region", header: "Region(Zone)", cell: info => info.getValue() || '-' },
     {
       id: 'actions',
       header: 'Actions',
@@ -441,106 +399,64 @@ export default function BagsLiftPage() {
     },
   ];
 
-  const handleBagLiftOrderChange = (newOrder: BagLiftRecord[]) => {
-    console.log("New Bag Lift order:", newOrder.map(r => r.id));
-  };
-
-  if (isLoading) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      <span className="ml-2">Loading Bag Lift records...</span>
-    </div>
-  );
-
-  if (error) return (
-    <div className="text-center text-red-500 min-h-screen pt-10">
-      Error: {error}
-      <Button onClick={fetchBagLiftRecords} className="ml-4">Retry</Button>
-    </div>
-  );
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
-        {/* Header Section */}
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold tracking-tight">Bag Lift Records</h2>
+            <div className="flex items-center gap-4">
+                <h2 className="text-3xl font-bold tracking-tight">Bag Lift Records</h2>
+                <Badge variant="outline" className="text-base px-4 py-1">
+                    Total Records: {totalCount}
+                </Badge>
+            </div>
             <RefreshDataButton
-            cachePrefix="bags-lift"
-            onRefresh={fetchBagLiftRecords}
-          />
+               cachePrefix="bags-lift"
+               onRefresh={fetchBagLiftRecords}
+            />
           </div>
 
-          {/* --- Stats Counters (Updated with Indian Number System) --- */}
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Bags Lifted
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
-                  <path d="M4 6v12a2 2 0 0 0 2 2h14v-4" />
-                  <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
-                </svg>
+                <CardTitle className="text-sm font-medium">Bags Lifted (This Page)</CardTitle>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="h-4 w-4 text-muted-foreground"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" /><path d="M4 6v12a2 2 0 0 0 2 2h14v-4" /><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" /></svg>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{formatIndianNumber(stats.totalBags)}</div>
-                <p className="text-xs text-muted-foreground">
-                  Filtered view
-                </p>
+                <p className="text-xs text-muted-foreground">Sum of current results</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Points Pending
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Points Pending</CardTitle>
                 <Loader2 className="h-4 w-4 text-yellow-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-yellow-600">{formatIndianNumber(stats.pointsPending)}</div>
-                <p className="text-xs text-muted-foreground">
-                  Awaiting approval
-                </p>
+                <p className="text-xs text-muted-foreground">Awaiting approval</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Points Approved
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Points Approved</CardTitle>
                 <Check className="h-4 w-4 text-green-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">{formatIndianNumber(stats.pointsApproved)}</div>
-                <p className="text-xs text-muted-foreground">
-                  Successfully credited
-                </p>
+                <p className="text-xs text-muted-foreground">Successfully credited</p>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* --- Filter Components --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
-          {/* 1. Mason Name Search Input */}
+        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
           <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Mason Name</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Search Mason / Dealer</label>
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by mason name..."
+                placeholder="Name or Phone..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-8 h-9 bg-background border-input"
@@ -548,127 +464,70 @@ export default function BagsLiftPage() {
             </div>
           </div>
 
-          {/* 2. Status Filter */}
-          {renderSelectFilter(
-            'Status',
-            statusFilter,
-            (v) => { setStatusFilter(v); },
-            statusOptions
-          )}
-
-          {/* 4. Area Filter */}
-          {renderSelectFilter(
-            'Area',
-            areaFilter,
-            (v) => { setAreaFilter(v); },
-            availableAreas,
-            isLoadingLocations
-          )}
-
-          {/* 5. Region Filter */}
-          {renderSelectFilter(
-            'Region(Zone)',
-            regionFilter,
-            (v) => { setRegionFilter(v); },
-            availableRegions,
-            isLoadingLocations
-          )}
-
-          {/* 6. Date Range Filters - SHADCN UI COMPONENT */}
-          <div className="flex flex-col space-y-1 w-full sm:w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Purchased From</label>
+          <div className="flex flex-col space-y-1.5 w-full sm:w-[280px]">
+            <label className="text-xs font-bold text-muted-foreground uppercase">Purchase Date</label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full h-9 justify-start text-left font-normal bg-background border-input",
-                    !dateFilterStart && "text-muted-foreground"
+                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-9 bg-background border-input", !dateRange && "text-muted-foreground")}>
+                  <IconCalendar className="mr-2 h-4 w-4" />
+                  {dateRange?.from ? (
+                    dateRange.to ? (
+                      <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
+                    ) : (format(dateRange.from, "LLL dd, y"))
+                  ) : (
+                    <span>Select Date Range</span>
                   )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                  {dateFilterStart ? format(new Date(dateFilterStart), "PPP") : <span>Pick date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dateFilterStart ? new Date(dateFilterStart) : undefined}
-                  onSelect={(date) => setDateFilterStart(date ? format(date, "yyyy-MM-dd") : '')}
-                  initialFocus
-                />
+                <Calendar mode="range" defaultMonth={dateRange?.from || new Date()} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="flex flex-col space-y-1 w-full sm:w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Purchased To</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full h-9 justify-start text-left font-normal bg-background border-input",
-                    !dateFilterEnd && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                  {dateFilterEnd ? format(new Date(dateFilterEnd), "PPP") : <span>Pick date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dateFilterEnd ? new Date(dateFilterEnd) : undefined}
-                  onSelect={(date) => setDateFilterEnd(date ? format(date, "yyyy-MM-dd") : '')}
-                  disabled={(date) => dateFilterStart ? isBefore(date, new Date(dateFilterStart)) : false}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          {renderSelectFilter('Status', statusFilter, setStatusFilter, statusOptions)}
+          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
+          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
 
-          {/* Clear Date Filter Button */}
-          {(dateFilterStart || dateFilterEnd) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-9 mb-0.5 text-muted-foreground hover:text-foreground"
-              onClick={() => {
-                setDateFilterStart('');
-                setDateFilterEnd('');
-              }}
-            >
-              Clear Dates
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchQuery('');
+              setStatusFilter('all');
+              setAreaFilter('all');
+              setRegionFilter('all');
+              setDateRange(undefined);
+            }}
+            className="mb-0.5 text-muted-foreground hover:text-destructive"
+          >
+            Clear Filters
+          </Button>
 
-          {/* Display filter option errors if any */}
-          {locationError && <p className="text-xs text-red-500 w-full">Location Filter Error: {locationError}</p>}
-          {roleError && <p className="text-xs text-red-500 w-full">Role Filter Error: {roleError}</p>}
+          {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>}
         </div>
-        {/* --- End Filter Components --- */}
 
-        {/* Data Table Section */}
-        <div className="bg-card p-6 rounded-lg border border-border">
-          {filteredRecords.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">No Bag Lift records found matching the selected filters.</div>
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
+          {isLoading && bagLiftRecords.length === 0 ? (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <span className="ml-2 text-muted-foreground">Loading Bag Lift records...</span>
+            </div>
+          ) : bagLiftRecords.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">No Bag Lift records found matching the selected filters.</div>
           ) : (
-            <>
-              <DataTableReusable
-                columns={bagLiftColumns}
-                data={filteredRecords}
-                enableRowDragging={false}
-                onRowOrderChange={handleBagLiftOrderChange}
-              />
-            </>
+            <DataTableReusable
+              columns={bagLiftColumns}
+              data={bagLiftRecords}
+              enableRowDragging={false}
+              onRowOrderChange={() => {}}
+            />
           )}
         </div>
       </div>
 
       {selectedRecord && (
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-background">
             <DialogHeader>
               <DialogTitle>Bag Lift Details</DialogTitle>
               <DialogDescription>
@@ -683,27 +542,27 @@ export default function BagsLiftPage() {
 
               <div>
                 <Label>Mason Name</Label>
-                <Input value={selectedRecord.masonName} readOnly />
+                <Input value={selectedRecord.masonName} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label>Associated Dealer</Label>
-                <Input value={selectedRecord.dealerName || 'N/A'} readOnly />
+                <Input value={selectedRecord.dealerName || 'N/A'} readOnly className="bg-muted/50" />
               </div>
 
               <div>
                 <Label>Site Key Person Name</Label>
-                <Input value={selectedRecord.siteKeyPersonName || 'N/A'} readOnly />
+                <Input value={selectedRecord.siteKeyPersonName || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label>Site Key Person Phone</Label>
-                <Input value={selectedRecord.siteKeyPersonPhone || 'N/A'} readOnly />
+                <Input value={selectedRecord.siteKeyPersonPhone || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div className="md:col-span-2">
                 <Label>Site Name & Address</Label>
                 <div className="relative mt-1">
                   <MapPin className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    className="pl-8"
+                    className="pl-8 bg-muted/50"
                     value={
                       selectedRecord.siteName
                         ? `${selectedRecord.siteName} — ${selectedRecord.siteAddress || 'No Address'}`
@@ -720,19 +579,19 @@ export default function BagsLiftPage() {
 
               <div>
                 <Label>Purchase Date</Label>
-                <Input value={formatDate(selectedRecord.purchaseDate)} readOnly />
+                <Input value={formatDate(selectedRecord.purchaseDate)} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label>Bag Count</Label>
-                <Input value={selectedRecord.bagCount} readOnly />
+                <Input value={selectedRecord.bagCount} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label>Points Credited</Label>
-                <Input value={selectedRecord.pointsCredited} readOnly />
+                <Input value={selectedRecord.pointsCredited} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label>Status</Label>
-                <Input value={selectedRecord.status} readOnly />
+                <Input value={selectedRecord.status} readOnly className="bg-muted/50" />
               </div>
 
               <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
@@ -741,19 +600,17 @@ export default function BagsLiftPage() {
 
               <div>
                 <Label>Approved By</Label>
-                <Input value={selectedRecord.approverName || selectedRecord.associatedSalesmanName || 'N/A'} readOnly />
+                <Input value={selectedRecord.approverName || selectedRecord.associatedSalesmanName || 'N/A'} readOnly className="bg-muted/50" />
               </div>
               <div>
                 <Label>Approved At</Label>
-                <Input value={formatDate(selectedRecord.approvedAt)} readOnly />
+                <Input value={formatDate(selectedRecord.approvedAt)} readOnly className="bg-muted/50" />
               </div>
 
-              {/* --- IMAGE PREVIEW SECTION --- */}
               {selectedRecord.imageUrl && (
                 <div className="md:col-span-2">
                   <Label htmlFor="bagLiftImage">Mason Bag Lift Image</Label>
-                  <div id="bagLiftImage" className="mt-2 border p-2 rounded-md bg-muted/50">
-                    {/* Link to open original image */}
+                  <div id="bagLiftImage" className="mt-2 border p-2 rounded-md bg-muted/30">
                     <a
                       href={selectedRecord.imageUrl}
                       target="_blank"
@@ -771,7 +628,6 @@ export default function BagsLiftPage() {
                 </div>
               )}
 
-              {/* TSO VERIFICATION EVIDENCE */}
               {(selectedRecord.verificationSiteImageUrl || selectedRecord.verificationProofImageUrl) && (
                 <div className="md:col-span-2 text-lg font-semibold border-b pt-4 pb-2">
                   TSO Verification Image
@@ -781,7 +637,7 @@ export default function BagsLiftPage() {
               {selectedRecord.verificationSiteImageUrl && (
                 <div className="md:col-span-2">
                   <Label>Site Verification Image</Label>
-                  <div className="mt-2 border p-2 rounded-md bg-muted/50">
+                  <div className="mt-2 border p-2 rounded-md bg-muted/30">
                     <a
                       href={selectedRecord.verificationSiteImageUrl}
                       target="_blank"
@@ -798,9 +654,7 @@ export default function BagsLiftPage() {
                   </div>
                 </div>
               )}
-
             </div>
-
             <DialogFooter>
               <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
             </DialogFooter>

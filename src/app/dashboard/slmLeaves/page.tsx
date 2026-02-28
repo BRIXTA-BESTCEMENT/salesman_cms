@@ -12,8 +12,8 @@ import { DateRange } from "react-day-picker";
 
 // Import your Shadcn UI components
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge'; // For status badges
-import { Input } from '@/components/ui/input'; // For search input
+import { Badge } from '@/components/ui/badge'; 
+import { Input } from '@/components/ui/input'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -25,17 +25,16 @@ import { IconCalendar } from '@tabler/icons-react';
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { cn } from '@/lib/utils';
 import { selectSalesmanLeaveApplicationSchema } from '../../../../drizzle/zodSchemas';
 
-// --- EXTEND THE DRIZZLE SCHEMA ---
-// Add the relational joined fields and ensure dates don't break validation
 const extendedSalesmanLeaveApplicationSchema = selectSalesmanLeaveApplicationSchema.extend({
   salesmanName: z.string().optional().catch("Unknown"),
   salesmanRole: z.string().optional().catch("N/A"),
-  role: z.string().optional().catch("N/A"), // Fallback if API uses 'role' instead
+  role: z.string().optional().catch("N/A"), 
   area: z.string().nullable().optional().catch("N/A"),
   region: z.string().nullable().optional().catch("N/A"),
-  // Handle cases where dates might come through as stringified Timestamps
   startDate: z.string().optional(),
   endDate: z.string().optional(),
 });
@@ -44,7 +43,6 @@ type SalesmanLeaveApplication = Omit<z.infer<typeof extendedSalesmanLeaveApplica
   id: string 
 };
 
-// --- API Endpoints and Types for Filters ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
 const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
@@ -56,55 +54,24 @@ interface RolesResponse {
   roles: string[];
 }
 
-// Helper function to render the Select filter component - KEPT FOR REFERENCE, but not used in final JSX
-// const renderSelectFilter = (
-//   label: string,
-//   value: string,
-//   onValueChange: (v: string) => void,
-//   options: string[],
-//   isLoading: boolean = false
-// ) => (
-//   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-//     <label className="text-sm font-medium text-muted-foreground">{label}</label>
-//     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-//       <SelectTrigger className="h-9">
-//         {isLoading ? (
-//           <div className="flex flex-row items-center space-x-2">
-//             <Loader2 className="h-4 w-4 animate-spin" />
-//             <span className="text-muted-foreground">Loading...</span>
-//           </div>
-//         ) : (
-//           <SelectValue placeholder={`Select ${label}`} />
-//         )}
-//       </SelectTrigger>
-//       <SelectContent>
-//         <SelectItem value="all">All {label}s</SelectItem>
-//         {options.map(option => (
-//           <SelectItem key={option} value={option}>
-//             {option}
-//           </SelectItem>
-//         ))}
-//       </SelectContent>
-//     </Select>
-//   </div>
-// );
-
-
 export default function SlmLeavesPage() {
   const router = useRouter();
   const [leaveApplications, setLeaveApplications] = React.useState<SalesmanLeaveApplication[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  // --- Filter States ---
+  // --- Pagination & Filters ---
+  const [page, setPage] = React.useState(0);
+  const [pageSize] = React.useState(500);
+  const [totalCount, setTotalCount] = React.useState(0);
+
   const [searchQuery, setSearchQuery] = React.useState("");
-  // currentPage state REMOVED as DataTableReusable manages it.
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
   const [roleFilter, setRoleFilter] = React.useState('all');
   const [areaFilter, setAreaFilter] = React.useState('all');
   const [regionFilter, setRegionFilter] = React.useState('all');
 
-  // --- Filter Options States ---
   const [availableRoles, setAvailableRoles] = React.useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = React.useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = React.useState<string[]>([]);
@@ -123,7 +90,17 @@ export default function SlmLeavesPage() {
   const [actionRemarks, setActionRemarks] = React.useState("");
   const [isSubmittingAction, setIsSubmittingAction] = React.useState(false);
 
-  // --- Filter Options Fetching ---
+  // Debounce search
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page when filters change
+  React.useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter, dateRange]);
+
   const fetchLocations = React.useCallback(async () => {
     setIsLoadingLocations(true);
     setLocationError(null);
@@ -137,7 +114,6 @@ export default function SlmLeavesPage() {
 
       setAvailableAreas(safeAreas);
       setAvailableRegions(safeRegions);
-
     } catch (err: any) {
       console.error('Failed to fetch filter locations:', err);
       setLocationError('Failed to load Area/Region filters.');
@@ -162,20 +138,25 @@ export default function SlmLeavesPage() {
     }
   }, []);
 
-
-  // --- Data Fetching Logic ---
   const apiURI = `/api/dashboardPagesAPI/slm-leaves`
   const fetchLeaveApplications = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const url = new URL(apiURI, window.location.origin);
-      // Append date range to API call
-      if (dateRange?.from) {
-        url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
-      }
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (roleFilter !== 'all') url.searchParams.append('role', roleFilter);
+      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
+      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+
+      if (dateRange?.from) url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
       if (dateRange?.to) {
         url.searchParams.append('endDate', format(dateRange.to, 'yyyy-MM-dd'));
+      } else if (dateRange?.from) {
+        url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
       const response = await fetch(url.toString());
@@ -193,10 +174,13 @@ export default function SlmLeavesPage() {
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: SalesmanLeaveApplication[] = await response.json();
-      const validatedData = data.map((item) => {
+
+      const result = await response.json();
+      const data = result.data || result;
+      setTotalCount(result.totalCount || 0);
+
+      const validatedData = data.map((item: any) => {
         try {
-          // Use id as UniqueIdentifier for DataTableReusable
           const validated = extendedSalesmanLeaveApplicationSchema.parse(item);
           return { ...validated, id: validated.id.toString() } as SalesmanLeaveApplication;
         } catch (e) {
@@ -214,7 +198,7 @@ export default function SlmLeavesPage() {
     } finally {
       setLoading(false);
     }
-  }, [dateRange, router]);
+  }, [page, pageSize, debouncedSearchQuery, roleFilter, areaFilter, regionFilter, dateRange, router]);
 
   React.useEffect(() => {
     fetchLeaveApplications();
@@ -225,7 +209,6 @@ export default function SlmLeavesPage() {
     fetchRoles();
   }, [fetchLocations, fetchRoles]);
 
-  // --- Handle Leave Approval/Rejection ---
   const handleLeaveAction = async (id: UniqueIdentifier, newStatus: "Approved" | "Rejected", remarks: string | null = null) => {
     try {
       const response = await fetch(apiURI, {
@@ -250,7 +233,7 @@ export default function SlmLeavesPage() {
             : app
         )
       );
-      toast.success(`Leave for ${updatedApplication.salesmanName} ${newStatus.toLowerCase()}!`);
+      toast.success(`Leave ${newStatus.toLowerCase()}!`);
     } catch (e: any) {
       console.error("Failed to update leave application:", e);
       toast.error(e.message || "Failed to update leave application.");
@@ -263,7 +246,7 @@ export default function SlmLeavesPage() {
       type: type,
       salesmanName: app.salesmanName || "Unknown"
     });
-    setActionRemarks(""); // Reset remarks
+    setActionRemarks(""); 
     setIsDialogOpen(true);
   };
 
@@ -277,40 +260,6 @@ export default function SlmLeavesPage() {
     setCurrentAction(null);
   };
 
-  // --- Filtering Logic
-  const filteredData = React.useMemo(() => {
-    const lowerCaseSearch = (searchQuery || '').toLowerCase();
-
-    return leaveApplications.filter((app) => {
-      // 1. Search Filter (Salesman, Leave Type, Reason, Status, Admin Remarks, Start/End dates)
-      const matchesSearch =
-        !lowerCaseSearch ||
-        (app.salesmanName || '').toLowerCase().includes(lowerCaseSearch) ||
-        (app.leaveType || '').toLowerCase().includes(lowerCaseSearch) ||
-        (app.reason || '').toLowerCase().includes(lowerCaseSearch) ||
-        (app.status || '').toLowerCase().includes(lowerCaseSearch) ||
-        (app.adminRemarks || '').toLowerCase().includes(lowerCaseSearch) ||
-        (app.startDate || '').toLowerCase().includes(lowerCaseSearch) ||
-        (app.endDate || '').toLowerCase().includes(lowerCaseSearch);
-
-      // 2. Role Filter: backend might not provide role on leave object.
-      // Use safe runtime checks via (app as any).salesmanRole or (app as any).role
-      const reportRole = ((app as any).salesmanRole || (app as any).role || '').toString();
-      const roleMatch = roleFilter === 'all' || reportRole.toLowerCase() === roleFilter.toLowerCase();
-
-      // 3. Area Filter: backend might not have area on leave object
-      const reportArea = ((app as any).area || '').toString();
-      const areaMatch = areaFilter === 'all' || reportArea.toLowerCase() === areaFilter.toLowerCase();
-
-      // 4. Region Filter
-      const reportRegion = ((app as any).region || '').toString();
-      const regionMatch = regionFilter === 'all' || reportRegion.toLowerCase() === regionFilter.toLowerCase();
-
-      return matchesSearch && roleMatch && areaMatch && regionMatch;
-    });
-  }, [leaveApplications, searchQuery, roleFilter, areaFilter, regionFilter]);
-
-  // --- Define Columns for Salesman Leave Applications DataTable ---
   const salesmanLeaveColumns: ColumnDef<SalesmanLeaveApplication>[] = [
     { accessorKey: "salesmanName", header: "Salesman" },
     { accessorKey: "leaveType", header: "Leave Type" },
@@ -328,16 +277,16 @@ export default function SlmLeavesPage() {
         let className = "";
         switch (status) {
           case "Approved":
-            className = "bg-green-600 hover:bg-green-700 text-white";
+            className = "bg-green-600 hover:bg-green-700 text-white shadow-none";
             break;
           case "Rejected":
-            className = "bg-red-600 hover:bg-red-700 text-white";
+            className = "bg-red-600 hover:bg-red-700 text-white shadow-none";
             break;
           case "Pending":
-            className = "bg-yellow-500 hover:bg-yellow-600 text-black";
+            className = "bg-yellow-500 hover:bg-yellow-600 text-black shadow-none";
             break;
           default:
-            className = "bg-gray-500 hover:bg-gray-600 text-white";
+            className = "bg-gray-500 hover:bg-gray-600 text-white shadow-none";
         }
         return (
           <Badge className={className}>
@@ -346,7 +295,7 @@ export default function SlmLeavesPage() {
         );
       },
     },
-{
+    {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
@@ -380,16 +329,11 @@ export default function SlmLeavesPage() {
     },
   ];
 
-  const handleSalesmanLeaveOrderChange = (newOrder: SalesmanLeaveApplication[]) => {
-    console.log("New salesman leave report order (for draggable table):", newOrder.map(r => (r as any).id));
-  };
-
-  // --- Loading and Error States ---
-  if (loading) {
+  if (loading && leaveApplications.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-        <p>Loading salesman leave applications...</p>
+        <p className="text-muted-foreground">Loading salesman leave applications...</p>
       </div>
     );
   }
@@ -406,14 +350,22 @@ export default function SlmLeavesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
-        {/* Header Section */}
+        
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Salesman Leave Applications</h2>
+          <div className="flex items-center gap-4">
+              <h2 className="text-3xl font-bold tracking-tight">Leave Applications</h2>
+              <Badge variant="outline" className="text-base px-4 py-1">
+                 Total Records: {totalCount}
+              </Badge>
+          </div>
+          <RefreshDataButton
+            cachePrefix="salesman-leaves"
+            onRefresh={fetchLeaveApplications}
+          />
         </div>
 
         {/* --- Filters Section --- */}
-        <div
-          className="rounded-lg border border-border mb-6 bg-card p-6">
+        <div className="rounded-lg border border-border mb-6 bg-card p-6 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
             {/* 1) Date Range */}
@@ -425,7 +377,7 @@ export default function SlmLeavesPage() {
                     <Button
                       id="date"
                       variant="outline"
-                      className="w-full h-9 justify-start text-left font-normal"
+                      className="w-full h-9 justify-start text-left font-normal bg-background"
                     >
                       <IconCalendar className="mr-2 h-4 w-4" />
                       {dateRange?.from
@@ -456,23 +408,22 @@ export default function SlmLeavesPage() {
 
             {/* 2) Search */}
             <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-muted-foreground">Search All Fields</label>
+              <label className="text-sm font-medium text-muted-foreground">Search Fields</label>
               <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Salesman, Reason, Status..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 h-9"
+                  className="pl-10 h-9 border-border bg-background"
                 />
               </div>
             </div>
 
-            {/* 3) Role */}
             <div className="flex flex-col space-y-1">
               <label className="text-sm font-medium text-muted-foreground">Role</label>
               <Select value={roleFilter} onValueChange={setRoleFilter} disabled={isLoadingRoles}>
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-9 bg-background">
                   {isLoadingRoles ? <span className="text-muted-foreground">Loading…</span> : <SelectValue placeholder="All Roles" />}
                 </SelectTrigger>
                 <SelectContent>
@@ -482,11 +433,10 @@ export default function SlmLeavesPage() {
               </Select>
             </div>
 
-            {/* 4) Area */}
             <div className="flex flex-col space-y-1">
               <label className="text-sm font-medium text-muted-foreground">Area</label>
               <Select value={areaFilter} onValueChange={setAreaFilter} disabled={isLoadingLocations}>
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-9 bg-background">
                   {isLoadingLocations ? <span className="text-muted-foreground">Loading…</span> : <SelectValue placeholder="All Areas" />}
                 </SelectTrigger>
                 <SelectContent>
@@ -496,11 +446,10 @@ export default function SlmLeavesPage() {
               </Select>
             </div>
 
-            {/* 5) Region */}
             <div className="flex flex-col space-y-1">
               <label className="text-sm font-medium text-muted-foreground">Region(Zone)</label>
               <Select value={regionFilter} onValueChange={setRegionFilter} disabled={isLoadingLocations}>
-                <SelectTrigger className="h-9">
+                <SelectTrigger className="h-9 bg-background">
                   {isLoadingLocations ? <span className="text-muted-foreground">Loading…</span> : <SelectValue placeholder="All Regions" />}
                 </SelectTrigger>
                 <SelectContent>
@@ -510,7 +459,6 @@ export default function SlmLeavesPage() {
               </Select>
             </div>
 
-            {/* Errors across full width */}
             {(locationError || roleError) && (
               <div className="sm:col-span-2 lg:col-span-4">
                 {locationError && <p className="text-xs text-red-500">Location Filter Error: {locationError}</p>}
@@ -520,25 +468,22 @@ export default function SlmLeavesPage() {
           </div>
         </div>
 
-        {/* Data Table Section */}
-        <div className="bg-card p-6 rounded-lg border border-border">
-          {filteredData.length === 0 && !loading && !error ? (
-            <div className="text-center text-gray-500 py-8">No salesman leave applications found matching the selected filters.</div>
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
+          {leaveApplications.length === 0 && !loading && !error ? (
+            <div className="text-center text-muted-foreground py-8">No salesman leave applications found matching the selected filters.</div>
           ) : (
-            <>
-              <DataTableReusable
-                columns={salesmanLeaveColumns}
-                data={filteredData}
-                enableRowDragging={false}
-                onRowOrderChange={handleSalesmanLeaveOrderChange}
-              />
-            </>
+            <DataTableReusable
+              columns={salesmanLeaveColumns}
+              data={leaveApplications}
+              enableRowDragging={false}
+              onRowOrderChange={() => {}}
+            />
           )}
         </div>
       </div>
   
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] bg-background">
           <DialogHeader>
             <DialogTitle>{currentAction?.type === 'Approved' ? 'Approve Leave' : 'Reject Leave'}</DialogTitle>
             <DialogDescription>
@@ -553,6 +498,7 @@ export default function SlmLeavesPage() {
                 placeholder="Enter remarks here..."
                 value={actionRemarks}
                 onChange={(e) => setActionRemarks(e.target.value)}
+                className="bg-muted/50"
               />
             </div>
           </div>

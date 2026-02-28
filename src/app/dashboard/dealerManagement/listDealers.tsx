@@ -5,13 +5,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
-import { Loader2, Search, MapPin, ExternalLink } from 'lucide-react'; // Added Icons
+import { Loader2, Search, MapPin, ExternalLink } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { useDealerLocations } from '@/components/reusable-dealer-locations';
@@ -42,9 +43,9 @@ const renderSelectFilter = (
   isLoading: boolean = false
 ) => (
   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
+      <SelectTrigger className="h-9 bg-background border-input">
         {isLoading ? (
           <div className="flex flex-row items-center space-x-2">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -55,7 +56,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -67,28 +68,40 @@ const renderSelectFilter = (
 );
 
 export default function ListDealersPage() {
-  // --- State for Dealer Listing ---
   const [dealers, setDealers] = useState<DealerRecord[]>([]);
   const [loadingDealers, setLoadingDealers] = useState(true);
   const [errorDealers, setErrorDealers] = useState<string | null>(null);
 
-  // --- Delete Dialog ---
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [dealerToDeleteId, setDealerToDeleteId] = useState<string | null>(null);
 
-  // --- Filters ---
+  // --- Pagination & Filters ---
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [filterRegion, setFilterRegion] = useState<string>('all');
   const [filterArea, setFilterArea] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
 
-  // Locations from shared hook
   const { locations, loading: locationsLoading, error: locationsError } = useDealerLocations();
 
-  // Types
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const [loadingTypes, setLoadingTypes] = useState(true);
   const [typesError, setTypesError] = useState<string | null>(null);
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page on filter change
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, filterRegion, filterArea, filterType]);
 
   const fetchDealerTypes = useCallback(async () => {
     setLoadingTypes(true);
@@ -102,24 +115,35 @@ export default function ListDealersPage() {
     } catch (e: any) {
       console.error('Failed to fetch dealer types:', e);
       setTypesError('Failed to load dealer types.');
-      toast.error('Failed to load dealer types.');
     } finally {
       setLoadingTypes(false);
     }
   }, []);
 
-  // --- Fetch Dealers ---
   const fetchDealers = useCallback(async () => {
     setLoadingDealers(true);
     setErrorDealers(null);
     try {
-      const response = await fetch(`${DEALER_LOCATIONS_API}?status=VERIFIED`);
+      const url = new URL(DEALER_LOCATIONS_API, window.location.origin);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (filterRegion !== 'all') url.searchParams.append('region', filterRegion);
+      if (filterArea !== 'all') url.searchParams.append('area', filterArea);
+      if (filterType !== 'all') url.searchParams.append('type', filterType);
+
+      const response = await fetch(url.toString());
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
-      const data = await response.json();
-      const validatedDealers = z.array(dealerFrontendSchema).parse(data);
+      const result = await response.json();
+      
+      const rawData = result.data || result; // Fallback in case of shape mismatch
+      setTotalCount(result.totalCount || 0);
+
+      const validatedDealers = z.array(dealerFrontendSchema).parse(rawData);
       setDealers(validatedDealers);
       toast.success('Verified dealers loaded successfully!');
     } catch (e: any) {
@@ -132,14 +156,16 @@ export default function ListDealersPage() {
     } finally {
       setLoadingDealers(false);
     }
-  }, []);
+  }, [page, pageSize, debouncedSearchQuery, filterRegion, filterArea, filterType]);
 
   useEffect(() => {
     fetchDealers();
-    fetchDealerTypes();
-  }, [fetchDealers, fetchDealerTypes]);
+  }, [fetchDealers]);
 
-  // --- Delete Handler ---
+  useEffect(() => {
+    fetchDealerTypes();
+  }, [fetchDealerTypes]);
+
   const handleDelete = async () => {
     if (!dealerToDeleteId) return;
     try {
@@ -158,30 +184,17 @@ export default function ListDealersPage() {
     }
   };
 
-  // --- Client-side filtering ---
-  const filteredDealers = dealers.filter(d => {
-    const nameMatch = !searchQuery || (d.name || '').toLowerCase().includes(searchQuery.toLowerCase());
-    const regionMatch = filterRegion === 'all' || d.region === filterRegion;
-    const areaMatch = filterArea === 'all' || d.area === filterArea;
-    const typeMatch = filterType === 'all' || d.type === filterType;
-    return nameMatch && regionMatch && areaMatch && typeMatch;
-  });
-
-  // --- Helper for Maps ---
   const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
     if (lat == null || lng == null) return null;
     return `https://www.google.com/maps?q=${lat},${lng}`;
   };
 
-  // --- Table columns ---
   const dealerColumns: ColumnDef<DealerRecord>[] = [
     { accessorKey: 'name', header: 'Name', cell: info => <span className="font-semibold">{info.getValue() as string}</span> },
     { accessorKey: 'type', header: 'Type' },
-    
-    // Combined Location Column (Region + Area + Address + Map)
     {
       header: 'Location',
-      accessorKey: 'address', // Used for sorting fallback
+      accessorKey: 'address', 
       cell: ({ row }) => {
         const { region, area, address, pinCode, latitude, longitude } = row.original;
         const mapLink = getGoogleMapsLink(latitude, longitude);
@@ -211,17 +224,13 @@ export default function ListDealersPage() {
         );
       }
     },
-
     { accessorKey: 'parentDealerName', header: 'Parent', cell: info => info.getValue() || '-' },
     { accessorKey: 'nameOfFirm', header: 'Firm Name' },
     { accessorKey: 'underSalesPromoterName', header: 'SP Name' },
     { accessorKey: 'phoneNo', header: 'Phone No.' },
-    
-    // Combined Business Info
    {
       header: 'Business Info',
       cell: ({ row }) => {
-        // Move logic outside the return block
         const brands = row.original.brandSelling ?? [];
         const total = Number(row.original.totalPotential || 0);
         const best = Number(row.original.bestPotential || 0);
@@ -244,27 +253,9 @@ export default function ListDealersPage() {
       }
     },
     { accessorKey: 'createdAt', header: 'Added On', cell: info => new Date(info.getValue() as string).toLocaleDateString() },
-    
-    // {
-    //   id: 'actions',
-    //   header: 'Actions',
-    //   cell: ({ row }) => (
-    //     <Button
-    //       className="bg-red-800 hover:bg-red-900 text-white h-7 px-3 text-xs"
-    //       size="sm"
-    //       onClick={() => {
-    //         setDealerToDeleteId(row.original.id);
-    //         setIsDeleteDialogOpen(true);
-    //       }}
-    //     >
-    //       Delete
-    //     </Button>
-    //   ),
-    // },
   ];
 
-  // --- Loading / Error gates ---
-  if (loadingDealers || locationsLoading || loadingTypes) {
+  if (loadingDealers && dealers.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen gap-2">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -277,11 +268,15 @@ export default function ListDealersPage() {
     return <div className="text-center text-red-500 min-h-screen pt-10">Error: {errorDealers || locationsError || typesError}</div>;
   }
 
-  // --- UI ---
   return (
     <div className="container mx-auto p-4 max-w-[100vw] overflow-hidden">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Manage Dealers</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">Manage Dealers</h1>
+          <Badge variant="outline" className="text-base px-4 py-1">
+            Total Dealers: {totalCount}
+          </Badge>
+        </div>
         <RefreshDataButton 
           cachePrefix="dealers" 
           onRefresh={fetchDealers} 
@@ -301,59 +296,46 @@ export default function ListDealersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Filters */}
       <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6 shadow-sm">
         
-        {/* 1. Name Search Input */}
         <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-          <label className="text-sm font-medium text-muted-foreground">Dealer Name</label>
+          <label className="text-xs font-semibold text-muted-foreground uppercase">Dealer Name / Firm</label>
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by dealer name..."
+              placeholder="Search by name, address..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9"
+              className="pl-8 h-9 bg-background border-input"
             />
           </div>
         </div>
 
-        {/* 2. Type Filter */}
-        {renderSelectFilter(
-          'Type',
-          filterType,
-          setFilterType,
-          availableTypes,
-          loadingTypes
-        )}
+        {renderSelectFilter('Type', filterType, setFilterType, availableTypes, loadingTypes)}
+        {renderSelectFilter('Region', filterRegion, setFilterRegion, (locations.regions || []).filter(Boolean).sort(), locationsLoading)}
+        {renderSelectFilter('Area', filterArea, setFilterArea, (locations.areas || []).filter(Boolean).sort(), locationsLoading)}
 
-        {/* 3. Region Filter */}
-        {renderSelectFilter(
-          'Region',
-          filterRegion,
-          setFilterRegion,
-          (locations.regions || []).filter(Boolean).sort(),
-          locationsLoading
-        )}
-
-        {/* 4. Area Filter */}
-        {renderSelectFilter(
-          'Area',
-          filterArea,
-          setFilterArea,
-          (locations.areas || []).filter(Boolean).sort(),
-          locationsLoading
-        )}
+        <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchQuery('');
+              setFilterType('all');
+              setFilterRegion('all');
+              setFilterArea('all');
+            }}
+            className="mb-0.5 text-muted-foreground hover:text-destructive"
+          >
+            Clear Filters
+        </Button>
       </div>
 
-      {/* Table */}
       {dealers.length === 0 ? (
-        <div className="text-center text-gray-500 py-12 bg-gray-50 rounded-lg">No dealers found for your company.</div>
+        <div className="text-center text-muted-foreground py-12 bg-muted/20 rounded-lg">No dealers found matching the selected filters.</div>
       ) : (
-        <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+        <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden p-1">
           <DataTableReusable
             columns={dealerColumns}
-            data={filteredDealers}
+            data={dealers}
             enableRowDragging={false}
             onRowOrderChange={() => { }}
           />

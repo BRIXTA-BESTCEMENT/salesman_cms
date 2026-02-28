@@ -8,7 +8,7 @@ import {
     users, technicalSites, siteAssociatedUsers, siteAssociatedDealers, dealers,
     siteAssociatedMasons, masonPcSide, bagLifts
 } from '../../../../../drizzle'; 
-import { eq, desc, inArray, getTableColumns } from 'drizzle-orm';
+import { eq, desc, inArray, getTableColumns, and, or, ilike, count, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectTechnicalSiteSchema } from '../../../../../drizzle/zodSchemas';
@@ -20,7 +20,6 @@ const allowedRoles = [
     'senior-executive', 'executive',
 ];
 
-// 1. Extend the baked DB schema to strictly type the nested relations and parsed dates/numbers
 const frontendSiteSchema = selectTechnicalSiteSchema.extend({
     latitude: z.number().nullable(),
     longitude: z.number().nullable(),
@@ -59,26 +58,62 @@ const frontendSiteSchema = selectTechnicalSiteSchema.extend({
     })),
 });
 
-// Explicit type to survive 'use cache' boundary collapse
 type SiteRow = InferSelectModel<typeof technicalSites>;
 
-// 2. The Cached Function
-async function getCachedTechnicalSites() {
+async function getCachedTechnicalSites(
+    page: number,
+    pageSize: number,
+    search: string | null,
+    region: string | null,
+    area: string | null,
+    stage: string | null
+) {
     'use cache';
     cacheLife('days');
-    cacheTag('technical-sites');
+    
+    const filterKey = `${search}-${region}-${area}-${stage}`;
+    cacheTag(`technical-sites-${page}-${filterKey}`);
 
-    // Step 1: Fetch base sites cleanly
+    const filters: SQL[] = [];
+
+    if (search) {
+        const searchCondition = or(
+            ilike(technicalSites.siteName, `%${search}%`),
+            ilike(technicalSites.concernedPerson, `%${search}%`),
+            ilike(technicalSites.address, `%${search}%`),
+            ilike(technicalSites.phoneNo, `%${search}%`)
+        );
+        if (searchCondition) filters.push(searchCondition);
+    }
+
+    if (region && region !== 'all') filters.push(eq(technicalSites.region, region));
+    if (area && area !== 'all') filters.push(eq(technicalSites.area, area));
+    if (stage && stage !== 'all') filters.push(eq(technicalSites.stageOfConstruction, stage));
+
+    const whereClause = filters.length > 0 ? and(...filters) : undefined;
+
+    // Step 1: Fetch paginated base sites
     const sites: SiteRow[] = await db
         .select({ ...getTableColumns(technicalSites) })
         .from(technicalSites)
-        .orderBy(desc(technicalSites.updatedAt));
+        .where(whereClause)
+        .orderBy(desc(technicalSites.updatedAt))
+        .limit(pageSize)
+        .offset(page * pageSize);
 
-    if (sites.length === 0) return [];
+    // Fetch Total Count
+    const totalCountResult = await db
+        .select({ count: count() })
+        .from(technicalSites)
+        .where(whereClause);
+
+    const totalCount = Number(totalCountResult[0].count);
+
+    if (sites.length === 0) return { data: [], totalCount };
 
     const siteIds = sites.map(s => s.id);
 
-    // Step 2: Fetch all relations in 4 parallel, batched queries using `inArray` (Fixes N+1 issue)
+    // Step 2: Fetch all relations ONLY for the paginated site IDs (Fixes N+1 issue)
     const [allUsers, allDealers, allMasons, allBagLifts] = await Promise.all([
         db.select({
             siteId: siteAssociatedUsers.a,
@@ -145,14 +180,12 @@ async function getCachedTechnicalSites() {
     const toNumber = (val: any) => (val ? Number(val) : null);
 
     // Step 4: Map final results
-    return sites.map(site => {
-        // Safe access to grouped maps
+    const formattedData = sites.map(site => {
         const siteUsers = usersMap[site.id] || [];
         const siteDealers = dealersMap[site.id] || [];
         const siteMasons = masonsMap[site.id] || [];
         const siteBagLifts = bagLiftsMap[site.id] || [];
 
-        // Support for both typo variants that might exist in schema vs frontend ('firstVisitDate' vs 'firstVistDate')
         const firstVisitRaw = (site as any).firstVisitDate || (site as any).firstVistDate;
 
         return {
@@ -188,6 +221,8 @@ async function getCachedTechnicalSites() {
             })),
         };
     });
+
+    return { data: formattedData, totalCount };
 }
 
 export async function GET(request: NextRequest) {
@@ -211,18 +246,57 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        const formattedSites = await getCachedTechnicalSites();
+        const { searchParams } = new URL(request.url);
 
-        // Validate strictly with our extended schema
-        const validatedData = z.array(frontendSiteSchema).safeParse(formattedSites);
+        // --- Action: Fetch Distinct Filters Layout ---
+        const action = searchParams.get('action');
+        if (action === 'fetch_filters') {
+             const distinctRegions = await db.selectDistinct({ region: technicalSites.region }).from(technicalSites);
+             const distinctAreas = await db.selectDistinct({ area: technicalSites.area }).from(technicalSites);
+             const distinctStages = await db.selectDistinct({ stage: technicalSites.stageOfConstruction }).from(technicalSites);
+
+             return NextResponse.json({
+                 regions: distinctRegions.map(r => r.region).filter(Boolean).sort(),
+                 areas: distinctAreas.map(a => a.area).filter(Boolean).sort(),
+                 stages: distinctStages.map(s => s.stage).filter(Boolean).sort(),
+             }, { status: 200 });
+        }
+
+        const page = Number(searchParams.get('page') ?? 0);
+        const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
+        
+        const search = searchParams.get('search');
+        const region = searchParams.get('region');
+        const area = searchParams.get('area');
+        const stage = searchParams.get('stage');
+
+        const result = await getCachedTechnicalSites(
+            page,
+            pageSize,
+            search,
+            region,
+            area,
+            stage
+        );
+
+        const validatedData = z.array(frontendSiteSchema).safeParse(result.data);
 
         if (!validatedData.success) {
             console.error("Technical Sites Validation Error:", validatedData.error.format());
-            // Graceful fallback to avoid crashing the dashboard view
-            return NextResponse.json(formattedSites, { status: 200 });
+            return NextResponse.json({
+                data: result.data,
+                totalCount: result.totalCount,
+                page,
+                pageSize
+            }, { status: 200 });
         }
 
-        return NextResponse.json(validatedData.data, { status: 200 });
+        return NextResponse.json({
+            data: validatedData.data,
+            totalCount: result.totalCount,
+            page,
+            pageSize
+        }, { status: 200 });
 
     } catch (error) {
         console.error('Error fetching technical sites:', error);

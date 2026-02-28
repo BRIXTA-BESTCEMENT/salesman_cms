@@ -1,7 +1,7 @@
 // app/dashboard/reports/technicalVisitReports.tsx
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
@@ -13,11 +13,9 @@ import {
   RefreshCw, Wrench, Users,
 } from 'lucide-react';
 
-// Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 
-// UI Components
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,12 +32,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { selectTechnicalVisitReportSchema } from '../../../../drizzle/zodSchemas';
 
-// --- EXTEND THE DRIZZLE SCHEMA ---
 const extendedTechnicalVisitReportSchema = selectTechnicalVisitReportSchema.extend({
   salesmanName: z.string().optional().catch("Unknown"),
   role: z.string().optional().catch("N/A"),
   date: z.string().optional(),
-  timeSpentinLoc: z.string().nullable().optional(), 
+  timeSpentinLoc: z.string().nullable().optional(),
   latitude: z.coerce.number().nullable().optional().catch(null),
   longitude: z.coerce.number().nullable().optional().catch(null),
   constAreaSqFt: z.coerce.number().nullable().optional().catch(null),
@@ -56,7 +53,6 @@ const extendedTechnicalVisitReportSchema = selectTechnicalVisitReportSchema.exte
 
 type TechnicalVisitReport = z.infer<typeof extendedTechnicalVisitReportSchema>;
 
-// --- CONSTANTS AND TYPES ---
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
 const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
 
@@ -75,8 +71,6 @@ const CUSTOMER_TYPE_OPTIONS = [
   'Channel Partner(Dealer/Sub-Dealer)',
   'Competitor Channel Partner (Dealer/Sub-Dealer)',
 ];
-
-// --- HELPER FUNCTIONS ---
 
 const formatTimeIST = (dateString: string | null) => {
   if (!dateString) return 'N/A';
@@ -97,12 +91,11 @@ const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
   return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 };
 
-// Helper to determine color based on customer type
 const getCustomerTypeBadgeColor = (type: string | null) => {
   if (!type) return 'secondary';
-  if (type === 'IHB/Site') return 'default'; // Black/Primary
-  if (type.includes('Dealer')) return 'destructive'; // Red-ish
-  return 'outline'; // Influencers (Masons/Archs)
+  if (type === 'IHB/Site') return 'default'; 
+  if (type.includes('Dealer')) return 'destructive'; 
+  return 'outline'; 
 };
 
 const renderSelectFilter = (
@@ -137,7 +130,6 @@ const renderSelectFilter = (
   </div>
 );
 
-// --- REUSABLE READ-ONLY FIELD ---
 const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: string, value: React.ReactNode, icon?: any, fullWidth?: boolean }) => (
   <div className={`flex flex-col space-y-1.5 ${fullWidth ? 'col-span-2' : ''}`}>
     <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
@@ -156,36 +148,61 @@ export default function TechnicalVisitReportsPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Modal State ---
   const [selectedReport, setSelectedReport] = useState<TechnicalVisitReport | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  // --- Filter States ---
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
   const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
 
-  // --- Filter Options States ---
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
   const [isLoadingRoles, setIsLoadingRoles] = useState(true);
 
-  // --- Data Fetching ---
+  const [page, setPage] = React.useState(0);
+  const [pageSize] = React.useState(500); 
+  const [totalCount, setTotalCount] = React.useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter]);
+
   const fetchTechnicalReports = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/dashboardPagesAPI/reports/technical-visit-reports`);
+      const url = new URL(`/api/dashboardPagesAPI/reports/technical-visit-reports`, window.location.origin);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (roleFilter !== 'all') url.searchParams.append('role', roleFilter);
+      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
+      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      if (customerTypeFilter !== 'all') url.searchParams.append('customerType', customerTypeFilter);
+
+      const response = await fetch(url.toString());
+      const result = await response.json();
+      const rawData: TechnicalVisitReport[] = result.data || [];
+
+      setTotalCount(result.totalCount || 0);
+
       if (!response.ok) {
         if (response.status === 401) { router.push('/login'); return; }
         if (response.status === 403) { router.push('/dashboard'); return; }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const rawData: TechnicalVisitReport[] = await response.json();
+
       const validatedData = rawData.map((item) => {
         try {
           const validated = extendedTechnicalVisitReportSchema.parse(item);
@@ -204,7 +221,7 @@ export default function TechnicalVisitReportsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [router]);
+  }, [router, page, pageSize, debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -231,29 +248,17 @@ export default function TechnicalVisitReportsPage() {
 
   React.useEffect(() => {
     fetchTechnicalReports();
+  }, [fetchTechnicalReports]);
+
+  React.useEffect(() => {
     fetchLocations();
     fetchRoles();
-  }, [fetchTechnicalReports, fetchLocations, fetchRoles]);
+  }, [fetchLocations, fetchRoles]);
 
-  // --- Filtering Logic ---
-  const filteredReports = useMemo(() => {
-    const q = searchQuery.toLowerCase();
-    return technicalReports.filter((report) => {
-      const usernameMatch = !searchQuery || (report.salesmanName || '').toLowerCase().includes(q) || report.siteNameConcernedPerson?.toLowerCase().includes(q);
-      const customerTypeMatch = customerTypeFilter === 'all' || report.customerType === customerTypeFilter;
-      const roleMatch = roleFilter === 'all' || report.role?.toLowerCase() === roleFilter.toLowerCase();
-      const areaMatch = areaFilter === 'all' || report.area?.toLowerCase() === areaFilter.toLowerCase();
-      const regionMatch = regionFilter === 'all' || report.region?.toLowerCase() === regionFilter.toLowerCase();
-      return usernameMatch && customerTypeMatch && roleMatch && areaMatch && regionMatch;
-    });
-  }, [technicalReports, customerTypeFilter, searchQuery, roleFilter, areaFilter, regionFilter]);
-
-  // --- Logic Helpers ---
   const isDealerVisit = (r: TechnicalVisitReport) => r.customerType?.includes('Dealer');
   const isIHBVisit = (r: TechnicalVisitReport) => r.customerType === 'IHB' || r.customerType === 'IHB/Site';
   const isInfluencerVisit = (r: TechnicalVisitReport) => !isIHBVisit(r) && !isDealerVisit(r);
 
-  // --- Columns ---
   const columns = useMemo<ColumnDef<TechnicalVisitReport>[]>(() => [
     {
       accessorKey: "customerType",
@@ -345,11 +350,8 @@ export default function TechnicalVisitReportsPage() {
     },
   ], []);
 
-  // --- LAYOUT RENDERERS FOR MODAL ---
   const renderIHBDetails = (r: TechnicalVisitReport) => (
     <div className="space-y-6">
-
-      {/* 1. CONSTRUCTION SITE BASIC INFO */}
       <Card className="border-l-4 border-l-primary">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -369,9 +371,7 @@ export default function TechnicalVisitReportsPage() {
         </CardContent>
       </Card>
 
-      {/* 2. CONVERSION & TECH SERVICES (Side by Side) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
         <Card className={`border-l-4 ${r.isConverted ? 'border-l-green-500' : 'border-l-muted'}`}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -411,7 +411,6 @@ export default function TechnicalVisitReportsPage() {
         </Card>
       </div>
 
-      {/* 3. LINKED INFLUENCER / MASON (If applicable) */}
       {(r.influencerName || r.influencerPhone) && (
         <Card className="border-l-4 border-l-orange-400">
           <CardHeader className="pb-2">
@@ -429,7 +428,6 @@ export default function TechnicalVisitReportsPage() {
           </CardContent>
         </Card>
       )}
-
     </div>
   );
 
@@ -485,14 +483,13 @@ export default function TechnicalVisitReportsPage() {
     </Card>
   );
 
-  // --- MAIN RENDER ---
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-6 p-8 pt-6">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Technical Visit Reports</h2>
           <Badge variant="outline" className="text-base px-4 py-1">
-            Total Reports: {filteredReports.length}
+            Total Reports: {totalCount}
           </Badge>
 
           <RefreshDataButton
@@ -501,7 +498,6 @@ export default function TechnicalVisitReportsPage() {
           />
         </div>
 
-        {/* Filter Bar */}
         <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
           <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
             <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
@@ -535,7 +531,6 @@ export default function TechnicalVisitReportsPage() {
           </Button>
         </div>
 
-        {/* Data Table */}
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
@@ -544,18 +539,16 @@ export default function TechnicalVisitReportsPage() {
           ) : (
             <DataTableReusable
               columns={columns}
-              data={filteredReports}
+              data={technicalReports}
               enableRowDragging={false}
             />
           )}
         </div>
       </div>
 
-      {/* --- SMART DETAILS MODAL --- */}
       {selectedReport && (
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
           <DialogContent className="sm:max-w-[850px] max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
-            {/* Header with Color Coding */}
             <div className={`px-6 py-4 border-b bg-muted/20 ${isDealerVisit(selectedReport) ? 'border-l-[6px] border-l-red-500' : isIHBVisit(selectedReport) ? 'border-l-[6px] border-l-primary' : 'border-l-[6px] border-l-blue-500'}`}>
               <DialogTitle className="text-xl flex items-center justify-between">
                 <span>Visit Details</span>
@@ -571,7 +564,6 @@ export default function TechnicalVisitReportsPage() {
 
             <div className="p-6 space-y-6">
 
-              {/* 1. GENERAL INFO (Applicable to all) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="h-full">
                   <CardHeader className="pb-2">
@@ -597,8 +589,6 @@ export default function TechnicalVisitReportsPage() {
                   <CardContent className="grid grid-cols-2 gap-3 pt-2">
                     <InfoField label="Visit Type" value={selectedReport.visitType} />
                     <InfoField label="Visit Category" value={selectedReport.visitCategory} />
-                    {/* <InfoField label="Purpose" value={selectedReport.purposeOfVisit} fullWidth /> */}
-                    {/* MOVED CHECK IN TIME HERE */}
                     <InfoField label="Check In" value={formatTimeIST(selectedReport.checkInTime)} />
                     <InfoField label="Check Out" value={formatTimeIST(selectedReport.checkOutTime)} />
                     <InfoField label="Time Spent" value={selectedReport.timeSpentinLoc} fullWidth />
@@ -606,27 +596,22 @@ export default function TechnicalVisitReportsPage() {
                 </Card>
               </div>
 
-              {/* 2. DYNAMIC SECTION (Switches based on Customer Type) */}
               {isIHBVisit(selectedReport) && renderIHBDetails(selectedReport)}
               {isDealerVisit(selectedReport) && renderDealerDetails(selectedReport)}
               {isInfluencerVisit(selectedReport) && renderInfluencerDetails(selectedReport)}
 
-              {/* 3. REMARKS */}
               <Card>
                 <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InfoField label="Remarks" value={selectedReport.salespersonRemarks} />
                 </CardContent>
               </Card>
 
-              {/* 4. IMAGES EVIDENCE (Stacked Vertically) */}
               <div>
                 <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
                   <Camera className="w-4 h-4" /> Photo Evidence
                 </h4>
 
                 <div className="flex flex-col gap-6">
-
-                  {/* 1. SITE PHOTO (TOP) */}
                   {selectedReport.sitePhotoUrl && (
                     <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
                       <div className="bg-muted px-4 py-2 text-sm font-semibold border-b flex justify-between items-center">
@@ -648,7 +633,6 @@ export default function TechnicalVisitReportsPage() {
                     </div>
                   )}
 
-                  {/* 2. CHECK-IN PHOTO (MIDDLE) */}
                   {selectedReport.inTimeImageUrl ? (
                     <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
                       <div className="bg-emerald-50 px-4 py-2 text-sm font-semibold border-b flex justify-between items-center text-emerald-800">
@@ -674,7 +658,6 @@ export default function TechnicalVisitReportsPage() {
                     </div>
                   )}
 
-                  {/* 3. CHECK-OUT PHOTO (BOTTOM) */}
                   {selectedReport.outTimeImageUrl ? (
                     <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
                       <div className="bg-orange-50 px-4 py-2 text-sm font-semibold border-b flex justify-between items-center text-orange-800">

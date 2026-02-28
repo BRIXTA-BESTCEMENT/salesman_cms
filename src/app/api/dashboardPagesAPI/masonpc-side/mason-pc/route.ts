@@ -5,7 +5,7 @@ import { cacheTag, cacheLife } from 'next/cache';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users, masonPcSide, kycSubmissions, dealers } from '../../../../../../drizzle';
-import { eq, and, inArray, desc, asc, getTableColumns } from 'drizzle-orm';
+import { eq, and, or, ilike, inArray, desc, asc, getTableColumns, sql, SQL, count } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectMasonPcSideSchema } from '../../../../../../drizzle/zodSchemas';
 
@@ -19,7 +19,6 @@ const allowedRoles = [
 export type KycStatus = 'none' | 'pending' | 'verified' | 'approved' | 'rejected';
 export type KycVerificationStatus = 'PENDING' | 'VERIFIED' | 'REJECTED' | 'NONE';
 
-// Extend the baked DB schema to include joined user/dealer info and KYC details
 const masonPcFullSchema = selectMasonPcSideSchema.extend({
   salesmanName: z.string().optional(),
   role: z.string().optional(),
@@ -38,20 +37,47 @@ const masonPcFullSchema = selectMasonPcSideSchema.extend({
 
 type MasonPcFullDetails = z.infer<typeof masonPcFullSchema>;
 
-async function getCachedMasonPcRecords(companyId: number, kycStatusFilter: string | null) {
+async function getCachedMasonPcRecords(
+  companyId: number,
+  page: number,
+  pageSize: number,
+  search: string | null,
+  kycStatusFilter: string | null,
+  roleFilter: string | null,
+  areaFilter: string | null,
+  regionFilter: string | null
+) {
   'use cache';
   cacheLife('minutes');
-  cacheTag(`mason-pc-${companyId}`);
+  
+  const filterKey = `${search}-${kycStatusFilter}-${roleFilter}-${areaFilter}-${regionFilter}`;
+  cacheTag(`mason-pc-${companyId}-${page}-${filterKey}`);
 
-  const filters = [];
+  const filters: SQL[] = []; // Not scoping by users.companyId yet because masonPcSide might not have a userId assigned
+
   if (kycStatusFilter === 'VERIFIED') {
     filters.push(inArray(masonPcSide.kycStatus, ['verified', 'approved']));
-  } else if (kycStatusFilter) {
+  } else if (kycStatusFilter && kycStatusFilter !== 'all') {
     const map: Record<string, string> = { PENDING: 'pending', REJECTED: 'rejected', NONE: 'none' };
     if (map[kycStatusFilter]) filters.push(eq(masonPcSide.kycStatus, map[kycStatusFilter]));
   }
 
-  // 1. Fetch all Mason PCs and flatten the user/dealer data natively
+  if (search) {
+    const searchCondition = or(
+        ilike(masonPcSide.name, `%${search}%`),
+        ilike(masonPcSide.phoneNumber, `%${search}%`),
+        ilike(dealers.name, `%${search}%`),
+        ilike(users.firstName, `%${search}%`)
+    );
+    if (searchCondition) filters.push(searchCondition);
+  }
+
+  if (roleFilter && roleFilter !== 'all') filters.push(eq(users.role, roleFilter));
+  if (areaFilter && areaFilter !== 'all') filters.push(eq(users.area, areaFilter));
+  if (regionFilter && regionFilter !== 'all') filters.push(eq(users.region, regionFilter));
+
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
+
   const masonRecords = await db
     .select({
       ...getTableColumns(masonPcSide),
@@ -65,34 +91,38 @@ async function getCachedMasonPcRecords(companyId: number, kycStatusFilter: strin
     .from(masonPcSide)
     .leftJoin(users, eq(masonPcSide.userId, users.id))
     .leftJoin(dealers, eq(masonPcSide.dealerId, dealers.id))
-    .where(filters.length ? and(...filters) : undefined)
-    .orderBy(asc(masonPcSide.name))
-    .limit(2000);
+    .where(whereClause)
+    .limit(pageSize)
+    .offset(page * pageSize);
 
-  if (masonRecords.length === 0) return [];
+  const totalCountResult = await db
+    .select({ count: count() })
+    .from(masonPcSide)
+    .leftJoin(users, eq(masonPcSide.userId, users.id))
+    .leftJoin(dealers, eq(masonPcSide.dealerId, dealers.id))
+    .where(whereClause);
 
-  // 2. Fetch all related KYC submissions in ONE query (Fixing the N+1 issue)
+  const totalCount = Number(totalCountResult[0].count);
+
+  if (masonRecords.length === 0) return { data: [], totalCount };
+
   const masonIds = masonRecords.map(m => m.id);
   const allKycs = await db
     .select()
     .from(kycSubmissions)
     .where(inArray(kycSubmissions.masonId, masonIds))
-    .orderBy(desc(kycSubmissions.createdAt)); // Newest first
+    .orderBy(desc(kycSubmissions.createdAt));
 
-  // 3. Group by masonId to quickly look up the latest KYC submission
   const latestKycMap = new Map<string, typeof allKycs[0]>();
   for (const kyc of allKycs) {
-    // Because we ordered by desc, the first one we hit for a mason is the latest
     if (!latestKycMap.has(kyc.masonId)) {
       latestKycMap.set(kyc.masonId, kyc);
     }
   }
 
-  // 4. Map the data together into the final shape
   const formattedRecords = masonRecords.map((record): MasonPcFullDetails => {
     const latestKyc = latestKycMap.get(record.id);
 
-    // Normalize Document JSON
     let normalizedDocs: Record<string, string> | null = null;
     if (latestKyc?.documents) {
       const raw = typeof latestKyc.documents === 'string' 
@@ -105,7 +135,6 @@ async function getCachedMasonPcRecords(companyId: number, kycStatusFilter: strin
       }
     }
 
-    // Determine FE display status
     let displayStatus: KycVerificationStatus;
     switch (record.kycStatus) {
       case 'verified':
@@ -140,11 +169,10 @@ async function getCachedMasonPcRecords(companyId: number, kycStatusFilter: strin
     };
   });
 
-  return formattedRecords;
+  return { data: formattedRecords, totalCount };
 }
 
 export async function GET(request: NextRequest) {
-  // If you are using Next.js 15+, connection() is used to opt into dynamic rendering
   if (typeof connection === 'function') await connection();
 
   try {
@@ -163,18 +191,45 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const kycStatusFilter = request.nextUrl.searchParams.get('kycStatus');
-    const records = await getCachedMasonPcRecords(currentUser.companyId, kycStatusFilter);
+    const { searchParams } = new URL(request.url);
+    const page = Number(searchParams.get('page') ?? 0);
+    const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
+    
+    const search = searchParams.get('search');
+    const kycStatusFilter = searchParams.get('kycStatus');
+    const roleFilter = searchParams.get('role');
+    const areaFilter = searchParams.get('area');
+    const regionFilter = searchParams.get('region');
 
-    // Validate the complete row
-    const validatedReports = z.array(masonPcFullSchema).safeParse(records);
+    const result = await getCachedMasonPcRecords(
+      currentUser.companyId,
+      page,
+      pageSize,
+      search,
+      kycStatusFilter,
+      roleFilter,
+      areaFilter,
+      regionFilter
+    );
+
+    const validatedReports = z.array(masonPcFullSchema).safeParse(result.data);
 
     if (!validatedReports.success) {
       console.error("Mason PC Validation Error:", validatedReports.error.format());
-      return NextResponse.json(records, { status: 200 }); // Graceful fallback
+      return NextResponse.json({
+        data: result.data,
+        totalCount: result.totalCount,
+        page,
+        pageSize
+      }, { status: 200 }); 
     }
 
-    return NextResponse.json(validatedReports.data, { status: 200 });
+    return NextResponse.json({
+        data: validatedReports.data,
+        totalCount: result.totalCount,
+        page,
+        pageSize
+    }, { status: 200 });
 
   } catch (error: any) {
     console.error("Mason PC Route Error:", error);

@@ -14,6 +14,7 @@ import {
 
 // Import the reusable DataTable
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { selectTsoMeetingSchema } from '../../../../drizzle/zodSchemas';
 
 // UI Components
@@ -45,17 +46,18 @@ interface RolesResponse {
   roles: string[];
 }
 
-// Extend the inferred type to include the creator's info
-type TsoMeeting = z.infer<typeof selectTsoMeetingSchema> & {
-  creatorName: string;
-  role: string;
-  area: string;
-  region: string;
-  meetImageUrl: string;
-};
+const extendedMeetingSchema = selectTsoMeetingSchema.loose().extend({
+  creatorName: z.string(),
+  role: z.string(),
+  area: z.string(),
+  region: z.string(),
+  meetImageUrl: z.string().nullable().optional(),
+  totalExpenses: z.number().nullable().optional()
+});
+
+type TsoMeeting = z.infer<typeof extendedMeetingSchema>;
 
 // --- HELPER FUNCTIONS ---
-
 const renderSelectFilter = (
   label: string,
   value: string,
@@ -64,9 +66,9 @@ const renderSelectFilter = (
   isLoading: boolean = false
 ) => (
   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
+      <SelectTrigger className="h-9 bg-background border-input">
         {isLoading ? (
           <div className="flex flex-row items-center space-x-2">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -77,7 +79,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -126,12 +128,15 @@ const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: str
 );
 
 // --- MAIN COMPONENT ---
-
 export default function TsoMeetingsPage() {
   const router = useRouter();
   const [tsoMeetings, setTsoMeetings] = useState<TsoMeeting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
 
   // --- Modal State ---
   const [selectedReport, setSelectedReport] = useState<TsoMeeting | null>(null);
@@ -139,6 +144,7 @@ export default function TsoMeetingsPage() {
 
   // --- Filter States ---
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
@@ -154,19 +160,46 @@ export default function TsoMeetingsPage() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter]);
+
   // --- Data Fetching Functions ---
   const fetchTsoMeetings = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(TSO_MEETINGS_API_ENDPOINT);
+      const url = new URL(TSO_MEETINGS_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (roleFilter !== 'all') url.searchParams.append('role', roleFilter);
+      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
+      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+
+      const response = await fetch(url.toString());
       if (!response.ok) {
         if (response.status === 401) { router.push('/login'); return; }
         if (response.status === 403) { router.push('/dashboard'); return; }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: TsoMeeting[] = await response.json();
-      setTsoMeetings(data);
+
+      const result = await response.json();
+      const rawData = result.data || result;
+      setTotalCount(result.totalCount || 0);
+
+      const validatedData = rawData.map((item: any) => {
+          const v = extendedMeetingSchema.parse(item);
+          return { ...v, id: v.id.toString() } as TsoMeeting;
+      });
+
+      setTsoMeetings(validatedData);
       toast.success("TSO meetings loaded successfully!");
     } catch (error: any) {
       toast.error(`Failed to fetch TSO meetings: ${error.message}`);
@@ -174,7 +207,7 @@ export default function TsoMeetingsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [router]);
+  }, [router, page, pageSize, debouncedSearchQuery, roleFilter, areaFilter, regionFilter]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -209,21 +242,12 @@ export default function TsoMeetingsPage() {
 
   useEffect(() => {
     fetchTsoMeetings();
+  }, [fetchTsoMeetings]);
+
+  useEffect(() => {
     fetchLocations();
     fetchRoles();
-  }, [fetchTsoMeetings, fetchLocations, fetchRoles]);
-
-  // --- Filtering Logic ---
-  const filteredMeetings = useMemo(() => {
-    return tsoMeetings.filter((meeting) => {
-      const creatorNameMatch = !searchQuery || meeting.creatorName.toLowerCase().includes(searchQuery.toLowerCase());
-      const roleMatch = roleFilter === 'all' || meeting.role?.toLowerCase() === roleFilter.toLowerCase();
-      const areaMatch = areaFilter === 'all' || meeting.area?.toLowerCase() === areaFilter.toLowerCase();
-      const regionMatch = regionFilter === 'all' || meeting.region?.toLowerCase() === regionFilter.toLowerCase();
-
-      return creatorNameMatch && roleMatch && areaMatch && regionMatch;
-    });
-  }, [tsoMeetings, searchQuery, roleFilter, areaFilter, regionFilter]);
+  }, [fetchLocations, fetchRoles]);
 
   // --- Define Columns ---
   const tsoMeetingColumns = useMemo<ColumnDef<TsoMeeting>[]>(() => [
@@ -232,7 +256,7 @@ export default function TsoMeetingsPage() {
     {
       accessorKey: "type",
       header: "Type",
-      cell: ({ row }) => <Badge variant="outline">{row.original.type}</Badge>
+      cell: ({ row }) => <Badge variant="outline" className="shadow-none">{row.original.type}</Badge>
     },
     {
       accessorKey: "date",
@@ -257,21 +281,6 @@ export default function TsoMeetingsPage() {
       header: () => <div className="text-right">Expenses</div>,
       cell: ({ row }) => <span className="font-semibold text-right block">{formatCurrency(row.original.totalExpenses)}</span>
     },
-    // {
-    //   accessorKey: "billSubmitted",
-    //   header: "Bill",
-    //   cell: ({ row }) => (
-    //     row.original.billSubmitted ? (
-    //       <Badge className="bg-green-50 text-green-700 border-green-200 gap-1 hover:bg-green-100">
-    //         <CheckCircle2 size={12} /> Yes
-    //       </Badge>
-    //     ) : (
-    //       <Badge className="bg-red-50 text-red-700 border-red-200 gap-1 hover:bg-red-100">
-    //         <XCircle size={12} /> No
-    //       </Badge>
-    //     )
-    //   )
-    // },
     {
       id: "actions",
       header: "Actions",
@@ -291,37 +300,33 @@ export default function TsoMeetingsPage() {
     },
   ], []);
 
-  // --- Loading / Error Gates ---
-  if (isLoading) return <div className="flex justify-center items-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
-
-  if (error) return (
-    <div className="text-center text-red-500 min-h-screen pt-10">
-      Error: {error}
-      <Button onClick={fetchTsoMeetings} className="ml-4">Retry</Button>
-    </div>
-  );
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">TSO Meetings</h2>
-          <Badge variant="outline" className="text-base px-4 py-1">
-            Total Meetings: {filteredMeetings.length}
-          </Badge>
+          <div className="flex items-center gap-4">
+             <h2 className="text-3xl font-bold tracking-tight">TSO Meetings</h2>
+             <Badge variant="outline" className="text-base px-4 py-1">
+                 Total Meetings: {totalCount}
+             </Badge>
+          </div>
+          <RefreshDataButton
+            cachePrefix="tso-meetings"
+            onRefresh={fetchTsoMeetings}
+          />
         </div>
 
         {/* --- Filter Components --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
+        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
           <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Creator Name</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Creator / Dealer Search</label>
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by creator name..."
+                placeholder="Name, Dealer, Market..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9"
+                className="pl-8 h-9 bg-background border-input"
               />
             </div>
           </div>
@@ -342,16 +347,28 @@ export default function TsoMeetingsPage() {
           >
             Clear Filters
           </Button>
+
+          {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>}
+          {roleError && <p className="text-xs text-red-500 w-full mt-2">Role Filter Error: {roleError}</p>}
         </div>
 
         {/* Data Table Section */}
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
-          {filteredMeetings.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">No TSO meetings found matching the selected filters.</div>
+          {isLoading && tsoMeetings.length === 0 ? (
+             <div className="flex justify-center items-center h-64">
+               <Loader2 className="w-8 h-8 animate-spin text-primary" />
+             </div>
+          ) : error ? (
+            <div className="text-center text-red-500 min-h-64 flex flex-col items-center justify-center">
+              <p>Error: {error}</p>
+              <Button onClick={fetchTsoMeetings} className="mt-4">Retry</Button>
+            </div>
+          ) : tsoMeetings.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">No TSO meetings found matching the selected filters.</div>
           ) : (
             <DataTableReusable
               columns={tsoMeetingColumns}
-              data={filteredMeetings}
+              data={tsoMeetings}
               enableRowDragging={false}
             />
           )}
@@ -363,7 +380,6 @@ export default function TsoMeetingsPage() {
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
           <DialogContent className="sm:max-w-[850px] max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
 
-            {/* Header with Color Coding */}
             <div className="px-6 py-4 border-b bg-muted/20 border-l-[6px] border-l-indigo-500">
               <DialogTitle className="text-xl flex items-center justify-between">
                 <span>Meeting Details</span>
@@ -378,8 +394,6 @@ export default function TsoMeetingsPage() {
             </div>
 
             <div className="p-6 space-y-6">
-
-              {/* 1. GENERAL & LOCATION */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="h-full border-l-4 border-l-emerald-500">
                   <CardHeader className="pb-2">
@@ -407,7 +421,6 @@ export default function TsoMeetingsPage() {
                 </Card>
               </div>
 
-              {/* 2. METRICS & EXPENSES */}
               <Card className="border-l-4 border-l-blue-500">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -421,25 +434,13 @@ export default function TsoMeetingsPage() {
 
                   <div className="flex flex-col space-y-1.5">
                     <Label className="text-xs font-medium text-muted-foreground">Total Expenses</Label>
-                    <div className="text-sm font-bold p-2 text-white rounded-md border flex items-center">
+                    <div className="text-sm font-bold p-2 text-foreground bg-muted/50 rounded-md border flex items-center">
                       {formatCurrency(selectedReport.totalExpenses)}
                     </div>
                   </div>
-
-                  {/* <div className="col-span-2 md:col-span-4 mt-2">
-                    <InfoField 
-                      label="Bill Submitted Status" 
-                      value={
-                        selectedReport.billSubmitted 
-                          ? <Badge className="bg-green-100 text-green-800 hover:bg-green-100"><CheckCircle2 className="w-3 h-3 mr-1"/> Yes, Submitted</Badge>
-                          : <Badge className="bg-red-100 text-red-800 hover:bg-red-100"><XCircle className="w-3 h-3 mr-1"/> Not Submitted</Badge>
-                      } 
-                    />
-                  </div> */}
                 </CardContent>
               </Card>
 
-              {/* 3. PHOTO EVIDENCE */}
               <div>
                 <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
                   <Camera className="w-4 h-4" /> Meeting Photo Evidence

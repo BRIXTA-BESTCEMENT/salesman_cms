@@ -1,21 +1,21 @@
 // src/app/dashboard/dealerManagement/listVerifiedDealers.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
 import { Loader2, Search, MapPin } from 'lucide-react'; 
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { selectVerifiedDealersSchema } from '../../../../drizzle/zodSchemas';
 
-// --- EXTEND THE DRIZZLE SCHEMA ---
-// Use .partial() because the backend API omits fields like `userId`, `brandSelling`, etc.
 const extendedVerifiedDealersSchema = selectVerifiedDealersSchema.partial().extend({
-    id: z.number(), // Ensure ID is strictly a string for DataTableReusable
+    id: z.number(), 
     dealerPartyName: z.string().optional().catch("Unknown"),
     alias: z.string().nullable().optional(),
     zone: z.string().nullable().optional(),
@@ -33,7 +33,6 @@ const extendedVerifiedDealersSchema = selectVerifiedDealersSchema.partial().exte
     panNo: z.string().nullable().optional(),
     dealerSegment: z.string().nullable().optional(),
     
-    // Coerce timestamps that Drizzle expects as Date objects back from strings
     createdAt: z.string().nullable().optional(),
     updatedAt: z.string().nullable().optional(),
 });
@@ -42,7 +41,6 @@ type VerifiedDealerRecord = z.infer<typeof extendedVerifiedDealersSchema>;
 
 const VERIFIED_DEALERS_API = `/api/dashboardPagesAPI/dealerManagement/verified-dealers`;
 
-// Helper component for dropdown filters matching the theme
 const renderSelectFilter = (
   label: string,
   value: string,
@@ -51,9 +49,9 @@ const renderSelectFilter = (
   isLoading: boolean = false
 ) => (
   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
+      <SelectTrigger className="h-9 bg-background border-input">
         {isLoading ? (
           <div className="flex flex-row items-center space-x-2">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -64,7 +62,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -76,31 +74,73 @@ const renderSelectFilter = (
 );
 
 export default function ListVerifiedDealersPage() {
-  // --- State ---
   const [dealers, setDealers] = useState<VerifiedDealerRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Filters ---
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [filterZone, setFilterZone] = useState<string>('all');
   const [filterArea, setFilterArea] = useState<string>('all');
   const [filterSegment, setFilterSegment] = useState<string>('all');
 
-  // --- Fetch Data ---
+  const [uniqueZones, setUniqueZones] = useState<string[]>([]);
+  const [uniqueAreas, setUniqueAreas] = useState<string[]>([]);
+  const [uniqueSegments, setUniqueSegments] = useState<string[]>([]);
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page on filter change
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, filterZone, filterArea, filterSegment]);
+
+  const fetchFilters = useCallback(async () => {
+    try {
+      const response = await fetch(`${VERIFIED_DEALERS_API}?action=fetch_filters`);
+      if (response.ok) {
+        const data = await response.json();
+        setUniqueZones(data.uniqueZones || []);
+        setUniqueAreas(data.uniqueAreas || []);
+        setUniqueSegments(data.uniqueSegments || []);
+      }
+    } catch (e) {
+      console.error("Failed to load verified dealer filters", e);
+    }
+  }, []);
+
   const fetchVerifiedDealers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(VERIFIED_DEALERS_API);
+      const url = new URL(VERIFIED_DEALERS_API, window.location.origin);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (filterZone !== 'all') url.searchParams.append('zone', filterZone);
+      if (filterArea !== 'all') url.searchParams.append('area', filterArea);
+      if (filterSegment !== 'all') url.searchParams.append('segment', filterSegment);
+
+      const response = await fetch(url.toString());
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
-      const data = await response.json();
+      const result = await response.json();
       
-      // Parse using our new tolerant schema
-      const validatedDealers = z.array(extendedVerifiedDealersSchema).parse(data);
+      const rawData = result.data || result;
+      setTotalCount(result.totalCount || 0);
+
+      const validatedDealers = z.array(extendedVerifiedDealersSchema).parse(rawData);
       setDealers(validatedDealers);
       toast.success('Verified dealers loaded successfully!');
     } catch (e: any) {
@@ -113,48 +153,16 @@ export default function ListVerifiedDealersPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, pageSize, debouncedSearchQuery, filterZone, filterArea, filterSegment]);
+
+  useEffect(() => {
+    fetchFilters();
+  }, [fetchFilters]);
 
   useEffect(() => {
     fetchVerifiedDealers();
   }, [fetchVerifiedDealers]);
 
-  // --- Derived Filter Options ---
-  const uniqueZones = useMemo(() => {
-    const zones = new Set(dealers.map(d => d.zone).filter(Boolean) as string[]);
-    return Array.from(zones).sort();
-  }, [dealers]);
-
-  const uniqueAreas = useMemo(() => {
-    let filtered = dealers;
-    if (filterZone !== 'all') {
-      filtered = dealers.filter(d => d.zone === filterZone);
-    }
-    const areas = new Set(filtered.map(d => d.area).filter(Boolean) as string[]);
-    return Array.from(areas).sort();
-  }, [dealers, filterZone]);
-
-  const uniqueSegments = useMemo(() => {
-    const segments = new Set(dealers.map(d => d.dealerSegment).filter(Boolean) as string[]);
-    return Array.from(segments).sort();
-  }, [dealers]);
-
-  // --- Client-side filtering ---
-  const filteredDealers = useMemo(() => {
-    return dealers.filter(d => {
-      const nameMatch = !searchQuery || 
-        (d.dealerPartyName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (d.alias || '').toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const zoneMatch = filterZone === 'all' || d.zone === filterZone;
-      const areaMatch = filterArea === 'all' || d.area === filterArea;
-      const segmentMatch = filterSegment === 'all' || d.dealerSegment === filterSegment;
-      
-      return nameMatch && zoneMatch && areaMatch && segmentMatch;
-    });
-  }, [dealers, searchQuery, filterZone, filterArea, filterSegment]);
-
-  // --- Table columns ---
   const columns: ColumnDef<VerifiedDealerRecord>[] = [
     { 
       accessorKey: 'dealerPartyName', 
@@ -171,11 +179,9 @@ export default function ListVerifiedDealersPage() {
       header: 'Segment',
       cell: info => info.getValue() || '-'
     },
-    
-    // Combined Location Column (Zone + Area + District + State)
     {
       header: 'Location',
-      accessorKey: 'district', // Fallback for sorting
+      accessorKey: 'district', 
       cell: ({ row }) => {
         const { zone, area, district, state, pinCode } = row.original;
 
@@ -192,7 +198,6 @@ export default function ListVerifiedDealersPage() {
         );
       }
     },
-
     { 
       header: 'Contact Info',
       cell: ({ row }) => {
@@ -208,7 +213,6 @@ export default function ListVerifiedDealersPage() {
         )
       }
     },
-
     { 
       header: 'Sales & Financials',
       cell: ({ row }) => {
@@ -221,7 +225,6 @@ export default function ListVerifiedDealersPage() {
         )
       }
     },
-    
     { 
       header: 'Tax Info',
       cell: ({ row }) => {
@@ -236,8 +239,7 @@ export default function ListVerifiedDealersPage() {
     }
   ];
 
-  // --- Loading / Error gates ---
-  if (loading) {
+  if (loading && dealers.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen gap-2">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -250,70 +252,61 @@ export default function ListVerifiedDealersPage() {
     return <div className="text-center text-red-500 min-h-screen pt-10">Error: {error}</div>;
   }
 
-  // --- UI ---
   return (
     <div className="container mx-auto p-4 max-w-[100vw] overflow-hidden">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Verified Dealers Registry</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">Verified Dealers Registry</h1>
+          <Badge variant="outline" className="text-base px-4 py-1">
+            Total Dealers: {totalCount}
+          </Badge>
+        </div>
         <RefreshDataButton 
           cachePrefix="verified-dealers-list" 
           onRefresh={fetchVerifiedDealers} 
         />
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6 shadow-sm">
         
-        {/* 1. Name Search Input */}
         <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-          <label className="text-sm font-medium text-muted-foreground">Search</label>
+          <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Name or Alias..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9"
+              className="pl-8 h-9 bg-background border-input"
             />
           </div>
         </div>
 
-        {/* 2. Segment Filter */}
-        {renderSelectFilter(
-          'Segment',
-          filterSegment,
-          setFilterSegment,
-          uniqueSegments,
-          loading
-        )}
+        {renderSelectFilter('Segment', filterSegment, setFilterSegment, uniqueSegments, loading)}
+        {renderSelectFilter('Zone', filterZone, setFilterZone, uniqueZones, loading)}
+        {renderSelectFilter('Area', filterArea, setFilterArea, uniqueAreas, loading)}
 
-        {/* 3. Zone Filter */}
-        {renderSelectFilter(
-          'Zone',
-          filterZone,
-          setFilterZone,
-          uniqueZones,
-          loading
-        )}
-
-        {/* 4. Area Filter */}
-        {renderSelectFilter(
-          'Area',
-          filterArea,
-          setFilterArea,
-          uniqueAreas,
-          loading
-        )}
+        <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchQuery('');
+              setFilterSegment('all');
+              setFilterZone('all');
+              setFilterArea('all');
+            }}
+            className="mb-0.5 text-muted-foreground hover:text-destructive"
+          >
+            Clear Filters
+        </Button>
       </div>
 
-      {/* Table */}
-      {filteredDealers.length === 0 ? (
-        <div className="text-center py-12 bg-card text-muted-foreground rounded-lg border">No verified dealers found matching your filters.</div>
+      {dealers.length === 0 ? (
+        <div className="text-center py-12 bg-card text-muted-foreground rounded-lg border shadow-sm">No verified dealers found matching your filters.</div>
       ) : (
-        <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+        <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden p-1">
           <DataTableReusable
             columns={columns}
-            data={filteredDealers}
+            data={dealers}
             enableRowDragging={false}
             onRowOrderChange={() => { }}
           />

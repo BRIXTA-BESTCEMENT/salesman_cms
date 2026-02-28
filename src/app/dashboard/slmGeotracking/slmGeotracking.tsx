@@ -30,9 +30,6 @@ import {
 
 import { selectJourneyOpsSchema } from '../../../../drizzle/zodSchemas';
 
-// --- EXTEND THE DRIZZLE SCHEMA ---
-// We make the base partial so Zod doesn't crash if the API flattens the response 
-// and removes strict base fields like `payload` or `serverSeq`.
 const extendedJourneyOpsSchema = selectJourneyOpsSchema.partial().extend({
   id: z.string().optional(),
   serverSeq: z.coerce.bigint().optional(),
@@ -44,7 +41,6 @@ const extendedJourneyOpsSchema = selectJourneyOpsSchema.partial().extend({
   employeeId: z.string().nullable().optional(),
   workosOrganizationId: z.string().nullable().optional(),
 
-  // Flattened Payload Tracking Data (Coerce numerics safely)
   latitude: z.coerce.number().nullable().optional().catch(null),
   longitude: z.coerce.number().nullable().optional().catch(null),
   recordedAt: z.string().nullable().optional(),
@@ -68,7 +64,6 @@ const extendedJourneyOpsSchema = selectJourneyOpsSchema.partial().extend({
   destLng: z.coerce.number().nullable().optional().catch(null),
 });
 
-// --- CONSTANTS AND TYPES ---
 type GeoTrack = z.infer<typeof extendedJourneyOpsSchema>;
 type DisplayGeoTrack = Omit<GeoTrack, 'id'> & 
 { 
@@ -89,7 +84,6 @@ interface RolesResponse {
   roles: string[];
 }
 
-// Helper function to render the Select filter component (KEPT, as it's correctly used for filter UI)
 const renderSelectFilter = (
   label: string,
   value: string,
@@ -98,9 +92,9 @@ const renderSelectFilter = (
   isLoading: boolean = false
 ) => (
   <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
     <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
+      <SelectTrigger className="h-9 bg-background border-input">
         {isLoading ? (
           <div className="flex flex-row items-center space-x-2">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -111,7 +105,7 @@ const renderSelectFilter = (
         )}
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(option => (
           <SelectItem key={option} value={option}>
             {option}
@@ -127,14 +121,13 @@ export default function SalesmanGeoTrackingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Filter States ---
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
 
-  // --- Filter Options States ---
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
@@ -143,6 +136,12 @@ export default function SalesmanGeoTrackingPage() {
   const [isLoadingRoles, setIsLoadingRoles] = useState(true);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';
@@ -167,7 +166,6 @@ export default function SalesmanGeoTrackingPage() {
     });
   };
 
-  // --- Filter Options Fetching (NO CHANGES) ---
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     setLocationError(null);
@@ -179,8 +177,8 @@ export default function SalesmanGeoTrackingPage() {
       const safeAreas = Array.isArray(data.areas) ? data.areas.filter(Boolean) : [];
       const safeRegions = Array.isArray(data.regions) ? data.regions.filter(Boolean) : [];
 
-      setAvailableAreas(safeAreas);
-      setAvailableRegions(safeRegions);
+      setAvailableAreas(safeAreas.sort());
+      setAvailableRegions(safeRegions.sort());
 
     } catch (err: any) {
       console.error('Failed to fetch filter locations:', err);
@@ -197,7 +195,7 @@ export default function SalesmanGeoTrackingPage() {
       const response = await fetch(ROLES_API_ENDPOINT);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data: RolesResponse = await response.json();
-      setAvailableRoles(data.roles && Array.isArray(data.roles) ? data.roles.filter(Boolean) : []);
+      setAvailableRoles(data.roles && Array.isArray(data.roles) ? data.roles.filter(Boolean).sort() : []);
     } catch (err: any) {
       console.error('Failed to fetch filter roles:', err);
       setRoleError('Failed to load Role filters.');
@@ -206,7 +204,6 @@ export default function SalesmanGeoTrackingPage() {
     }
   }, []);
 
-  // --- Main Data Fetching (NO CHANGES) ---
   const apiURI = `/api/dashboardPagesAPI/slm-geotracking`;
   const fetchTracks = useCallback(async () => {
     setLoading(true);
@@ -267,68 +264,43 @@ export default function SalesmanGeoTrackingPage() {
     fetchRoles();
   }, [fetchLocations, fetchRoles]);
 
-  // --- Filtering Logic (PAGINATION LOGIC REMOVED) ---
   const allFilteredTracks = useMemo(() => {
-    const lowerCaseSearch = (searchQuery || '').toLowerCase();
+    const lowerCaseSearch = (debouncedSearchQuery || '').toLowerCase();
 
     return tracks.filter(track => {
       const salesmanName = (track.salesmanName || '').toString();
-      const journeyId = (track.journeyId || '').toString();
       const siteName = (track.siteName || '').toString();
       const displayDate = (track.displayDate || '').toString();
       const checkIn = (track.displayCheckInTime || '').toString();
       const checkOut = (track.displayCheckOutTime || '').toString();
       const locationType = (track.locationType || '').toString();
 
-      // 1. Search Filter (Salesman Name, Journey ID, Site Name, Date, CheckIn/Out, Location Type)
       const matchesSearch =
         !lowerCaseSearch ||
         salesmanName.toLowerCase().includes(lowerCaseSearch) ||
-        journeyId.toLowerCase().includes(lowerCaseSearch) ||
         siteName.toLowerCase().includes(lowerCaseSearch) ||
         displayDate.toLowerCase().includes(lowerCaseSearch) ||
         checkIn.toLowerCase().includes(lowerCaseSearch) ||
         checkOut.toLowerCase().includes(lowerCaseSearch) ||
         locationType.toLowerCase().includes(lowerCaseSearch);
 
-      // 2. Role Filter (support both 'salesmanRole' and 'role')
       const reportRole = (track.salesmanRole || track.role || '').toString();
       const roleMatch = roleFilter === 'all' || reportRole.toLowerCase() === roleFilter.toLowerCase();
 
-      // 3. Area Filter
       const reportArea = (track.area || '').toString();
       const areaMatch = areaFilter === 'all' || reportArea.toLowerCase() === areaFilter.toLowerCase();
 
-      // 4. Region Filter
       const reportRegion = (track.region || '').toString();
       const regionMatch = regionFilter === 'all' || reportRegion.toLowerCase() === regionFilter.toLowerCase();
 
-      // 5. Date Filter
-      let matchesDate = true;
-      if (dateRange && dateRange.from) {
-        const targetDate = track.recordedAt || track.createdAt;
-        if (!targetDate) return false;
-
-        const trackDate = new Date(targetDate);
-        const fromDate = new Date(dateRange.from);
-        const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
-
-        // Normalize to midnight for comparison
-        trackDate.setHours(0, 0, 0, 0);
-        fromDate.setHours(0, 0, 0, 0);
-        toDate.setHours(23, 59, 59, 999);
-
-        matchesDate = trackDate >= fromDate && trackDate <= toDate;
-      }
-
-      return matchesSearch && roleMatch && areaMatch && regionMatch && matchesDate;
+      return matchesSearch && roleMatch && areaMatch && regionMatch;
     });
-  }, [tracks, searchQuery, roleFilter, areaFilter, regionFilter, dateRange]);
+  }, [tracks, debouncedSearchQuery, roleFilter, areaFilter, regionFilter]);
 
   const geoStats = useMemo(() => {
     const now = new Date();
 
-    const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Monday
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 }); 
     const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 
     const monthStart = startOfMonth(now);
@@ -426,10 +398,7 @@ export default function SalesmanGeoTrackingPage() {
           />
         </div>
 
-        {/* --- Distance Summary --- */}
         <div className="grid gap-4 md:grid-cols-3">
-
-          {/* Total Distance (Primary) */}
           <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 shadow-sm">
             <div className="text-xs font-bold uppercase text-muted-foreground tracking-wide">
               Total Distance Travelled
@@ -439,7 +408,6 @@ export default function SalesmanGeoTrackingPage() {
               {geoStats.total.toFixed(2)} km
             </div>
 
-            {/* Week / Month breakdown */}
             <div className="mt-3 space-y-1 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>This Week</span>
@@ -460,8 +428,7 @@ export default function SalesmanGeoTrackingPage() {
             </p>
           </div>
 
-          {/* Active Salesmen */}
-          <div className="bg-muted/20 border border-dashed rounded-lg p-4 shadow-none">
+          <div className="bg-muted/20 border border-dashed rounded-lg p-4 shadow-none flex flex-col justify-center">
             <div className="text-xs font-bold uppercase text-muted-foreground tracking-wide">
               Active Salesmen
             </div>
@@ -470,8 +437,7 @@ export default function SalesmanGeoTrackingPage() {
             </div>
           </div>
 
-          {/* Avg Distance */}
-          <div className="bg-muted/20 border border-dashed rounded-lg p-4 shadow-none">
+          <div className="bg-muted/20 border border-dashed rounded-lg p-4 shadow-none flex flex-col justify-center">
             <div className="text-xs font-bold uppercase text-muted-foreground tracking-wide">
               Avg Distance per Salesman
             </div>
@@ -482,120 +448,106 @@ export default function SalesmanGeoTrackingPage() {
 
         </div>
 
-        {/* Filters Card */}
-        <div className="bg-card p-6 rounded-lg border border-border shadow-lg">
-          <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg border mb-0">
-            {/* 1. Date Range Picker */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={"outline"}
-                  className={cn(
-                    "w-full sm:w-[300px] justify-start text-left font-normal",
-                    !dateRange && "text-muted-foreground"
-                  )}
-                >
-                  <IconCalendar className="mr-2 h-4 w-4" />
-                  {dateRange?.from ? (
-                    dateRange.to ? (
-                      <>
-                        {format(dateRange.from, "LLL dd, y")} -{" "}
-                        {format(dateRange.to, "LLL dd, y")}
-                      </>
+        <div className="bg-card p-4 rounded-lg border border-border shadow-sm">
+          <div className="flex flex-wrap items-end gap-4 p-0 rounded-lg border-0 mb-0">
+            <div className="flex flex-col space-y-1 w-full sm:w-[250px]">
+              <label className="text-xs font-semibold text-muted-foreground uppercase">Filter by Date Range</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="date"
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-9 bg-background border-input",
+                      !dateRange && "text-muted-foreground"
+                    )}
+                  >
+                    <IconCalendar className="mr-2 h-4 w-4" />
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "LLL dd, y")} -{" "}
+                          {format(dateRange.to, "LLL dd, y")}
+                        </>
+                      ) : (
+                        format(dateRange.from, "LLL dd, y")
+                      )
                     ) : (
-                      format(dateRange.from, "LLL dd, y")
-                    )
-                  ) : (
-                    <span>Filter by Date Range</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="range"
-                  defaultMonth={dateRange?.from || addDays(new Date(), -7)}
-                  selected={dateRange}
-                  onSelect={setDateRange}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-            {dateRange && (
-              <Button variant="ghost" onClick={() => setDateRange(undefined)} className='min-w-[100px]'>
-                Clear Date
-              </Button>
-            )}
-
-            {/* 2. Search Input */}
+                      <span>Select Range</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="range"
+                    defaultMonth={dateRange?.from || addDays(new Date(), -7)}
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    numberOfMonths={2}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
             <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-              <label className="text-sm font-medium text-muted-foreground">Search All Fields</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase">Search Fields</label>
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Salesman, Journey ID, Site..."
+                  placeholder="Salesman, Site, Location..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 h-9"
+                  className="pl-8 h-9 bg-background border-input"
                 />
               </div>
             </div>
 
-            {/* 3. Role Filter */}
-            {renderSelectFilter(
-              'Role',
-              roleFilter,
-              setRoleFilter,
-              availableRoles,
-              isLoadingRoles
-            )}
+            {renderSelectFilter('Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
+            {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
+            {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
 
-            {/* 4. Area Filter */}
-            {renderSelectFilter(
-              'Area',
-              areaFilter,
-              setAreaFilter,
-              availableAreas,
-              isLoadingLocations
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSearchQuery('');
+                setRoleFilter('all');
+                setAreaFilter('all');
+                setRegionFilter('all');
+                setDateRange(undefined);
+              }}
+              className="mb-0.5 text-muted-foreground hover:text-destructive"
+            >
+              Clear Filters
+            </Button>
+            
+            {(locationError || roleError) && (
+              <div className="w-full">
+                 {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>}
+                 {roleError && <p className="text-xs text-red-500 w-full mt-2">Role Filter Error: {roleError}</p>}
+              </div>
             )}
-
-            {/* 5. Region Filter */}
-            {renderSelectFilter(
-              'Region(Zone)',
-              regionFilter,
-              setRegionFilter,
-              availableRegions,
-              isLoadingLocations
-            )}
-
-            {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>}
-            {roleError && <p className="text-xs text-red-500 w-full">Role Filter Error: {roleError}</p>}
           </div>
         </div>
 
-        {/* Table Card */}
-        <div className="bg-card p-6 rounded-lg border border-border shadow-lg">
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
           {loading ? (
-            <div className="text-center py-8 text-gray-500">
-              <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto mb-2" />
-              <p>Loading geo-tracking reports...</p>
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
             </div>
           ) : error ? (
-            <div className="text-center text-red-500 py-8">
-              Error: {error}
-              <Button onClick={fetchTracks} className="ml-4">Retry</Button>
+            <div className="text-center text-red-500 py-12 flex flex-col items-center">
+              <p>Error: {error}</p>
+              <Button onClick={fetchTracks} variant="outline" className="mt-4">Retry</Button>
             </div>
           ) : allFilteredTracks.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">No geo-tracking reports found matching the selected filters.</div>
+            <div className="text-center text-muted-foreground py-12">No geo-tracking reports found matching the selected filters.</div>
           ) : (
-            <>
-              <DataTableReusable
-                columns={columns}
-                data={allFilteredTracks}
-                enableRowDragging={false}
-                onRowOrderChange={() => { }}
-              />
-            </>
+            <DataTableReusable
+              columns={columns}
+              data={allFilteredTracks}
+              enableRowDragging={false}
+              onRowOrderChange={() => { }}
+            />
           )}
         </div>
       </div>

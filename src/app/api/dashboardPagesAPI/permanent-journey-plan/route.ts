@@ -5,7 +5,7 @@ import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, permanentJourneyPlans, dailyTasks, dealers, technicalSites } from '../../../../../drizzle';
-import { eq, and, desc, aliasedTable, getTableColumns, inArray, ilike } from 'drizzle-orm';
+import { eq, and, or, ilike, desc, asc, aliasedTable, getTableColumns, inArray, sql, SQL, count, gte, lte } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectPermanentJourneyPlanSchema } from '../../../../../drizzle/zodSchemas';
@@ -23,7 +23,6 @@ const getISTDate = (date: string | Date | null) => {
   return new Date(date).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 };
 
-// 1. Extend the baked DB schema to include frontend-specific types and joined fields
 const frontendPJPSchema = selectPermanentJourneyPlanSchema.extend({
   salesmanName: z.string(),
   createdByName: z.string(),
@@ -32,12 +31,10 @@ const frontendPJPSchema = selectPermanentJourneyPlanSchema.extend({
   visitDealerName: z.string().nullable(),
   planDate: z.string(), 
   
-  // Explicitly mapping the old Prisma camelCase names the frontend expects
   noOfConvertedBags: z.number().nullable().optional(),
   noOfMasonPcSchemes: z.number().nullable().optional(),
 });
 
-// 2. Explicit type to survive Next.js 'use cache' boundary
 type PJPRow = InferSelectModel<typeof permanentJourneyPlans> & {
   salesmanFirstName: string | null;
   salesmanLastName: string | null;
@@ -50,22 +47,47 @@ type PJPRow = InferSelectModel<typeof permanentJourneyPlans> & {
   siteName: string | null;
 };
 
-async function getCachedPJPs(companyId: number, verificationStatus: string | null) {
+async function getCachedPJPs(
+  companyId: number,
+  page: number,
+  pageSize: number,
+  search: string | null,
+  salesmanId: string | null,
+  status: string | null,
+  verificationStatus: string | null,
+  fromDate: string | null,
+  toDate: string | null
+) {
   'use cache';
   cacheLife('days');
-  cacheTag(`permanent-journey-plan-${companyId}`);
+  
+  const filterKey = `${search}-${salesmanId}-${status}-${verificationStatus}-${fromDate}-${toDate}`;
+  cacheTag(`permanent-journey-plan-${companyId}-${page}-${filterKey}`);
 
   const createdByUsers = aliasedTable(users, 'createdByUsers');
 
-  // Build dynamic filters
-  const filters = [eq(users.companyId, companyId)];
+  const filters: SQL[] = [eq(users.companyId, companyId)];
   
-  // FIX: Ignore "all" or "null" strings, and use ilike for case-insensitive matching
   if (verificationStatus && verificationStatus !== 'all' && verificationStatus !== 'null') {
     filters.push(ilike(permanentJourneyPlans.verificationStatus, verificationStatus));
   }
 
-  // 1. Fetch flat PJPs using getTableColumns
+  if (search) {
+    const searchCondition = or(
+      ilike(users.firstName, `%${search}%`),
+      ilike(users.lastName, `%${search}%`),
+      ilike(permanentJourneyPlans.areaToBeVisited, `%${search}%`)
+    );
+    if (searchCondition) filters.push(searchCondition);
+  }
+
+  if (salesmanId && salesmanId !== 'all') filters.push(eq(permanentJourneyPlans.userId, Number(salesmanId)));
+  if (status && status !== 'all') filters.push(ilike(permanentJourneyPlans.status, status));
+  if (fromDate) filters.push(gte(permanentJourneyPlans.planDate, fromDate));
+  if (toDate) filters.push(lte(permanentJourneyPlans.planDate, toDate));
+
+  const whereClause = and(...filters);
+
   const rawPlans: PJPRow[] = await db
     .select({
       ...getTableColumns(permanentJourneyPlans),
@@ -84,19 +106,27 @@ async function getCachedPJPs(companyId: number, verificationStatus: string | nul
     .leftJoin(createdByUsers, eq(permanentJourneyPlans.createdById, createdByUsers.id))
     .leftJoin(dealers, eq(permanentJourneyPlans.dealerId, dealers.id))
     .leftJoin(technicalSites, eq(permanentJourneyPlans.siteId, technicalSites.id))
-    .where(and(...filters))
-    .orderBy(desc(permanentJourneyPlans.planDate));
+    .where(whereClause)
+    .orderBy(desc(permanentJourneyPlans.planDate), desc(permanentJourneyPlans.createdAt))
+    .limit(pageSize)
+    .offset(page * pageSize);
 
-  // 2. Safely fetch tasks ONLY for these PJPs to avoid the Drizzle N+1 tautology
+  const totalCountResult = await db
+    .select({ count: count() })
+    .from(permanentJourneyPlans)
+    .leftJoin(users, eq(permanentJourneyPlans.userId, users.id))
+    .where(whereClause);
+
+  const totalCount = Number(totalCountResult[0].count);
+
   const pjpIds = rawPlans.map(p => p.id);
   const tasks = pjpIds.length > 0 
     ? await db
-        .select({ id: dailyTasks.id, pjpId: dailyTasks.id })
+        .select({ id: dailyTasks.id, pjpId: dailyTasks.id }) // Keeping your existing mapping logic
         .from(dailyTasks)
         .where(inArray(dailyTasks.id, pjpIds))
     : [];
 
-  // Group tasks by pjpId for O(1) lookups
   const tasksByPjpId = tasks.reduce((acc, task) => {
     if (task.pjpId) {
         if (!acc[task.pjpId]) acc[task.pjpId] = [];
@@ -105,8 +135,7 @@ async function getCachedPJPs(companyId: number, verificationStatus: string | nul
     return acc;
   }, {} as Record<string, string[]>);
 
-  // 3. Map to final frontend structure
-  return rawPlans.map((row) => {
+  const formattedData = rawPlans.map((row) => {
     const salesmanName = `${row.salesmanFirstName || ''} ${row.salesmanLastName || ''}`.trim() || row.salesmanEmail || '';
     const createdByName = `${row.createdByFirstName || ''} ${row.createdByLastName || ''}`.trim() || row.createdByEmail || '';
     
@@ -119,7 +148,6 @@ async function getCachedPJPs(companyId: number, verificationStatus: string | nul
       taskIds: tasksByPjpId[row.id] || [],
       visitDealerName: row.dealerName ?? row.siteName ?? null,
       
-      // FIX: Re-map Drizzle generated names back to the old Prisma exact casing
       noOfConvertedBags: row.noofConvertedBags ?? 0,
       noOfMasonPcSchemes: row.noofMasonpcInSchemes ?? 0,
       
@@ -132,6 +160,8 @@ async function getCachedPJPs(companyId: number, verificationStatus: string | nul
       updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
     };
   });
+
+  return { data: formattedData, totalCount };
 }
 
 export async function GET(request: NextRequest) {
@@ -153,19 +183,66 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const verificationStatus = searchParams.get('verificationStatus');
+    const action = searchParams.get('action');
 
-    const formattedPlans = await getCachedPJPs(currentUser.companyId, verificationStatus);
+    // --- Action: Fetch Distinct Filters ---
+    if (action === 'fetch_filters') {
+      const distinctSalesmen = await db
+        .selectDistinct({ id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email })
+        .from(permanentJourneyPlans)
+        .innerJoin(users, eq(permanentJourneyPlans.userId, users.id))
+        .where(eq(users.companyId, currentUser.companyId))
+        .orderBy(asc(users.firstName));
+        
+      const distinctStatuses = await db
+        .selectDistinct({ status: permanentJourneyPlans.status })
+        .from(permanentJourneyPlans)
+        .innerJoin(users, eq(permanentJourneyPlans.userId, users.id))
+        .where(eq(users.companyId, currentUser.companyId));
+
+      return NextResponse.json({
+        salesmen: distinctSalesmen,
+        statuses: distinctStatuses.map(s => s.status).filter(Boolean).sort()
+      }, { status: 200 });
+    }
+
+    // --- Default Action: Fetch Paginated PJPs ---
+    const page = Number(searchParams.get('page') ?? 0);
+    const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
     
-    // Validate safely with loose() to ensure mapped frontend variables don't get stripped
-    const validatedData = z.array(frontendPJPSchema.loose()).safeParse(formattedPlans);
+    const search = searchParams.get('search');
+    const salesmanId = searchParams.get('salesmanId');
+    const status = searchParams.get('status');
+    const verificationStatus = searchParams.get('verificationStatus');
+    const fromDate = searchParams.get('fromDate');
+    const toDate = searchParams.get('toDate');
+
+    const result = await getCachedPJPs(
+      currentUser.companyId,
+      page,
+      pageSize,
+      search,
+      salesmanId,
+      status,
+      verificationStatus,
+      fromDate,
+      toDate
+    );
+    
+    const validatedData = z.array(frontendPJPSchema.loose()).safeParse(result.data);
 
     if (!validatedData.success) {
       console.error("PJP Validation Error:", validatedData.error.format());
-      return NextResponse.json(formattedPlans, { status: 200 }); // Graceful fallback
+      return NextResponse.json({ data: result.data, totalCount: result.totalCount, page, pageSize }, { status: 200 }); 
     }
 
-    return NextResponse.json(validatedData.data, { status: 200 });
+    return NextResponse.json({
+      data: validatedData.data,
+      totalCount: result.totalCount,
+      page,
+      pageSize
+    }, { status: 200 });
+
   } catch (error) {
     console.error('Error fetching permanent journey plans:', error);
     return NextResponse.json({ error: 'Failed to fetch', details: (error as Error).message }, { status: 500 });

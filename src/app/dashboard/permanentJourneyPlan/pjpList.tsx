@@ -6,14 +6,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
-  Eye,
-  MapPin,
-  User,
-  Calendar as CalendarIcon,
-  Target,
-  Users,
-  Route,
-  ClipboardList
+  Eye, MapPin, User, Calendar as CalendarIcon, Target, Users, Route, ClipboardList, Loader2
 } from 'lucide-react';
 import { IconCalendar } from '@tabler/icons-react';
 import { format } from "date-fns";
@@ -26,11 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,7 +40,6 @@ const extendedPjpSchema = selectPermanentJourneyPlanSchema.extend({
   influencerPhone: z.string().nullable().optional(),
   activityType: z.string().nullable().optional(),
   route: z.string().nullable().optional(),
-  // Drizzle numbers sometimes come as strings from Postgres aggregations/joins, coerce them safely
   noofConvertedBags: z.coerce.number().optional().catch(0),
   noofMasonpcInSchemes: z.coerce.number().optional().catch(0),
   plannedNewSiteVisits: z.coerce.number().optional().catch(0),
@@ -62,7 +50,6 @@ const extendedPjpSchema = selectPermanentJourneyPlanSchema.extend({
 
 type PermanentJourneyPlan = z.infer<typeof extendedPjpSchema>;
 
-// --- REUSABLE READ-ONLY FIELD ---
 const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: string, value: React.ReactNode, icon?: any, fullWidth?: boolean }) => (
   <div className={`flex flex-col space-y-1.5 ${fullWidth ? 'col-span-2' : ''}`}>
     <Label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1 tracking-wider">
@@ -80,22 +67,77 @@ export default function PJPListPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
+  // Pagination & Backend Meta
+  const [page, setPage] = React.useState(0);
+  const [pageSize] = React.useState(500);
+  const [totalCount, setTotalCount] = React.useState(0);
+
   // Filters
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
   const [selectedStatusFilter, setSelectedStatusFilter] = React.useState<string>('all');
   const [selectedSalesmanFilter, setSelectedSalesmanFilter] = React.useState<string>('all');
+
+  // Filter Options
+  const [salesmen, setSalesmen] = React.useState<{id: number, firstName: string | null, lastName: string | null, email: string}[]>([]);
+  const [statuses, setStatuses] = React.useState<string[]>([]);
 
   // Modal State
   const [selectedPjp, setSelectedPjp] = React.useState<PermanentJourneyPlan | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
 
+  // Debounce search
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page when filters change
+  React.useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, selectedStatusFilter, selectedSalesmanFilter, dateRange]);
+
+  const fetchFilters = React.useCallback(async () => {
+    try {
+      const res = await fetch(`/api/dashboardPagesAPI/permanent-journey-plan?action=fetch_filters`);
+      if (res.ok) {
+        const data = await res.json();
+        setSalesmen(data.salesmen || []);
+        setStatuses(data.statuses || []);
+      }
+    } catch (e) {
+      console.error("Failed to load PJP filters", e);
+    }
+  }, []);
+
   const fetchPjps = React.useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/dashboardPagesAPI/permanent-journey-plan?verificationStatus=VERIFIED`);
+      const url = new URL(`/api/dashboardPagesAPI/permanent-journey-plan`, window.location.origin);
+      url.searchParams.append('verificationStatus', 'VERIFIED');
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (selectedSalesmanFilter !== 'all') url.searchParams.append('salesmanId', selectedSalesmanFilter);
+      if (selectedStatusFilter !== 'all') url.searchParams.append('status', selectedStatusFilter);
+      
+      if (dateRange?.from) url.searchParams.append('fromDate', format(dateRange.from, "yyyy-MM-dd"));
+      if (dateRange?.to) {
+        url.searchParams.append('toDate', format(dateRange.to, "yyyy-MM-dd"));
+      } else if (dateRange?.from) {
+        url.searchParams.append('toDate', format(dateRange.from, "yyyy-MM-dd"));
+      }
+
+      const response = await fetch(url.toString());
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data: any[] = await response.json();
+      
+      const result = await response.json();
+      const data: any[] = result.data || result;
+      
+      setTotalCount(result.totalCount || 0);
+
       const validatedData = data.map((item) => {
         const validated = extendedPjpSchema.parse(item);
         return { ...validated, id: validated.id.toString() };
@@ -107,12 +149,12 @@ export default function PJPListPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, pageSize, debouncedSearchQuery, selectedSalesmanFilter, selectedStatusFilter, dateRange]);
 
+  React.useEffect(() => { fetchFilters(); }, [fetchFilters]);
   React.useEffect(() => { fetchPjps(); }, [fetchPjps]);
 
-  // Summary Stats
-  // --- 1. UPDATED STATS CALCULATION (Today + Total) ---
+  // Summary Stats based on loaded subset (reflecting current active filters/page)
   const stats = React.useMemo(() => {
     const todayStr = new Date().toISOString().split('T')[0];
 
@@ -123,42 +165,15 @@ export default function PJPListPage() {
     });
 
     return {
-      // Today Stats
       todayCount: todaysPlans.length,
       todayBags: todaysPlans.reduce((acc, curr) => acc + (curr.noofConvertedBags || 0), 0),
       todaySites: todaysPlans.reduce((acc, curr) => acc + (curr.plannedNewSiteVisits || 0) + (curr.plannedFollowUpSiteVisits || 0), 0),
 
-      // Total Stats
-      totalCount: pjps.length,
-      totalBags: pjps.reduce((acc, curr) => acc + (curr.noofConvertedBags || 0), 0),
-      totalSites: pjps.reduce((acc, curr) => acc + (curr.plannedNewSiteVisits || 0) + (curr.plannedFollowUpSiteVisits || 0), 0)
+      totalCount: totalCount, 
+      pageBags: pjps.reduce((acc, curr) => acc + (curr.noofConvertedBags || 0), 0),
+      pageSites: pjps.reduce((acc, curr) => acc + (curr.plannedNewSiteVisits || 0) + (curr.plannedFollowUpSiteVisits || 0), 0)
     };
-  }, [pjps]);
-
-  const filteredPjps = React.useMemo(() => {
-    return pjps.filter((pjp) => {
-      const matchesSearch = (pjp.salesmanName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (pjp.areaToBeVisited || '').toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = selectedStatusFilter === 'all' || pjp.status === selectedStatusFilter;
-      const matchesSalesman = selectedSalesmanFilter === 'all' || pjp.salesmanName === selectedSalesmanFilter;
-
-      let matchesDate = true;
-      if (dateRange && dateRange.from) {
-        const planDate = new Date(pjp.planDate); // Assuming YYYY-MM-DD string
-        const fromDate = new Date(dateRange.from);
-        // If 'to' is undefined, default to 'from' (single day selection)
-        const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
-
-        // Normalize all times to midnight (00:00:00) to compare dates only
-        planDate.setHours(0, 0, 0, 0);
-        fromDate.setHours(0, 0, 0, 0);
-        toDate.setHours(23, 59, 59, 999); // Set end of range to end of day
-
-        matchesDate = planDate >= fromDate && planDate <= toDate;
-      }
-      return matchesSearch && matchesStatus && matchesSalesman && matchesDate;
-    });
-  }, [pjps, searchQuery, selectedStatusFilter, selectedSalesmanFilter, dateRange]);
+  }, [pjps, totalCount]);
 
   const columns: ColumnDef<PermanentJourneyPlan>[] = [
     { accessorKey: "salesmanName", header: "Salesman" },
@@ -184,66 +199,41 @@ export default function PJPListPage() {
       cell: ({ row }) => {
         const status = row.original.status;
 
-        // Logic for dynamic badge styling
         if (status === 'VERIFIED') {
-          return (
-            <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-100 shadow-none">
-              {status}
-            </Badge>
-          );
+          return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-100 shadow-none">{status}</Badge>;
         }
-
         if (status === 'COMPLETED') {
-          return (
-            <Badge variant="default" className="shadow-none">
-              {status}
-            </Badge>
-          );
+          return <Badge variant="default" className="shadow-none">{status}</Badge>;
         }
-
-        return (
-          <Badge variant="secondary" className="shadow-none">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="secondary" className="shadow-none">{status}</Badge>;
       }
     },
     {
       id: "actions",
       header: "View",
       cell: ({ row }) => (
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 px-2"
-          onClick={() => {
-            setSelectedPjp(row.original);
-            setIsViewModalOpen(true);
-          }}
-        >
+        <Button variant="outline" size="sm" className="h-8 px-2" onClick={() => { setSelectedPjp(row.original); setIsViewModalOpen(true); }}>
           <Eye className="h-4 w-4 mr-1" /> View
         </Button>
       ),
     },
   ];
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="flex-1 space-y-8 p-8 pt-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Weekly Technical PJPs</h2>
-          <RefreshDataButton
-            cachePrefix="permanent-journey-plan"
-            onRefresh={fetchPjps}
-          />
+          <div className="flex items-center gap-4">
+             <h2 className="text-3xl font-bold tracking-tight">Weekly Technical PJPs</h2>
+             <Badge variant="outline" className="text-base px-4 py-1">
+                Total PJPs: {stats.totalCount}
+             </Badge>
+          </div>
+          <RefreshDataButton cachePrefix="permanent-journey-plan" onRefresh={fetchPjps} />
         </div>
 
         {/* --- Summary Cards --- */}
         <div className="space-y-4">
-
-          {/* Row 1: TODAY'S STATS (Large) */}
           <div className="grid gap-4 md:grid-cols-3">
             <Card className="bg-primary/5 border-primary/10">
               <CardHeader className="pb-2 flex flex-row items-center justify-between">
@@ -279,50 +269,42 @@ export default function PJPListPage() {
             </Card>
           </div>
 
-          {/* Row 2: TOTAL STATS (Half Size / Compact) */}
           <div className="grid gap-2 md:grid-cols-3">
             <Card className="bg-muted/20 border-dashed shadow-none">
               <CardContent className="p-1 flex items-center justify-center">
                 <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Total Verified Plans:   </span>
-                <span className="text-base font-bold text-foreground">{stats.totalCount}</span>
+                <span className="text-base font-bold text-foreground ml-2">{stats.totalCount}</span>
               </CardContent>
             </Card>
 
             <Card className="bg-muted/20 border-dashed shadow-none">
               <CardContent className="p-1 flex items-center justify-center">
-                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Total Target Bags:   </span>
-                <span className="text-base font-bold text-blue-600/80">{stats.totalBags}</span>
+                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Target Bags (This Page):   </span>
+                <span className="text-base font-bold text-blue-600/80 ml-2">{stats.pageBags}</span>
               </CardContent>
             </Card>
 
             <Card className="bg-muted/20 border-dashed shadow-none">
               <CardContent className="p-1 flex items-center justify-center">
-                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Total Target Site Visits:   </span>
-                <span className="text-base font-bold text-orange-600/80">{stats.totalSites}</span>
+                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Site Visits (This Page):   </span>
+                <span className="text-base font-bold text-orange-600/80 ml-2">{stats.pageSites}</span>
               </CardContent>
             </Card>
           </div>
-
         </div>
 
         {/* --- Filters --- */}
         <div className="flex flex-wrap gap-4 p-5 rounded-xl bg-card border shadow-sm items-end">
           <div className="flex flex-col space-y-1.5 w-full md:w-[250px]">
             <label className="text-xs font-bold text-muted-foreground uppercase">Search Plans</label>
-            <Input placeholder="Salesman or area..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            <Input placeholder="Salesman or area..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-background" />
           </div>
-          {/* 1. Date Range Picker */}
+          
           <div className="flex flex-col space-y-1.5 w-full sm:w-[300px]">
             <label className="text-xs font-bold text-muted-foreground uppercase">Filter by Date</label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-9",
-                    !dateRange && "text-muted-foreground"
-                  )}
-                >
+                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-9 bg-background", !dateRange && "text-muted-foreground")}>
                   <IconCalendar className="mr-2 h-4 w-4" />
                   {dateRange?.from ? (
                     dateRange.to ? (
@@ -334,41 +316,56 @@ export default function PJPListPage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="range"
-                  defaultMonth={dateRange?.from || new Date()}
-                  selected={dateRange}
-                  onSelect={(range) => setDateRange(range)}
-                  numberOfMonths={2}
-                />
+                <Calendar mode="range" defaultMonth={dateRange?.from || new Date()} selected={dateRange} onSelect={(range) => setDateRange(range)} numberOfMonths={2} />
               </PopoverContent>
             </Popover>
           </div>
-          <div className="flex flex-col space-y-1.5 w-[180px]">
+
+          <div className="flex flex-col space-y-1.5 w-[220px]">
             <label className="text-xs font-bold text-muted-foreground uppercase">Salesman</label>
             <Select value={selectedSalesmanFilter} onValueChange={setSelectedSalesmanFilter}>
-              <SelectTrigger><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectTrigger className="bg-background"><SelectValue placeholder="All" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Salesmen</SelectItem>
-                {Array.from(new Set(pjps.map(p => p.salesmanName)))
-                .filter((name): name is string => Boolean(name))
-                .map(n => <SelectItem key={n} value={n}>{n}</SelectItem>
-                )}
+                {salesmen.map(s => <SelectItem key={s.id} value={s.id.toString()}>{`${s.firstName || ''} ${s.lastName || ''}`.trim() || s.email}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
-          <Button variant="ghost" className="text-muted-foreground" onClick={() => { setSearchQuery(""); setSelectedSalesmanFilter("all"); }}>Clear</Button>
+
+          <div className="flex flex-col space-y-1.5 w-40">
+            <label className="text-xs font-bold text-muted-foreground uppercase">Status</label>
+            <Select value={selectedStatusFilter} onValueChange={setSelectedStatusFilter}>
+              <SelectTrigger className="bg-background"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                {statuses.map(st => <SelectItem key={st} value={st}>{st}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button variant="ghost" className="text-muted-foreground" onClick={() => { setSearchQuery(""); setSelectedSalesmanFilter("all"); setSelectedStatusFilter("all"); setDateRange(undefined); }}>Clear</Button>
         </div>
 
-        <div className="bg-card p-4 rounded-lg border shadow-sm">
-          <DataTableReusable columns={columns} data={filteredPjps} />
+        <div className="bg-card p-1 rounded-lg border shadow-sm">
+          {loading && pjps.length === 0 ? (
+             <div className="flex justify-center items-center h-64">
+               <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+               <p className="text-muted-foreground">Loading PJPs...</p>
+             </div>
+          ) : pjps.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">
+               No Permanent Journey Plans found matching the selected filters.
+            </div>
+          ) : (
+            <DataTableReusable columns={columns} data={pjps} enableRowDragging={false} onRowOrderChange={() => {}} />
+          )}
         </div>
       </div>
 
       {/* --- Smart Details Modal --- */}
       {selectedPjp && (
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto p-0 gap-0">
+          <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto p-0 gap-0 bg-background">
             <div className="px-6 py-4 border-b bg-muted/30 border-l-[6px] border-l-primary">
               <DialogTitle className="text-xl flex items-center justify-between">
                 <span>PJP Details</span>
@@ -381,7 +378,6 @@ export default function PJPListPage() {
             </div>
 
             <div className="p-6 space-y-6">
-              {/* 1. Logistics Section */}
               <div className="grid grid-cols-2 gap-4">
                 <Card className="bg-primary/5 border-primary/10">
                   <CardHeader className="p-3 border-b border-dashed"><CardTitle className="text-xs uppercase flex items-center gap-2"><MapPin className="w-3 h-3" /> Visit Location</CardTitle></CardHeader>
@@ -403,7 +399,6 @@ export default function PJPListPage() {
                 </Card>
               </div>
 
-              {/* 2. Business Values */}
               <Card className="bg-primary/5 border-primary/10">
                 <CardContent className="p-4 grid grid-cols-2 gap-4">
                   <InfoField label="Conversion Target (Bags)" value={`${selectedPjp.noofConvertedBags} Bags`} icon={Target} />
@@ -411,9 +406,8 @@ export default function PJPListPage() {
                 </CardContent>
               </Card>
 
-              {/* 3. Influencer Plan Details */}
               <Card className="bg-primary/5 border-primary/10">
-                <CardHeader className="p-3 border-b border-orange-100"><CardTitle className="text-xs uppercase font-bold text-white">Specific Influencer Plan</CardTitle></CardHeader>
+                <CardHeader className="p-3 border-b border-orange-100"><CardTitle className="text-xs uppercase font-bold text-orange-800">Specific Influencer Plan</CardTitle></CardHeader>
                 <CardContent className="p-4 grid grid-cols-3 gap-3">
                   <InfoField label="Contact Name" value={selectedPjp.influencerName} />
                   <InfoField label="Phone" value={selectedPjp.influencerPhone} />
@@ -421,7 +415,6 @@ export default function PJPListPage() {
                 </CardContent>
               </Card>
 
-              {/* 4. Creator Info */}
               <div className="bg-muted/50 p-4 rounded-lg flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Created By</p>

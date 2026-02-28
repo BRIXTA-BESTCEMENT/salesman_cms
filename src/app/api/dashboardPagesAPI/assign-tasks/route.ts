@@ -2,13 +2,14 @@
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
+import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
-// Ensure verifiedDealers is imported here
 import { users, dealers, verifiedDealers, dailyTasks } from '../../../../../drizzle/schema';
-import { getTableColumns, eq, and, ilike, inArray, desc, asc } from 'drizzle-orm';
+import { getTableColumns, eq, and, or, ilike, inArray, desc, asc, count, SQL, gte, lte } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDailyTaskSchema } from '../../../../../drizzle/zodSchemas';
-import crypto from 'crypto'; // Needed to generate the missing IDs
+import crypto from 'crypto'; 
 
 const allowedAssignerRoles = [
   'president', 'senior-general-manager', 'general-manager',
@@ -43,6 +44,87 @@ const apiResponseTaskSchema = selectDailyTaskSchema.extend({
   relatedDealerName: z.string().nullable().optional(),
 });
 
+type DailyTaskRow = InferSelectModel<typeof dailyTasks> & {
+  userFirstName: string | null;
+  userLastName: string | null;
+  userEmail: string | null;
+  dealerNameFromRelation: string | null;
+};
+
+// --- CACHED FETCH FUNCTION ---
+async function getCachedDailyTasks(
+  companyId: number,
+  page: number,
+  pageSize: number,
+  search: string | null,
+  zone: string | null,
+  area: string | null,
+  salesmanId: string | null,
+  status: string | null,
+  fromDate: string | null,
+  toDate: string | null
+) {
+  'use cache';
+  cacheLife('hours');
+  
+  const filterKey = `${search}-${zone}-${area}-${salesmanId}-${status}-${fromDate}-${toDate}`;
+  cacheTag(`assign-tasks-${companyId}-${page}-${filterKey}`);
+
+  const filters: SQL[] = [eq(users.companyId, companyId)];
+
+  if (search) {
+    const searchCondition = or(
+      ilike(users.firstName, `%${search}%`),
+      ilike(users.lastName, `%${search}%`),
+      ilike(dailyTasks.dealerNameSnapshot, `%${search}%`),
+      ilike(dealers.name, `%${search}%`)
+    );
+    if (searchCondition) filters.push(searchCondition);
+  }
+  
+  if (zone) filters.push(eq(dailyTasks.zone, zone));
+  if (area) filters.push(eq(dailyTasks.area, area));
+  if (salesmanId) filters.push(eq(dailyTasks.userId, Number(salesmanId)));
+  if (status) filters.push(ilike(dailyTasks.status, status));
+  if (fromDate) filters.push(gte(dailyTasks.taskDate, fromDate));
+  if (toDate) filters.push(lte(dailyTasks.taskDate, toDate));
+
+  const whereClause = and(...filters);
+
+  const results: DailyTaskRow[] = await db
+    .select({
+      ...getTableColumns(dailyTasks),
+      userFirstName: users.firstName,
+      userLastName: users.lastName,
+      userEmail: users.email,
+      dealerNameFromRelation: dealers.name,
+    })
+    .from(dailyTasks)
+    .innerJoin(users, eq(dailyTasks.userId, users.id))
+    .leftJoin(dealers, eq(dailyTasks.dealerId, dealers.id))
+    .where(whereClause)
+    .orderBy(desc(dailyTasks.taskDate), desc(dailyTasks.createdAt))
+    .limit(pageSize)
+    .offset(page * pageSize);
+
+  const totalCountResult = await db
+    .select({ count: count() })
+    .from(dailyTasks)
+    .innerJoin(users, eq(dailyTasks.userId, users.id))
+    .leftJoin(dealers, eq(dailyTasks.dealerId, dealers.id))
+    .where(whereClause);
+
+  const totalCount = Number(totalCountResult[0].count);
+
+  const formattedTasks = results.map((task) => ({
+    ...task,
+    salesmanName: `${task.userFirstName || ''} ${task.userLastName || ''}`.trim() || task.userEmail || 'Unknown',
+    relatedDealerName: task.dealerNameSnapshot || task.dealerNameFromRelation || 'N/A',
+  }));
+
+  return { data: formattedTasks, totalCount };
+}
+
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
@@ -70,7 +152,6 @@ export async function GET(request: NextRequest) {
       const zone = searchParams.get('zone');
       const area = searchParams.get('area');
 
-      // 1. Fetch Regular Dealers
       const regularDealersQuery = db
         .select({ id: dealers.id, name: dealers.name, region: dealers.region, area: dealers.area })
         .from(dealers)
@@ -81,7 +162,6 @@ export async function GET(request: NextRequest) {
           )
         );
 
-      // 2. Fetch Verified Dealers (Adding wildcards for safety)
       const verifiedDealersQuery = db
         .select({
           id: verifiedDealers.id,
@@ -97,7 +177,6 @@ export async function GET(request: NextRequest) {
           )
         );
 
-      // Execute both simultaneously
       const [fetchedRegularDealers, fetchedVerifiedDealers] = await Promise.all([
         regularDealersQuery,
         verifiedDealersQuery
@@ -111,77 +190,91 @@ export async function GET(request: NextRequest) {
       }));
 
       const combinedDealers = [...fetchedRegularDealers, ...formattedVerifiedDealers];
-
       return NextResponse.json({ dealers: combinedDealers }, { status: 200 });
     }
 
-    // --- Action: Initial Page Load ---
-    const assignableSalesmen = await db
-      .select({
-        id: users.id,
-        firstName: users.firstName,
-        lastName: users.lastName,
-        email: users.email,
-        salesmanLoginId: users.salesmanLoginId,
-        area: users.area,
-        region: users.region
-      })
-      .from(users)
-      .where(
-        and(
-          eq(users.companyId, currentUser.companyId),
-          inArray(users.role, allowedAssigneeRoles)
+    // --- Action: Fetch Filters Layout Data ---
+    if (action === 'fetch_filters') {
+      const assignableSalesmen = await db
+        .select({
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          email: users.email,
+          salesmanLoginId: users.salesmanLoginId,
+          area: users.area,
+          region: users.region
+        })
+        .from(users)
+        .where(
+          and(
+            eq(users.companyId, currentUser.companyId),
+            inArray(users.role, allowedAssigneeRoles)
+          )
         )
-      )
-      .orderBy(asc(users.firstName));
+        .orderBy(asc(users.firstName));
 
-    // For the initial page load filters, we also need to get distinct zones/areas from both tables
-    const distinctDealers = await db
-      .selectDistinct({ region: dealers.region, area: dealers.area })
-      .from(dealers)
-      .innerJoin(users, eq(dealers.userId, users.id))
-      .where(eq(users.companyId, currentUser.companyId));
+      const distinctDealers = await db
+        .selectDistinct({ region: dealers.region, area: dealers.area })
+        .from(dealers)
+        .innerJoin(users, eq(dealers.userId, users.id))
+        .where(eq(users.companyId, currentUser.companyId));
 
-    const distinctVerifiedDealers = await db
-      .selectDistinct({ region: verifiedDealers.zone, area: verifiedDealers.area })
-      .from(verifiedDealers);
+      const distinctVerifiedDealers = await db
+        .selectDistinct({ region: verifiedDealers.zone, area: verifiedDealers.area })
+        .from(verifiedDealers);
+        
+      const distinctStatuses = await db
+        .selectDistinct({ status: dailyTasks.status })
+        .from(dailyTasks)
+        .innerJoin(users, eq(dailyTasks.userId, users.id))
+        .where(eq(users.companyId, currentUser.companyId));
 
-    const allDistinct = [...distinctDealers, ...distinctVerifiedDealers];
-    const uniqueZones = Array.from(new Set(allDistinct.map(d => d.region))).filter(Boolean).sort();
-    const uniqueAreas = Array.from(new Set(allDistinct.map(d => d.area))).filter(Boolean).sort();
+      const allDistinct = [...distinctDealers, ...distinctVerifiedDealers];
+      const uniqueZones = Array.from(new Set(allDistinct.map(d => d.region))).filter(Boolean).sort();
+      const uniqueAreas = Array.from(new Set(allDistinct.map(d => d.area))).filter(Boolean).sort();
+      const uniqueStatuses = Array.from(new Set(distinctStatuses.map(s => s.status))).filter(Boolean).sort();
 
-    const dailyTasksRaw = await db
-      .select({
-        ...getTableColumns(dailyTasks),
-        userFirstName: users.firstName,
-        userLastName: users.lastName,
-        userEmail: users.email,
-        dealerNameFromRelation: dealers.name,
-      })
-      .from(dailyTasks)
-      .innerJoin(users, eq(dailyTasks.userId, users.id))
-      .leftJoin(dealers, eq(dailyTasks.dealerId, dealers.id))
-      .where(eq(users.companyId, currentUser.companyId))
-      .orderBy(desc(dailyTasks.createdAt))
-      .limit(10000);
+      return NextResponse.json({ salesmen: assignableSalesmen, uniqueZones, uniqueAreas, uniqueStatuses }, { status: 200 });
+    }
 
-    const formattedTasks = dailyTasksRaw.map((task: any) => ({
-      ...task,
-      salesmanName: `${task.userFirstName || ''} ${task.userLastName || ''}`.trim() || task.userEmail || 'Unknown',
-      relatedDealerName: task.dealerNameSnapshot || task.dealerNameFromRelation || 'N/A',
-    }));
+    // --- Default Action: Fetch Paginated Tasks ---
+    const page = Number(searchParams.get('page') ?? 0);
+    const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
+    
+    const search = searchParams.get('search');
+    const zone = searchParams.get('zone');
+    const area = searchParams.get('area');
+    const salesmanId = searchParams.get('salesmanId');
+    const status = searchParams.get('status');
+    const fromDate = searchParams.get('fromDate');
+    const toDate = searchParams.get('toDate');
 
-    const validatedTasks = z.array(apiResponseTaskSchema).safeParse(formattedTasks);
+    const result = await getCachedDailyTasks(
+      currentUser.companyId,
+      page,
+      pageSize,
+      search,
+      zone,
+      area,
+      salesmanId,
+      status,
+      fromDate,
+      toDate
+    );
+
+    const validatedTasks = z.array(apiResponseTaskSchema).safeParse(result.data);
 
     if (!validatedTasks.success) {
       console.error("Task Validation Error:", validatedTasks.error.format());
+      return NextResponse.json({ data: result.data, totalCount: result.totalCount, page, pageSize }, { status: 200 });
     }
 
     return NextResponse.json({
-      salesmen: assignableSalesmen,
-      uniqueZones,
-      uniqueAreas,
-      tasks: validatedTasks.success ? validatedTasks.data : formattedTasks
+      data: validatedTasks.data,
+      totalCount: result.totalCount,
+      page,
+      pageSize
     }, { status: 200 });
 
   } catch (error) {
