@@ -272,64 +272,68 @@ export default function LogisticsIOList() {
   return (
     <div className="space-y-4">
       {/* --- Filter Bar --- */}
-      <div className="bg-card border rounded-lg p-4 shadow-sm flex flex-wrap gap-4 items-end">
-        <div className="flex flex-col space-y-1 w-full sm:w-[250px]">
-          <label className="text-xs font-semibold text-muted-foreground">Search</label>
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Vehicle, Zone, Factory..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9"
-            />
+      <div className="bg-card border rounded-lg p-4 shadow-sm flex flex-wrap gap-4 items-end justify-between">
+        
+        {/* Left Side: Filters */}
+        <div className="flex flex-wrap gap-4 items-end">
+          <div className="flex flex-col space-y-1 w-full sm:w-[250px]">
+            <label className="text-xs font-semibold text-muted-foreground">Search</label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Vehicle, Zone, Factory..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-9"
+              />
+            </div>
           </div>
+
+          <div className="flex flex-col space-y-1">
+            <label className="text-xs font-semibold text-muted-foreground">From Date</label>
+            <Input type="date" className="h-9 w-[140px]" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          </div>
+          <div className="flex flex-col space-y-1">
+            <label className="text-xs font-semibold text-muted-foreground">To Date</label>
+            <Input type="date" className="h-9 w-[140px]" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          </div>
+
+          <div className="flex flex-col space-y-1 w-[150px]">
+            <label className="text-xs font-semibold text-muted-foreground">Source</label>
+            <Select value={filterSource} onValueChange={setFilterSource}>
+              <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                {availableSources.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col space-y-1 w-[150px]">
+            <label className="text-xs font-semibold text-muted-foreground">Zone</label>
+            <Select value={filterZone} onValueChange={setFilterZone}>
+              <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Zones</SelectItem>
+                {availableZones.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col space-y-1 w-[150px]">
+            <label className="text-xs font-semibold text-muted-foreground">District</label>
+            <Select value={filterDistrict} onValueChange={setFilterDistrict}>
+              <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Districts</SelectItem>
+                {availableDistricts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button onClick={fetchRecords} size="sm" className="h-9 mb-px">Apply Filters</Button>
         </div>
 
-        <div className="flex flex-col space-y-1">
-          <label className="text-xs font-semibold text-muted-foreground">From Date</label>
-          <Input type="date" className="h-9 w-[140px]" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-        </div>
-        <div className="flex flex-col space-y-1">
-          <label className="text-xs font-semibold text-muted-foreground">To Date</label>
-          <Input type="date" className="h-9 w-[140px]" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </div>
-
-        {/* Source / Factory Filter */}
-        <div className="flex flex-col space-y-1 w-[150px]">
-          <label className="text-xs font-semibold text-muted-foreground">Source</label>
-          <Select value={filterSource} onValueChange={setFilterSource}>
-            <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Sources</SelectItem>
-              {availableSources.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col space-y-1 w-[150px]">
-          <label className="text-xs font-semibold text-muted-foreground">Zone</label>
-          <Select value={filterZone} onValueChange={setFilterZone}>
-            <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Zones</SelectItem>
-              {availableZones.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col space-y-1 w-[150px]">
-          <label className="text-xs font-semibold text-muted-foreground">District</label>
-          <Select value={filterDistrict} onValueChange={setFilterDistrict}>
-            <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Districts</SelectItem>
-              {availableDistricts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button onClick={fetchRecords} size="sm" className="h-9 mb-px">Apply Filters</Button>
       </div>
 
       {/* --- Data Table --- */}

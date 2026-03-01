@@ -2,7 +2,7 @@
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/drizzle';
-import { users, logisticsIo } from '../../../../../drizzle'; 
+import { users, logisticsIO } from '../../../../../drizzle'; 
 import { eq, and, gte, lte, ilike, desc } from 'drizzle-orm';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { z } from 'zod';
@@ -65,27 +65,27 @@ export async function GET(request: NextRequest) {
       const end = endDateParam ? new Date(endDateParam) : new Date(startDateParam);
       end.setHours(23, 59, 59, 999);
 
-      filters.push(gte(logisticsIo.createdAt, start.toISOString()));
-      filters.push(lte(logisticsIo.createdAt, end.toISOString()));
+      filters.push(gte(logisticsIO.createdAt, start));
+      filters.push(lte(logisticsIO.createdAt, end));
     }
 
     // Prisma's `equals: x, mode: 'insensitive'` is the exact equivalent of SQL ILIKE without wildcards
     if (zoneParam) {
-      filters.push(ilike(logisticsIo.zone, zoneParam));
+      filters.push(ilike(logisticsIO.zone, zoneParam));
     }
     if (districtParam) {
-      filters.push(ilike(logisticsIo.district, districtParam));
+      filters.push(ilike(logisticsIO.district, districtParam));
     }
     if (sourceParam) {
-      filters.push(ilike(logisticsIo.partyName, sourceParam));
+      filters.push(ilike(logisticsIO.partyName, sourceParam));
     }
 
     // 4. Fetch Data
     const logisticsRecords = await db
       .select()
-      .from(logisticsIo)
+      .from(logisticsIO)
       .where(filters.length > 0 ? and(...filters) : undefined)
-      .orderBy(desc(logisticsIo.createdAt));
+      .orderBy(desc(logisticsIO.createdAt));
 
     // 5. Map Data to Schema
     const formattedRecords = logisticsRecords.map((record) => {

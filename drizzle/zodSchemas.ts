@@ -7,7 +7,7 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
     siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
-    outstandingReports,masonsOnMeetings,logisticsIo, masonOnScheme, notifications, syncState, 
+    outstandingReports,masonsOnMeetings,logisticsIO, logisticsUsers, masonOnScheme, notifications, syncState, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, salesPromoters,
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
 } from "../drizzle/index";
@@ -72,7 +72,8 @@ export const insertSiteAssociatedUsersSchema = createInsertSchema(siteAssociated
 export const insertSchemeToRewardsSchema = createInsertSchema(schemeToRewards);
 
 // logistics
-export const insertLogisticsIOSchema = createInsertSchema(logisticsIo);
+export const insertLogisticsUsersSchema = createInsertSchema(logisticsUsers);
+export const insertLogisticsIOSchema = createInsertSchema(logisticsIO);
 
 //emailStuff
 export const insertEmailReportSchema = createInsertSchema(emailReports);
@@ -142,7 +143,8 @@ export const selectSiteAssociatedUsersSchema = createSelectSchema(siteAssociated
 export const selectSchemeToRewardsSchema = createSelectSchema(schemeToRewards);
 
 // logistics
-export const selectLogisticsIOSchema = createSelectSchema(logisticsIo);
+export const selectLogisticsUsersSchema = createSelectSchema(logisticsUsers);
+export const selectLogisticsIOSchema = createSelectSchema(logisticsIO);
 
 //emailStuff
 export const selectEmailReportSchema = createSelectSchema(emailReports);

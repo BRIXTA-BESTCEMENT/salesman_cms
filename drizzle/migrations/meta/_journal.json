@@ -50,6 +50,13 @@
       "when": 1771743862504,
       "tag": "0006_wooden_oracle",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772376447335,
+      "tag": "0007_productive_captain_stacy",
+      "breakpoints": true
     }
   ]
 }

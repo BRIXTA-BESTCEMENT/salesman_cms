@@ -968,42 +968,61 @@ export const syncState = pgTable("sync_state", {
 ]);
 
 // ------ Logistics -------
-export const logisticsIo = pgTable("logistics_io", {
-	id: text().primaryKey().notNull(),
-	zone: varchar({ length: 255 }),
-	district: varchar({ length: 255 }),
-	destination: varchar({ length: 255 }),
-	doOrderDate: date(),
-	doOrderTime: varchar({ length: 50 }),
-	gateInDate: date(),
-	gateInTime: varchar({ length: 50 }),
-	processingTime: varchar({ length: 100 }),
-	wbInDate: date(),
-	wbInTime: varchar({ length: 50 }),
-	diffGateInTareWt: varchar({ length: 100 }),
-	wbOutDate: date(),
-	wbOutTime: varchar({ length: 50 }),
-	diffTareWtGrossWt: varchar({ length: 100 }),
-	gateOutDate: date(),
-	gateOutTime: varchar({ length: 50 }),
-	diffGrossWtGateOut: varchar({ length: 100 }),
-	diffGrossWtInvoiceDt: varchar("diffGrossWtInvoiceDT", { length: 100 }), 
-	diffInvoiceDtGateOut: varchar("diffInvoiceDTGateOut", { length: 100 }),
-	diffGateInGateOut: varchar({ length: 100 }),
-	createdAt: timestamp({ precision: 3, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updatedAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
-	purpose: varchar({ length: 255 }),
-	typeOfMaterials: varchar("type_of_materials", { length: 255 }),
-	vehicleNumber: varchar("vehicle_number", { length: 100 }),
-	storeDate: date("store_date"),
-	storeTime: varchar("store_time", { length: 50 }),
-	noOfInvoice: integer("no_of_invoice"),
-	partyName: varchar("party_name", { length: 255 }),
-	invoiceNos: text("invoice_nos").array(),
-	billNos: text("bill_nos").array(),
-	gateOutNoOfInvoice: integer("gate_out_no_of_invoice"),
-	gateOutInvoiceNos: text("gate_out_invoice_nos").array(),
-	gateOutBillNos: text("gate_out_bill_nos").array(),
+export const logisticsUsers = pgTable("logistics_users", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  sourceName: varchar("source_name", { length: 255 }),
+  userName: varchar("user_name", { length: 255 }).unique().notNull(),
+  userPassword: varchar("user_password", { length: 255 }).notNull(),
+  userRole: varchar("user_role", { length: 255 }).notNull(), // 'GATE', 'WB', 'STORE', 'ADMIN' etc.
+  
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date" })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const logisticsIO = pgTable("logistics_io", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  zone: varchar("zone", { length: 255 }),
+  district: varchar("district", { length: 255 }),
+  destination: varchar("destination", { length: 255 }),
+  doOrderDate: date("doOrderDate"),
+  doOrderTime: varchar("doOrderTime", { length: 50 }),
+  gateInDate: date("gateInDate"),
+  gateInTime: varchar("gateInTime", { length: 50 }),
+  processingTime: varchar("processingTime", { length: 100 }),
+  wbInDate: date("wbInDate"),
+  wbInTime: varchar("wbInTime", { length: 50 }),
+  diffGateInTareWt: varchar("diffGateInTareWt", { length: 100 }),
+  wbOutDate: date("wbOutDate"),
+  wbOutTime: varchar("wbOutTime", { length: 50 }),
+  diffTareWtGrossWt: varchar("diffTareWtGrossWt", { length: 100 }),
+  gateOutDate: date("gateOutDate"),
+  gateOutTime: varchar("gateOutTime", { length: 50 }),
+  gateOutNoOfInvoice: integer("gate_out_no_of_invoice"),
+  gateOutInvoiceNos: text("gate_out_invoice_nos").array(),
+  gateOutBillNos: text("gate_out_bill_nos").array(),
+  diffGrossWtGateOut: varchar("diffGrossWtGateOut", { length: 100 }),
+  diffGrossWtInvoiceDT: varchar("diffGrossWtInvoiceDT", { length: 100 }),
+  diffInvoiceDTGateOut: varchar("diffInvoiceDTGateOut", { length: 100 }),
+  diffGateInGateOut: varchar("diffGateInGateOut", { length: 100 }),
+  purpose: varchar("purpose", { length: 255 }),
+  typeOfMaterials: varchar("type_of_materials", { length: 255 }),
+  vehicleNumber: varchar("vehicle_number", { length: 100 }),
+  storeDate: date("store_date"),
+  storeTime: varchar("store_time", { length: 50 }),
+  noOfInvoice: integer("no_of_invoice"),
+  partyName: varchar("party_name", { length: 255 }),
+  invoiceNos: text("invoice_nos").array(),
+  billNos: text("bill_nos").array(),
+  sourceName: varchar("source_name", { length: 255 }),
+
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date" })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 });
 
 // ----- Email Reports ------

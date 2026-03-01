@@ -1,4 +1,4 @@
-// src/app/dashboard/logisticsGateIO/page.tsx
+// src/app/dashboard/logisticsIO/page.tsx
 import { Suspense } from 'react';
 import { LogisticsTabsLoader } from './tabsLoader';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
@@ -48,9 +48,10 @@ export async function LogisticsDynamicContent() {
   const userRole = await getCurrentUserRole();
   const roleToCheck = userRole ?? 'junior-executive'; 
 
-  const canView = hasPermission(roleToCheck, 'logisticsIO.records'); 
+  const canViewRecords = hasPermission(roleToCheck, 'logisticsIO.records'); 
+  const canViewUsers = hasPermission(roleToCheck, 'logisticsIO.logisticsUsers');
 
-  if (!canView) {
+  if (!canViewRecords) {
     return (
       <div className="flex-1 space-y-4 p-4 md:p-6">
         <h2 className="text-3xl font-bold tracking-tight">Access Denied</h2>
@@ -65,7 +66,8 @@ export async function LogisticsDynamicContent() {
     <div className="flex-1 space-y-4 p-4 md:p-6 overflow-x-hidden">
 
       <LogisticsTabsLoader
-        canView={canView}
+        canViewRecords={canViewRecords}
+        canViewUsers={canViewUsers}
       />
     </div>
   );

@@ -6,7 +6,7 @@ import {
   salesmanAttendance, salesmanLeaveApplications, journeyOps, dealerReportsAndScores,
   ratings, dealerBrandMapping, brands, tsoMeetings, rewards, giftAllocationLogs,
   masonPcSide, schemesOffers, masonOnScheme, masonsOnMeetings, rewardCategories,
-  kycSubmissions, tsoAssignments, bagLifts, rewardRedemptions, pointsLedger, logisticsIo,
+  kycSubmissions, tsoAssignments, bagLifts, rewardRedemptions, pointsLedger, logisticsIO,
   siteAssociatedUsers, siteAssociatedDealers, siteAssociatedMasons
 } from '../../drizzle/schema';
 import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull } from 'drizzle-orm';
@@ -1215,17 +1215,17 @@ export async function getFlattenedLogisticsIO(startDate?: Date, endDate?: Date) 
     endDate.setHours(23, 59, 59, 999);
     filters.push(
       and(
-        sql`${logisticsIo.createdAt} >= ${startDate.toISOString()}`,
-        sql`${logisticsIo.createdAt} <= ${endDate.toISOString()}`
+        sql`${logisticsIO.createdAt} >= ${startDate.toISOString()}`,
+        sql`${logisticsIO.createdAt} <= ${endDate.toISOString()}`
       )
     );
   }
 
   const rawData = await db
     .select()
-    .from(logisticsIo)
+    .from(logisticsIO)
     .where(filters.length > 0 ? and(...filters) : undefined)
-    .orderBy(desc(logisticsIo.createdAt));
+    .orderBy(desc(logisticsIO.createdAt));
 
   return rawData.map((r) => ({
     id: r.id,
@@ -1259,8 +1259,6 @@ export async function getFlattenedLogisticsIO(startDate?: Date, endDate?: Date) 
     gateOutInvoiceNos: Array.isArray(r.gateOutInvoiceNos) ? r.gateOutInvoiceNos : [],
     gateOutBillNos: Array.isArray(r.gateOutBillNos) ? r.gateOutBillNos : [],
     diffGrossWtGateOut: r.diffGrossWtGateOut ?? null,
-    diffGrossWtInvoiceDT: r.diffGrossWtInvoiceDt ?? null,
-    diffInvoiceDTGateOut: r.diffInvoiceDtGateOut ?? null,
     diffGateInGateOut: r.diffGateInGateOut ?? null,
     createdAt: formatDateTimeIST(r.createdAt),
     updatedAt: formatDateTimeIST(r.updatedAt),

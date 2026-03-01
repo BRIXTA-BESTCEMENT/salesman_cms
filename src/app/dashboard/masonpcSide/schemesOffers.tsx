@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AddSchemesRewards } from '@/components/add-schemes-rewards';
+import { AddSchemesRewards } from '@/app/dashboard/masonpcSide/add-schemes-rewards';
 import { selectSchemesOffersSchema } from '../../../../drizzle/zodSchemas';
 
 // Types

@@ -28,7 +28,7 @@ import { RefreshDataButton } from '@/components/RefreshDataButton';
 // Types & Schemas
 import { selectDailyTaskSchema } from '../../../../drizzle/zodSchemas';
 import { z } from "zod";
-import { AssignTasksDialog } from "@/components/assign-tasks-dialog";
+import { AssignTasksDialog } from "@/app/dashboard/assignTasks/assign-tasks-dialog";
 
 type Salesman = { id: number; firstName: string | null; lastName: string | null; email: string; salesmanLoginId: string | null; area: string | null; region: string | null; };
 type DailyTaskRecord = z.infer<typeof selectDailyTaskSchema> & { salesmanName?: string; relatedDealerName?: string; assignedByUserName?: string };

@@ -68,6 +68,7 @@ export interface DashboardPermissions {
   };
   logisticsIO: {
     records: boolean;
+    logisticsUsers: boolean;
   };
 
   // Account section
@@ -130,6 +131,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -187,6 +189,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -244,6 +247,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -303,6 +307,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -360,6 +365,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -417,6 +423,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -474,6 +481,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -531,6 +539,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -590,6 +599,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: false,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,
@@ -647,6 +657,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: false,
+      logisticsUsers: false,
     },
     account: true,
     raiseAQuery: true,
@@ -704,6 +715,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     },
     logisticsIO: {
       records: false,
+      logisticsUsers: false,
     },
     account: true,
     raiseAQuery: true,
