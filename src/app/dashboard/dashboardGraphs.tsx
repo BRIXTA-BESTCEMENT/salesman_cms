@@ -268,17 +268,6 @@ export default function DashboardGraphs() {
     return Object.keys(agg).sort().map(k => ({ name: k, distance: agg[k] }));
   }, [rawGeoTrackingRecords, selectedSalesman]);
 
-  const collectionGraphData: DailyCollectionData[] = useMemo(() => {
-    let filtered = roleFilteredDailyReports;
-    if (selectedSalesman !== 'all') filtered = filtered.filter(r => r.salesmanName === selectedSalesman);
-    const agg: Record<string, number> = {};
-    filtered.forEach(item => {
-      const key = item.reportDate;
-      agg[key] = (agg[key] || 0) + (item.todayCollectionRupees ?? 0);
-    });
-    return Object.keys(agg).sort().map(k => ({ name: k, collection: agg[k] }));
-  }, [roleFilteredDailyReports, selectedSalesman]);
-
   const salesQuantityGraphData: SalesQuantityData[] = useMemo(() => {
     let filtered = rawSalesOrders;
     if (selectedSalesman !== 'all') filtered = filtered.filter(r => r.salesmanName === selectedSalesman);
@@ -359,17 +348,6 @@ export default function DashboardGraphs() {
           </CardContent>
         </Card>
       </TabsContent>
-
-      {/* Daily Collection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Daily Collection Reports</CardTitle>
-          <CardDescription>Total collection (₹) per day.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartAreaInteractive data={collectionGraphData} dataKey="collection" title="Daily Collection (₹)" />
-        </CardContent>
-      </Card>
 
       {/* Sales Quantity */}
       <Card>

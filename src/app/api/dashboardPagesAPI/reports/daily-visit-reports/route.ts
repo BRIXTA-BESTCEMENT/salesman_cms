@@ -25,6 +25,12 @@ const frontendDVRSchema = selectDailyVisitReportSchema.extend({
   region: z.string(),
   dealerName: z.string().nullable().optional(),
   subDealerName: z.string().nullable().optional(),
+
+  customerType: z.string().nullable().optional(),
+  partyType: z.string().nullable().optional(),
+  nameOfParty: z.string().nullable().optional(),
+  contactNoOfParty: z.string().nullable().optional(),
+  expectedActivationDate: z.string().nullable().optional(),
   
   latitude: z.number(),
   longitude: z.number(),
@@ -78,7 +84,8 @@ async function getCachedDailyVisitReports(
       ilike(users.firstName, `%${search}%`),
       ilike(users.lastName, `%${search}%`),
       ilike(dealers.name, `%${search}%`),
-      ilike(subDealers.name, `%${search}%`)
+      ilike(subDealers.name, `%${search}%`),
+      ilike(dailyVisitReports.nameOfParty, `%${search}%`)
     );
     if (searchCondition) filters.push(searchCondition);
   }
@@ -135,6 +142,12 @@ async function getCachedDailyVisitReports(
       reportDate: row.reportDate ? new Date(row.reportDate).toISOString().split('T')[0] : '',
       dealerName: row.dealerNameStr ?? null,
       subDealerName: row.subDealerNameStr ?? null,
+
+      customerType: row.customerType ?? null,
+      partyType: row.partyType ?? null,
+      nameOfParty: row.nameOfParty ?? null,
+      contactNoOfParty: row.contactNoOfParty ?? null,
+      expectedActivationDate: row.expectedActivationDate ? new Date(row.expectedActivationDate).toISOString().split('T')[0] : null,
       
       latitude: toNum(row.latitude) ?? 0,
       longitude: toNum(row.longitude) ?? 0,

@@ -58,7 +58,8 @@ export const tablesMetadata: TableMeta[] = [
             'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
             'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
             'todayCollectionRupees', 'overdueAmount', 'feedbacks', 'solutionBySalesperson',
-            'anyRemarks', 'checkInTime', 'timeSpentinLoc', 'checkOutTime', 'inTimeImageUrl', 'outTimeImageUrl',
+            'anyRemarks', 'checkInTime', 'customerType', 'partyType', 'nameOfParty', 'contactNoOfParty', 'expectedActivationDate',
+            'timeSpentinLoc', 'checkOutTime', 'inTimeImageUrl', 'outTimeImageUrl',
             'createdAt', 'updatedAt'
         ],
     },

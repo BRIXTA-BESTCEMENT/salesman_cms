@@ -1,10 +1,12 @@
-import { pgTable, uniqueIndex, foreignKey, varchar, text, numeric, timestamp, 
-	index, integer, date, uuid, boolean, unique, serial, jsonb, doublePrecision, 
-	bigserial, check, bigint, real, primaryKey, pgView 
+import {
+	pgTable, uniqueIndex, foreignKey, varchar, text, numeric, timestamp,
+	index, integer, date, uuid, boolean, unique, serial, jsonb, doublePrecision,
+	bigserial, check, bigint, real, primaryKey, pgView
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
-export const vLatestPositions = pgView("v_latest_positions", {	userId: integer("user_id"),
+export const vLatestPositions = pgView("v_latest_positions", {
+	userId: integer("user_id"),
 	journeyId: text("journey_id"),
 	lat: doublePrecision(),
 	lng: doublePrecision(),
@@ -65,15 +67,15 @@ export const users = pgTable("users", {
 	uniqueIndex("users_salesman_login_id_key").using("btree", table.salesmanLoginId.asc().nullsLast().op("text_ops")),
 	uniqueIndex("users_workos_user_id_key").using("btree", table.workosUserId.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.companyId],
-			foreignColumns: [companies.id],
-			name: "users_company_id_fkey"
-		}),
+		columns: [table.companyId],
+		foreignColumns: [companies.id],
+		name: "users_company_id_fkey"
+	}),
 	foreignKey({
-			columns: [table.reportsToId],
-			foreignColumns: [table.id],
-			name: "users_reports_to_id_fkey"
-		}).onUpdate("cascade").onDelete("set null"),
+		columns: [table.reportsToId],
+		foreignColumns: [table.id],
+		name: "users_reports_to_id_fkey"
+	}).onUpdate("cascade").onDelete("set null"),
 	unique("uniq_user_device_id").on(table.deviceId),
 ]);
 
@@ -85,10 +87,10 @@ export const authSessions = pgTable("auth_sessions", {
 	expiresAt: timestamp("expires_at", { withTimezone: true, mode: 'string' }),
 }, (table) => [
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "auth_sessions_mason_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "auth_sessions_mason_id_fkey"
+	}).onDelete("cascade"),
 	unique("auth_sessions_session_token_key").on(table.sessionToken),
 ]);
 
@@ -102,8 +104,8 @@ export const dealers = pgTable("dealers", {
 	area: varchar({ length: 255 }).notNull(),
 	phoneNo: varchar("phone_no", { length: 20 }).notNull(),
 	address: varchar({ length: 500 }).notNull(),
-	totalPotential: numeric("total_potential", { precision: 10, scale:  2 }).notNull(),
-	bestPotential: numeric("best_potential", { precision: 10, scale:  2 }).notNull(),
+	totalPotential: numeric("total_potential", { precision: 10, scale: 2 }).notNull(),
+	bestPotential: numeric("best_potential", { precision: 10, scale: 2 }).notNull(),
 	brandSelling: text("brand_selling").array(),
 	feedbacks: varchar({ length: 500 }).notNull(),
 	remarks: varchar({ length: 500 }),
@@ -112,8 +114,8 @@ export const dealers = pgTable("dealers", {
 	pinCode: varchar({ length: 20 }),
 	dateOfBirth: date(),
 	anniversaryDate: date(),
-	latitude: numeric({ precision: 10, scale:  7 }),
-	longitude: numeric({ precision: 10, scale:  7 }),
+	latitude: numeric({ precision: 10, scale: 7 }),
+	longitude: numeric({ precision: 10, scale: 7 }),
 	verificationStatus: varchar("verification_status", { length: 50 }).default('PENDING').notNull(),
 	whatsappNo: varchar("whatsapp_no", { length: 20 }),
 	emailId: varchar("email_id", { length: 255 }),
@@ -142,10 +144,10 @@ export const dealers = pgTable("dealers", {
 	bankAccountNumber: varchar("bank_account_number", { length: 50 }),
 	bankIfscCode: varchar("bank_ifsc_code", { length: 50 }),
 	brandName: varchar("brand_name", { length: 255 }),
-	monthlySaleMt: numeric("monthly_sale_mt", { precision: 10, scale:  2 }),
+	monthlySaleMt: numeric("monthly_sale_mt", { precision: 10, scale: 2 }),
 	noOfDealers: integer("no_of_dealers"),
 	areaCovered: varchar("area_covered", { length: 255 }),
-	projectedMonthlySalesBestCementMt: numeric("projected_monthly_sales_best_cement_mt", { precision: 10, scale:  2 }),
+	projectedMonthlySalesBestCementMt: numeric("projected_monthly_sales_best_cement_mt", { precision: 10, scale: 2 }),
 	noOfEmployeesInSales: integer("no_of_employees_in_sales"),
 	declarationName: varchar("declaration_name", { length: 255 }),
 	declarationPlace: varchar("declaration_place", { length: 100 }),
@@ -157,7 +159,7 @@ export const dealers = pgTable("dealers", {
 	partnershipDeedPicUrl: varchar("partnership_deed_pic_url", { length: 500 }),
 	dealerdevelopmentstatus: varchar({ length: 50 }),
 	dealerdevelopmentobstacle: varchar({ length: 500 }),
-	salesGrowthPercentage: numeric("sales_growth_percentage", { precision: 5, scale:  2 }),
+	salesGrowthPercentage: numeric("sales_growth_percentage", { precision: 5, scale: 2 }),
 	noOfPjp: integer("no_of_pjp"),
 	nameOfFirm: varchar({ length: 500 }),
 	underSalesPromoterName: varchar({ length: 200 }),
@@ -165,61 +167,62 @@ export const dealers = pgTable("dealers", {
 	index("idx_dealers_parent_dealer_id").using("btree", table.parentDealerId.asc().nullsLast().op("text_ops")),
 	index("idx_dealers_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "dealers_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "dealers_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.parentDealerId],
-			foreignColumns: [table.id],
-			name: "dealers_parent_dealer_id_fkey"
-		}).onUpdate("cascade").onDelete("set null"),
+		columns: [table.parentDealerId],
+		foreignColumns: [table.id],
+		name: "dealers_parent_dealer_id_fkey"
+	}).onUpdate("cascade").onDelete("set null"),
 	unique("dealers_gstin_no_unique").on(table.gstinNo),
 ]);
 
 export const verifiedDealers = pgTable("verified_dealers", {
-  id: serial("id").primaryKey(),
-  dealerPartyName: varchar("dealer_party_name", { length: 255 }).notNull(),
-  alias: varchar("alias", { length: 255 }),
-  gstNo: varchar("gst_no", { length: 50 }),
-  panNo: varchar("pan_no", { length: 50 }),
-  zone: varchar("zone", { length: 120 }),
-  district: varchar("district", { length: 120 }),
-  area: varchar("area", { length: 120 }),
-  state: varchar("state", { length: 100 }),
-  pinCode: varchar("pin_code", { length: 20 }),
-  contactNo1: varchar("contact_no1", { length: 20 }),
-  contactNo2: varchar("contact_no2", { length: 20 }),
-  email: varchar("email", { length: 255 }),
-  contactPerson: varchar("contact_person", { length: 255 }),
-  dealerSegment: varchar("dealer_segment", { length: 255 }),
-  salesPromoterId: integer("sales_promoter_id").references(() => salesPromoters.id, { onDelete: "set null" }),
-  salesManNameRaw: varchar("sales_man_name_raw", { length: 255 }),
-  creditLimit: numeric("credit_limit", { precision: 14, scale: 2 }),
-  securityBlankChequeNo: varchar("security_blank_cheque_no", { length: 255 }),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+	id: serial("id").primaryKey(),
+	dealerPartyName: varchar("dealer_party_name", { length: 255 }).notNull(),
+	alias: varchar("alias", { length: 255 }),
+	gstNo: varchar("gst_no", { length: 50 }),
+	panNo: varchar("pan_no", { length: 50 }),
+	zone: varchar("zone", { length: 120 }),
+	district: varchar("district", { length: 120 }),
+	area: varchar("area", { length: 120 }),
+	state: varchar("state", { length: 100 }),
+	pinCode: varchar("pin_code", { length: 20 }),
+	contactNo1: varchar("contact_no1", { length: 20 }),
+	contactNo2: varchar("contact_no2", { length: 20 }),
+	email: varchar("email", { length: 255 }),
+	contactPerson: varchar("contact_person", { length: 255 }),
+	dealerSegment: varchar("dealer_segment", { length: 255 }),
+	salesPromoterId: integer("sales_promoter_id").references(() => salesPromoters.id, { onDelete: "set null" }),
+	salesManNameRaw: varchar("sales_man_name_raw", { length: 255 }),
+	creditLimit: numeric("credit_limit", { precision: 14, scale: 2 }),
+	securityBlankChequeNo: varchar("security_blank_cheque_no", { length: 255 }),
+	dealerUuid: varchar("dealer_uuid", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
+	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (t) => [
-  index("idx_verified_zone").on(t.zone),
-  index("idx_verified_district").on(t.district),
-  index("idx_verified_pincode").on(t.pinCode),
-  index("idx_verified_sales_promoter").on(t.salesPromoterId),
-  index("idx_verified_segment").on(t.dealerSegment),
-  index("idx_verified_gst").on(t.gstNo),
-  index("idx_verified_mobile").on(t.contactNo1),
+	index("idx_verified_zone").on(t.zone),
+	index("idx_verified_district").on(t.district),
+	index("idx_verified_pincode").on(t.pinCode),
+	index("idx_verified_sales_promoter").on(t.salesPromoterId),
+	index("idx_verified_segment").on(t.dealerSegment),
+	index("idx_verified_gst").on(t.gstNo),
+	index("idx_verified_mobile").on(t.contactNo1),
 ]);
 
 export const salesPromoters = pgTable("sales_promoters", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  mobile: varchar("mobile", { length: 20 }),
-  email: varchar("email", { length: 255 }),
-  zone: varchar("zone", { length: 120 }),
-  district: varchar("district", { length: 120 }),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+	id: serial("id").primaryKey(),
+	name: varchar("name", { length: 255 }).notNull(),
+	mobile: varchar("mobile", { length: 20 }),
+	email: varchar("email", { length: 255 }),
+	zone: varchar("zone", { length: 120 }),
+	district: varchar("district", { length: 120 }),
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
 });
 
 export const permanentJourneyPlans = pgTable("permanent_journey_plans", {
@@ -258,109 +261,98 @@ export const permanentJourneyPlans = pgTable("permanent_journey_plans", {
 	uniqueIndex("uniq_pjp_idempotency_key_not_null").using("btree", table.idempotencyKey.asc().nullsLast().op("text_ops")).where(sql`(idempotency_key IS NOT NULL)`),
 	uniqueIndex("uniq_pjp_user_dealer_plan_date").using("btree", table.userId.asc().nullsLast().op("date_ops"), table.dealerId.asc().nullsLast().op("text_ops"), table.planDate.asc().nullsLast().op("date_ops")),
 	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "fk_pjp_dealer_id"
-		}).onDelete("set null"),
+		columns: [table.dealerId],
+		foreignColumns: [dealers.id],
+		name: "fk_pjp_dealer_id"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "permanent_journey_plans_user_id_fkey"
-		}).onUpdate("cascade").onDelete("restrict"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "permanent_journey_plans_user_id_fkey"
+	}).onUpdate("cascade").onDelete("restrict"),
 	foreignKey({
-			columns: [table.createdById],
-			foreignColumns: [users.id],
-			name: "permanent_journey_plans_created_by_id_fkey"
-		}).onUpdate("cascade").onDelete("restrict"),
+		columns: [table.createdById],
+		foreignColumns: [users.id],
+		name: "permanent_journey_plans_created_by_id_fkey"
+	}).onUpdate("cascade").onDelete("restrict"),
 	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [technicalSites.id],
-			name: "permanent_journey_plans_site_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.siteId],
+		foreignColumns: [technicalSites.id],
+		name: "permanent_journey_plans_site_id_fkey"
+	}).onDelete("set null"),
 ]);
 
 export const dailyTasks = pgTable("daily_tasks", {
-  id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
-  pjpBatchId: uuid("pjp_batch_id"),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  dealerId: varchar("dealer_id", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
-  dealerNameSnapshot: varchar("dealer_name_snapshot", { length: 255 }),
-  dealerMobile: varchar("dealer_mobile", { length: 20 }),
-  zone: varchar("zone", { length: 120 }),
-  area: varchar("area", { length: 120 }),
-  route: text("route"),
-  objective: varchar("objective", { length: 255 }),
-  visitType: varchar("visit_type", { length: 100 }),
-  requiredVisitCount: integer("required_visit_count"),
-  week: varchar("week", { length: 50 }),
-  taskDate: date("task_date").notNull(),
-  status: varchar("status", { length: 50 }).default("Assigned").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()).defaultNow().notNull(),
+	id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
+	pjpBatchId: uuid("pjp_batch_id"),
+	userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+	dealerId: varchar("dealer_id", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
+	dealerNameSnapshot: varchar("dealer_name_snapshot", { length: 255 }),
+	dealerMobile: varchar("dealer_mobile", { length: 20 }),
+	zone: varchar("zone", { length: 120 }),
+	area: varchar("area", { length: 120 }),
+	route: text("route"),
+	objective: varchar("objective", { length: 255 }),
+	visitType: varchar("visit_type", { length: 100 }),
+	requiredVisitCount: integer("required_visit_count"),
+	week: varchar("week", { length: 50 }),
+	taskDate: date("task_date").notNull(),
+	status: varchar("status", { length: 50 }).default("Assigned").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()).defaultNow().notNull(),
 }, (t) => [
-  index("idx_daily_tasks_user").on(t.userId),
-  index("idx_daily_tasks_dealer").on(t.dealerId),
-  index("idx_daily_tasks_date").on(t.taskDate),
-  index("idx_daily_tasks_zone").on(t.zone),
-  index("idx_daily_tasks_week").on(t.week),
-  index("idx_daily_tasks_pjp_batch").on(t.pjpBatchId),
+	index("idx_daily_tasks_user").on(t.userId),
+	index("idx_daily_tasks_dealer").on(t.dealerId),
+	index("idx_daily_tasks_date").on(t.taskDate),
+	index("idx_daily_tasks_zone").on(t.zone),
+	index("idx_daily_tasks_week").on(t.week),
+	index("idx_daily_tasks_pjp_batch").on(t.pjpBatchId),
 ]);
 
 export const dailyVisitReports = pgTable("daily_visit_reports", {
-	id: varchar({ length: 255 }).primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
-	reportDate: date("report_date").notNull(),
-	dealerType: varchar("dealer_type", { length: 50 }).notNull(),
-	location: varchar({ length: 500 }).notNull(),
-	latitude: numeric({ precision: 10, scale:  7 }).notNull(),
-	longitude: numeric({ precision: 10, scale:  7 }).notNull(),
-	visitType: varchar("visit_type", { length: 50 }).notNull(),
-	dealerTotalPotential: numeric("dealer_total_potential", { precision: 10, scale:  2 }).notNull(),
-	dealerBestPotential: numeric("dealer_best_potential", { precision: 10, scale:  2 }).notNull(),
+	id: varchar("id", { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
+	userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+	dealerId: varchar("dealer_id", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
+	subDealerId: varchar("sub_dealer_id", { length: 255 }).references(() => dealers.id, { onDelete: "set null" }),
+	reportDate: date("report_date"),
+	dealerType: varchar("dealer_type", { length: 50 }),
+	location: varchar("location", { length: 500 }),
+	latitude: numeric("latitude", { precision: 10, scale: 7 }),
+	longitude: numeric("longitude", { precision: 10, scale: 7 }),
+	visitType: varchar("visit_type", { length: 50 }),
+	dealerTotalPotential: numeric("dealer_total_potential", { precision: 10, scale: 2 }),
+	dealerBestPotential: numeric("dealer_best_potential", { precision: 10, scale: 2 }),
 	brandSelling: text("brand_selling").array(),
 	contactPerson: varchar("contact_person", { length: 255 }),
 	contactPersonPhoneNo: varchar("contact_person_phone_no", { length: 20 }),
-	todayOrderMt: numeric("today_order_mt", { precision: 10, scale:  2 }).notNull(),
-	todayCollectionRupees: numeric("today_collection_rupees", { precision: 10, scale:  2 }).notNull(),
-	feedbacks: varchar({ length: 500 }).notNull(),
+	todayOrderMt: numeric("today_order_mt", { precision: 10, scale: 2 }),
+	todayCollectionRupees: numeric("today_collection_rupees", { precision: 10, scale: 2 }),
+	overdueAmount: numeric("overdue_amount", { precision: 12, scale: 2 }),
+	feedbacks: varchar("feedbacks", { length: 500 }),
 	solutionBySalesperson: varchar("solution_by_salesperson", { length: 500 }),
 	anyRemarks: varchar("any_remarks", { length: 500 }),
-	checkInTime: timestamp("check_in_time", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	checkOutTime: timestamp("check_out_time", { precision: 6, withTimezone: true, mode: 'string' }),
+
+	checkInTime: timestamp("check_in_time", { withTimezone: true, precision: 6 }),
+	checkOutTime: timestamp("check_out_time", { withTimezone: true, precision: 6 }),
+	timeSpentinLoc: varchar("time_spent_in_loc", { length: 255 }),
 	inTimeImageUrl: varchar("in_time_image_url", { length: 500 }),
 	outTimeImageUrl: varchar("out_time_image_url", { length: 500 }),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	overdueAmount: numeric("overdue_amount", { precision: 12, scale:  2 }),
-	pjpId: varchar("pjp_id", { length: 255 }),
-	dealerId: varchar("dealer_id", { length: 255 }),
-	subDealerId: varchar("sub_dealer_id", { length: 255 }),
-	timeSpentInLoc: text("time_spent_in_loc"),
-}, (table) => [
-	index("idx_daily_visit_reports_pjp_id").using("btree", table.pjpId.asc().nullsLast().op("text_ops")),
-	index("idx_daily_visit_reports_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
-	index("idx_dvr_dealer_id").using("btree", table.dealerId.asc().nullsLast().op("text_ops")),
-	index("idx_dvr_sub_dealer_id").using("btree", table.subDealerId.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "fk_dvr_dealer_id"
-		}).onDelete("set null"),
-	foreignKey({
-			columns: [table.subDealerId],
-			foreignColumns: [dealers.id],
-			name: "fk_dvr_sub_dealer_id"
-		}).onDelete("set null"),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "daily_visit_reports_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
-	foreignKey({
-			columns: [table.pjpId],
-			foreignColumns: [permanentJourneyPlans.id],
-			name: "fk_daily_visit_reports_pjp_id"
-		}).onDelete("set null"),
+	pjpId: varchar("pjp_id", { length: 255 }).references(() => permanentJourneyPlans.id, { onDelete: "set null" }),
+
+	customerType: varchar("customer_type", { length: 100 }),
+	partyType: varchar("party_type", { length: 100 }),
+	nameOfParty: varchar("name_of_party", { length: 255 }),
+	contactNoOfParty: varchar("contact_no_of_party", { length: 20 }),
+	expectedActivationDate: date("expected_activation_date"),
+	currentDealerOutstandingAmt: numeric("current_dealer_outstanding_amt", { precision: 14, scale: 2 }),
+
+	createdAt: timestamp("created_at", { withTimezone: true, precision: 6 }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, precision: 6 }).defaultNow().notNull(),
+}, (t) => [
+	index("idx_daily_visit_reports_user_id").on(t.userId),
+	index("idx_daily_visit_reports_pjp_id").on(t.pjpId),
+	index("idx_dvr_dealer_id").on(t.dealerId),
+	index("idx_dvr_sub_dealer_id").on(t.subDealerId),
 ]);
 
 export const technicalVisitReports = pgTable("technical_visit_reports", {
@@ -383,7 +375,7 @@ export const technicalVisitReports = pgTable("technical_visit_reports", {
 	channelPartnerVisit: text("channel_partner_visit"),
 	conversionFromBrand: text("conversion_from_brand"),
 	conversionQuantityUnit: varchar("conversion_quantity_unit", { length: 20 }),
-	conversionQuantityValue: numeric("conversion_quantity_value", { precision: 10, scale:  2 }),
+	conversionQuantityValue: numeric("conversion_quantity_value", { precision: 10, scale: 2 }),
 	promotionalActivity: text("promotional_activity"),
 	qualityComplaint: text("quality_complaint"),
 	serviceType: text("service_type"),
@@ -406,8 +398,8 @@ export const technicalVisitReports = pgTable("technical_visit_reports", {
 	totalVisitsCount: integer("total_visits_count"),
 	region: varchar({ length: 100 }),
 	area: varchar({ length: 100 }),
-	latitude: numeric({ precision: 9, scale:  6 }),
-	longitude: numeric({ precision: 9, scale:  6 }),
+	latitude: numeric({ precision: 9, scale: 6 }),
+	longitude: numeric({ precision: 9, scale: 6 }),
 	masonId: uuid("mason_id"),
 	timeSpentInLoc: text("time_spent_in_loc"),
 	siteId: uuid("site_id"),
@@ -417,9 +409,9 @@ export const technicalVisitReports = pgTable("technical_visit_reports", {
 	visitCategory: varchar("visit_category", { length: 50 }),
 	customerType: varchar("customer_type", { length: 50 }),
 	constAreaSqFt: integer("const_area_sq_ft"),
-	currentBrandPrice: numeric("current_brand_price", { precision: 10, scale:  2 }),
-	siteStock: numeric("site_stock", { precision: 10, scale:  2 }),
-	estRequirement: numeric("est_requirement", { precision: 10, scale:  2 }),
+	currentBrandPrice: numeric("current_brand_price", { precision: 10, scale: 2 }),
+	siteStock: numeric("site_stock", { precision: 10, scale: 2 }),
+	estRequirement: numeric("est_requirement", { precision: 10, scale: 2 }),
 	supplyingDealerName: varchar("supplying_dealer_name", { length: 255 }),
 	nearbyDealerName: varchar("nearby_dealer_name", { length: 255 }),
 	isConverted: boolean("is_converted"),
@@ -438,20 +430,20 @@ export const technicalVisitReports = pgTable("technical_visit_reports", {
 	index("idx_tvr_journey_id").using("btree", table.journeyId.asc().nullsLast().op("text_ops")),
 	index("idx_tvr_site_id").using("btree", table.siteId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "technical_visit_reports_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "technical_visit_reports_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.pjpId],
-			foreignColumns: [permanentJourneyPlans.id],
-			name: "fk_technical_visit_reports_pjp_id"
-		}).onDelete("set null"),
+		columns: [table.pjpId],
+		foreignColumns: [permanentJourneyPlans.id],
+		name: "fk_technical_visit_reports_pjp_id"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [technicalSites.id],
-			name: "technical_visit_reports_site_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.siteId],
+		foreignColumns: [technicalSites.id],
+		name: "technical_visit_reports_site_id_fkey"
+	}).onDelete("set null"),
 ]);
 
 export const salesmanLeaveApplications = pgTable("salesman_leave_applications", {
@@ -468,10 +460,10 @@ export const salesmanLeaveApplications = pgTable("salesman_leave_applications", 
 }, (table) => [
 	index("idx_salesman_leave_applications_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "salesman_leave_applications_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "salesman_leave_applications_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const salesmanAttendance = pgTable("salesman_attendance", {
@@ -485,28 +477,28 @@ export const salesmanAttendance = pgTable("salesman_attendance", {
 	outTimeImageCaptured: boolean("out_time_image_captured").notNull(),
 	inTimeImageUrl: varchar("in_time_image_url", { length: 500 }),
 	outTimeImageUrl: varchar("out_time_image_url", { length: 500 }),
-	inTimeLatitude: numeric("in_time_latitude", { precision: 10, scale:  7 }).notNull(),
-	inTimeLongitude: numeric("in_time_longitude", { precision: 10, scale:  7 }).notNull(),
-	inTimeAccuracy: numeric("in_time_accuracy", { precision: 10, scale:  2 }),
-	inTimeSpeed: numeric("in_time_speed", { precision: 10, scale:  2 }),
-	inTimeHeading: numeric("in_time_heading", { precision: 10, scale:  2 }),
-	inTimeAltitude: numeric("in_time_altitude", { precision: 10, scale:  2 }),
-	outTimeLatitude: numeric("out_time_latitude", { precision: 10, scale:  7 }),
-	outTimeLongitude: numeric("out_time_longitude", { precision: 10, scale:  7 }),
-	outTimeAccuracy: numeric("out_time_accuracy", { precision: 10, scale:  2 }),
-	outTimeSpeed: numeric("out_time_speed", { precision: 10, scale:  2 }),
-	outTimeHeading: numeric("out_time_heading", { precision: 10, scale:  2 }),
-	outTimeAltitude: numeric("out_time_altitude", { precision: 10, scale:  2 }),
+	inTimeLatitude: numeric("in_time_latitude", { precision: 10, scale: 7 }).notNull(),
+	inTimeLongitude: numeric("in_time_longitude", { precision: 10, scale: 7 }).notNull(),
+	inTimeAccuracy: numeric("in_time_accuracy", { precision: 10, scale: 2 }),
+	inTimeSpeed: numeric("in_time_speed", { precision: 10, scale: 2 }),
+	inTimeHeading: numeric("in_time_heading", { precision: 10, scale: 2 }),
+	inTimeAltitude: numeric("in_time_altitude", { precision: 10, scale: 2 }),
+	outTimeLatitude: numeric("out_time_latitude", { precision: 10, scale: 7 }),
+	outTimeLongitude: numeric("out_time_longitude", { precision: 10, scale: 7 }),
+	outTimeAccuracy: numeric("out_time_accuracy", { precision: 10, scale: 2 }),
+	outTimeSpeed: numeric("out_time_speed", { precision: 10, scale: 2 }),
+	outTimeHeading: numeric("out_time_heading", { precision: 10, scale: 2 }),
+	outTimeAltitude: numeric("out_time_altitude", { precision: 10, scale: 2 }),
 	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	role: varchar({ length: 50 }).default('SALES'),
 }, (table) => [
 	index("idx_salesman_attendance_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "salesman_attendance_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "salesman_attendance_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const competitionReports = pgTable("competition_reports", {
@@ -518,17 +510,17 @@ export const competitionReports = pgTable("competition_reports", {
 	nod: varchar({ length: 100 }).notNull(),
 	retail: varchar({ length: 100 }).notNull(),
 	schemesYesNo: varchar("schemes_yes_no", { length: 10 }).notNull(),
-	avgSchemeCost: numeric("avg_scheme_cost", { precision: 10, scale:  2 }).notNull(),
+	avgSchemeCost: numeric("avg_scheme_cost", { precision: 10, scale: 2 }).notNull(),
 	remarks: varchar({ length: 500 }),
 	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
 }, (table) => [
 	index("competition_reports_user_id_idx").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "competition_reports_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "competition_reports_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const technicalSites = pgTable("technical_sites", {
@@ -537,8 +529,8 @@ export const technicalSites = pgTable("technical_sites", {
 	concernedPerson: varchar("concerned_person", { length: 255 }).notNull(),
 	phoneNo: varchar("phone_no", { length: 20 }).notNull(),
 	address: text(),
-	latitude: numeric({ precision: 10, scale:  7 }),
-	longitude: numeric({ precision: 10, scale:  7 }),
+	latitude: numeric({ precision: 10, scale: 7 }),
+	longitude: numeric({ precision: 10, scale: 7 }),
 	siteType: varchar("site_type", { length: 50 }),
 	area: varchar({ length: 100 }),
 	region: varchar({ length: 100 }),
@@ -575,15 +567,15 @@ export const salesOrders = pgTable("sales_orders", {
 	deliveryLocPincode: varchar("delivery_loc_pincode", { length: 10 }),
 	paymentMode: varchar("payment_mode", { length: 50 }),
 	paymentTerms: varchar("payment_terms", { length: 500 }),
-	paymentAmount: numeric("payment_amount", { precision: 12, scale:  2 }),
-	receivedPayment: numeric("received_payment", { precision: 12, scale:  2 }),
+	paymentAmount: numeric("payment_amount", { precision: 12, scale: 2 }),
+	receivedPayment: numeric("received_payment", { precision: 12, scale: 2 }),
 	receivedPaymentDate: date("received_payment_date"),
-	pendingPayment: numeric("pending_payment", { precision: 12, scale:  2 }),
-	orderQty: numeric("order_qty", { precision: 12, scale:  3 }),
+	pendingPayment: numeric("pending_payment", { precision: 12, scale: 2 }),
+	orderQty: numeric("order_qty", { precision: 12, scale: 3 }),
 	orderUnit: varchar("order_unit", { length: 20 }),
-	itemPrice: numeric("item_price", { precision: 12, scale:  2 }),
-	discountPercentage: numeric("discount_percentage", { precision: 5, scale:  2 }),
-	itemPriceAfterDiscount: numeric("item_price_after_discount", { precision: 12, scale:  2 }),
+	itemPrice: numeric("item_price", { precision: 12, scale: 2 }),
+	discountPercentage: numeric("discount_percentage", { precision: 5, scale: 2 }),
+	itemPriceAfterDiscount: numeric("item_price_after_discount", { precision: 12, scale: 2 }),
 	itemType: varchar("item_type", { length: 20 }),
 	itemGrade: varchar("item_grade", { length: 10 }),
 	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).defaultNow(),
@@ -596,25 +588,25 @@ export const salesOrders = pgTable("sales_orders", {
 	index("idx_sales_orders_pjp_id").using("btree", table.pjpId.asc().nullsLast().op("text_ops")),
 	index("idx_sales_orders_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "fk_sales_orders_user"
-		}).onDelete("set null"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "fk_sales_orders_user"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "fk_sales_orders_dealer"
-		}).onDelete("set null"),
+		columns: [table.dealerId],
+		foreignColumns: [dealers.id],
+		name: "fk_sales_orders_dealer"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.dvrId],
-			foreignColumns: [dailyVisitReports.id],
-			name: "fk_sales_orders_dvr"
-		}).onDelete("set null"),
+		columns: [table.dvrId],
+		foreignColumns: [dailyVisitReports.id],
+		name: "fk_sales_orders_dvr"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.pjpId],
-			foreignColumns: [permanentJourneyPlans.id],
-			name: "fk_sales_orders_pjp"
-		}).onDelete("set null"),
+		columns: [table.pjpId],
+		foreignColumns: [permanentJourneyPlans.id],
+		name: "fk_sales_orders_pjp"
+	}).onDelete("set null"),
 ]);
 
 export const tsoMeetings = pgTable("tso_meetings", {
@@ -633,22 +625,22 @@ export const tsoMeetings = pgTable("tso_meetings", {
 	conductedBy: varchar("conducted_by", { length: 255 }),
 	giftType: varchar("gift_type", { length: 255 }),
 	accountJsbJud: varchar("account_jsb_jud", { length: 100 }),
-	totalExpenses: numeric("total_expenses", { precision: 12, scale:  2 }),
+	totalExpenses: numeric("total_expenses", { precision: 12, scale: 2 }),
 	billSubmitted: boolean("bill_submitted").default(false),
 	meetImageUrl: varchar("meet_image_url", { length: 300 }),
 }, (table) => [
 	index("idx_meeting_site_id").using("btree", table.siteId.asc().nullsLast().op("uuid_ops")),
 	index("idx_tso_meetings_created_by_user_id").using("btree", table.createdByUserId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.createdByUserId],
-			foreignColumns: [users.id],
-			name: "fk_tso_meetings_created_by"
-		}),
+		columns: [table.createdByUserId],
+		foreignColumns: [users.id],
+		name: "fk_tso_meetings_created_by"
+	}),
 	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [technicalSites.id],
-			name: "tso_meetings_site_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.siteId],
+		foreignColumns: [technicalSites.id],
+		name: "tso_meetings_site_id_fkey"
+	}).onDelete("set null"),
 ]);
 
 export const notifications = pgTable("notifications", {
@@ -663,31 +655,31 @@ export const notifications = pgTable("notifications", {
 }, (table) => [
 	index("idx_notifications_recipient").using("btree", table.recipientUserId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.recipientUserId],
-			foreignColumns: [users.id],
-			name: "notifications_recipient_user_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.recipientUserId],
+		foreignColumns: [users.id],
+		name: "notifications_recipient_user_id_fkey"
+	}).onDelete("cascade"),
 ]);
 
 // ----- scores -------
 export const dealerReportsAndScores = pgTable("dealer_reports_and_scores", {
 	id: varchar({ length: 255 }).primaryKey().notNull(),
 	dealerId: text("dealer_id").notNull(),
-	dealerScore: numeric("dealer_score", { precision: 10, scale:  2 }).notNull(),
-	trustWorthinessScore: numeric("trust_worthiness_score", { precision: 10, scale:  2 }).notNull(),
-	creditWorthinessScore: numeric("credit_worthiness_score", { precision: 10, scale:  2 }).notNull(),
-	orderHistoryScore: numeric("order_history_score", { precision: 10, scale:  2 }).notNull(),
-	visitFrequencyScore: numeric("visit_frequency_score", { precision: 10, scale:  2 }).notNull(),
+	dealerScore: numeric("dealer_score", { precision: 10, scale: 2 }).notNull(),
+	trustWorthinessScore: numeric("trust_worthiness_score", { precision: 10, scale: 2 }).notNull(),
+	creditWorthinessScore: numeric("credit_worthiness_score", { precision: 10, scale: 2 }).notNull(),
+	orderHistoryScore: numeric("order_history_score", { precision: 10, scale: 2 }).notNull(),
+	visitFrequencyScore: numeric("visit_frequency_score", { precision: 10, scale: 2 }).notNull(),
 	lastUpdatedDate: timestamp("last_updated_date", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
 	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 }, (table) => [
 	uniqueIndex("dealer_reports_and_scores_dealer_id_key").using("btree", table.dealerId.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "dealer_reports_and_scores_dealer_id_fkey"
-		}).onUpdate("cascade").onDelete("restrict"),
+		columns: [table.dealerId],
+		foreignColumns: [dealers.id],
+		name: "dealer_reports_and_scores_dealer_id_fkey"
+	}).onUpdate("cascade").onDelete("restrict"),
 ]);
 
 export const ratings = pgTable("ratings", {
@@ -698,10 +690,10 @@ export const ratings = pgTable("ratings", {
 	rating: integer().notNull(),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "ratings_user_id_fkey"
-		}).onUpdate("cascade").onDelete("restrict"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "ratings_user_id_fkey"
+	}).onUpdate("cascade").onDelete("restrict"),
 ]);
 
 // ----- Brand Mapping -------
@@ -716,35 +708,35 @@ export const dealerBrandMapping = pgTable("dealer_brand_mapping", {
 	id: varchar({ length: 255 }).primaryKey().notNull(),
 	dealerId: text("dealer_id").notNull(),
 	brandId: integer("brand_id").notNull(),
-	capacityMt: numeric("capacity_mt", { precision: 12, scale:  2 }).notNull(),
+	capacityMt: numeric("capacity_mt", { precision: 12, scale: 2 }).notNull(),
 	userId: integer("user_id"),
-	bestCapacityMt: numeric("best_capacity_mt", { precision: 12, scale:  2 }),
-	brandGrowthCapacityPercent: numeric("brand_growth_capacity_percent", { precision: 5, scale:  2 }),
+	bestCapacityMt: numeric("best_capacity_mt", { precision: 12, scale: 2 }),
+	brandGrowthCapacityPercent: numeric("brand_growth_capacity_percent", { precision: 5, scale: 2 }),
 	verifiedDealerId: integer("verified_dealer_id"),
 }, (table) => [
 	uniqueIndex("dealer_brand_mapping_dealer_id_brand_id_key").using("btree", table.dealerId.asc().nullsLast().op("text_ops"), table.brandId.asc().nullsLast().op("int4_ops")),
 	index("dealer_brand_mapping_user_id_idx").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	index("idx_dbm_verified_dealer_id").using("btree", table.verifiedDealerId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "dealer_brand_mapping_user_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "dealer_brand_mapping_user_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "dealer_brand_mapping_dealer_id_fkey"
-		}).onUpdate("cascade").onDelete("restrict"),
+		columns: [table.dealerId],
+		foreignColumns: [dealers.id],
+		name: "dealer_brand_mapping_dealer_id_fkey"
+	}).onUpdate("cascade").onDelete("restrict"),
 	foreignKey({
-			columns: [table.brandId],
-			foreignColumns: [brands.id],
-			name: "dealer_brand_mapping_brand_id_fkey"
-		}).onUpdate("cascade").onDelete("restrict"),
+		columns: [table.brandId],
+		foreignColumns: [brands.id],
+		name: "dealer_brand_mapping_brand_id_fkey"
+	}).onUpdate("cascade").onDelete("restrict"),
 	foreignKey({
-			columns: [table.verifiedDealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "fk_dbm_verified_dealer"
-		}).onDelete("set null"),
+		columns: [table.verifiedDealerId],
+		foreignColumns: [verifiedDealers.id],
+		name: "fk_dbm_verified_dealer"
+	}).onDelete("set null"),
 ]);
 
 // ----- JOINS --------
@@ -755,15 +747,15 @@ export const dealerAssociatedMasons = pgTable("_DealerAssociatedMasons", {
 	uniqueIndex("_DealerAssociatedMasons_AB_unique").using("btree", table.a.asc().nullsLast().op("text_ops"), table.b.asc().nullsLast().op("text_ops")),
 	index().using("btree", table.b.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.a],
-			foreignColumns: [dealers.id],
-			name: "_DealerAssociatedMasons_A_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.a],
+		foreignColumns: [dealers.id],
+		name: "_DealerAssociatedMasons_A_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.b],
-			foreignColumns: [masonPcSide.id],
-			name: "_DealerAssociatedMasons_B_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.b],
+		foreignColumns: [masonPcSide.id],
+		name: "_DealerAssociatedMasons_B_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const siteAssociatedDealers = pgTable("_SiteAssociatedDealers", {
@@ -773,15 +765,15 @@ export const siteAssociatedDealers = pgTable("_SiteAssociatedDealers", {
 	uniqueIndex("_SiteAssociatedDealers_AB_unique").using("btree", table.a.asc().nullsLast().op("text_ops"), table.b.asc().nullsLast().op("text_ops")),
 	index().using("btree", table.b.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.a],
-			foreignColumns: [dealers.id],
-			name: "_SiteAssociatedDealers_A_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.a],
+		foreignColumns: [dealers.id],
+		name: "_SiteAssociatedDealers_A_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.b],
-			foreignColumns: [technicalSites.id],
-			name: "_SiteAssociatedDealers_B_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.b],
+		foreignColumns: [technicalSites.id],
+		name: "_SiteAssociatedDealers_B_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const siteAssociatedMasons = pgTable("_SiteAssociatedMasons", {
@@ -791,15 +783,15 @@ export const siteAssociatedMasons = pgTable("_SiteAssociatedMasons", {
 	uniqueIndex("_SiteAssociatedMasons_AB_unique").using("btree", table.a.asc().nullsLast().op("uuid_ops"), table.b.asc().nullsLast().op("uuid_ops")),
 	index().using("btree", table.b.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.a],
-			foreignColumns: [masonPcSide.id],
-			name: "_SiteAssociatedMasons_A_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.a],
+		foreignColumns: [masonPcSide.id],
+		name: "_SiteAssociatedMasons_A_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.b],
-			foreignColumns: [technicalSites.id],
-			name: "_SiteAssociatedMasons_B_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.b],
+		foreignColumns: [technicalSites.id],
+		name: "_SiteAssociatedMasons_B_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const siteAssociatedUsers = pgTable("_SiteAssociatedUsers", {
@@ -809,43 +801,43 @@ export const siteAssociatedUsers = pgTable("_SiteAssociatedUsers", {
 	uniqueIndex("_SiteAssociatedUsers_AB_unique").using("btree", table.a.asc().nullsLast().op("int4_ops"), table.b.asc().nullsLast().op("int4_ops")),
 	index().using("btree", table.b.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.a],
-			foreignColumns: [technicalSites.id],
-			name: "_SiteAssociatedUsers_A_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.a],
+		foreignColumns: [technicalSites.id],
+		name: "_SiteAssociatedUsers_A_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.b],
-			foreignColumns: [users.id],
-			name: "_SiteAssociatedUsers_B_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.b],
+		foreignColumns: [users.id],
+		name: "_SiteAssociatedUsers_B_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 // ------ Geotracking ------
 export const geoTracking = pgTable("geo_tracking", {
 	id: text().primaryKey().notNull(),
 	userId: integer("user_id").notNull(),
-	latitude: numeric({ precision: 10, scale:  7 }).notNull(),
-	longitude: numeric({ precision: 10, scale:  7 }).notNull(),
+	latitude: numeric({ precision: 10, scale: 7 }).notNull(),
+	longitude: numeric({ precision: 10, scale: 7 }).notNull(),
 	recordedAt: timestamp("recorded_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	accuracy: numeric({ precision: 10, scale:  2 }),
-	speed: numeric({ precision: 10, scale:  2 }),
-	heading: numeric({ precision: 10, scale:  2 }),
-	altitude: numeric({ precision: 10, scale:  2 }),
+	accuracy: numeric({ precision: 10, scale: 2 }),
+	speed: numeric({ precision: 10, scale: 2 }),
+	heading: numeric({ precision: 10, scale: 2 }),
+	altitude: numeric({ precision: 10, scale: 2 }),
 	locationType: varchar("location_type", { length: 50 }),
 	activityType: varchar("activity_type", { length: 50 }),
 	appState: varchar("app_state", { length: 50 }),
-	batteryLevel: numeric("battery_level", { precision: 5, scale:  2 }),
+	batteryLevel: numeric("battery_level", { precision: 5, scale: 2 }),
 	isCharging: boolean("is_charging"),
 	networkStatus: varchar("network_status", { length: 50 }),
 	ipAddress: varchar("ip_address", { length: 45 }),
 	siteName: varchar("site_name", { length: 255 }),
 	checkInTime: timestamp("check_in_time", { precision: 6, withTimezone: true, mode: 'string' }),
 	checkOutTime: timestamp("check_out_time", { precision: 6, withTimezone: true, mode: 'string' }),
-	totalDistanceTravelled: numeric("total_distance_travelled", { precision: 10, scale:  3 }),
+	totalDistanceTravelled: numeric("total_distance_travelled", { precision: 10, scale: 3 }),
 	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	destLat: numeric("dest_lat", { precision: 10, scale:  7 }),
-	destLng: numeric("dest_lng", { precision: 10, scale:  7 }),
+	destLat: numeric("dest_lat", { precision: 10, scale: 7 }),
+	destLng: numeric("dest_lng", { precision: 10, scale: 7 }),
 	isActive: boolean("is_active").default(true).notNull(),
 	journeyId: text("journey_id"),
 	siteId: uuid("site_id"),
@@ -861,25 +853,25 @@ export const geoTracking = pgTable("geo_tracking", {
 	index("idx_geo_tracking_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	index("idx_geo_user_time").using("btree", table.userId.asc().nullsLast().op("timestamptz_ops"), table.recordedAt.asc().nullsLast().op("timestamptz_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "geo_tracking_user_id_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "geo_tracking_user_id_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [technicalSites.id],
-			name: "geo_tracking_site_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.siteId],
+		foreignColumns: [technicalSites.id],
+		name: "geo_tracking_site_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "geo_tracking_dealer_id_fkey"
-		}).onUpdate("cascade").onDelete("set null"),
+		columns: [table.dealerId],
+		foreignColumns: [dealers.id],
+		name: "geo_tracking_dealer_id_fkey"
+	}).onUpdate("cascade").onDelete("set null"),
 	foreignKey({
-			columns: [table.linkedJourneyId],
-			foreignColumns: [journeys.id],
-			name: "geo_tracking_linked_journey_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.linkedJourneyId],
+		foreignColumns: [journeys.id],
+		name: "geo_tracking_linked_journey_id_fkey"
+	}).onDelete("set null"),
 ]);
 
 export const journeys = pgTable("journeys", {
@@ -889,13 +881,13 @@ export const journeys = pgTable("journeys", {
 	siteId: varchar("site_id", { length: 255 }),
 	dealerId: varchar("dealer_id", { length: 255 }),
 	siteName: varchar("site_name", { length: 255 }),
-	destLat: numeric("dest_lat", { precision: 10, scale:  7 }),
-	destLng: numeric("dest_lng", { precision: 10, scale:  7 }),
+	destLat: numeric("dest_lat", { precision: 10, scale: 7 }),
+	destLng: numeric("dest_lng", { precision: 10, scale: 7 }),
 	status: varchar({ length: 50 }).default('ACTIVE').notNull(),
 	isActive: boolean("is_active").default(true),
 	startTime: timestamp("start_time", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	endTime: timestamp("end_time", { withTimezone: true, mode: 'string' }),
-	totalDistance: numeric("total_distance", { precision: 10, scale:  3 }).default('0'),
+	totalDistance: numeric("total_distance", { precision: 10, scale: 3 }).default('0'),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	isSynced: boolean("is_synced").default(false),
@@ -904,10 +896,10 @@ export const journeys = pgTable("journeys", {
 }, (table) => [
 	index("idx_journeys_user_status").using("btree", table.userId.asc().nullsLast().op("int4_ops"), table.status.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "journeys_user_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "journeys_user_id_fkey"
+	}).onDelete("cascade"),
 ]);
 
 export const journeyOps = pgTable("journey_ops", {
@@ -924,10 +916,10 @@ export const journeyOps = pgTable("journey_ops", {
 	index("idx_journey_ops_server_seq").using("btree", table.serverSeq.asc().nullsLast().op("int8_ops")),
 	index("idx_journey_ops_user").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "fk_journey_ops_user"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "fk_journey_ops_user"
+	}).onUpdate("cascade").onDelete("cascade"),
 	unique("journey_ops_op_id_key").on(table.opId),
 ]);
 
@@ -953,10 +945,10 @@ export const journeyBreadcrumbs = pgTable("journey_breadcrumbs", {
 	index("idx_breadcrumbs_h3").using("btree", table.h3Index.asc().nullsLast().op("text_ops")),
 	index("idx_breadcrumbs_journey_time").using("btree", table.journeyId.asc().nullsLast().op("text_ops"), table.recordedAt.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.journeyId],
-			foreignColumns: [journeys.id],
-			name: "journey_breadcrumbs_journey_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.journeyId],
+		foreignColumns: [journeys.id],
+		name: "journey_breadcrumbs_journey_id_fkey"
+	}).onDelete("cascade"),
 ]);
 
 export const syncState = pgTable("sync_state", {
@@ -969,60 +961,60 @@ export const syncState = pgTable("sync_state", {
 
 // ------ Logistics -------
 export const logisticsUsers = pgTable("logistics_users", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  sourceName: varchar("source_name", { length: 255 }),
-  userName: varchar("user_name", { length: 255 }).unique().notNull(),
-  userPassword: varchar("user_password", { length: 255 }).notNull(),
-  userRole: varchar("user_role", { length: 255 }).notNull(), // 'GATE', 'WB', 'STORE', 'ADMIN' etc.
-  
-  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date" })
-    .defaultNow()
-    .$onUpdate(() => new Date())
-    .notNull(),
+	id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+	sourceName: varchar("source_name", { length: 255 }),
+	userName: varchar("user_name", { length: 255 }).unique().notNull(),
+	userPassword: varchar("user_password", { length: 255 }).notNull(),
+	userRole: varchar("user_role", { length: 255 }).notNull(), // 'GATE', 'WB', 'STORE', 'ADMIN' etc.
+
+	createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+	updatedAt: timestamp("updatedAt", { mode: "date" })
+		.defaultNow()
+		.$onUpdate(() => new Date())
+		.notNull(),
 });
 
 export const logisticsIO = pgTable("logistics_io", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  zone: varchar("zone", { length: 255 }),
-  district: varchar("district", { length: 255 }),
-  destination: varchar("destination", { length: 255 }),
-  doOrderDate: date("doOrderDate"),
-  doOrderTime: varchar("doOrderTime", { length: 50 }),
-  gateInDate: date("gateInDate"),
-  gateInTime: varchar("gateInTime", { length: 50 }),
-  processingTime: varchar("processingTime", { length: 100 }),
-  wbInDate: date("wbInDate"),
-  wbInTime: varchar("wbInTime", { length: 50 }),
-  diffGateInTareWt: varchar("diffGateInTareWt", { length: 100 }),
-  wbOutDate: date("wbOutDate"),
-  wbOutTime: varchar("wbOutTime", { length: 50 }),
-  diffTareWtGrossWt: varchar("diffTareWtGrossWt", { length: 100 }),
-  gateOutDate: date("gateOutDate"),
-  gateOutTime: varchar("gateOutTime", { length: 50 }),
-  gateOutNoOfInvoice: integer("gate_out_no_of_invoice"),
-  gateOutInvoiceNos: text("gate_out_invoice_nos").array(),
-  gateOutBillNos: text("gate_out_bill_nos").array(),
-  diffGrossWtGateOut: varchar("diffGrossWtGateOut", { length: 100 }),
-  diffGrossWtInvoiceDT: varchar("diffGrossWtInvoiceDT", { length: 100 }),
-  diffInvoiceDTGateOut: varchar("diffInvoiceDTGateOut", { length: 100 }),
-  diffGateInGateOut: varchar("diffGateInGateOut", { length: 100 }),
-  purpose: varchar("purpose", { length: 255 }),
-  typeOfMaterials: varchar("type_of_materials", { length: 255 }),
-  vehicleNumber: varchar("vehicle_number", { length: 100 }),
-  storeDate: date("store_date"),
-  storeTime: varchar("store_time", { length: 50 }),
-  noOfInvoice: integer("no_of_invoice"),
-  partyName: varchar("party_name", { length: 255 }),
-  invoiceNos: text("invoice_nos").array(),
-  billNos: text("bill_nos").array(),
-  sourceName: varchar("source_name", { length: 255 }),
+	id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+	zone: varchar("zone", { length: 255 }),
+	district: varchar("district", { length: 255 }),
+	destination: varchar("destination", { length: 255 }),
+	doOrderDate: date("doOrderDate"),
+	doOrderTime: varchar("doOrderTime", { length: 50 }),
+	gateInDate: date("gateInDate"),
+	gateInTime: varchar("gateInTime", { length: 50 }),
+	processingTime: varchar("processingTime", { length: 100 }),
+	wbInDate: date("wbInDate"),
+	wbInTime: varchar("wbInTime", { length: 50 }),
+	diffGateInTareWt: varchar("diffGateInTareWt", { length: 100 }),
+	wbOutDate: date("wbOutDate"),
+	wbOutTime: varchar("wbOutTime", { length: 50 }),
+	diffTareWtGrossWt: varchar("diffTareWtGrossWt", { length: 100 }),
+	gateOutDate: date("gateOutDate"),
+	gateOutTime: varchar("gateOutTime", { length: 50 }),
+	gateOutNoOfInvoice: integer("gate_out_no_of_invoice"),
+	gateOutInvoiceNos: text("gate_out_invoice_nos").array(),
+	gateOutBillNos: text("gate_out_bill_nos").array(),
+	diffGrossWtGateOut: varchar("diffGrossWtGateOut", { length: 100 }),
+	diffGrossWtInvoiceDT: varchar("diffGrossWtInvoiceDT", { length: 100 }),
+	diffInvoiceDTGateOut: varchar("diffInvoiceDTGateOut", { length: 100 }),
+	diffGateInGateOut: varchar("diffGateInGateOut", { length: 100 }),
+	purpose: varchar("purpose", { length: 255 }),
+	typeOfMaterials: varchar("type_of_materials", { length: 255 }),
+	vehicleNumber: varchar("vehicle_number", { length: 100 }),
+	storeDate: date("store_date"),
+	storeTime: varchar("store_time", { length: 50 }),
+	noOfInvoice: integer("no_of_invoice"),
+	partyName: varchar("party_name", { length: 255 }),
+	invoiceNos: text("invoice_nos").array(),
+	billNos: text("bill_nos").array(),
+	sourceName: varchar("source_name", { length: 255 }),
 
-  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt", { mode: "date" })
-    .defaultNow()
-    .$onUpdate(() => new Date())
-    .notNull(),
+	createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+	updatedAt: timestamp("updatedAt", { mode: "date" })
+		.defaultNow()
+		.$onUpdate(() => new Date())
+		.notNull(),
 });
 
 // ----- Email Reports ------
@@ -1032,15 +1024,15 @@ export const projectionVsActualReports = pgTable("projection_vs_actual_reports",
 	institution: varchar({ length: 10 }).notNull(),
 	zone: varchar({ length: 120 }).notNull(),
 	dealerName: varchar("dealer_name", { length: 255 }).notNull(),
-	orderProjectionMt: numeric("order_projection_mt", { precision: 12, scale:  2 }),
-	actualOrderReceivedMt: numeric("actual_order_received_mt", { precision: 12, scale:  2 }),
-	doDoneMt: numeric("do_done_mt", { precision: 12, scale:  2 }),
-	projectionVsActualOrderMt: numeric("projection_vs_actual_order_mt", { precision: 12, scale:  2 }),
-	actualOrderVsDoMt: numeric("actual_order_vs_do_mt", { precision: 12, scale:  2 }),
-	collectionProjection: numeric("collection_projection", { precision: 14, scale:  2 }),
-	actualCollection: numeric("actual_collection", { precision: 14, scale:  2 }),
-	shortFall: numeric("short_fall", { precision: 14, scale:  2 }),
-	percent: numeric({ precision: 6, scale:  2 }),
+	orderProjectionMt: numeric("order_projection_mt", { precision: 12, scale: 2 }),
+	actualOrderReceivedMt: numeric("actual_order_received_mt", { precision: 12, scale: 2 }),
+	doDoneMt: numeric("do_done_mt", { precision: 12, scale: 2 }),
+	projectionVsActualOrderMt: numeric("projection_vs_actual_order_mt", { precision: 12, scale: 2 }),
+	actualOrderVsDoMt: numeric("actual_order_vs_do_mt", { precision: 12, scale: 2 }),
+	collectionProjection: numeric("collection_projection", { precision: 14, scale: 2 }),
+	actualCollection: numeric("actual_collection", { precision: 14, scale: 2 }),
+	shortFall: numeric("short_fall", { precision: 14, scale: 2 }),
+	percent: numeric({ precision: 6, scale: 2 }),
 	sourceMessageId: text("source_message_id"),
 	sourceFileName: text("source_file_name"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -1055,15 +1047,15 @@ export const projectionVsActualReports = pgTable("projection_vs_actual_reports",
 	index("idx_proj_actual_zone").using("btree", table.zone.asc().nullsLast().op("text_ops")),
 	uniqueIndex("uniq_proj_actual_snapshot").using("btree", table.reportDate.asc().nullsLast().op("text_ops"), table.dealerName.asc().nullsLast().op("date_ops"), table.institution.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.verifiedDealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "projection_vs_actual_reports_verified_dealer_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.verifiedDealerId],
+		foreignColumns: [verifiedDealers.id],
+		name: "projection_vs_actual_reports_verified_dealer_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "projection_vs_actual_reports_user_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "projection_vs_actual_reports_user_id_fkey"
+	}).onDelete("set null"),
 ]);
 
 export const collectionReports = pgTable("collection_reports", {
@@ -1071,7 +1063,7 @@ export const collectionReports = pgTable("collection_reports", {
 	institution: varchar({ length: 10 }).notNull(),
 	voucherNo: varchar("voucher_no", { length: 100 }).notNull(),
 	voucherDate: date("voucher_date").notNull(),
-	amount: numeric({ precision: 14, scale:  2 }).notNull(),
+	amount: numeric({ precision: 14, scale: 2 }).notNull(),
 	bankAccount: varchar("bank_account", { length: 255 }),
 	remarks: varchar({ length: 500 }),
 	partyName: varchar("party_name", { length: 255 }).notNull(),
@@ -1094,25 +1086,25 @@ export const collectionReports = pgTable("collection_reports", {
 	index("idx_collection_voucher").using("btree", table.voucherNo.asc().nullsLast().op("text_ops")),
 	uniqueIndex("uniq_collection_voucher_inst").using("btree", table.voucherNo.asc().nullsLast().op("text_ops"), table.institution.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.salesPromoterUserId],
-			foreignColumns: [users.id],
-			name: "collection_reports_sales_promoter_user_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.salesPromoterUserId],
+		foreignColumns: [users.id],
+		name: "collection_reports_sales_promoter_user_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.verifiedDealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "collection_reports_verified_dealer_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.verifiedDealerId],
+		foreignColumns: [verifiedDealers.id],
+		name: "collection_reports_verified_dealer_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "collection_reports_user_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "collection_reports_user_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.emailReportId],
-			foreignColumns: [emailReports.id],
-			name: "fk_collection_email_report"
-		}).onDelete("cascade"),
+		columns: [table.emailReportId],
+		foreignColumns: [emailReports.id],
+		name: "fk_collection_email_report"
+	}).onDelete("cascade"),
 ]);
 
 export const projectionReports = pgTable("projection_reports", {
@@ -1121,9 +1113,9 @@ export const projectionReports = pgTable("projection_reports", {
 	reportDate: date("report_date").notNull(),
 	zone: varchar({ length: 100 }).notNull(),
 	orderDealerName: varchar("order_dealer_name", { length: 255 }),
-	orderQtyMt: numeric("order_qty_mt", { precision: 10, scale:  2 }),
+	orderQtyMt: numeric("order_qty_mt", { precision: 10, scale: 2 }),
 	collectionDealerName: varchar("collection_dealer_name", { length: 255 }),
-	collectionAmount: numeric("collection_amount", { precision: 14, scale:  2 }),
+	collectionAmount: numeric("collection_amount", { precision: 14, scale: 2 }),
 	salesPromoterUserId: integer("sales_promoter_user_id"),
 	sourceMessageId: text("source_message_id"),
 	sourceFileName: text("source_file_name"),
@@ -1140,36 +1132,36 @@ export const projectionReports = pgTable("projection_reports", {
 	index("idx_projection_zone").using("btree", table.zone.asc().nullsLast().op("text_ops")),
 	uniqueIndex("uniq_projection_snapshot").using("btree", table.reportDate.asc().nullsLast().op("date_ops"), table.orderDealerName.asc().nullsLast().op("text_ops"), table.collectionDealerName.asc().nullsLast().op("text_ops"), table.institution.asc().nullsLast().op("date_ops")),
 	foreignKey({
-			columns: [table.verifiedDealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "projection_reports_verified_dealer_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.verifiedDealerId],
+		foreignColumns: [verifiedDealers.id],
+		name: "projection_reports_verified_dealer_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "projection_reports_user_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "projection_reports_user_id_fkey"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.emailReportId],
-			foreignColumns: [emailReports.id],
-			name: "fk_projection_email_report"
-		}).onDelete("cascade"),
+		columns: [table.emailReportId],
+		foreignColumns: [emailReports.id],
+		name: "fk_projection_email_report"
+	}).onDelete("cascade"),
 	unique("projection_reports_unique_key").on(table.institution, table.reportDate, table.zone, table.orderDealerName, table.collectionDealerName),
 ]);
 
 export const outstandingReports = pgTable("outstanding_reports", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
-	securityDepositAmt: numeric("security_deposit_amt", { precision: 14, scale:  2 }),
-	pendingAmt: numeric("pending_amt", { precision: 14, scale:  2 }),
-	lessThan10Days: numeric("less_than_10_days", { precision: 14, scale:  2 }),
-	"10To15Days": numeric("10_to_15_days", { precision: 14, scale:  2 }),
-	"15To21Days": numeric("15_to_21_days", { precision: 14, scale:  2 }),
-	"21To30Days": numeric("21_to_30_days", { precision: 14, scale:  2 }),
-	"30To45Days": numeric("30_to_45_days", { precision: 14, scale:  2 }),
-	"45To60Days": numeric("45_to_60_days", { precision: 14, scale:  2 }),
-	"60To75Days": numeric("60_to_75_days", { precision: 14, scale:  2 }),
-	"75To90Days": numeric("75_to_90_days", { precision: 14, scale:  2 }),
-	greaterThan90Days: numeric("greater_than_90_days", { precision: 14, scale:  2 }),
+	securityDepositAmt: numeric("security_deposit_amt", { precision: 14, scale: 2 }),
+	pendingAmt: numeric("pending_amt", { precision: 14, scale: 2 }),
+	lessThan10Days: numeric("less_than_10_days", { precision: 14, scale: 2 }),
+	"10To15Days": numeric("10_to_15_days", { precision: 14, scale: 2 }),
+	"15To21Days": numeric("15_to_21_days", { precision: 14, scale: 2 }),
+	"21To30Days": numeric("21_to_30_days", { precision: 14, scale: 2 }),
+	"30To45Days": numeric("30_to_45_days", { precision: 14, scale: 2 }),
+	"45To60Days": numeric("45_to_60_days", { precision: 14, scale: 2 }),
+	"60To75Days": numeric("60_to_75_days", { precision: 14, scale: 2 }),
+	"75To90Days": numeric("75_to_90_days", { precision: 14, scale: 2 }),
+	greaterThan90Days: numeric("greater_than_90_days", { precision: 14, scale: 2 }),
 	isOverdue: boolean("is_overdue").default(false),
 	isAccountJsbJud: boolean("is_account_jsb_jud").default(false),
 	verifiedDealerId: integer("verified_dealer_id"),
@@ -1187,43 +1179,43 @@ export const outstandingReports = pgTable("outstanding_reports", {
 	index("idx_outstanding_email_report").using("btree", table.emailReportId.asc().nullsLast().op("uuid_ops")),
 	index("idx_outstanding_verified_dealer").using("btree", table.verifiedDealerId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.verifiedDealerId],
-			foreignColumns: [verifiedDealers.id],
-			name: "fk_outstanding_verified_dealer"
-		}).onDelete("set null"),
+		columns: [table.verifiedDealerId],
+		foreignColumns: [verifiedDealers.id],
+		name: "fk_outstanding_verified_dealer"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.collectionReportId],
-			foreignColumns: [collectionReports.id],
-			name: "fk_outstanding_collection_report"
-		}).onDelete("set null"),
+		columns: [table.collectionReportId],
+		foreignColumns: [collectionReports.id],
+		name: "fk_outstanding_collection_report"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.dvrId],
-			foreignColumns: [dailyVisitReports.id],
-			name: "fk_outstanding_dvr"
-		}).onDelete("set null"),
+		columns: [table.dvrId],
+		foreignColumns: [dailyVisitReports.id],
+		name: "fk_outstanding_dvr"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.emailReportId],
-			foreignColumns: [emailReports.id],
-			name: "fk_outstanding_email_report"
-		}).onDelete("cascade"),
+		columns: [table.emailReportId],
+		foreignColumns: [emailReports.id],
+		name: "fk_outstanding_email_report"
+	}).onDelete("cascade"),
 	unique("unique_outstanding_entry").on(table.isAccountJsbJud, table.verifiedDealerId, table.reportDate),
 ]);
 
 export const emailReports = pgTable("email_reports", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  messageId: text("message_id").notNull(), 
-  subject: text("subject"),
-  sender: text("sender"),
-  fileName: text("file_name"),
-  payload: jsonb("payload").notNull(),
-  processed: boolean("processed").default(false),
-  institution: text("institution"),
-  reportName: text("report_name"),
-  dealerNames: jsonb("dealer_names"), 
-  reportDate: date("report_date"),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	id: uuid("id").primaryKey().defaultRandom(),
+	messageId: text("message_id").notNull(),
+	subject: text("subject"),
+	sender: text("sender"),
+	fileName: text("file_name"),
+	payload: jsonb("payload").notNull(),
+	processed: boolean("processed").default(false),
+	institution: text("institution"),
+	reportName: text("report_name"),
+	dealerNames: jsonb("dealer_names"),
+	reportDate: date("report_date"),
+	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 }, (t) => [
-  index("idx_email_reports_message").on(t.messageId),
+	index("idx_email_reports_message").on(t.messageId),
 ]);
 
 // ------- Mason PC --------
@@ -1246,15 +1238,15 @@ export const masonPcSide = pgTable("mason_pc_side", {
 	fcmToken: varchar("fcm_token", { length: 500 }),
 }, (table) => [
 	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "fk_mason_dealer"
-		}).onUpdate("cascade").onDelete("set null"),
+		columns: [table.dealerId],
+		foreignColumns: [dealers.id],
+		name: "fk_mason_dealer"
+	}).onUpdate("cascade").onDelete("set null"),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "fk_mason_user"
-		}).onUpdate("cascade").onDelete("set null"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "fk_mason_user"
+	}).onUpdate("cascade").onDelete("set null"),
 	unique("mason_pc_side_firebase_uid_key").on(table.firebaseUid),
 	unique("mason_pc_side_device_id_unique").on(table.deviceId),
 ]);
@@ -1282,25 +1274,25 @@ export const bagLifts = pgTable("bag_lifts", {
 	index("idx_bag_lifts_site_id").using("btree", table.siteId.asc().nullsLast().op("uuid_ops")),
 	index("idx_bag_lifts_status").using("btree", table.status.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "fk_bag_lifts_mason_id"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "fk_bag_lifts_mason_id"
+	}).onDelete("cascade"),
 	foreignKey({
-			columns: [table.dealerId],
-			foreignColumns: [dealers.id],
-			name: "fk_bag_lifts_dealer_id"
-		}).onDelete("set null"),
+		columns: [table.dealerId],
+		foreignColumns: [dealers.id],
+		name: "fk_bag_lifts_dealer_id"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.approvedBy],
-			foreignColumns: [users.id],
-			name: "fk_bag_lifts_approved_by"
-		}).onDelete("set null"),
+		columns: [table.approvedBy],
+		foreignColumns: [users.id],
+		name: "fk_bag_lifts_approved_by"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [technicalSites.id],
-			name: "bag_lifts_site_id_fkey"
-		}).onUpdate("cascade").onDelete("set null"),
+		columns: [table.siteId],
+		foreignColumns: [technicalSites.id],
+		name: "bag_lifts_site_id_fkey"
+	}).onUpdate("cascade").onDelete("set null"),
 ]);
 
 export const pointsLedger = pgTable("points_ledger", {
@@ -1315,10 +1307,10 @@ export const pointsLedger = pgTable("points_ledger", {
 	index("idx_points_ledger_mason_id").using("btree", table.masonId.asc().nullsLast().op("uuid_ops")),
 	index("idx_points_ledger_source_id").using("btree", table.sourceId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "fk_points_ledger_mason_id"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "fk_points_ledger_mason_id"
+	}).onDelete("cascade"),
 	unique("points_ledger_source_id_unique").on(table.sourceId),
 ]);
 
@@ -1336,10 +1328,10 @@ export const kycSubmissions = pgTable("kyc_submissions", {
 }, (table) => [
 	index("idx_kyc_submissions_mason_id").using("btree", table.masonId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "fk_kyc_submissions_mason_id"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "fk_kyc_submissions_mason_id"
+	}).onDelete("cascade"),
 ]);
 
 export const otpVerifications = pgTable("otp_verifications", {
@@ -1350,10 +1342,10 @@ export const otpVerifications = pgTable("otp_verifications", {
 }, (table) => [
 	index("idx_otp_verifications_mason_id").using("btree", table.masonId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "fk_otp_mason"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "fk_otp_mason"
+	}).onDelete("cascade"),
 ]);
 
 export const schemesOffers = pgTable("schemes_offers", {
@@ -1381,15 +1373,15 @@ export const rewardRedemptions = pgTable("reward_redemptions", {
 	index("idx_reward_redemptions_mason_id").using("btree", table.masonId.asc().nullsLast().op("uuid_ops")),
 	index("idx_reward_redemptions_status").using("btree", table.status.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "fk_reward_redemptions_mason_id"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "fk_reward_redemptions_mason_id"
+	}).onDelete("cascade"),
 	foreignKey({
-			columns: [table.rewardId],
-			foreignColumns: [rewards.id],
-			name: "fk_reward_redemptions_reward_id"
-		}),
+		columns: [table.rewardId],
+		foreignColumns: [rewards.id],
+		name: "fk_reward_redemptions_reward_id"
+	}),
 ]);
 
 export const rewardCategories = pgTable("reward_categories", {
@@ -1413,10 +1405,10 @@ export const rewards = pgTable("rewards", {
 }, (table) => [
 	index("idx_rewards_category_id").using("btree", table.categoryId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.categoryId],
-			foreignColumns: [rewardCategories.id],
-			name: "fk_rewards_category_id"
-		}),
+		columns: [table.categoryId],
+		foreignColumns: [rewardCategories.id],
+		name: "fk_rewards_category_id"
+	}),
 	unique("rewards_item_name_key").on(table.itemName),
 ]);
 
@@ -1434,15 +1426,15 @@ export const schemeSlabs = pgTable("scheme_slabs", {
 	index("idx_scheme_slabs_reward_id").using("btree", table.rewardId.asc().nullsLast().op("int4_ops")),
 	index("idx_scheme_slabs_scheme_id").using("btree", table.schemeId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.schemeId],
-			foreignColumns: [schemesOffers.id],
-			name: "scheme_slabs_scheme_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.schemeId],
+		foreignColumns: [schemesOffers.id],
+		name: "scheme_slabs_scheme_id_fkey"
+	}).onDelete("cascade"),
 	foreignKey({
-			columns: [table.rewardId],
-			foreignColumns: [rewards.id],
-			name: "scheme_slabs_reward_id_fkey"
-		}).onDelete("set null"),
+		columns: [table.rewardId],
+		foreignColumns: [rewards.id],
+		name: "scheme_slabs_reward_id_fkey"
+	}).onDelete("set null"),
 ]);
 
 export const masonSlabAchievements = pgTable("mason_slab_achievements", {
@@ -1456,15 +1448,15 @@ export const masonSlabAchievements = pgTable("mason_slab_achievements", {
 	index("idx_msa_slab_id").using("btree", table.schemeSlabId.asc().nullsLast().op("uuid_ops")),
 	uniqueIndex("unique_mason_slab_claim").using("btree", table.masonId.asc().nullsLast().op("uuid_ops"), table.schemeSlabId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "mason_slab_achievements_mason_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "mason_slab_achievements_mason_id_fkey"
+	}).onDelete("cascade"),
 	foreignKey({
-			columns: [table.schemeSlabId],
-			foreignColumns: [schemeSlabs.id],
-			name: "mason_slab_achievements_scheme_slab_id_fkey"
-		}).onDelete("cascade"),
+		columns: [table.schemeSlabId],
+		foreignColumns: [schemeSlabs.id],
+		name: "mason_slab_achievements_scheme_slab_id_fkey"
+	}).onDelete("cascade"),
 ]);
 
 export const masonsOnMeetings = pgTable("masons_on_meetings", {
@@ -1473,16 +1465,16 @@ export const masonsOnMeetings = pgTable("masons_on_meetings", {
 	attendedAt: timestamp("attended_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 }, (table) => [
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "fk_mom_mason"
-		}).onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "fk_mom_mason"
+	}).onDelete("cascade"),
 	foreignKey({
-			columns: [table.meetingId],
-			foreignColumns: [tsoMeetings.id],
-			name: "fk_mom_meeting"
-		}).onDelete("cascade"),
-	primaryKey({ columns: [table.masonId, table.meetingId], name: "masons_on_meetings_pkey"}),
+		columns: [table.meetingId],
+		foreignColumns: [tsoMeetings.id],
+		name: "fk_mom_meeting"
+	}).onDelete("cascade"),
+	primaryKey({ columns: [table.masonId, table.meetingId], name: "masons_on_meetings_pkey" }),
 ]);
 
 export const masonOnScheme = pgTable("mason_on_scheme", {
@@ -1494,30 +1486,30 @@ export const masonOnScheme = pgTable("mason_on_scheme", {
 }, (table) => [
 	index("idx_mos_site_id").using("btree", table.siteId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.masonId],
-			foreignColumns: [masonPcSide.id],
-			name: "fk_mos_mason"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.masonId],
+		foreignColumns: [masonPcSide.id],
+		name: "fk_mos_mason"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.schemeId],
-			foreignColumns: [schemesOffers.id],
-			name: "fk_mos_scheme"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.schemeId],
+		foreignColumns: [schemesOffers.id],
+		name: "fk_mos_scheme"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.siteId],
-			foreignColumns: [technicalSites.id],
-			name: "mason_on_scheme_site_id_fkey"
-		}).onDelete("set null"),
-	primaryKey({ columns: [table.masonId, table.schemeId], name: "mason_on_scheme_pkey"}),
+		columns: [table.siteId],
+		foreignColumns: [technicalSites.id],
+		name: "mason_on_scheme_site_id_fkey"
+	}).onDelete("set null"),
+	primaryKey({ columns: [table.masonId, table.schemeId], name: "mason_on_scheme_pkey" }),
 ]);
 
 export const tsoAssignments = pgTable("tso_assignments", {
-  tsoId: integer("tso_id").notNull().references(() => users.id), 
-  masonId: uuid("mason_id").notNull().references(() => masonPcSide.id, { onDelete: "cascade" }), // The mason being managed
-  createdAt: timestamp("created_at", { withTimezone: true, precision: 6 }).defaultNow().notNull(),
+	tsoId: integer("tso_id").notNull().references(() => users.id),
+	masonId: uuid("mason_id").notNull().references(() => masonPcSide.id, { onDelete: "cascade" }), // The mason being managed
+	createdAt: timestamp("created_at", { withTimezone: true, precision: 6 }).defaultNow().notNull(),
 }, (t) => ({
-  pk: primaryKey({ columns: [t.tsoId, t.masonId] }),
-  tsoIdIndex: index("idx_tso_assignments_tso_id").on(t.tsoId),
+	pk: primaryKey({ columns: [t.tsoId, t.masonId] }),
+	tsoIdIndex: index("idx_tso_assignments_tso_id").on(t.tsoId),
 }));
 
 export const schemeToRewards = pgTable("_SchemeToRewards", {
@@ -1527,15 +1519,15 @@ export const schemeToRewards = pgTable("_SchemeToRewards", {
 	uniqueIndex("_SchemeToRewards_AB_unique").using("btree", table.a.asc().nullsLast().op("int4_ops"), table.b.asc().nullsLast().op("int4_ops")),
 	index().using("btree", table.b.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-			columns: [table.a],
-			foreignColumns: [rewards.id],
-			name: "_SchemeToRewards_A_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.a],
+		foreignColumns: [rewards.id],
+		name: "_SchemeToRewards_A_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 	foreignKey({
-			columns: [table.b],
-			foreignColumns: [schemesOffers.id],
-			name: "_SchemeToRewards_B_fkey"
-		}).onUpdate("cascade").onDelete("cascade"),
+		columns: [table.b],
+		foreignColumns: [schemesOffers.id],
+		name: "_SchemeToRewards_B_fkey"
+	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
 export const giftAllocationLogs = pgTable("gift_allocation_logs", {
@@ -1555,23 +1547,23 @@ export const giftAllocationLogs = pgTable("gift_allocation_logs", {
 	index("idx_gift_allocation_logs_source_user_id").using("btree", table.sourceUserId.asc().nullsLast().op("int4_ops")),
 	index("idx_gift_allocation_logs_user_id").using("btree", table.userId.asc().nullsLast().op("int4_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [users.id],
-			name: "fk_gift_logs_user"
-		}).onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [users.id],
+		name: "fk_gift_logs_user"
+	}).onDelete("cascade"),
 	foreignKey({
-			columns: [table.sourceUserId],
-			foreignColumns: [users.id],
-			name: "fk_gift_logs_source_user"
-		}).onDelete("set null"),
+		columns: [table.sourceUserId],
+		foreignColumns: [users.id],
+		name: "fk_gift_logs_source_user"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.destinationUserId],
-			foreignColumns: [users.id],
-			name: "fk_gift_logs_dest_user"
-		}).onDelete("set null"),
+		columns: [table.destinationUserId],
+		foreignColumns: [users.id],
+		name: "fk_gift_logs_dest_user"
+	}).onDelete("set null"),
 	foreignKey({
-			columns: [table.rewardId],
-			foreignColumns: [rewards.id],
-			name: "fk_gift_allocation_logs_reward_id"
-		}),
+		columns: [table.rewardId],
+		foreignColumns: [rewards.id],
+		name: "fk_gift_allocation_logs_reward_id"
+	}),
 ]);

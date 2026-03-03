@@ -163,14 +163,14 @@ export default function AssignTasksPage() {
         </div>
       </div>
 
-      {/* <AssignTasksDialog 
+      <AssignTasksDialog 
         isOpen={isFormOpen} 
         setIsOpen={setIsFormOpen} 
         salesmen={salesmen} 
         uniqueZones={uniqueZones} 
         uniqueAreas={uniqueAreas} 
         onSuccess={fetchTasks} 
-      /> */}
+      /> 
 
       <div className="flex flex-wrap gap-4 p-5 rounded-xl bg-card border shadow-sm items-end mt-2">
         <div className="flex flex-col space-y-1.5 w-full md:w-[220px]">

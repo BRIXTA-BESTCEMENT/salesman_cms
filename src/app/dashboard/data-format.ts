@@ -25,6 +25,12 @@ export const rawGeoTrackingSchema = selectJourneyOpsSchema.partial().extend({
 });
 
 export const rawDailyVisitReportSchema = selectDailyVisitReportSchema.extend({
+  reportDate: z.coerce.date().nullable().optional(),
+  checkInTime: z.coerce.date().nullable().optional(),
+  checkOutTime: z.coerce.date().nullable().optional(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  expectedActivationDate: z.coerce.date().nullable().optional(),
   salesmanName: z.string().optional().catch("Unknown"),
   role: z.string().optional().catch("N/A"),
   dealerName: z.string().nullable().optional(),
