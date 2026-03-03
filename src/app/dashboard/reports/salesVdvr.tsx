@@ -5,7 +5,7 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { IconFilter, IconRefresh, IconSearch, IconListDetails, IconTrendingUp, IconCurrencyRupee } from '@tabler/icons-react';
-import { Calendar, Gauge, BarChart } from 'lucide-react'; 
+import { Calendar, Gauge, BarChart } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -69,24 +69,24 @@ const salesColumns: ColumnDef<SalesRecord>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-        const val = (row.original as any).orderTotal;
-        return <div className="text-right font-semibold text-primary">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
+      const val = (row.original as any).orderTotal;
+      return <div className="text-right font-semibold text-primary">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
     }
   },
   {
     id: 'receivedPayment',
     header: 'Received',
     cell: ({ row }) => {
-        const val = (row.original as any).receivedPayment;
-        return <div className="text-right text-sm text-green-600">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
+      const val = (row.original as any).receivedPayment;
+      return <div className="text-right text-sm text-green-600">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
     }
   },
   {
     id: 'pendingPayment',
     header: 'Pending',
     cell: ({ row }) => {
-        const val = (row.original as any).pendingPayment;
-        return <div className="text-right text-sm text-red-600">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
+      const val = (row.original as any).pendingPayment;
+      return <div className="text-right text-sm text-red-600">{formatCurrency(typeof val === 'number' ? val : 0)}</div>;
     }
   },
   { id: 'orderQty', header: 'Qty', cell: ({ row }) => <div className="text-center font-mono text-sm">{(row.original as any).orderQty ?? 0}</div> },
@@ -97,25 +97,25 @@ const salesColumns: ColumnDef<SalesRecord>[] = [
 // --- DVR Columns ---
 const dvrColumns: ColumnDef<DVRRecord>[] = [
   { accessorKey: 'reportDate', header: 'Report Date', cell: ({ row }) => row.original.reportDate ? new Date(row.original.reportDate).toLocaleDateString() : 'N/A' },
-  { id: 'salesmanName', header: 'Salesman', cell: ({row}) => (row.original as any).salesmanName || 'N/A' },
-  { id: 'dealerName', header: 'Dealer Visited', cell: ({row}) => (row.original as any).dealerName || 'N/A' },
+  { id: 'salesmanName', header: 'Salesman', cell: ({ row }) => (row.original as any).salesmanName || 'N/A' },
+  { id: 'dealerName', header: 'Dealer Visited', cell: ({ row }) => (row.original as any).dealerName || 'N/A' },
   { accessorKey: 'dealerType', header: 'Type', cell: ({ row }) => <Badge variant="outline">{row.original.dealerType || 'N/A'}</Badge> },
   { accessorKey: 'location', header: 'Location' },
-  { 
-      id: 'todayOrderMt', 
-      header: 'Order (MT)', 
-      cell: ({ row }) => {
-          const val = (row.original as any).todayOrderMt;
-          return (typeof val === 'number' ? val : 0).toFixed(2);
-      }
+  {
+    id: 'todayOrderMt',
+    header: 'Order (MT)',
+    cell: ({ row }) => {
+      const val = (row.original as any).todayOrderMt;
+      return (typeof val === 'number' ? val : 0).toFixed(2);
+    }
   },
-  { 
-      id: 'todayCollectionRupees', 
-      header: 'Collection (₹)', 
-      cell: ({ row }) => {
-          const val = (row.original as any).todayCollectionRupees;
-          return `₹${(typeof val === 'number' ? val : 0).toLocaleString('en-IN')}`;
-      }
+  {
+    id: 'todayCollectionRupees',
+    header: 'Collection (₹)',
+    cell: ({ row }) => {
+      const val = (row.original as any).todayCollectionRupees;
+      return `₹${(typeof val === 'number' ? val : 0).toLocaleString('en-IN')}`;
+    }
   },
 ];
 
@@ -167,7 +167,7 @@ export default function SalesDVRReportPage() {
       if (ar) areas.add(ar);
       if (type) dealerTypes.add(type);
     });
-    
+
     (dvrs ?? []).forEach(d => {
       if (d.dealerType) dealerTypes.add(d.dealerType);
     });
@@ -242,7 +242,7 @@ export default function SalesDVRReportPage() {
      Analytics (Sales vs DVR)
   ========================= */
   const totalSalesValue = React.useMemo(() => calculateTotalSalesValue(filteredSalesData), [filteredSalesData]);
-  const totalVisits = filteredDvrData.length; 
+  const totalVisits = filteredDvrData.length;
   const salesPerVisit = totalVisits > 0 ? totalSalesValue / totalVisits : 0;
 
   const mom = React.useMemo(() => {
@@ -269,8 +269,13 @@ export default function SalesDVRReportPage() {
     const thisMonthSalesValue = calculateTotalSalesValue(thisMonthSales);
     const lastMonthSalesValue = calculateTotalSalesValue(lastMonthSales);
 
-    const thisMonthDvrs = dvrs.filter(d => isThisMonth(d.reportDate)).length;
-    const lastMonthDvrs = dvrs.filter(d => isLastMonth(d.reportDate)).length;
+    const thisMonthDvrs = dvrs.filter(
+      d => d.reportDate && isThisMonth(d.reportDate)
+    ).length;
+
+    const lastMonthDvrs = dvrs.filter(
+      d => d.reportDate && isLastMonth(d.reportDate)
+    ).length;
 
     return {
       sales: {
@@ -399,7 +404,7 @@ export default function SalesDVRReportPage() {
       {!loading && sales && dvrs && (
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold border-b pb-2">Key Performance Indicators</h2>
-          
+
           {/* --- KPIs --- */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="shadow-lg hover:shadow-xl transition-shadow">
@@ -439,7 +444,7 @@ export default function SalesDVRReportPage() {
                 <div className="text-4xl font-extrabold text-green-600">
                   {formatCurrency(salesPerVisit)}
                 </div>
-                 <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   (Total Sales / Total Visits)
                 </p>
               </CardContent>
@@ -505,7 +510,7 @@ export default function SalesDVRReportPage() {
                     columns={salesColumns}
                     data={filteredSalesData as any}
                     enableRowDragging={false}
-                    onRowOrderChange={() => {}}
+                    onRowOrderChange={() => { }}
                   />
                 ) : (
                   <div className="text-center text-gray-500 py-12 border border-dashed rounded-lg">
@@ -529,7 +534,7 @@ export default function SalesDVRReportPage() {
                     columns={dvrColumns}
                     data={filteredDvrData as any}
                     enableRowDragging={false}
-                    onRowOrderChange={() => {}}
+                    onRowOrderChange={() => { }}
                   />
                 ) : (
                   <div className="text-center text-gray-500 py-12 border border-dashed rounded-lg">
