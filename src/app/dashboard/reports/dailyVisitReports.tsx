@@ -26,6 +26,7 @@ import { RefreshDataButton } from '@/components/RefreshDataButton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -63,6 +64,56 @@ const extendedDailyVisitReportSchema = selectDailyVisitReportSchema.extend({
 });
 
 type DailyVisitReport = z.infer<typeof extendedDailyVisitReportSchema>;
+
+const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
+const ROLES_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-roles`;
+
+interface LocationsResponse {
+  areas: string[];
+  regions: string[];
+}
+interface RolesResponse {
+  roles: string[];
+}
+
+const CUSTOMER_TYPE_OPTIONS = [
+  'Dealer',
+  'Sub-Dealer',
+  'Non-Trade',
+  'Other'
+];
+
+const renderSelectFilter = (
+  label: string,
+  value: string,
+  onValueChange: (v: string) => void,
+  options: string[],
+  isLoading: boolean = false
+) => (
+  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
+    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
+    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
+      <SelectTrigger className="h-9 w-full bg-background border-input">
+        {isLoading ? (
+          <div className="flex flex-row items-center space-x-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-muted-foreground">Loading...</span>
+          </div>
+        ) : (
+          <SelectValue placeholder={`Select ${label}`} />
+        )}
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All</SelectItem>
+        {options.map(option => (
+          <SelectItem key={option} value={option}>
+            {option}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+);
 
 const InfoField = ({
   label,
@@ -116,16 +167,32 @@ export default function DailyVisitReportsPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  
+  // Filters state
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [areaFilter, setAreaFilter] = useState('all');
+  const [regionFilter, setRegionFilter] = useState('all');
+  const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
 
-  const [page] = useState(0);
+  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
+
+  const [page, setPage] = useState(0);
   const [pageSize] = useState(500);
 
-  /* -------------------- DEBOUNCE -------------------- */
+  /* -------------------- DEBOUNCE & RESET -------------------- */
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter]);
 
   /* -------------------- FETCH -------------------- */
 
@@ -135,7 +202,12 @@ export default function DailyVisitReportsPage() {
       const url = new URL(`/api/dashboardPagesAPI/reports/daily-visit-reports`, window.location.origin);
       url.searchParams.append('page', page.toString());
       url.searchParams.append('pageSize', pageSize.toString());
+      
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (roleFilter !== 'all') url.searchParams.append('role', roleFilter);
+      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
+      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      if (customerTypeFilter !== 'all') url.searchParams.append('customerType', customerTypeFilter);
 
       const response = await fetch(url.toString());
 
@@ -159,11 +231,39 @@ export default function DailyVisitReportsPage() {
     } finally {
       setLoading(false);
     }
-  }, [router, page, pageSize, debouncedSearchQuery]);
+  }, [router, page, pageSize, debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter]);
+
+  const fetchLocations = useCallback(async () => {
+    setIsLoadingLocations(true);
+    try {
+      const response = await fetch(LOCATION_API_ENDPOINT);
+      if (response.ok) {
+        const data: LocationsResponse = await response.json();
+        setAvailableAreas(data.areas || []);
+        setAvailableRegions(data.regions || []);
+      }
+    } finally { setIsLoadingLocations(false); }
+  }, []);
+
+  const fetchRoles = useCallback(async () => {
+    setIsLoadingRoles(true);
+    try {
+      const response = await fetch(ROLES_API_ENDPOINT);
+      if (response.ok) {
+        const data: RolesResponse = await response.json();
+        setAvailableRoles(data.roles || []);
+      }
+    } finally { setIsLoadingRoles(false); }
+  }, []);
 
   useEffect(() => {
     fetchReports();
   }, [fetchReports]);
+
+  useEffect(() => {
+    fetchLocations();
+    fetchRoles();
+  }, [fetchLocations, fetchRoles]);
 
   /* -------------------- TYPE SPLIT -------------------- */
 
@@ -195,10 +295,7 @@ export default function DailyVisitReportsPage() {
       cell: ({ row }) => (
         <div className="flex flex-col">
           <span className="text-sm">
-            {row.original.dealerName || row.original.nameOfParty}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {row.original.subDealerName}
+            {row.original.dealerName || row.original.nameOfParty || row.original.subDealerName}
           </span>
         </div>
       ),
@@ -240,6 +337,40 @@ export default function DailyVisitReportsPage() {
             cachePrefix="daily-visit-reports"
             onRefresh={fetchReports}
           />
+        </div>
+
+        {/* -------------------- FILTERS BLOCK -------------------- */}
+        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
+          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Name, Dealer, or Party..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-9 bg-background border-input"
+              />
+            </div>
+          </div>
+          {renderSelectFilter('Customer Type', customerTypeFilter, setCustomerTypeFilter, CUSTOMER_TYPE_OPTIONS)}
+          {renderSelectFilter('Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
+          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
+          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchQuery('');
+              setCustomerTypeFilter('all');
+              setRoleFilter('all');
+              setAreaFilter('all');
+              setRegionFilter('all');
+            }}
+            className="mb-0.5 text-muted-foreground hover:text-destructive"
+          >
+            Clear Filters
+          </Button>
         </div>
 
         <div className="bg-card p-1 rounded-lg border shadow-sm">
