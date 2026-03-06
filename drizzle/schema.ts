@@ -77,6 +77,7 @@ export const users = pgTable("users", {
 		name: "users_reports_to_id_fkey"
 	}).onUpdate("cascade").onDelete("set null"),
 	unique("uniq_user_device_id").on(table.deviceId),
+	index("idx_users_reports_to_id").on(table.reportsToId),
 ]);
 
 export const authSessions = pgTable("auth_sessions", {
