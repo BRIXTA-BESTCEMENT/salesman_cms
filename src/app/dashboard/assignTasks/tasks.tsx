@@ -186,9 +186,6 @@ export default function TasksListPage() {
         if (upperStatus === 'ASSIGNED') { 
           return <Badge className="bg-blue-100 text-blue-800 border-blue-200 shadow-none tracking-wide">{status}</Badge>; 
         }
-        if (upperStatus === 'PENDING') { 
-          return <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-none tracking-wide">{status}</Badge>; 
-        }
 
         return <Badge variant="secondary" className="shadow-none tracking-wide">{status}</Badge>; 
       } 
