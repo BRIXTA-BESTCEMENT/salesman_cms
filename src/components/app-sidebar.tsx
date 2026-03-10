@@ -44,7 +44,7 @@ const ITEM_PERMISSIONS = {
 
   "Business Dashboard": 'dashboard' as const,
   "Users & Team": 'usersAndTeam.userManagement' as const,
-  "Assign Tasks": 'assignTasks' as const,
+  "Assign Tasks": 'assignTasks.tasksList' as const,
   "Dealers": 'dealerManagement.listDealers' as const,
   "Technical Sites": 'technicalSites.listSites' as const,
   "Reports": 'reports.dailyVisitReports' as const,

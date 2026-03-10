@@ -25,6 +25,8 @@ const frontendTaskSchema = selectDailyTaskSchema.extend({
     salesmanArea: z.string().nullable().optional(),
     relatedDealerName: z.string().nullable().optional(),
     taskDate: z.string(), 
+    createdAt: z.string(),
+    updatedAt: z.string(),
 });
 
 type PendingTaskRow = InferSelectModel<typeof dailyTasks> & {

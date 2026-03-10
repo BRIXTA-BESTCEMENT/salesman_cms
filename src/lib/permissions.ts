@@ -24,7 +24,10 @@ export interface DashboardPermissions {
     userManagement: boolean;
     teamOverview: boolean;
   };
-  assignTasks: boolean;
+  assignTasks: {
+    tasksList: boolean,
+    verifyTasks: boolean,
+  };
   dealerManagement: {
     addAndListDealers: boolean,
     listDealers: boolean;
@@ -87,7 +90,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -145,7 +151,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -203,7 +212,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -263,7 +275,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -321,7 +336,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -379,7 +397,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -437,7 +458,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -495,7 +519,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: true,
       teamOverview: true,
     },
-    assignTasks: true,
+    assignTasks: {
+      tasksList: true,
+      verifyTasks: true,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: true,
@@ -555,7 +582,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: false,
       teamOverview: false,
     },
-    assignTasks: false,
+    assignTasks: {
+      tasksList: false,
+      verifyTasks: false,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: false,
@@ -613,7 +643,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: false,
       teamOverview: false,
     },
-    assignTasks: false,
+    assignTasks: {
+      tasksList: false,
+      verifyTasks: false,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: false,
@@ -671,7 +704,10 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       userManagement: false,
       teamOverview: false,
     },
-    assignTasks: false,
+    assignTasks: {
+      tasksList: false,
+      verifyTasks: false,
+    },
     dealerManagement: {
       addAndListDealers: false,
       listDealers: false,

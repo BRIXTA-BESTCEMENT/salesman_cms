@@ -1,3 +1,4 @@
+// src/app/dashboard/masonpcSide/tabsLoader.tsx
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

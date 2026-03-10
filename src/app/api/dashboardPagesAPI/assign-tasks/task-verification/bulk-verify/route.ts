@@ -60,9 +60,9 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ message: 'No valid Tasks found for this company.' }, { status: 200 });
     }
 
-    const result = await db
+    await db
       .update(dailyTasks)
-      .set({ status: 'VERIFIED' })
+      .set({ status: 'Approved' })
       .where(inArray(dailyTasks.id, validIds));
 
     return NextResponse.json({

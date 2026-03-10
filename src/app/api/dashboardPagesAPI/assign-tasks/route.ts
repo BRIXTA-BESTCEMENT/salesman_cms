@@ -66,6 +66,7 @@ async function getCachedDailyTasks(
 ) {
   'use cache';
   cacheLife('hours');
+  cacheTag(`assign-tasks-${companyId}`);
   
   const filterKey = `${search}-${zone}-${area}-${salesmanId}-${status}-${fromDate}-${toDate}`;
   cacheTag(`assign-tasks-${companyId}-${page}-${filterKey}`);
