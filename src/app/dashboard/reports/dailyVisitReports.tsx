@@ -61,6 +61,7 @@ const extendedDailyVisitReportSchema = selectDailyVisitReportSchema.extend({
   todayCollectionRupees: z.coerce.number().nullable().optional().catch(0),
   overdueAmount: z.coerce.number().nullable().optional().catch(0),
   brandSelling: z.array(z.string()).nullable().optional().transform(v => v || []),
+  pjpStatus: z.string().nullable().optional(),
 });
 
 type DailyVisitReport = z.infer<typeof extendedDailyVisitReportSchema>;
@@ -167,12 +168,13 @@ export default function DailyVisitReportsPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  
+
   // Filters state
   const [roleFilter, setRoleFilter] = useState('all');
   const [areaFilter, setAreaFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
   const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
+  const [pjpStatusFilter, setPjpStatusFilter] = useState('all');
 
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
@@ -183,6 +185,15 @@ export default function DailyVisitReportsPage() {
   const [page, setPage] = useState(0);
   const [pageSize] = useState(500);
 
+  const PJP_STATUS_OPTIONS = [
+    'Completed',
+    'Assigned',
+    'Approved',
+    'Verified',
+    'Unplanned',
+    'Failed',
+  ];
+
   /* -------------------- DEBOUNCE & RESET -------------------- */
 
   useEffect(() => {
@@ -192,7 +203,7 @@ export default function DailyVisitReportsPage() {
 
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter]);
+  }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter, pjpStatusFilter]);
 
   /* -------------------- FETCH -------------------- */
 
@@ -202,12 +213,13 @@ export default function DailyVisitReportsPage() {
       const url = new URL(`/api/dashboardPagesAPI/reports/daily-visit-reports`, window.location.origin);
       url.searchParams.append('page', page.toString());
       url.searchParams.append('pageSize', pageSize.toString());
-      
+
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
       if (roleFilter !== 'all') url.searchParams.append('role', roleFilter);
       if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
       if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
       if (customerTypeFilter !== 'all') url.searchParams.append('customerType', customerTypeFilter);
+      if (pjpStatusFilter !== 'all') url.searchParams.append('pjpStatus', pjpStatusFilter);
 
       const response = await fetch(url.toString());
 
@@ -231,7 +243,7 @@ export default function DailyVisitReportsPage() {
     } finally {
       setLoading(false);
     }
-  }, [router, page, pageSize, debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter]);
+  }, [router, page, pageSize, debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter, pjpStatusFilter]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -304,6 +316,26 @@ export default function DailyVisitReportsPage() {
     { accessorKey: "area", header: "Area" },
     { accessorKey: "reportDate", header: "Date" },
     {
+      accessorKey: 'pjpStatus',
+      header: 'PJP Status',
+      cell: ({ row }) => {
+        const status = row.original.pjpStatus || "Unplanned";
+        const upperStatus = status.toUpperCase();
+
+        if (upperStatus === 'COMPLETED') {
+          return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 shadow-none tracking-wide">{status}</Badge>;
+        }
+        if (upperStatus === 'APPROVED' || upperStatus === 'VERIFIED') {
+          return <Badge className="bg-green-100 text-green-800 border-green-200 shadow-none tracking-wide">{status}</Badge>;
+        }
+        if (upperStatus === 'ASSIGNED') {
+          return <Badge className="bg-blue-100 text-blue-800 border-blue-200 shadow-none tracking-wide">{status}</Badge>;
+        }
+
+        return <Badge variant="secondary" className="shadow-none tracking-wide">{status}</Badge>;
+      }
+    },
+    {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
@@ -357,6 +389,8 @@ export default function DailyVisitReportsPage() {
           {renderSelectFilter('Role', roleFilter, setRoleFilter, availableRoles, isLoadingRoles)}
           {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
           {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+          {renderSelectFilter('PJP Status', pjpStatusFilter, setPjpStatusFilter, PJP_STATUS_OPTIONS)}
+
 
           <Button
             variant="ghost"
@@ -366,6 +400,7 @@ export default function DailyVisitReportsPage() {
               setRoleFilter('all');
               setAreaFilter('all');
               setRegionFilter('all');
+              setPjpStatusFilter('all'); 
             }}
             className="mb-0.5 text-muted-foreground hover:text-destructive"
           >
@@ -398,10 +433,15 @@ export default function DailyVisitReportsPage() {
 
             <div className={`px-6 py-4 border-b bg-muted/20 ${isDealerVisit(selectedReport) ? 'border-l-[6px] border-l-amber-600' : 'border-l-[6px] border-l-blue-500'}`}>
               <DialogTitle className="text-xl flex items-center justify-between">
-                <span>Visit Details</span>
-                <Badge variant="outline" className="text-sm px-3">
-                  {selectedReport.customerType}
-                </Badge>
+                <div className="flex items-center gap-3">
+                  <span>Visit Details</span>
+                  <Badge variant="outline" className="text-sm px-3">
+                    {selectedReport.customerType}
+                  </Badge>
+                  <Badge variant={selectedReport.pjpStatus?.toUpperCase() === 'COMPLETED' ? 'default' : 'secondary'} className="text-xs uppercase">
+                    {selectedReport.pjpStatus || 'UNPLANNED'}
+                  </Badge>
+                </div>
               </DialogTitle>
               <DialogDescription className="mt-1 flex items-center gap-4 text-xs sm:text-sm">
                 <span className="flex items-center gap-1">

@@ -85,6 +85,20 @@
       "when": 1772809660149,
       "tag": "0011_slippery_victor_mancha",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1773228564255,
+      "tag": "0012_abandoned_captain_midlands",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1773232195361,
+      "tag": "0013_fair_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

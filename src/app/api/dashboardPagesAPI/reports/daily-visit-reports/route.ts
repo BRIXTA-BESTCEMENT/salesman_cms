@@ -4,8 +4,8 @@ import { connection, NextResponse, NextRequest } from 'next/server';
 import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
-import { users, dailyVisitReports, dealers } from '../../../../../../drizzle';
-import { eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL } from 'drizzle-orm';
+import { users, dailyVisitReports, dealers, dailyTasks } from '../../../../../../drizzle';
+import { eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, isNull, notIlike } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod'; 
 import { selectDailyVisitReportSchema } from '../../../../../../drizzle/zodSchemas'; 
@@ -45,6 +45,7 @@ const frontendDVRSchema = selectDailyVisitReportSchema.extend({
   checkOutTime: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  pjpStatus: z.string().nullable().optional(),
 });
 
 type DVRRow = InferSelectModel<typeof dailyVisitReports> & {
@@ -56,6 +57,8 @@ type DVRRow = InferSelectModel<typeof dailyVisitReports> & {
   userRegion: string | null;
   dealerNameStr: string | null;
   subDealerNameStr: string | null;
+  pjpTaskStatus: string | null;
+  pjpVisitType: string | null;
 };
 
 async function getCachedDailyVisitReports(
@@ -65,7 +68,8 @@ async function getCachedDailyVisitReports(
   search: string | null,
   role: string | null,
   area: string | null,
-  region: string | null
+  region: string | null,
+  pjpStatus: string | null
 ) {
   'use cache';
   cacheLife('hours');
@@ -76,8 +80,7 @@ async function getCachedDailyVisitReports(
 
   const subDealers = aliasedTable(dealers, 'subDealers');
 
-  // Strictly type as SQL[] to prevent undefined errors in and()
-  const filters: SQL[] = [eq(users.companyId, companyId)];
+  const filters: (SQL | undefined)[] = [eq(users.companyId, companyId)];
 
   if (search) {
     const searchCondition = or(
@@ -94,6 +97,24 @@ async function getCachedDailyVisitReports(
   if (area) filters.push(eq(users.area, area));
   if (region) filters.push(eq(users.region, region));
 
+  if (pjpStatus && pjpStatus !== 'all') {
+    if (pjpStatus.toLowerCase() === 'unplanned') {
+      filters.push(
+        or(
+          isNull(dailyTasks.id), 
+          ilike(dailyTasks.visitType, 'unplanned')
+        )
+      );
+    } else {
+      filters.push(
+        and(
+          ilike(dailyTasks.status, pjpStatus),
+          or(isNull(dailyTasks.visitType), notIlike(dailyTasks.visitType, 'unplanned'))
+        )
+      );
+    }
+  }
+
   const whereClause = and(...filters);
 
   const results: DVRRow[] = await db
@@ -107,8 +128,18 @@ async function getCachedDailyVisitReports(
       userRegion: users.region,
       dealerNameStr: dealers.name,
       subDealerNameStr: subDealers.name,
+      pjpTaskStatus: dailyTasks.status, 
+      pjpVisitType: dailyTasks.visitType,
     })
     .from(dailyVisitReports)
+    .leftJoin( 
+      dailyTasks, 
+      and(
+        eq(dailyVisitReports.userId, dailyTasks.userId),
+        eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
+        eq(dailyVisitReports.dealerId, dailyTasks.dealerId)
+      )
+    )
     .leftJoin(users, eq(dailyVisitReports.userId, users.id))
     .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
     .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
@@ -121,6 +152,14 @@ async function getCachedDailyVisitReports(
   const totalCountResult = await db
     .select({ count: count() })
     .from(dailyVisitReports)
+    .leftJoin( 
+      dailyTasks, 
+      and(
+        eq(dailyVisitReports.userId, dailyTasks.userId),
+        eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
+        eq(dailyVisitReports.dealerId, dailyTasks.dealerId)
+      )
+    )
     .leftJoin(users, eq(dailyVisitReports.userId, users.id))
     .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
     .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
@@ -132,6 +171,10 @@ async function getCachedDailyVisitReports(
     const toNum = (v: any) => (v == null ? null : Number(v));
     const salesmanName = `${row.userFirstName || ''} ${row.userLastName || ''}`.trim() || row.userEmail || 'Unknown';
 
+    const finalPjpStatus = (!row.pjpTaskStatus || row.pjpVisitType?.toLowerCase() === 'unplanned')
+      ? 'Unplanned'
+      : row.pjpTaskStatus;
+
     return {
       ...row,
       id: String(row.id),
@@ -142,6 +185,7 @@ async function getCachedDailyVisitReports(
       reportDate: row.reportDate ? new Date(row.reportDate).toISOString().split('T')[0] : '',
       dealerName: row.dealerNameStr ?? null,
       subDealerName: row.subDealerNameStr ?? null,
+      pjpStatus: finalPjpStatus,
 
       customerType: row.customerType ?? null,
       partyType: row.partyType ?? null,
@@ -198,6 +242,7 @@ export async function GET(request: NextRequest) {
     const role = searchParams.get('role');
     const area = searchParams.get('area');
     const region = searchParams.get('region');
+    const pjpStatus = searchParams.get('pjpStatus');
 
     const result = await getCachedDailyVisitReports(
       currentUser.companyId,
@@ -206,7 +251,8 @@ export async function GET(request: NextRequest) {
       search,
       role,
       area,
-      region
+      region,
+      pjpStatus,
     );
 
     const validatedReports = z.array(frontendDVRSchema).safeParse(result.data);

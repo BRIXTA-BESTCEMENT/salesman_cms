@@ -1,12 +1,13 @@
 // src/app/home/customReportGenerator/customTableHeaders.ts
 
 import {
-    LucideIcon, User, Car, BadgeIndianRupeeIcon, ListTodo, ClipboardCheck, BandageIcon,
-    CalendarCheck, PencilRuler, ChartNoAxesCombined, MapPin, Award, Star, Boxes,
-    Construction, UsersRound, Gift, HandCoins, ScrollText, UserCheck, Users,
+    LucideIcon, User, ListTodo, ClipboardCheck, BandageIcon,
+    CalendarCheck, PencilRuler, MapPin,
+    Construction, UsersRound, Gift, HandCoins, ScrollText, ClipboardPen,
     Building2, ShoppingBag,
     Truck,
-    ListChecks
+    ListChecks,
+    ClipboardPenLine
 } from 'lucide-react';
 
 export interface TableColumn {
@@ -54,13 +55,48 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Daily Visit Reports',
         icon: CalendarCheck,
         columns: [
-            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'dealerType', 'dealerName', 'subDealerName', 'location',
+            'id', 'reportDate', 'pjpStatus', 'salesmanName', 'salesmanEmail', 'dealerType', 'dealerName', 'subDealerName', 'location',
             'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
             'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
             'todayCollectionRupees', 'overdueAmount', 'feedbacks', 'solutionBySalesperson',
             'anyRemarks', 'checkInTime', 'customerType', 'partyType', 'nameOfParty', 'contactNoOfParty', 'expectedActivationDate',
             'timeSpentinLoc', 'checkOutTime', 'inTimeImageUrl', 'outTimeImageUrl',
             'createdAt', 'updatedAt'
+        ],
+    },
+    {
+        id: 'kamrupTsoDvrs',
+        title: 'Kamrup-TSO DVRs',
+        icon: ClipboardPen,
+        columns: [
+            'sourceReport', 'id', 'reportDate', 'pjpStatus', 'salesmanName', 'salesmanEmail', 
+            'customerType', 'dealerType', 'dealerName', 'subDealerName', 'partyType', 
+            'nameOfParty', 'contactNoOfParty', 'expectedActivationDate', 'location',
+            'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
+            'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
+            'todayCollectionRupees', 'overdueAmount', 'feedbacks', 'solutionBySalesperson',
+            'anyRemarks', 'checkInTime', 'checkOutTime', 'timeSpentinLoc', 
+            'inTimeImageUrl', 'outTimeImageUrl', 'createdAt', 'updatedAt'
+        ],
+    },
+    {
+        id: 'kamrupTsoTvrs',
+        title: 'Kamrup-TSO TVRs',
+        icon: ClipboardPenLine, 
+        columns: [
+            'sourceReport', 'id', 'reportDate', 'salesmanName', 'salesmanEmail', 
+            'customerType', 'visitCategory', 'visitType', 'purposeOfVisit', 
+            'siteNameConcernedPerson', 'associatedPartyName', 'phoneNo', 'emailId',
+            'region', 'area', 'location', 'latitude', 'longitude', 'marketName', 'siteAddress',
+            'whatsappNo', 'constAreaSqFt', 'siteVisitStage', 'siteVisitBrandInUse',
+            'currentBrandPrice', 'siteStock', 'estRequirement', 'supplyingDealerName',
+            'nearbyDealerName', 'isConverted', 'conversionType', 'conversionFromBrand',
+            'conversionQuantityValue', 'conversionQuantityUnit', 'isTechService',
+            'serviceType', 'serviceDesc', 'influencerName', 'influencerType',
+            'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity',
+            'qualityComplaint', 'promotionalActivity', 'channelPartnerVisit', 
+            'clientsRemarks', 'salespersonRemarks', 'siteVisitsCount', 'otherVisitsCount', 
+            'checkInTime', 'checkOutTime', 'timeSpentinLoc', 'siteVisitType',
         ],
     },
     {

@@ -206,7 +206,7 @@ export default function TasksListPage() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold">Weekly Sales PJPs</h1>
-            <Badge variant="outline" className="text-base px-4 py-1">Total Tasks: {totalCount}</Badge>
+            <Badge variant="outline" className="text-base px-4 py-1">Total Pjps: {totalCount}</Badge>
         </div>
         <div className="flex items-center gap-3">
           <RefreshDataButton cachePrefix="assign-tasks" onRefresh={fetchTasks} />

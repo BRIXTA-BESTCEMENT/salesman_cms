@@ -5,11 +5,11 @@ import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dealers, verifiedDealers, dailyTasks } from '../../../../../drizzle/schema';
-import { getTableColumns, eq, and, or, ilike, inArray, desc, asc, count, SQL, gte, lte } from 'drizzle-orm';
+import { getTableColumns, eq, and, or, ilike, inArray, desc, asc, count, SQL, gte, lte, notIlike } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDailyTaskSchema } from '../../../../../drizzle/zodSchemas';
-import crypto from 'crypto'; 
+import crypto from 'crypto';
 
 const allowedAssignerRoles = [
   'president', 'senior-general-manager', 'general-manager',
@@ -67,11 +67,14 @@ async function getCachedDailyTasks(
   'use cache';
   cacheLife('hours');
   cacheTag(`assign-tasks-${companyId}`);
-  
+
   const filterKey = `${search}-${zone}-${area}-${salesmanId}-${status}-${fromDate}-${toDate}`;
   cacheTag(`assign-tasks-${companyId}-${page}-${filterKey}`);
 
-  const filters: SQL[] = [eq(users.companyId, companyId)];
+  const filters: SQL[] = [
+    eq(users.companyId, companyId),
+    notIlike(dailyTasks.visitType, 'unplanned')
+  ];
 
   if (search) {
     const searchCondition = or(
@@ -82,7 +85,7 @@ async function getCachedDailyTasks(
     );
     if (searchCondition) filters.push(searchCondition);
   }
-  
+
   if (zone) filters.push(eq(dailyTasks.zone, zone));
   if (area) filters.push(eq(dailyTasks.area, area));
   if (salesmanId) filters.push(eq(dailyTasks.userId, Number(salesmanId)));
@@ -224,12 +227,17 @@ export async function GET(request: NextRequest) {
       const distinctVerifiedDealers = await db
         .selectDistinct({ region: verifiedDealers.zone, area: verifiedDealers.area })
         .from(verifiedDealers);
-        
+
       const distinctStatuses = await db
         .selectDistinct({ status: dailyTasks.status })
         .from(dailyTasks)
         .innerJoin(users, eq(dailyTasks.userId, users.id))
-        .where(eq(users.companyId, currentUser.companyId));
+        .where(
+          and(
+            eq(users.companyId, currentUser.companyId),
+            notIlike(dailyTasks.visitType, 'unplanned') // filter out unplanned status
+          )
+        );
 
       const allDistinct = [...distinctDealers, ...distinctVerifiedDealers];
       const uniqueZones = Array.from(new Set(allDistinct.map(d => d.region))).filter(Boolean).sort();
@@ -242,7 +250,7 @@ export async function GET(request: NextRequest) {
     // --- Default Action: Fetch Paginated Tasks ---
     const page = Number(searchParams.get('page') ?? 0);
     const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
-    
+
     const search = searchParams.get('search');
     const zone = searchParams.get('zone');
     const area = searchParams.get('area');

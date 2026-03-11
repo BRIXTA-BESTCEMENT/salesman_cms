@@ -5,20 +5,16 @@ import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../../../../drizzle';
 import { eq, and, asc, aliasedTable } from 'drizzle-orm';
-import type { InferSelectModel } from "drizzle-orm";
-import { ROLE_HIERARCHY } from '@/lib/roleHierarchy';
+import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectUserSchema } from '../../../../../../../drizzle/zodSchemas';
 
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive',];
-
+// Explicitly define the UserRow type
 type UserRow = InferSelectModel<typeof users>;
 
 export async function GET(request: NextRequest) {
-  await connection();
+  if (typeof connection === 'function') await connection();
+
   try {
     const claims = await getTokenClaims();
     if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -31,21 +27,23 @@ export async function GET(request: NextRequest) {
 
     const currentUser = currentUserResult[0];
 
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
+    // Basic safety check
+    if (!currentUser) {
       return NextResponse.json({ error: `Forbidden` }, { status: 403 });
     }
 
-    const roleParam = request.nextUrl.searchParams.get('role') ?? undefined;
-    const roleFilter = roleParam && roleParam !== 'all' && ROLE_HIERARCHY.includes(roleParam) ? roleParam : undefined;
+    const roleParam = request.nextUrl.searchParams.get('role');
+    const roleFilter = roleParam && roleParam !== 'all' ? roleParam : undefined;
 
-    // Self-join aliases for hierarchy
     const managers = aliasedTable(users, 'managers');
-    const reports = aliasedTable(users, 'reports');
+    
+    // Simple conditions: Just their company, and optionally a specific role
     const conditions = [
       eq(users.companyId, currentUser.companyId),
       ...(roleFilter ? [eq(users.role, roleFilter)] : []),
     ];
 
+    // Explicitly typed to prevent the TypeScript 'never' errors
     const teamMembers: {
       member: UserRow;
       managerFirstName: string | null;
@@ -61,8 +59,8 @@ export async function GET(request: NextRequest) {
       .where(and(...conditions))
       .orderBy(asc(users.firstName));
 
-    // Fetch reports in a separate step to avoid massive Cartesian products from double-joins
     const formattedTeamData = await Promise.all(teamMembers.map(async ({ member, managerFirstName, managerLastName }) => {
+      // Fetch direct reports
       const directReports = await db
         .select({ id: users.id, firstName: users.firstName, lastName: users.lastName, role: users.role })
         .from(users)
@@ -85,6 +83,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(z.array(selectUserSchema.loose()).parse(formattedTeamData), { status: 200 });
 
   } catch (error: any) {
+    console.error("Team Overview Fetch Error:", error);
     return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }

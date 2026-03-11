@@ -41,6 +41,7 @@ export interface DashboardPermissions {
   reports: {
     dailyVisitReports: boolean;
     technicalVisitReports: boolean;
+    dvrAndTvr: boolean;
     competitionReports: boolean;
     salesOrders: boolean;
     dvrVpjp: boolean;
@@ -107,6 +108,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -168,6 +170,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -229,6 +232,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -292,6 +296,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -353,6 +358,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -414,6 +420,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -475,6 +482,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -536,6 +544,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -599,6 +608,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: true,
       technicalVisitReports: true,
+      dvrAndTvr: false,
       competitionReports: true,
       salesOrders: true,
       dvrVpjp: true,
@@ -660,6 +670,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: false,
       technicalVisitReports: false,
+      dvrAndTvr: false,
       competitionReports: false,
       salesOrders: false,
       dvrVpjp: false,
@@ -721,6 +732,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
     reports: {
       dailyVisitReports: false,
       technicalVisitReports: false,
+      dvrAndTvr: false,
       competitionReports: true,
       salesOrders: false,
       dvrVpjp: false,

@@ -7,6 +7,7 @@ import CompetitionReportsPage from './competitionReports';
 import SalesOrdersTable from './salesOrders';
 import DailyVisitReportsPage from './dailyVisitReports';
 import TechnicalVisitReportsPage from './technicalVisitReports';
+import HybridReportsPage from './dvrAndTvr';
 import DvrPjpReportPage from './dvrVpjp';
 import TvrPjpReportPage from './tvrVpjp';
 import SalesDVRReportPage from './salesVdvr';
@@ -16,6 +17,7 @@ import SalesDVRReportPage from './salesVdvr';
 interface ReportsTabsProps {
   canSeeDVR: boolean;
   canSeeTVR: boolean;
+  canSeeDvrTvr: boolean;
   canSeeSalesOrders: boolean;
   canSeeCompetition: boolean;
   canSeeDvrVpjp: boolean;
@@ -26,6 +28,7 @@ interface ReportsTabsProps {
 export function ReportsTabs({
   canSeeDVR,
   canSeeTVR,
+  canSeeDvrTvr,
   canSeeSalesOrders,
   canSeeCompetition,
   canSeeDvrVpjp,
@@ -45,13 +48,14 @@ export function ReportsTabs({
   const defaultTab = React.useMemo(() => {
     if (canSeeDVR) return "dailyVisitReport";
     if (canSeeTVR) return "technicalVisitReport";
+    if (canSeeDvrTvr) return "dvrAndTvr"
     if (canSeeSalesOrders) return "salesOrderReport";
     if (canSeeCompetition) return "competitionReport";
     if (canSeeDvrVpjp) return "dvrVpjp";
     if (canSeeTvrVpjp) return "tvrVpjp";
     if (canSeeSalesVdvr) return "salesVdvr";
     return ""; // Should not happen if canSeeAnyReport is checked in parent
-  }, [canSeeDVR, canSeeTVR, canSeeSalesOrders, canSeeCompetition, canSeeDvrVpjp, canSeeTvrVpjp, canSeeSalesVdvr]);
+  }, [canSeeDVR, canSeeTVR, canSeeDvrTvr, canSeeSalesOrders, canSeeCompetition, canSeeDvrVpjp, canSeeTvrVpjp, canSeeSalesVdvr]);
 
 
   // 3. Prevent rendering the component that generates unstable IDs during SSR
@@ -70,6 +74,9 @@ export function ReportsTabs({
       <TabsList>
         {canSeeDVR && (
           <TabsTrigger value="dailyVisitReport">DVR Report</TabsTrigger>
+        )}
+        {canSeeDVR && (
+          <TabsTrigger value="dvrAndTvr">DVR/TVR (Kamrup-TSO)</TabsTrigger>
         )}
         {canSeeTVR && (
           <TabsTrigger value="technicalVisitReport">TVR Report</TabsTrigger>
@@ -95,6 +102,11 @@ export function ReportsTabs({
       {canSeeDVR && (
         <TabsContent value="dailyVisitReport" className="space-y-4">
           <DailyVisitReportsPage />
+        </TabsContent>
+      )}
+      {canSeeDvrTvr && (
+        <TabsContent value="dvrAndTvr" className="space-y-4">
+          <HybridReportsPage />
         </TabsContent>
       )}
       {canSeeTVR && (

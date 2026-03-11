@@ -51,6 +51,7 @@ export async function ReportsDynamicContent() {
 
   const canSeeDVR = hasPermission(roleToCheck, 'reports.dailyVisitReports');
   const canSeeTVR = hasPermission(roleToCheck, 'reports.technicalVisitReports');
+  const canSeeDvrTvr = hasPermission(roleToCheck, 'reports.dvrAndTvr');
   const canSeeSalesOrders = hasPermission(roleToCheck, 'reports.salesOrders');
   const canSeeCompetition = hasPermission(roleToCheck, 'reports.competitionReports');
   const canSeeDvrVpjp = hasPermission(roleToCheck, 'reports.dvrVpjp');
@@ -78,6 +79,7 @@ export async function ReportsDynamicContent() {
       <ReportsTabs
         canSeeDVR={canSeeDVR}
         canSeeTVR={canSeeTVR}
+        canSeeDvrTvr={canSeeDvrTvr}
         canSeeSalesOrders={canSeeSalesOrders}
         canSeeCompetition={canSeeCompetition}
         canSeeDvrVpjp={canSeeDvrVpjp}

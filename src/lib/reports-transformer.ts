@@ -9,7 +9,7 @@ import {
   kycSubmissions, tsoAssignments, bagLifts, rewardRedemptions, pointsLedger, logisticsIO,
   siteAssociatedUsers, siteAssociatedDealers, siteAssociatedMasons
 } from '../../drizzle/schema';
-import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull } from 'drizzle-orm';
+import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull, notIlike } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 
 // --- HELPERS ---
@@ -152,6 +152,8 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
   const raw = await db
     .select({
       ...getTableColumns(dailyVisitReports),
+      pjpTaskStatus: dailyTasks.status,
+      pjpVisitType: dailyTasks.visitType,
       userFirstName: users.firstName,
       userLastName: users.lastName,
       userEmail: users.email,
@@ -159,50 +161,65 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
       subDealerName: subDealers.name,
     })
     .from(dailyVisitReports)
+    .leftJoin(
+      dailyTasks,
+      and(
+        eq(dailyVisitReports.userId, dailyTasks.userId),
+        eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
+        eq(dailyVisitReports.dealerId, dailyTasks.dealerId)
+      )
+    )
     .leftJoin(users, eq(dailyVisitReports.userId, users.id))
     .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
     .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
     .where(eq(users.companyId, companyId))
     .orderBy(desc(dailyVisitReports.reportDate));
 
-  return raw.map((r) => ({
-    id: r.id,
-    reportDate: r.reportDate ? formatDateIST(r.reportDate) : '',
-    
-    customerType: r.customerType ?? null,
-    partyType: r.partyType ?? null,
-    nameOfParty: r.nameOfParty ?? null,
-    contactNoOfParty: r.contactNoOfParty ?? null,
-    expectedActivationDate: r.expectedActivationDate ? formatDateIST(r.expectedActivationDate) : null,
+  return raw.map((r) => {
+    const finalPjpStatus = (!r.pjpTaskStatus || r.pjpVisitType?.toLowerCase() === 'unplanned')
+      ? 'Unplanned'
+      : r.pjpTaskStatus;
 
-    dealerType: r.dealerType ?? null,
-    dealerName: r.dealerName ?? null,
-    subDealerName: r.subDealerName ?? null,
-    location: r.location ?? null,
-    latitude: toNum(r.latitude) || 0,
-    longitude: toNum(r.longitude) || 0,
-    visitType: r.visitType ?? null,
-    dealerTotalPotential: toNum(r.dealerTotalPotential) || 0,
-    dealerBestPotential: toNum(r.dealerBestPotential) || 0,
-    brandSelling: (r.brandSelling || []).join(', '),
-    contactPerson: r.contactPerson ?? null,
-    contactPersonPhoneNo: r.contactPersonPhoneNo ?? null,
-    todayOrderMt: toNum(r.todayOrderMt) || 0,
-    todayCollectionRupees: toNum(r.todayCollectionRupees) || 0,
-    overdueAmount: toNum(r.overdueAmount),
-    feedbacks: r.feedbacks ?? null,
-    solutionBySalesperson: r.solutionBySalesperson ?? null,
-    anyRemarks: r.anyRemarks ?? null,
-    checkInTime: r.checkInTime ? formatDateTimeIST(r.checkInTime) : null,
-    checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
-    timeSpentinLoc: r.timeSpentinLoc ?? null,
-    inTimeImageUrl: r.inTimeImageUrl ?? null,
-    outTimeImageUrl: r.outTimeImageUrl ?? null,
-    createdAt: formatDateTimeIST(r.createdAt),
-    updatedAt: formatDateTimeIST(r.updatedAt),
-    salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
-    salesmanEmail: r.userEmail || '',
-  }));
+    return {
+      id: r.id,
+      reportDate: r.reportDate ? formatDateIST(r.reportDate) : '',
+      pjpStatus: finalPjpStatus,
+
+      customerType: r.customerType ?? null,
+      partyType: r.partyType ?? null,
+      nameOfParty: r.nameOfParty ?? null,
+      contactNoOfParty: r.contactNoOfParty ?? null,
+      expectedActivationDate: r.expectedActivationDate ? formatDateIST(r.expectedActivationDate) : null,
+
+      dealerType: r.dealerType ?? null,
+      dealerName: r.dealerName ?? null,
+      subDealerName: r.subDealerName ?? null,
+      location: r.location ?? null,
+      latitude: toNum(r.latitude) || 0,
+      longitude: toNum(r.longitude) || 0,
+      visitType: r.visitType ?? null,
+      dealerTotalPotential: toNum(r.dealerTotalPotential) || 0,
+      dealerBestPotential: toNum(r.dealerBestPotential) || 0,
+      brandSelling: (r.brandSelling || []).join(', '),
+      contactPerson: r.contactPerson ?? null,
+      contactPersonPhoneNo: r.contactPersonPhoneNo ?? null,
+      todayOrderMt: toNum(r.todayOrderMt) || 0,
+      todayCollectionRupees: toNum(r.todayCollectionRupees) || 0,
+      overdueAmount: toNum(r.overdueAmount),
+      feedbacks: r.feedbacks ?? null,
+      solutionBySalesperson: r.solutionBySalesperson ?? null,
+      anyRemarks: r.anyRemarks ?? null,
+      checkInTime: r.checkInTime ? formatDateTimeIST(r.checkInTime) : null,
+      checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
+      timeSpentinLoc: r.timeSpentinLoc ?? null,
+      inTimeImageUrl: r.inTimeImageUrl ?? null,
+      outTimeImageUrl: r.outTimeImageUrl ?? null,
+      createdAt: formatDateTimeIST(r.createdAt),
+      updatedAt: formatDateTimeIST(r.updatedAt),
+      salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
+      salesmanEmail: r.userEmail || '',
+    }
+  });
 }
 
 export async function getFlattenedTechnicalVisitReports(companyId: number) {
@@ -219,6 +236,176 @@ export async function getFlattenedTechnicalVisitReports(companyId: number) {
     .orderBy(desc(technicalVisitReports.reportDate));
 
   return rawReports.map((r) => ({
+    id: r.id,
+    visitType: r.visitType,
+    siteNameConcernedPerson: r.siteNameConcernedPerson,
+    phoneNo: r.phoneNo,
+    emailId: r.emailId ?? null,
+    clientsRemarks: r.clientsRemarks,
+    salespersonRemarks: r.salespersonRemarks,
+    siteVisitStage: r.siteVisitStage ?? null,
+    conversionFromBrand: r.conversionFromBrand ?? null,
+    conversionQuantityUnit: r.conversionQuantityUnit ?? null,
+    associatedPartyName: r.associatedPartyName ?? null,
+    serviceType: r.serviceType ?? null,
+    qualityComplaint: r.qualityComplaint ?? null,
+    promotionalActivity: r.promotionalActivity ?? null,
+    channelPartnerVisit: r.channelPartnerVisit ?? null,
+    siteVisitType: r.siteVisitType ?? null,
+    dhalaiVerificationCode: r.dhalaiVerificationCode ?? null,
+    isVerificationStatus: r.isVerificationStatus ?? null,
+    meetingId: r.meetingId ?? null,
+    timeSpentinLoc: r.timeSpentInLoc ?? null,
+    inTimeImageUrl: r.inTimeImageUrl ?? null,
+    outTimeImageUrl: r.outTimeImageUrl ?? null,
+
+    reportDate: formatDateIST(r.reportDate) || '',
+    checkInTime: formatDateTimeIST(r.checkInTime),
+    checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
+    firstVisitTime: r.firstVisitTime ? formatDateTimeIST(r.firstVisitTime) : null,
+    lastVisitTime: r.lastVisitTime ? formatDateTimeIST(r.lastVisitTime) : null,
+
+    conversionQuantityValue: toNum(r.conversionQuantityValue),
+    siteVisitBrandInUse: (r.siteVisitBrandInUse || []).join(', '),
+    influencerType: (r.influencerType || []).join(', '),
+
+    purposeOfVisit: r.purposeOfVisit ?? null,
+    sitePhotoUrl: r.sitePhotoUrl ?? null,
+    firstVisitDay: r.firstVisitDay ?? null,
+    lastVisitDay: r.lastVisitDay ?? null,
+    siteVisitsCount: r.siteVisitsCount ?? null,
+    otherVisitsCount: r.otherVisitsCount ?? null,
+    totalVisitsCount: r.totalVisitsCount ?? null,
+    region: r.region ?? null,
+    area: r.area ?? null,
+    latitude: toNum(r.latitude),
+    longitude: toNum(r.longitude),
+    pjpId: r.pjpId ?? null,
+    masonId: r.masonId ?? null,
+    siteId: r.siteId ?? null,
+    marketName: r.marketName ?? null,
+    siteAddress: r.siteAddress ?? null,
+    whatsappNo: r.whatsappNo ?? null,
+    visitCategory: r.visitCategory ?? null,
+    customerType: r.customerType ?? null,
+    constAreaSqFt: r.constAreaSqFt ?? null,
+    supplyingDealerName: r.supplyingDealerName ?? null,
+    nearbyDealerName: r.nearbyDealerName ?? null,
+    conversionType: r.conversionType ?? null,
+    serviceDesc: r.serviceDesc ?? null,
+    influencerName: r.influencerName ?? null,
+    influencerPhone: r.influencerPhone ?? null,
+    influencerProductivity: r.influencerProductivity ?? null,
+    isConverted: r.isConverted ?? null,
+    isTechService: r.isTechService ?? null,
+    isSchemeEnrolled: r.isSchemeEnrolled ?? null,
+    currentBrandPrice: toNum(r.currentBrandPrice),
+    siteStock: toNum(r.siteStock),
+    estRequirement: toNum(r.estRequirement),
+    salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
+    salesmanEmail: r.userEmail || '',
+  }));
+}
+
+// kamrup Tso Dvr
+export async function getFlattenedKamrupDvrs(companyId: number) {
+  const subDealers = aliasedTable(dealers, 'subDealers');
+  const kamrupAreaFilter = inArray(users.area, ['Kamrup-TSO', 'Kamrup TSO']);
+  
+  const rawDvrs = await db
+    .select({
+      ...getTableColumns(dailyVisitReports),
+      pjpTaskStatus: dailyTasks.status,
+      pjpVisitType: dailyTasks.visitType,
+      userFirstName: users.firstName,
+      userLastName: users.lastName,
+      userEmail: users.email,
+      dealerName: dealers.name,
+      subDealerName: subDealers.name,
+    })
+    .from(dailyVisitReports)
+    .innerJoin(users, eq(dailyVisitReports.userId, users.id))
+    .leftJoin(
+      dailyTasks,
+      and(
+        eq(dailyVisitReports.userId, dailyTasks.userId),
+        eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
+        eq(dailyVisitReports.dealerId, dailyTasks.dealerId)
+      )
+    )
+    .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
+    .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
+    .where(and(eq(users.companyId, companyId), kamrupAreaFilter))
+    .orderBy(desc(dailyVisitReports.reportDate));
+
+  return rawDvrs.map((r) => {
+    const finalPjpStatus = (!r.pjpTaskStatus || r.pjpVisitType?.toLowerCase() === 'unplanned')
+      ? 'Unplanned'
+      : r.pjpTaskStatus;
+
+    return {
+      sourceReport: 'DVR', // <-- Proxy in-memory column
+      id: r.id,
+      reportDate: r.reportDate ? formatDateIST(r.reportDate) : '',
+      pjpStatus: finalPjpStatus,
+
+      customerType: r.customerType ?? null,
+      partyType: r.partyType ?? null,
+      nameOfParty: r.nameOfParty ?? null,
+      contactNoOfParty: r.contactNoOfParty ?? null,
+      expectedActivationDate: r.expectedActivationDate ? formatDateIST(r.expectedActivationDate) : null,
+
+      dealerType: r.dealerType ?? null,
+      dealerName: r.dealerName ?? null,
+      subDealerName: r.subDealerName ?? null,
+      location: r.location ?? null,
+      latitude: toNum(r.latitude) || 0,
+      longitude: toNum(r.longitude) || 0,
+      visitType: r.visitType ?? null,
+      dealerTotalPotential: toNum(r.dealerTotalPotential) || 0,
+      dealerBestPotential: toNum(r.dealerBestPotential) || 0,
+      brandSelling: (r.brandSelling || []).join(', '),
+      contactPerson: r.contactPerson ?? null,
+      contactPersonPhoneNo: r.contactPersonPhoneNo ?? null,
+      todayOrderMt: toNum(r.todayOrderMt) || 0,
+      todayCollectionRupees: toNum(r.todayCollectionRupees) || 0,
+      overdueAmount: toNum(r.overdueAmount),
+      feedbacks: r.feedbacks ?? null,
+      solutionBySalesperson: r.solutionBySalesperson ?? null,
+      anyRemarks: r.anyRemarks ?? null,
+      checkInTime: r.checkInTime ? formatDateTimeIST(r.checkInTime) : null,
+      checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
+      timeSpentinLoc: r.timeSpentinLoc ?? null,
+      inTimeImageUrl: r.inTimeImageUrl ?? null,
+      outTimeImageUrl: r.outTimeImageUrl ?? null,
+      createdAt: formatDateTimeIST(r.createdAt),
+      updatedAt: formatDateTimeIST(r.updatedAt),
+      salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
+      salesmanEmail: r.userEmail || '',
+    };
+  });
+}
+
+// kamrup Tso Tvr
+export async function getFlattenedKamrupTvrs(companyId: number) {
+  const kamrupAreaFilter = inArray(users.area, ['Kamrup-TSO', 'Kamrup TSO']);
+
+  const rawTvrs = await db
+    .select({
+      ...getTableColumns(technicalVisitReports),
+      userFirstName: users.firstName,
+      userLastName: users.lastName,
+      userEmail: users.email,
+    })
+    .from(technicalVisitReports)
+    .innerJoin(users, eq(technicalVisitReports.userId, users.id))
+    .where(and(eq(users.companyId, companyId), kamrupAreaFilter))
+    .orderBy(desc(technicalVisitReports.reportDate));
+
+  return rawTvrs.map((r) => ({
+    sourceReport: 'TVR', // <-- Proxy in-memory column
     id: r.id,
     visitType: r.visitType,
     siteNameConcernedPerson: r.siteNameConcernedPerson,
@@ -481,7 +668,12 @@ export async function getFlattenedDailyTasks(companyId: number) {
     .from(dailyTasks)
     .leftJoin(users, eq(dailyTasks.userId, users.id))
     .leftJoin(dealers, eq(dailyTasks.dealerId, dealers.id))
-    .where(eq(users.companyId, companyId))
+    .where(
+      and(
+        eq(users.companyId, companyId),
+        notIlike(dailyTasks.visitType, 'unplanned')
+      )
+    )
     .orderBy(desc(dailyTasks.taskDate));
 
   return rawReports.map((r) => ({
@@ -1105,9 +1297,9 @@ export async function getFlattenedRewardRedemptions(companyId: number) {
     id: r.id,
     masonId: r.masonId,
     masonName: r.masonName || 'Unknown',
-    associatedUserName: r.userFirstName 
-        ? `${r.userFirstName} ${r.userLastName || ''}`.trim() 
-        : 'Unassigned',
+    associatedUserName: r.userFirstName
+      ? `${r.userFirstName} ${r.userLastName || ''}`.trim()
+      : 'Unassigned',
     associatedUserEmail: r.userEmail ?? 'N/A',
     rewardId: r.rewardId,
     rewardName: r.rewardName || 'Unknown',
@@ -1241,6 +1433,8 @@ export const transformerMap = {
   dailyVisitReports: getFlattenedDailyVisitReports,
   technicalVisitReports: getFlattenedTechnicalVisitReports,
   technicalSites: getFlattenedTechnicalSites,
+  kamrupTsoDvrs: getFlattenedKamrupDvrs,
+  kamrupTsoTvrs: getFlattenedKamrupTvrs,
   salesOrders: getFlattenedSalesOrders,
   competitionReports: getFlattenedCompetitionReports,
 
