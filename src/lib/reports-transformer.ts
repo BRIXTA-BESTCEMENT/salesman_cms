@@ -64,8 +64,6 @@ type FlattenedUserRow = InferSelectModel<typeof users> & {
   managerEmail: string | null;
 };
 
-// --- TRANSFORMERS ---
-
 export async function getFlattenedUsers(companyId: number) {
   const reportsToUsers = aliasedTable(users, 'reportsTo');
 
@@ -163,10 +161,13 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
     .from(dailyVisitReports)
     .leftJoin(
       dailyTasks,
-      and(
-        eq(dailyVisitReports.userId, dailyTasks.userId),
-        eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
-        eq(dailyVisitReports.dealerId, dailyTasks.dealerId)
+      or(
+        eq(dailyVisitReports.dailyTaskId, dailyTasks.id),
+        and(
+          eq(dailyVisitReports.userId, dailyTasks.userId),
+          eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
+          eq(dailyVisitReports.dealerId, dailyTasks.dealerId)
+        )
       )
     )
     .leftJoin(users, eq(dailyVisitReports.userId, users.id))
@@ -176,14 +177,13 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
     .orderBy(desc(dailyVisitReports.reportDate));
 
   return raw.map((r) => {
-    const finalPjpStatus = (!r.pjpTaskStatus || r.pjpVisitType?.toLowerCase() === 'unplanned')
-      ? 'Unplanned'
-      : r.pjpTaskStatus;
+    const isUnplanned = !r.pjpTaskStatus || r.pjpVisitType?.toLowerCase() === 'unplanned';
+    const finalPjpStatus = isUnplanned ? '' : r.pjpTaskStatus;
+    const unplannedVisitStatus = isUnplanned ? 'Unplanned' : '';
 
     return {
       id: r.id,
       reportDate: r.reportDate ? formatDateIST(r.reportDate) : '',
-      pjpStatus: finalPjpStatus,
 
       customerType: r.customerType ?? null,
       partyType: r.partyType ?? null,
@@ -194,6 +194,9 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
       dealerType: r.dealerType ?? null,
       dealerName: r.dealerName ?? null,
       subDealerName: r.subDealerName ?? null,
+      pjpStatus: finalPjpStatus,
+      unplannedVisit: unplannedVisitStatus,
+
       location: r.location ?? null,
       latitude: toNum(r.latitude) || 0,
       longitude: toNum(r.longitude) || 0,
@@ -309,7 +312,6 @@ export async function getFlattenedTechnicalVisitReports(companyId: number) {
   }));
 }
 
-// kamrup Tso Dvr
 export async function getFlattenedKamrupDvrs(companyId: number) {
   const subDealers = aliasedTable(dealers, 'subDealers');
   const kamrupAreaFilter = inArray(users.area, ['Kamrup-TSO', 'Kamrup TSO']);
@@ -388,7 +390,6 @@ export async function getFlattenedKamrupDvrs(companyId: number) {
   });
 }
 
-// kamrup Tso Tvr
 export async function getFlattenedKamrupTvrs(companyId: number) {
   const kamrupAreaFilter = inArray(users.area, ['Kamrup-TSO', 'Kamrup TSO']);
 

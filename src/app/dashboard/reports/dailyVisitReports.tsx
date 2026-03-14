@@ -138,24 +138,6 @@ const InfoField = ({
   </div>
 );
 
-const formatTimeIST = (dateString: string | null) => {
-  if (!dateString) return 'N/A';
-  try {
-    return new Date(dateString).toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    }).toUpperCase();
-  } catch {
-    return 'N/A';
-  }
-};
-
-const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
-  if (!lat || !lng) return null;
-  return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-};
-
 export default function DailyVisitReportsPage() {
   const router = useRouter();
 
@@ -190,11 +172,8 @@ export default function DailyVisitReportsPage() {
     'Assigned',
     'Approved',
     'Verified',
-    'Unplanned',
     'Failed',
   ];
-
-  /* -------------------- DEBOUNCE & RESET -------------------- */
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
@@ -204,8 +183,6 @@ export default function DailyVisitReportsPage() {
   useEffect(() => {
     setPage(0);
   }, [debouncedSearchQuery, roleFilter, areaFilter, regionFilter, customerTypeFilter, pjpStatusFilter]);
-
-  /* -------------------- FETCH -------------------- */
 
   const fetchReports = useCallback(async () => {
     setLoading(true);
@@ -277,14 +254,12 @@ export default function DailyVisitReportsPage() {
     fetchRoles();
   }, [fetchLocations, fetchRoles]);
 
-  /* -------------------- TYPE SPLIT -------------------- */
-
   const isDealerVisit = (r: DailyVisitReport) => !!r.dealerType;
 
   const columns = useMemo<ColumnDef<DailyVisitReport>[]>(() => [
     {
       accessorKey: "customerType",
-      header: "Form Type/Name",
+      header: "Form Type",
       cell: ({ row }) => (
         <Badge variant="outline" className="whitespace-nowrap">
           {row.original.customerType || 'N/A'}
@@ -303,24 +278,75 @@ export default function DailyVisitReportsPage() {
     },
     {
       accessorKey: "dealerName",
-      header: "Dealer / Party",
+      header: "Dealer / Party Name",
       cell: ({ row }) => (
-        <div className="flex flex-col">
-          <span className="text-sm">
-            {row.original.dealerName || row.original.nameOfParty || row.original.subDealerName}
-          </span>
-        </div>
+        <span className="text-sm font-medium">
+          {row.original.dealerName || row.original.nameOfParty || '-'}
+        </span>
       ),
     },
-    { accessorKey: "region", header: "Region" },
-    { accessorKey: "area", header: "Area" },
-    { accessorKey: "reportDate", header: "Date" },
+    {
+      accessorKey: "subDealerName",
+      header: "Sub Dealer Name",
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {row.original.subDealerName || '-'}
+        </span>
+      ),
+    },
+    {
+      id: "location",
+      header: "Location",
+      cell: ({ row }) => {
+        const { region, area, latitude, longitude } = row.original;
+
+        const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
+          if (!lat || !lng) return null;
+          return `http://maps.google.com/?q=${lat},${lng}`; 
+        };
+
+        const mapLink = getGoogleMapsLink(latitude, longitude);
+
+        return (
+          <div className="flex flex-col min-w-[140px]">
+            <span className="text-sm">{region || '-'} / {area || '-'}</span>
+            {mapLink ? (
+              <a
+                href={mapLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline mt-1"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MapPin className="h-3 w-3" /> View Map
+              </a>
+            ) : (
+              <span className="text-xs text-muted-foreground mt-1">No GPS</span>
+            )}
+          </div>
+        );
+      }
+    },
+    {
+      id: "dateAndTime",
+      header: "Date & Time",
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="text-sm">{row.original.reportDate || '-'}</span>
+        </div>
+      )
+    },
     {
       accessorKey: 'pjpStatus',
       header: 'PJP Status',
       cell: ({ row }) => {
-        const status = row.original.pjpStatus || "Unplanned";
+
+        const status: any = row.original.pjpStatus || "-";
         const upperStatus = status.toUpperCase();
+
+        if (upperStatus === 'UNPLANNED') {
+          return <span className="text-muted-foreground text-xs">-</span>;
+        }
 
         if (upperStatus === 'COMPLETED') {
           return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 shadow-none tracking-wide">{status}</Badge>;
@@ -333,6 +359,20 @@ export default function DailyVisitReportsPage() {
         }
 
         return <Badge variant="secondary" className="shadow-none tracking-wide">{status}</Badge>;
+      }
+    },
+    {
+      id: "unplannedVisits",
+      header: "Unplanned Visit",
+      cell: ({ row }) => {
+        const status = row.original.pjpStatus || "Unplanned";
+        const isUnplanned = status.toUpperCase() === 'UNPLANNED';
+        
+        return isUnplanned ? (
+          <Badge variant="destructive" className="shadow-none tracking-wide">Unplanned</Badge>
+        ) : (
+          <span className="text-muted-foreground text-xs">-</span>
+        );
       }
     },
     {

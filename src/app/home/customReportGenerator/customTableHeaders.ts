@@ -55,11 +55,11 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Daily Visit Reports',
         icon: CalendarCheck,
         columns: [
-            'id', 'reportDate', 'pjpStatus', 'salesmanName', 'salesmanEmail', 'dealerType', 'dealerName', 'subDealerName', 'location',
-            'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
+            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'dealerType', 'dealerName', 'subDealerName', 'pjpStatus', 'unplannedVisit', 
+            'location', 'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
             'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
-            'todayCollectionRupees', 'overdueAmount', 'feedbacks', 'solutionBySalesperson',
-            'anyRemarks', 'checkInTime', 'customerType', 'partyType', 'nameOfParty', 'contactNoOfParty', 'expectedActivationDate',
+            'todayCollectionRupees', 'overdueAmount', 'feedbacks',
+            'checkInTime', 'customerType', 'partyType', 'nameOfParty', 'contactNoOfParty', 'expectedActivationDate',
             'timeSpentinLoc', 'checkOutTime', 'inTimeImageUrl', 'outTimeImageUrl',
             'createdAt', 'updatedAt'
         ],
@@ -74,8 +74,8 @@ export const tablesMetadata: TableMeta[] = [
             'nameOfParty', 'contactNoOfParty', 'expectedActivationDate', 'location',
             'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
             'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
-            'todayCollectionRupees', 'overdueAmount', 'feedbacks', 'solutionBySalesperson',
-            'anyRemarks', 'checkInTime', 'checkOutTime', 'timeSpentinLoc', 
+            'todayCollectionRupees', 'overdueAmount', 'feedbacks',
+            'checkInTime', 'checkOutTime', 'timeSpentinLoc', 
             'inTimeImageUrl', 'outTimeImageUrl', 'createdAt', 'updatedAt'
         ],
     },
@@ -95,7 +95,7 @@ export const tablesMetadata: TableMeta[] = [
             'serviceType', 'serviceDesc', 'influencerName', 'influencerType',
             'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity',
             'qualityComplaint', 'promotionalActivity', 'channelPartnerVisit', 
-            'clientsRemarks', 'salespersonRemarks', 'siteVisitsCount', 'otherVisitsCount', 
+            'salespersonRemarks', 'siteVisitsCount', 'otherVisitsCount', 
             'checkInTime', 'checkOutTime', 'timeSpentinLoc', 'siteVisitType',
         ],
     },
@@ -113,9 +113,8 @@ export const tablesMetadata: TableMeta[] = [
             'conversionType', 'conversionFromBrand', 'conversionQuantityValue', 'conversionQuantityUnit',
             'isTechService', 'serviceType', 'serviceDesc', 'qualityComplaint',
             'influencerName', 'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity', 'influencerType',
-            'masonId', 'salespersonRemarks', 'promotionalActivity',
-            'checkInTime', 'checkOutTime',
-            'pjpId', 'siteId'
+            'masonId', 'salespersonRemarks', 'promotionalActivity', 'timeSpentinLoc',
+            'checkInTime', 'checkOutTime', 'pjpId', 'siteId'
         ],
     },
     {
