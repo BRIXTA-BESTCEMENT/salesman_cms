@@ -153,7 +153,7 @@ export default function TasksListPage() {
     },
     { 
       accessorKey: 'relatedDealerName', 
-      header: 'Dealer', 
+      header: 'Visiting', 
       cell: ({ row }) => (
         <div className="flex flex-col">
           <span className="font-medium text-sm">{row.original.relatedDealerName || "N/A"}</span>

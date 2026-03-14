@@ -536,7 +536,7 @@ export default function VerifyTasksPage() {
                         {/* Update 2: Added missing fields from Flutter app */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <Label className="text-xs font-bold text-muted-foreground">Dealer Name (Snapshot)</Label>
+                                <Label className="text-xs font-bold text-muted-foreground">Dealer/Visiting Name</Label>
                                 <Input value={taskToModify?.dealerNameSnapshot ?? ''} onChange={e => setTaskToModify(p => p ? { ...p, dealerNameSnapshot: e.target.value } : null)} className="bg-background border-input font-medium" />
                             </div>
                             <div className="space-y-1">

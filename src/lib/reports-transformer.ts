@@ -684,7 +684,7 @@ export async function getFlattenedDailyTasks(companyId: number) {
 
     // Dealer Details
     dealerId: r.dealerId ?? null,
-    dealerName: r.dealerNameStr ?? r.dealerNameSnapshot ?? null,
+    dealerVisitingName: r.dealerNameStr ?? r.dealerNameSnapshot ?? null,
     dealerMobile: r.dealerMobile ?? null,
 
     // Routing & Location
