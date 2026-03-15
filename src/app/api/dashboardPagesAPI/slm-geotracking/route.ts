@@ -67,6 +67,7 @@ type TrackingRow = InferSelectModel<typeof journeyOps> & {
 async function getCachedTracking(companyId: number, startDateParam: string | null, endDateParam: string | null) {
   'use cache';
   cacheLife('minutes');
+  cacheTag(`slm-geotracking-${companyId}`);
   
   const filterKey = `${startDateParam}-${endDateParam}`;
   cacheTag(`slm-geotracking-${companyId}-${filterKey}`);

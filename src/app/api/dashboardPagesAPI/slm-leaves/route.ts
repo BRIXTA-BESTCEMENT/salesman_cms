@@ -51,6 +51,7 @@ async function getCachedLeaves(
 ) {
   'use cache';
   cacheLife('hours');
+  cacheTag(`salesman-leaves-${companyId}`);
   
   const filterKey = `${search}-${role}-${area}-${region}-${startDateParam}-${endDateParam}`;
   cacheTag(`salesman-leaves-${companyId}-${page}-${filterKey}`);

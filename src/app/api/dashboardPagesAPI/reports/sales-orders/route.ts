@@ -69,7 +69,8 @@ async function getCachedSalesOrders(
 ) {
   'use cache';
   cacheLife('hours');
-  
+  cacheTag(`sales-orders-${companyId}`);
+
   const filterKey = `${search}-${role}-${area}-${region}`;
   cacheTag(`sales-orders-${companyId}-${page}-${filterKey}`);
 

@@ -73,6 +73,7 @@ async function getCachedDailyVisitReports(
 ) {
   'use cache';
   cacheLife('hours');
+  cacheTag(`daily-visit-reports-${companyId}`);
   
   // Unique cache tag based on active filters
   const filterKey = `${search}-${role}-${area}-${region}`;

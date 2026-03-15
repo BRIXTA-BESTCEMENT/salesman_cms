@@ -175,7 +175,7 @@ export default function RewardsRedemptionPage() {
     {
       accessorKey: "createdAt",
       header: "Date",
-      cell: ({ row }) => <span className="text-xs text-gray-600">{formatDate(row.original.createdAt)}</span>,
+      cell: ({ row }) => <span className="text-xs">{formatDate(row.original.createdAt)}</span>,
     },
     { accessorKey: "masonName", header: "Mason" },
     { accessorKey: "rewardName", header: "Item" },

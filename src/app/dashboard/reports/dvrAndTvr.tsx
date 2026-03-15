@@ -463,7 +463,7 @@ export default function HybridReportsPage() {
           <Badge variant="outline" className="text-base px-4 py-1">
             Total Combined: {totalDvrCount + totalTvrCount}
           </Badge>
-          <RefreshDataButton cachePrefix="kamrup-tso-reports" onRefresh={fetchReports} />
+          <RefreshDataButton cachePrefix="hybrid-reports" onRefresh={fetchReports} />
         </div>
 
         {/* -------------------- FILTERS BLOCK -------------------- */}

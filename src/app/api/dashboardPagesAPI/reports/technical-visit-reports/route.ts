@@ -71,6 +71,7 @@ async function getCachedTechnicalVisitReports(
 ) {
   'use cache';
   cacheLife('hours');
+  cacheTag(`technical-visit-reports-${companyId}`);
   
   const filterKey = `${search}-${role}-${area}-${region}-${customerType}`;
   cacheTag(`technical-visit-reports-${companyId}-${page}-${filterKey}`);

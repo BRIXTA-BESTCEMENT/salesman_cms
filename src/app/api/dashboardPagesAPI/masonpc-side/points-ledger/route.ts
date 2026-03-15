@@ -30,6 +30,7 @@ async function getCachedPointsLedger(
 ) {
   'use cache';
   cacheLife('minutes');
+  cacheTag(`points-ledger-${companyId}`);
   
   const filterKey = `${search}-${sourceType}`;
   cacheTag(`points-ledger-${companyId}-${page}-${filterKey}`); 

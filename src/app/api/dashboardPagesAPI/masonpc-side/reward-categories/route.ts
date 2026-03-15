@@ -7,7 +7,7 @@ import { users, rewardCategories } from '../../../../../../drizzle';
 import { eq, asc } from 'drizzle-orm';
 import { z } from 'zod';
 // Use Drizzle-baked schema
-import { selectRewardsSchema } from '../../../../../../drizzle/zodSchemas'; 
+import { selectRewardCategorySchema } from '../../../../../../drizzle/zodSchemas'; 
 
 const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
@@ -40,7 +40,7 @@ export async function GET() {
       .limit(200);
 
     // Validate core data structure using the baked schema
-    const validatedReports = z.array(selectRewardsSchema.loose()).parse(categoryRecords);
+    const validatedReports = z.array(selectRewardCategorySchema.loose()).parse(categoryRecords);
 
     return NextResponse.json(validatedReports, { status: 200 });
     

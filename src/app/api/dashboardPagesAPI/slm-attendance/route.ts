@@ -67,7 +67,8 @@ async function getCachedAttendance(
   endDateParam: string | null
 ) {
   'use cache';
-  cacheLife('hours'); 
+  cacheLife('hours');
+  cacheTag(`salesman-attendance-${companyId}`); 
   
   const filterKey = `${search}-${jobTitle}-${companyRole}-${area}-${region}-${startDateParam}-${endDateParam}`;
   cacheTag(`salesman-attendance-${companyId}-${page}-${filterKey}`); 

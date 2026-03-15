@@ -70,6 +70,7 @@ async function getCachedTechnicalSites(
 ) {
     'use cache';
     cacheLife('days');
+    cacheTag(`technical-sites`);
     
     const filterKey = `${search}-${region}-${area}-${stage}`;
     cacheTag(`technical-sites-${page}-${filterKey}`);

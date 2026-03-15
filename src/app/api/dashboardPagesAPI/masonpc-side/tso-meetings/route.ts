@@ -35,7 +35,8 @@ async function getCachedTsoMeetings(
 ) {
   'use cache';
   cacheLife('minutes');
-  
+  cacheTag(`tso-meetings-${companyId}`);
+
   const filterKey = `${search}-${role}-${area}-${region}`;
   cacheTag(`tso-meetings-${companyId}-${page}-${filterKey}`);
 

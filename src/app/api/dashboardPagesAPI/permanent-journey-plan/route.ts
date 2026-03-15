@@ -60,6 +60,7 @@ async function getCachedPJPs(
 ) {
   'use cache';
   cacheLife('days');
+  cacheTag(`permanent-journey-plan-${companyId}`);
   
   const filterKey = `${search}-${salesmanId}-${status}-${verificationStatus}-${fromDate}-${toDate}`;
   cacheTag(`permanent-journey-plan-${companyId}-${page}-${filterKey}`);
