@@ -27,7 +27,7 @@ async function getAuthClaims() {
     if (!claims || !claims.sub || !claims.org_id) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
-    
+
     const result = await db
         .select({ companyId: users.companyId, role: users.role })
         .from(users)
@@ -50,7 +50,8 @@ function applyFilters(rows: any[], filters: FilterRule[]): any[] {
         // A row must satisfy ALL applicable filters (AND logic)
         return filters.every(filter => {
             // 1. If the row does not contain the column being filtered, ignore this filter.
-            if (!Object.prototype.hasOwnProperty.call(row, filter.column)) {
+            // Using 'in' safely checks the prototype chain as well.
+            if (!(filter.column in row)) {
                 return true;
             }
 

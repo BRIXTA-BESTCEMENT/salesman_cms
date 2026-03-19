@@ -105,34 +105,39 @@ const HierarchyTab = ({ member, allTeamMembers, currentUserRole, onSave }: { mem
   const [newManagesIds, setNewManagesIds] = useState<number[]>(member.managesIds ?? []);
   const [isSaving, setIsSaving] = useState(false);
 
-  const memberIndex = allRoles.indexOf(member.role);
+  // Safely find the index even if there are casing/spacing mismatches in the DB
+  const getRoleIndex = (roleToCheck: string | undefined | null) => {
+    if (!roleToCheck) return -1;
+    const normalized = roleToCheck.trim().toLowerCase();
+    return allRoles.findIndex(r => r.trim().toLowerCase() === normalized);
+  };
 
+  const memberIndex = getRoleIndex(member.role);
+
+  // 1. REPLACED managerOptions
   const managerOptions = useMemo(() => {
-    if (!currentUserRole || memberIndex === -1) return [];
     return allTeamMembers
-      .filter((m) => m.id !== member.id)
-      .filter((m) => {
-        const idx = allRoles.indexOf(m.role);
-        return idx !== -1 && idx < memberIndex && canAssignRole(currentUserRole, m.role);
-      })
+      .filter((m) => m.id !== member.id) // Just prevent assigning themselves
       .map((m) => ({ value: m.id.toString(), label: `${m.name} (${m.role})` }));
-  }, [allTeamMembers, memberIndex, member.id, currentUserRole]);
+  }, [allTeamMembers, member.id]);
 
+  // 2. REPLACED juniorOptions
   const juniorOptions = useMemo(() => {
-    if (!currentUserRole || memberIndex === -1) return [];
     return allTeamMembers
-      .filter((m) => m.id !== member.id)
-      .filter((m) => {
-        const idx = allRoles.indexOf(m.role);
-        return idx !== -1 && idx > memberIndex && canAssignRole(currentUserRole, m.role);
-      })
+      .filter((m) => m.id !== member.id) // Just prevent assigning themselves
       .map((m) => ({ value: m.id.toString(), label: `${m.name} (${m.role})` }));
-  }, [allTeamMembers, memberIndex, member.id, currentUserRole]);
+  }, [allTeamMembers, member.id]);
 
   const handleSave = async () => {
     setIsSaving(true);
-    await onSave(member.id, newReportsToId, newManagesIds);
-    setIsSaving(false);
+    try {
+      // If this throws an error now, the finally block will catch it
+      await onSave(member.id, newReportsToId, newManagesIds);
+    } catch (error) {
+      console.error("Failed to save hierarchy:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

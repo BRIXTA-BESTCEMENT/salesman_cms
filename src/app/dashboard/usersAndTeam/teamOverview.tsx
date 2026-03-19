@@ -54,11 +54,11 @@ export function TeamTabContent() {
   const [teamData, setTeamData] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // --- Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>('all');
-  
+
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
   const allRoles = ROLE_HIERARCHY;
@@ -82,7 +82,7 @@ export function TeamTabContent() {
 
       const response = await fetch(url.toString());
       if (!response.ok) throw new Error('Failed to fetch team data');
-      
+
       const data: TeamMember[] = await response.json();
       setTeamData(data);
     } catch (err: any) {
@@ -124,14 +124,24 @@ export function TeamTabContent() {
   }, [editRoleURI, loadTeamData]);
 
   const handleSaveMapping = useCallback(async (userId: number, reportsToId: number | null, managesIds: number[]) => {
-    const res = await fetch(editMappingURI, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, reportsToId, managesIds }),
-    });
-    if (!res.ok) throw new Error('Failed to update hierarchy');
-    toast.success('Hierarchy updated!');
-    await loadTeamData();
+    try {
+      const res = await fetch(editMappingURI, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, reportsToId, managesIds }),
+      });
+      if (!res.ok) {
+        // Parse the error message from your API route if it exists
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to update hierarchy');
+      }
+
+      toast.success('Hierarchy updated!');
+      await loadTeamData();
+    } catch (err: any) {
+      toast.error(err.message); // Now you will actually see WHY it failed!
+      throw err; // Rethrow so the modal knows to stop spinning
+    }
   }, [editMappingURI, loadTeamData]);
 
   const handleSaveDealerMapping = useCallback(async (userId: number, dealerIds: string[]) => {
@@ -169,10 +179,10 @@ export function TeamTabContent() {
   const columns: ColumnDef<TeamMember>[] = useMemo(() => [
     { accessorKey: 'name', header: 'Member Name' },
     { accessorKey: 'role', header: 'Role' },
-    { 
-      accessorKey: 'managedBy', 
+    {
+      accessorKey: 'managedBy',
       header: 'Manager',
-      cell: ({row}) => row.original.managedBy || <span className="text-muted-foreground italic">None</span>
+      cell: ({ row }) => row.original.managedBy || <span className="text-muted-foreground italic">None</span>
     },
     {
       header: 'Reports To',
@@ -217,22 +227,22 @@ export function TeamTabContent() {
         <CardTitle>Team Hierarchy & Overview</CardTitle>
       </CardHeader>
       <CardContent>
-        
+
         {/* --- Filter Components (Updated Style) --- */}
         <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6">
-          
+
           {/* 1. Search Input */}
           <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-             <label className="text-sm font-medium text-muted-foreground">Search Team</label>
-             <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                   placeholder="Search by name or role..." 
-                   value={searchQuery}
-                   onChange={(e) => setSearchQuery(e.target.value)}
-                   className="pl-8 h-9"
-                />
-             </div>
+            <label className="text-sm font-medium text-muted-foreground">Search Team</label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name or role..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-9"
+              />
+            </div>
           </div>
 
           {/* 2. Role Filter */}
@@ -254,7 +264,7 @@ export function TeamTabContent() {
         ) : (
           <DataTableReusable
             columns={columns}
-            data={filteredData} 
+            data={filteredData}
           />
         )}
       </CardContent>
