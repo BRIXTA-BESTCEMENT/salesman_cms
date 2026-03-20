@@ -13,8 +13,12 @@ const allowedOrigins = [
   'http://13.235.130.234/auth/callback',
   'http://122.176.219.242',
   'http://122.176.219.242/auth/callback',
+  'http://122.176.219.242:55002',
+  'http://122.176.219.242:55002/auth/callback',
   'http://salesforce.bestcement.co.in',
   'http://salesforce.bestcement.co.in/auth/callback',
+  'https://salesforce.bestcement.co.in',
+  'https://salesforce.bestcement.co.in/auth/callback',
 ];
 
 // The main middleware function that combines AuthKit and CORS logic.
