@@ -7,7 +7,8 @@ import {
     Building2, ShoppingBag,
     Truck,
     ListChecks,
-    ClipboardPenLine
+    ClipboardPenLine,
+    Activity
 } from 'lucide-react';
 
 export interface TableColumn {
@@ -116,6 +117,17 @@ export const tablesMetadata: TableMeta[] = [
             'masonId', 'salespersonRemarks', 'promotionalActivity', 'timeSpentinLoc',
             'checkInTime', 'checkOutTime', 'pjpId', 'siteId'
         ],
+    },
+    {
+        id: 'tsoPerformanceMetrics',
+        title: 'TSO Performance Metrics',
+        icon: Activity,
+        columns: [
+            'userId', 'salesmanName', 'region', 'area',
+            'totalVisits', 'siteVisitsNew', 'siteVisitsOld', 
+            'dealerVisits', 'influencerVisits', 'siteConversion', 
+            'volumeConvertedMT', 'enrollmentLifting', 'siteServiceSlab', 'technicalMeet'
+        ]
     },
     {
         id: 'technicalSites',

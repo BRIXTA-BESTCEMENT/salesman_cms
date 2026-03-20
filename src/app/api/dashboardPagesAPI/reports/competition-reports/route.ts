@@ -6,16 +6,18 @@ import { db } from '@/lib/drizzle';
 import { users, competitionReports } from '../../../../../../drizzle';
 import { eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
-// Use Drizzle-baked schema
 import { selectCompetitionReportSchema } from '../../../../../../drizzle/zodSchemas'; 
 
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
+const allowedRoles = [
+  'president', 'senior-general-manager', 'general-manager',
   'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
   'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive',];
+  'senior-executive',
+];
 
 export async function GET() {
-  await connection();
+  if (typeof connection === 'function') await connection();
+  
   try {
     const claims = await getTokenClaims();
 
@@ -60,16 +62,23 @@ export async function GET() {
       ...report, 
       salesmanName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || 'Unknown',
       date: report.reportDate ? new Date(report.reportDate).toISOString().split('T')[0] : '',
-      avgSchemeCost: report.avgSchemeCost ? Number(report.avgSchemeCost) : 0,
+      // Send the raw value. The frontend Zod schema will safely coerce this to a number!
+      avgSchemeCost: report.avgSchemeCost, 
       remarks: report.remarks || '',
       createdAt: report.createdAt ? new Date(report.createdAt).toISOString() : new Date().toISOString(),
       updatedAt: report.updatedAt ? new Date(report.updatedAt).toISOString() : new Date().toISOString(),
     }));
 
-    // 5. Zod Validation using baked schema
-    const validated = z.array(selectCompetitionReportSchema.loose()).parse(formattedReports);
+    // 5. Zod Validation using safeParse
+    const validated = z.array(selectCompetitionReportSchema.loose()).safeParse(formattedReports);
 
-    return NextResponse.json(validated, { status: 200 });
+    // If backend validation fails, log it but still return the data to the frontend gracefully
+    if (!validated.success) {
+      console.warn('Backend Zod Validation Warning:', validated.error.format());
+      return NextResponse.json(formattedReports, { status: 200 });
+    }
+
+    return NextResponse.json(validated.data, { status: 200 });
   } catch (error) {
     console.error('Error fetching competition reports:', error);
     return NextResponse.json({ 

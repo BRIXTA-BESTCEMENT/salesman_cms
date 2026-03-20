@@ -8,9 +8,7 @@ import SalesOrdersTable from './salesOrders';
 import DailyVisitReportsPage from './dailyVisitReports';
 import TechnicalVisitReportsPage from './technicalVisitReports';
 import HybridReportsPage from './dvrAndTvr';
-import DvrPjpReportPage from './dvrVpjp';
-import TvrPjpReportPage from './tvrVpjp';
-import SalesDVRReportPage from './salesVdvr';
+import TsoPerformanceMetricsPage from './tsoPerformanceMetrics';
 
 // This component receives the permissions as props
 // from the server component (page.tsx)
@@ -20,9 +18,7 @@ interface ReportsTabsProps {
   canSeeDvrTvr: boolean;
   canSeeSalesOrders: boolean;
   canSeeCompetition: boolean;
-  canSeeDvrVpjp: boolean;
-  canSeeTvrVpjp: boolean;
-  canSeeSalesVdvr: boolean;
+  canSeeTsoPerformanceMetrics: boolean;
 }
 
 export function ReportsTabs({
@@ -31,9 +27,7 @@ export function ReportsTabs({
   canSeeDvrTvr,
   canSeeSalesOrders,
   canSeeCompetition,
-  canSeeDvrVpjp,
-  canSeeTvrVpjp,
-  canSeeSalesVdvr,
+  canSeeTsoPerformanceMetrics
 }: ReportsTabsProps) {
 
   // 1. State to track hydration completion
@@ -51,11 +45,9 @@ export function ReportsTabs({
     if (canSeeDvrTvr) return "dvrAndTvr"
     if (canSeeSalesOrders) return "salesOrderReport";
     if (canSeeCompetition) return "competitionReport";
-    if (canSeeDvrVpjp) return "dvrVpjp";
-    if (canSeeTvrVpjp) return "tvrVpjp";
-    if (canSeeSalesVdvr) return "salesVdvr";
+    if (canSeeTsoPerformanceMetrics) return "tsoPerformanceMetrics";
     return ""; // Should not happen if canSeeAnyReport is checked in parent
-  }, [canSeeDVR, canSeeTVR, canSeeDvrTvr, canSeeSalesOrders, canSeeCompetition, canSeeDvrVpjp, canSeeTvrVpjp, canSeeSalesVdvr]);
+  }, [canSeeDVR, canSeeTVR, canSeeDvrTvr, canSeeSalesOrders, canSeeCompetition, canSeeTsoPerformanceMetrics]);
 
 
   // 3. Prevent rendering the component that generates unstable IDs during SSR
@@ -81,21 +73,16 @@ export function ReportsTabs({
         {canSeeTVR && (
           <TabsTrigger value="technicalVisitReport">TVR Report</TabsTrigger>
         )}
+        {canSeeTsoPerformanceMetrics && (
+          <TabsTrigger value="tsoPerformanceMetrics">TSO Metrics</TabsTrigger>
+        )}
         {canSeeSalesOrders && (
           <TabsTrigger value="salesOrderReport">Sales Orders</TabsTrigger>
         )}
         {canSeeCompetition && (
           <TabsTrigger value="competitionReport">Competition Report</TabsTrigger>
         )}
-        {/* {canSeeDvrVpjp && (
-          <TabsTrigger value="dvrVpjp">DVR V PJP</TabsTrigger>
-        )} */}
-        {/* {canSeeTvrVpjp && (
-          <TabsTrigger value="tvrVpjp">TVR V PJP</TabsTrigger>
-        )} */}
-        {/* {canSeeSalesVdvr && (
-          <TabsTrigger value="salesVdvr">Sales V DVR</TabsTrigger>
-        )} */}
+        
       </TabsList>
 
       {/* --- Tab Content --- */}
@@ -114,6 +101,11 @@ export function ReportsTabs({
           <TechnicalVisitReportsPage />
         </TabsContent>
       )}
+      {canSeeTsoPerformanceMetrics && (
+        <TabsContent value="tsoPerformanceMetrics" className="space-y-4">
+          <TsoPerformanceMetricsPage />
+        </TabsContent>
+      )}
       {canSeeSalesOrders && (
         <TabsContent value="salesOrderReport" className="space-y-4">
           <SalesOrdersTable />
@@ -124,21 +116,7 @@ export function ReportsTabs({
           <CompetitionReportsPage />
         </TabsContent>
       )}
-      {/* {canSeeDvrVpjp && (
-        <TabsContent value="dvrVpjp" className="space-y-4">
-          <DvrPjpReportPage />
-        </TabsContent>
-      )} */}
-      {/* {canSeeTvrVpjp && (
-        <TabsContent value="TvrVpjp" className="space-y-4">
-          <TvrPjpReportPage />
-        </TabsContent>
-      )} */}
-      {/* {canSeeSalesVdvr && (
-        <TabsContent value="salesVdvr" className="space-y-4">
-          <SalesDVRReportPage />
-        </TabsContent>
-      )} */}
+      
     </Tabs>
   );
 }

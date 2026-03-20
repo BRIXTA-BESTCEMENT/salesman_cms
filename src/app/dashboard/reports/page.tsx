@@ -54,11 +54,8 @@ export async function ReportsDynamicContent() {
   const canSeeDvrTvr = hasPermission(roleToCheck, 'reports.dvrAndTvr');
   const canSeeSalesOrders = hasPermission(roleToCheck, 'reports.salesOrders');
   const canSeeCompetition = hasPermission(roleToCheck, 'reports.competitionReports');
-  const canSeeDvrVpjp = hasPermission(roleToCheck, 'reports.dvrVpjp');
-  const canSeeTvrVpjp = hasPermission(roleToCheck, 'reports.tvrVpjp');
-  const canSeeSalesVdvr = hasPermission(roleToCheck, 'reports.salesVdvr');
-
-  const canSeeAnyReport = canSeeDVR || canSeeTVR || canSeeSalesOrders || canSeeCompetition || canSeeDvrVpjp || canSeeTvrVpjp || canSeeSalesVdvr;
+  const canSeeTsoPerformanceMetrics = hasPermission(roleToCheck, 'reports.tsoPerformanceMetrics');
+  const canSeeAnyReport = canSeeDVR || canSeeTVR || canSeeSalesOrders || canSeeCompetition || canSeeTsoPerformanceMetrics;
 
   // 3. Handle users who can't see anything
   if (!canSeeAnyReport) {
@@ -82,9 +79,7 @@ export async function ReportsDynamicContent() {
         canSeeDvrTvr={canSeeDvrTvr}
         canSeeSalesOrders={canSeeSalesOrders}
         canSeeCompetition={canSeeCompetition}
-        canSeeDvrVpjp={canSeeDvrVpjp}
-        canSeeTvrVpjp={canSeeTvrVpjp}
-        canSeeSalesVdvr={canSeeSalesVdvr}
+        canSeeTsoPerformanceMetrics={canSeeTsoPerformanceMetrics}
       />
     </div>
   );

@@ -9,8 +9,9 @@ import {
   kycSubmissions, tsoAssignments, bagLifts, rewardRedemptions, pointsLedger, logisticsIO,
   siteAssociatedUsers, siteAssociatedDealers, siteAssociatedMasons
 } from '../../drizzle/schema';
-import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull, notIlike } from 'drizzle-orm';
+import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull, notIlike, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
+import { TSO_AOP_TARGETS } from './Reusable-constants';
 
 // --- HELPERS ---
 
@@ -310,6 +311,90 @@ export async function getFlattenedTechnicalVisitReports(companyId: number) {
     salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
     salesmanEmail: r.userEmail || '',
   }));
+}
+
+export async function getFlattenedTsoPerformanceMetrics(companyId: number, startDate?: Date, endDate?: Date) {
+  
+  // --- BUILD THE MEETINGS SUBQUERY ---
+  const meetingFilters: (SQL | undefined)[] = [];
+  if (startDate && endDate) {
+    const startStr = startDate.toISOString().split('T')[0];
+    const endStr = endDate.toISOString().split('T')[0];
+    meetingFilters.push(and(
+      sql`${tsoMeetings.date} >= ${startStr}`,
+      sql`${tsoMeetings.date} <= ${endStr}`
+    ));
+  }
+
+  const meetingsSq = db
+    .select({
+      userId: tsoMeetings.createdByUserId,
+      meetCount: sql<number>`CAST(COUNT(${tsoMeetings.id}) AS INTEGER)`.as('meet_count'),
+    })
+    .from(tsoMeetings)
+    .where(meetingFilters.length > 0 ? and(...meetingFilters) : undefined)
+    .groupBy(tsoMeetings.createdByUserId)
+    .as('meetings_sq');
+  // -----------------------------------
+
+  const filters: (SQL | undefined)[] = [eq(users.companyId, companyId)];
+
+  if (startDate && endDate) {
+    endDate.setHours(23, 59, 59, 999);
+    filters.push(
+      and(
+        sql`${technicalVisitReports.reportDate} >= ${startDate.toISOString()}`,
+        sql`${technicalVisitReports.reportDate} <= ${endDate.toISOString()}`
+      )
+    );
+  }
+
+  const rawData = await db
+    .select({
+      userId: users.id,
+      salesmanName: sql<string>`COALESCE(NULLIF(TRIM(CONCAT(${users.firstName}, ' ', ${users.lastName})), ''), ${users.email})`,
+      region: users.region,
+      area: users.area,
+      totalVisits: sql<number>`CAST(COUNT(${technicalVisitReports.id}) AS INTEGER)`,
+      siteVisitsNew: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.customerType} ILIKE '%Site%' AND ${technicalVisitReports.visitCategory} ILIKE '%New%' THEN 1 ELSE 0 END) AS INTEGER)`,
+      siteVisitsOld: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.customerType} ILIKE '%Site%' AND ${technicalVisitReports.visitCategory} ILIKE '%Follow Up%' THEN 1 ELSE 0 END) AS INTEGER)`,
+      dealerVisits: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.customerType} ILIKE '%Dealer%' THEN 1 ELSE 0 END) AS INTEGER)`,
+      siteConversion: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.isConverted} = true THEN 1 ELSE 0 END) AS INTEGER)`,
+      volumeConverted: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.isConverted} = true THEN ${technicalVisitReports.conversionQuantityValue} ELSE 0 END) AS NUMERIC)`,
+      influencerVisits: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.customerType} ILIKE '%Influencer%' OR ${technicalVisitReports.customerType} ILIKE '%Architect%' THEN 1 ELSE 0 END) AS INTEGER)`,
+      enrollmentLifting: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.isSchemeEnrolled} = true THEN 1 ELSE 0 END) AS INTEGER)`,
+      siteServiceSlab: sql<number>`CAST(SUM(CASE WHEN ${technicalVisitReports.isTechService} = true AND ${technicalVisitReports.serviceType} ILIKE '%Slab%' THEN 1 ELSE 0 END) AS INTEGER)`,
+      technicalMeet: sql<number>`CAST(COALESCE(MAX(${meetingsSq.meetCount}), 0) AS INTEGER)`,
+    })
+    .from(technicalVisitReports)
+    .leftJoin(users, eq(technicalVisitReports.userId, users.id))
+    .leftJoin(meetingsSq, eq(users.id, meetingsSq.userId))
+    .where(and(...filters))
+    .groupBy(users.id, users.firstName, users.lastName, users.email, users.region, users.area)
+    .orderBy(desc(sql`COUNT(${technicalVisitReports.id})`));
+
+  return rawData.map((r) => {
+    const siteNew = r.siteVisitsNew || 0;
+    const siteOld = r.siteVisitsOld || 0;
+
+    return {
+      userId: r.userId ?? null,
+      salesmanName: r.salesmanName || 'Unknown',
+      region: r.region || '',
+      area: r.area || '',
+      totalVisits: r.totalVisits || 0,
+      siteVisits: siteNew + siteOld, 
+      dealerVisits: r.dealerVisits || 0,
+      influencerVisits: r.influencerVisits || 0,
+      siteVisitsNew: siteNew,
+      siteVisitsOld: siteOld,
+      siteConversion: r.siteConversion || 0,
+      volumeConvertedMT: Number(r.volumeConverted) || 0,
+      enrollmentLifting: r.enrollmentLifting || 0,
+      siteServiceSlab: r.siteServiceSlab || 0,
+      technicalMeet: r.technicalMeet || 0,
+    };
+  });
 }
 
 export async function getFlattenedKamrupDvrs(companyId: number) {
@@ -1433,6 +1518,7 @@ export const transformerMap = {
   dealers: getFlattenedDealers,
   dailyVisitReports: getFlattenedDailyVisitReports,
   technicalVisitReports: getFlattenedTechnicalVisitReports,
+  tsoPerformanceMetrics: getFlattenedTsoPerformanceMetrics,
   technicalSites: getFlattenedTechnicalSites,
   kamrupTsoDvrs: getFlattenedKamrupDvrs,
   kamrupTsoTvrs: getFlattenedKamrupTvrs,

@@ -7,8 +7,8 @@ import { db } from '@/lib/drizzle';
 import { users, dailyVisitReports, dealers, dailyTasks } from '../../../../../../drizzle';
 import { eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, isNull, notIlike } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
-import { z } from 'zod'; 
-import { selectDailyVisitReportSchema } from '../../../../../../drizzle/zodSchemas'; 
+import { z } from 'zod';
+import { selectDailyVisitReportSchema } from '../../../../../../drizzle/zodSchemas';
 
 const allowedRoles = [
   'president', 'senior-general-manager', 'general-manager',
@@ -18,7 +18,7 @@ const allowedRoles = [
 ];
 
 const frontendDVRSchema = selectDailyVisitReportSchema.extend({
-  id: z.string(), 
+  id: z.string(),
   salesmanName: z.string(),
   role: z.string(),
   area: z.string(),
@@ -31,7 +31,7 @@ const frontendDVRSchema = selectDailyVisitReportSchema.extend({
   nameOfParty: z.string().nullable().optional(),
   contactNoOfParty: z.string().nullable().optional(),
   expectedActivationDate: z.string().nullable().optional(),
-  
+
   latitude: z.number(),
   longitude: z.number(),
   dealerTotalPotential: z.number(),
@@ -39,7 +39,7 @@ const frontendDVRSchema = selectDailyVisitReportSchema.extend({
   todayOrderMt: z.number(),
   todayCollectionRupees: z.number(),
   overdueAmount: z.number().nullable(),
-  
+
   reportDate: z.string(),
   checkInTime: z.string(),
   checkOutTime: z.string().nullable(),
@@ -74,7 +74,7 @@ async function getCachedDailyVisitReports(
   'use cache';
   cacheLife('hours');
   cacheTag(`daily-visit-reports-${companyId}`);
-  
+
   // Unique cache tag based on active filters
   const filterKey = `${search}-${role}-${area}-${region}`;
   cacheTag(`daily-visit-reports-${companyId}-${page}-${filterKey}`);
@@ -93,7 +93,7 @@ async function getCachedDailyVisitReports(
     );
     if (searchCondition) filters.push(searchCondition);
   }
-  
+
   if (role) filters.push(eq(users.role, role));
   if (area) filters.push(eq(users.area, area));
   if (region) filters.push(eq(users.region, region));
@@ -102,7 +102,7 @@ async function getCachedDailyVisitReports(
     if (pjpStatus.toLowerCase() === 'unplanned') {
       filters.push(
         or(
-          isNull(dailyTasks.id), 
+          isNull(dailyTasks.id),
           ilike(dailyTasks.visitType, 'unplanned')
         )
       );
@@ -129,12 +129,12 @@ async function getCachedDailyVisitReports(
       userRegion: users.region,
       dealerNameStr: dealers.name,
       subDealerNameStr: subDealers.name,
-      pjpTaskStatus: dailyTasks.status, 
+      pjpTaskStatus: dailyTasks.status,
       pjpVisitType: dailyTasks.visitType,
     })
     .from(dailyVisitReports)
-    .leftJoin( 
-      dailyTasks, 
+    .leftJoin(
+      dailyTasks,
       and(
         eq(dailyVisitReports.userId, dailyTasks.userId),
         eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
@@ -153,8 +153,8 @@ async function getCachedDailyVisitReports(
   const totalCountResult = await db
     .select({ count: count() })
     .from(dailyVisitReports)
-    .leftJoin( 
-      dailyTasks, 
+    .leftJoin(
+      dailyTasks,
       and(
         eq(dailyVisitReports.userId, dailyTasks.userId),
         eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
@@ -168,7 +168,16 @@ async function getCachedDailyVisitReports(
 
   const totalCount = Number(totalCountResult[0].count);
 
-  const formatted = results.map((row) => {
+  // 1. Deduplicate results based on the unique Daily Visit Report ID
+  const uniqueReportsMap = new Map<string, DVRRow>();
+  for (const row of results) {
+    if (!uniqueReportsMap.has(row.id)) {
+      uniqueReportsMap.set(row.id, row);
+    }
+  }
+
+  // 2. Format only the unique rows
+  const formatted = Array.from(uniqueReportsMap.values()).map((row) => {
     const toNum = (v: any) => (v == null ? null : Number(v));
     const salesmanName = `${row.userFirstName || ''} ${row.userLastName || ''}`.trim() || row.userEmail || 'Unknown';
 
@@ -193,7 +202,7 @@ async function getCachedDailyVisitReports(
       nameOfParty: row.nameOfParty ?? null,
       contactNoOfParty: row.contactNoOfParty ?? null,
       expectedActivationDate: row.expectedActivationDate ? new Date(row.expectedActivationDate).toISOString().split('T')[0] : null,
-      
+
       latitude: toNum(row.latitude) ?? 0,
       longitude: toNum(row.longitude) ?? 0,
       dealerTotalPotential: toNum(row.dealerTotalPotential) ?? 0,
@@ -201,7 +210,7 @@ async function getCachedDailyVisitReports(
       todayOrderMt: toNum(row.todayOrderMt) ?? 0,
       todayCollectionRupees: toNum(row.todayCollectionRupees) ?? 0,
       overdueAmount: toNum(row.overdueAmount),
-      
+
       checkInTime: row.checkInTime ? new Date(row.checkInTime).toISOString() : '',
       checkOutTime: row.checkOutTime ? new Date(row.checkOutTime).toISOString() : null,
       createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
@@ -214,7 +223,7 @@ async function getCachedDailyVisitReports(
 
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
-  
+
   try {
     const claims = await getTokenClaims();
 
@@ -238,7 +247,7 @@ export async function GET(request: NextRequest) {
     const page = Number(searchParams.get('page') ?? 0);
     // Hard cap at 500
     const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
-    
+
     const search = searchParams.get('search');
     const role = searchParams.get('role');
     const area = searchParams.get('area');
@@ -276,9 +285,9 @@ export async function GET(request: NextRequest) {
     }, { status: 200 });
   } catch (error) {
     console.error('Error fetching daily visit reports:', error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch daily visit reports', 
-      details: (error as Error).message 
+    return NextResponse.json({
+      error: 'Failed to fetch daily visit reports',
+      details: (error as Error).message
     }, { status: 500 });
   }
 }

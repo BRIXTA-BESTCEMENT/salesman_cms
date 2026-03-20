@@ -44,9 +44,7 @@ export interface DashboardPermissions {
     dvrAndTvr: boolean;
     competitionReports: boolean;
     salesOrders: boolean;
-    dvrVpjp: boolean;
-    tvrVpjp: boolean;
-    salesVdvr: boolean;
+    tsoPerformanceMetrics: boolean;
   };
   permanentJourneyPlan: {
     pjpList: boolean;
@@ -111,9 +109,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -173,9 +169,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -235,9 +229,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -299,9 +291,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -361,9 +351,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -423,9 +411,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -485,9 +471,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -547,9 +531,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: true,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: true,
     },
     permanentJourneyPlan: {
       pjpList: true,
@@ -611,9 +593,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: false,
       competitionReports: true,
       salesOrders: true,
-      dvrVpjp: true,
-      tvrVpjp: true,
-      salesVdvr: true,
+      tsoPerformanceMetrics: false,
     },
     permanentJourneyPlan: {
       pjpList: false,
@@ -673,9 +653,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: false,
       competitionReports: false,
       salesOrders: false,
-      dvrVpjp: false,
-      tvrVpjp: false,
-      salesVdvr: false,
+      tsoPerformanceMetrics: false,
     },
     permanentJourneyPlan: {
       pjpList: false,
@@ -735,9 +713,7 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       dvrAndTvr: false,
       competitionReports: true,
       salesOrders: false,
-      dvrVpjp: false,
-      tvrVpjp: false,
-      salesVdvr: false,
+      tsoPerformanceMetrics: false,
     },
     permanentJourneyPlan: {
       pjpList: false,

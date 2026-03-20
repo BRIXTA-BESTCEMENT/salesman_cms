@@ -5,9 +5,11 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 import { 
-  Search, MapPin, Clock, Eye, Truck, Scale, 
-  Store, Package, FileText, Factory
+  Search, MapPin, Clock, Eye, Truck, Scale, Loader2,
+  Store, Package, FileText, Factory, Calendar as CalendarIcon
 } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -17,6 +19,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -81,8 +86,8 @@ export default function LogisticsIOList() {
   const [filterZone, setFilterZone] = useState<string>('all');
   const [filterDistrict, setFilterDistrict] = useState<string>('all');
   
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
+  // --- Date Range State ---
+  const [tableDateRange, setTableDateRange] = useState<DateRange | undefined>();
 
   const [availableSources, setAvailableSources] = useState<string[]>([]);
   const [availableZones, setAvailableZones] = useState<string[]>([]);
@@ -94,8 +99,18 @@ export default function LogisticsIOList() {
     setError(null);
     try {
       const params = new URLSearchParams();
-      if (startDate) params.append('startDate', startDate);
-      if (endDate) params.append('endDate', endDate);
+      
+      // Parse DateRange to API strings
+      if (tableDateRange?.from) {
+        params.append('startDate', format(tableDateRange.from, "yyyy-MM-dd"));
+      }
+      if (tableDateRange?.to) {
+        params.append('endDate', format(tableDateRange.to, "yyyy-MM-dd"));
+      } else if (tableDateRange?.from) {
+        // Fallback for single day selection
+        params.append('endDate', format(tableDateRange.from, "yyyy-MM-dd"));
+      }
+
       if (filterZone && filterZone !== 'all') params.append('zone', filterZone);
       if (filterDistrict && filterDistrict !== 'all') params.append('district', filterDistrict);
       if (filterSource && filterSource !== 'all') params.append('sourceName', filterSource);
@@ -130,7 +145,7 @@ export default function LogisticsIOList() {
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate, filterZone, filterDistrict, filterSource]);
+  }, [tableDateRange, filterZone, filterDistrict, filterSource]);
 
   useEffect(() => {
     fetchRecords();
@@ -277,7 +292,7 @@ export default function LogisticsIOList() {
         {/* Left Side: Filters */}
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex flex-col space-y-1 w-full sm:w-[250px]">
-            <label className="text-xs font-semibold text-muted-foreground">Search</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
@@ -289,17 +304,40 @@ export default function LogisticsIOList() {
             </div>
           </div>
 
-          <div className="flex flex-col space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">From Date</label>
-            <Input type="date" className="h-9 w-[140px]" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </div>
-          <div className="flex flex-col space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">To Date</label>
-            <Input type="date" className="h-9 w-[140px]" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          <div className="flex flex-col space-y-1 w-full sm:w-[260px]">
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Filter by Date</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant={"outline"} 
+                  className={cn("w-full justify-start text-left font-normal h-9 bg-background", !tableDateRange && "text-muted-foreground")}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {tableDateRange?.from ? (
+                    tableDateRange.to ? (
+                      <>{format(tableDateRange.from, "LLL dd, y")} - {format(tableDateRange.to, "LLL dd, y")}</>
+                    ) : (
+                      format(tableDateRange.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Select Date Range</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar 
+                  mode="range" 
+                  defaultMonth={tableDateRange?.from || new Date()} 
+                  selected={tableDateRange} 
+                  onSelect={setTableDateRange} 
+                  numberOfMonths={2} 
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="flex flex-col space-y-1 w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground">Source</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Source</label>
             <Select value={filterSource} onValueChange={setFilterSource}>
               <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
               <SelectContent>
@@ -310,7 +348,7 @@ export default function LogisticsIOList() {
           </div>
 
           <div className="flex flex-col space-y-1 w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground">Zone</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">Zone</label>
             <Select value={filterZone} onValueChange={setFilterZone}>
               <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
               <SelectContent>
@@ -321,7 +359,7 @@ export default function LogisticsIOList() {
           </div>
 
           <div className="flex flex-col space-y-1 w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground">District</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase">District</label>
             <Select value={filterDistrict} onValueChange={setFilterDistrict}>
               <SelectTrigger className="h-9"><SelectValue placeholder="All" /></SelectTrigger>
               <SelectContent>
@@ -332,15 +370,32 @@ export default function LogisticsIOList() {
           </div>
 
           <Button onClick={fetchRecords} size="sm" className="h-9 mb-px">Apply Filters</Button>
+          
+          <Button 
+            variant="ghost" 
+            onClick={() => {
+              setSearchQuery('');
+              setTableDateRange(undefined);
+              setFilterSource('all');
+              setFilterZone('all');
+              setFilterDistrict('all');
+            }} 
+            className="h-9 mb-px text-muted-foreground hover:text-destructive"
+          >
+            Clear
+          </Button>
         </div>
 
       </div>
 
       {/* --- Data Table --- */}
       {loading ? (
-        <div className="h-64 flex items-center justify-center text-muted-foreground">Loading logistics data...</div>
+        <div className="h-64 flex flex-col items-center justify-center text-muted-foreground rounded-lg border border-dashed bg-card/50">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+          <p>Loading logistics data...</p>
+        </div>
       ) : filteredRecords.length === 0 ? (
-         <div className="h-64 flex flex-col items-center justify-center text-muted-foreground rounded-lg border border-dashed">
+         <div className="h-64 flex flex-col items-center justify-center text-muted-foreground rounded-lg border border-dashed bg-card/50">
           <p>No records found matching your filters.</p>
         </div>
       ) : (
