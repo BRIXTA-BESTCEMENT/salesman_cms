@@ -25,7 +25,9 @@ export const formatDateIST = (date: Date | string | null | undefined): string | 
   if (!date) return null;
   const d = new Date(date);
   if (isNaN(d.getTime())) return null;
-  return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+  return d.toLocaleDateString('en-IN', {
+     timeZone: 'UTC' 
+    });
 };
 
 export const formatDateTimeIST = (date: Date | string | null | undefined): string => {
@@ -33,28 +35,10 @@ export const formatDateTimeIST = (date: Date | string | null | undefined): strin
   const d = new Date(date);
   if (isNaN(d.getTime())) return '';
   return d.toLocaleString('en-IN', {
-    timeZone: 'Asia/Kolkata',
+    timeZone: 'UTC',
     day: '2-digit', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: true
   }).replace(/,/g, '').toUpperCase();
-};
-
-export const formatTimeStr12Hr = (timeStr: string | null | undefined): string | null => {
-  if (!timeStr) return null;
-  const trimmed = timeStr.trim();
-  if (trimmed.toUpperCase().includes('AM') || trimmed.toUpperCase().includes('PM')) return trimmed;
-  try {
-    const parts = trimmed.split(':');
-    if (parts.length < 2) return trimmed;
-    let h = parseInt(parts[0], 10);
-    if (isNaN(h)) return trimmed;
-    const m = parts[1];
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    return `${h.toString().padStart(2, '0')}:${m} ${ampm}`;
-  } catch {
-    return trimmed;
-  }
 };
 
 const toNum = (v: any): number | null => (v == null ? null : Number(v));
