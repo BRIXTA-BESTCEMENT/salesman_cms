@@ -1,27 +1,14 @@
 // src/app/home/page.tsx (Server Component)
 import { Suspense } from 'react';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-    LayoutDashboard,
-    User,
-    ArrowRight,
-    BotMessageSquare
-} from 'lucide-react';
+import { LayoutDashboard, User, ArrowRight, BotMessageSquare } from 'lucide-react';
+import { verifySession } from '@/lib/auth'; // <-- IMPORT YOUR CUSTOM AUTH
 
-interface CustomClaims {
-    sub?: string;
-    email?: string;
-    first_name?: string;
-    last_name?: string;
-    [key: string]: unknown;
-}
-
-// 1. The Static Shell (Instantly compiled, no runtime data)
+// 1. The Static Shell
 export default function SignedInHomePage() {
     return (
         <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
@@ -30,13 +17,15 @@ export default function SignedInHomePage() {
     );
 }
 
-// 2. The Dynamic Content (Reads cookies securely)
+// 2. The Dynamic Content
 async function HomeContent() {
     await connection();
-    const claims = await getTokenClaims() as CustomClaims | null;
+    
+    // Read your custom cookie
+    const session = await verifySession();
 
     // Redirect to landing page if not signed in
-    if (!claims || !claims.sub) {
+    if (!session || !session.userId) {
         redirect('/');
     }
 
@@ -63,7 +52,6 @@ async function HomeContent() {
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                {/* Welcome Section */}
                 <div className="text-center mb-16">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
                         Welcome back!
@@ -75,7 +63,6 @@ async function HomeContent() {
 
                 {/* Main Action Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 mb-16">
-
                     {/* CemTem AI Chat Card */}
                     <Card className="group hover:shadow-lg transition-all duration-300 hover:border-primary/50 cursor-pointer">
                         <Link href="/home/cemtemChat" className="block h-full">
@@ -89,10 +76,7 @@ async function HomeContent() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="text-center pt-0">
-                                <Button>
-                                    Chat Now
-                                    <ArrowRight />
-                                </Button>
+                                <Button>Chat Now <ArrowRight /></Button>
                             </CardContent>
                         </Link>
                     </Card>
@@ -110,10 +94,7 @@ async function HomeContent() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="text-center pt-0">
-                                <Button>
-                                    View Dashboard
-                                    <ArrowRight />
-                                </Button>
+                                <Button>View Dashboard <ArrowRight /></Button>
                             </CardContent>
                         </Link>
                     </Card>
@@ -131,21 +112,15 @@ async function HomeContent() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="text-center pt-0">
-                                <Button>
-                                    Manage Account
-                                    <ArrowRight />
-                                </Button>
+                                <Button>Manage Account <ArrowRight /></Button>
                             </CardContent>
                         </Link>
                     </Card>
                 </div>
 
-                {/* Footer */}
                 <footer className="border-t border-border py-12">
                     <div className="text-center">
-                        <p className="text-muted-foreground">
-                            © 2025 Made By Brixta
-                        </p>
+                        <p className="text-muted-foreground">© 2025 Made By Brixta</p>
                     </div>
                 </footer>
             </div>

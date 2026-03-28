@@ -28,28 +28,18 @@ interface DashboardShellProps {
   user: User;
   company: Company;
   children: React.ReactNode;
-  workosRole?: string;
+  role?: string;
   permissions?: string[];
 }
 
 export default function DashboardShell({ 
-  //user, 
-  //company, 
   children, 
-  workosRole,
-  //permissions 
+  role,
 }: DashboardShellProps) {
   return (
-    <SidebarProvider
-      // style={
-      //   {
-      //     "--sidebar-width": "calc(var(--spacing) * 72)",
-      //     "--header-height": "calc(var(--spacing) * 12)",
-      //   } as React.CSSProperties
-      // }
-    >
+    <SidebarProvider>
       <AppSidebar 
-        userRole={workosRole as WorkOSRole}
+        userRole={role as WorkOSRole}
       />
       <SidebarInset className="pl-4 pt-4 md:pl-6 md:pt-6">
         <SiteHeader />

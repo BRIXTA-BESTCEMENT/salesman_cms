@@ -1,104 +1,17 @@
 // src/app/api/dashboardPagesAPI/users-and-team/users/route.ts
 import "server-only";
 import { connection, NextRequest, NextResponse } from "next/server";
-import { getTokenClaims } from "@workos-inc/authkit-nextjs";
+import { verifySession } from "@/lib/auth"; // Swapped to your custom auth
 import { db } from "@/lib/drizzle";
-import { users, companies } from "../../../../../../drizzle";
-import { eq, and, desc } from "drizzle-orm";
-import { WorkOS } from "@workos-inc/node";
-import { Resend } from "resend";
-import { InvitationEmail } from "@/components/InvitationEmail";
-import { RESEND_API_KEY } from "@/lib/Reusable-constants";
+import { users, companies, roles as rolesTable, userRoles } from "../../../../../../drizzle";
+import { eq, and, desc, inArray } from "drizzle-orm";
+import { generateRandomPassword, sendInvitationEmailResend } from "./helpers";
 
 const allowedAdminRoles = [
-    "president",
-    "senior-general-manager",
-    "general-manager",
-    "regional-sales-manager",
-    "area-sales-manager",
-    "senior-manager",
-    "manager",
-    "assistant-manager",
+    "president", "senior-general-manager", "general-manager",
+    "regional-sales-manager", "area-sales-manager", "senior-manager",
+    "manager", "assistant-manager", "Admin"
 ];
-
-type AdminUser = {
-    id: number;
-    workosUserId: string | null;
-    email: string;
-    role: string;
-    companyId: number;
-    firstName: string | null;
-    lastName: string | null;
-    region: string | null;
-    area: string | null;
-    isTechnicalRole: boolean;
-    isAdminAppUser: boolean;
-    deviceId: string | null;
-    companyName: string | null;
-};
-
-const resend = new Resend(RESEND_API_KEY);
-
-export function generateRandomPassword(length: number = 10): string {
-    const charset =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let password = "";
-    for (let i = 0; i < length; i++) {
-        password += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
-    return password;
-}
-
-// =======================================================
-// EMAIL INVITE FUNCTION (UNCHANGED LOGIC)
-// =======================================================
-
-export async function sendInvitationEmailResend({
-    to,
-    firstName,
-    lastName,
-    companyName,
-    adminName,
-    inviteUrl,
-    role,
-    salesmanLoginId,
-    tempPassword,
-    techLoginId,
-    techTempPassword,
-    adminAppLoginId,
-    adminAppTempPassword
-}: any) {
-
-    try {
-        const fromAddress = companyName
-            ? `"${companyName}" <noreply@bestcement.co.in>`
-            : `noreply@bestcement.co.in`;
-
-        const data = await resend.emails.send({
-            from: fromAddress,
-            to: [to],
-            subject: `You've been invited to join ${companyName}`,
-            react: InvitationEmail({
-                firstName,
-                lastName,
-                adminName,
-                companyName,
-                role,
-                inviteUrl,
-                salesmanLoginId,
-                tempPassword,
-                techLoginId,
-                techTempPassword,
-                adminAppLoginId,
-                adminAppTempPassword
-            }),
-        });
-
-        return data;
-    } catch (error) {
-        console.error("❌ Resend Error:", error);
-    }
-}
 
 // =================
 // POST ROUTE 
@@ -106,19 +19,11 @@ export async function sendInvitationEmailResend({
 
 export async function POST(request: NextRequest) {
     try {
-        const workos = new WorkOS(process.env.WORKOS_API_KEY!);
-        const claims = await getTokenClaims();
-
-        if (!claims?.sub) {
+        // --- 1. ADMIN AUTHORIZATION ---
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const userId = claims.sub;
-        const organizationId = claims.org_id as string;
-
-        // =============================
-        // FETCH ADMIN USER (DRIZZLE)
-        // =============================
 
         const adminUserResult = await db
             .select({
@@ -132,7 +37,7 @@ export async function POST(request: NextRequest) {
             })
             .from(users)
             .leftJoin(companies, eq(users.companyId, companies.id))
-            .where(eq(users.workosUserId, userId))
+            .where(eq(users.id, session.userId))
             .limit(1);
 
         const adminUser = adminUserResult[0];
@@ -141,218 +46,132 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
         }
 
-        if (!organizationId) {
-            return NextResponse.json({ error: 'No organization found for admin user.' }, { status: 400 });
-        }
-
+        // --- 2. PARSE REQUEST DATA ---
         const body = await request.json();
-        const { email, firstName, lastName, phoneNumber, role, region, area, isTechnical, isAdminAppUser } = body;
+        const { 
+            email, firstName, lastName, phoneNumber, role, jobRole, orgRole, region, area, 
+            isDashboardUser, isSalesAppUser, isTechnicalRole, isAdminAppUser 
+        } = body;
 
-        if (!email || !firstName || !lastName || !role) {
+        // jobRole is likely an array now based on your multi-role requirement
+        const jobRolesArray = Array.isArray(jobRole) ? jobRole : [jobRole].filter(Boolean);
+
+        if (!email || !firstName || (!orgRole && !role)) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        const workosRole = role.toLowerCase();
-        const isTechnicalRole = !!isTechnical;
-        const isAdminAppUserRole = !!isAdminAppUser;
-
-        // =============================
-        // EXISTING USER CHECK
-        // =============================
-
+        // --- 3. EXISTING USER CHECK ---
         const existingUserResult = await db
-            .select()
+            .select({ id: users.id })
             .from(users)
-            .where(and(
-                eq(users.companyId, adminUser.companyId),
-                eq(users.email, email)
-            ))
+            .where(and(eq(users.companyId, adminUser.companyId), eq(users.email, email)))
             .limit(1);
 
-        const existingUser = existingUserResult[0];
-
-        if (existingUser?.workosUserId) {
-            return NextResponse.json({ error: 'User with this email already exists and is active' }, { status: 409 });
+        if (existingUserResult[0]) {
+            return NextResponse.json({ error: 'User with this email already exists' }, { status: 409 });
         }
 
-        if (existingUser?.inviteToken) {
-            return NextResponse.json({ error: 'User with this email already has a pending invitation' }, { status: 409 });
-        }
-
-        // =============================
-        // LOGIN GENERATION (UNCHANGED)
-        // =============================
-
-        let salesmanLoginId: string | null = null;
-        let tempPasswordPlaintext: string | null = null;
-        let hashedPassword = null;
-
-        let techLoginId: string | null = null;
-        let techTempPasswordPlaintext: string | null = null;
-        let techHashPassword = null;
-
-        let adminAppLoginId: string | null = null;
-        let adminAppTempPasswordPlaintext: string | null = null;
-        let adminAppHashedPassword = null;
-
-        if ([
-            'general-manager','regional-sales-manager','area-sales-manager',
-            'senior-manager','manager','assistant-manager',
-            'senior-executive','executive','junior-executive'
-        ].includes(workosRole)) {
-
-            let isUnique = false;
-            while (!isUnique) {
-                const generatedId = `EMP-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
-
-                const check = await db
-                    .select({ id: users.id })
-                    .from(users)
-                    .where(eq(users.salesmanLoginId, generatedId))
-                    .limit(1);
-
-                if (!check[0]) {
-                    salesmanLoginId = generatedId;
-                    isUnique = true;
-                }
-            }
-
-            tempPasswordPlaintext = generateRandomPassword();
-            hashedPassword = tempPasswordPlaintext;
-        }
-
-        if (isTechnicalRole) {
-            let isUnique = false;
-            while (!isUnique) {
-                const generatedId = `TSE-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
-
-                const check = await db
-                    .select({ id: users.id })
-                    .from(users)
-                    .where(eq(users.techLoginId, generatedId))
-                    .limit(1);
-
-                if (!check[0]) {
-                    techLoginId = generatedId;
-                    isUnique = true;
-                }
-            }
-
-            techTempPasswordPlaintext = generateRandomPassword();
-            techHashPassword = techTempPasswordPlaintext;
-        }
-
-        if (isAdminAppUserRole) {
-            let isUnique = false;
-            while (!isUnique) {
-                const generatedId = `ADM-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
-
-                const check = await db
-                    .select({ id: users.id })
-                    .from(users)
-                    .where(eq(users.adminAppLoginId, generatedId))
-                    .limit(1);
-
-                if (!check[0]) {
-                    adminAppLoginId = generatedId;
-                    isUnique = true;
-                }
-            }
-
-            adminAppTempPasswordPlaintext = generateRandomPassword();
-            adminAppHashedPassword = adminAppTempPasswordPlaintext;
-        }
-
-        // =============================
-        // WORKOS INVITE (UNCHANGED)
-        // =============================
-
-        const workosInvitation = await workos.userManagement.sendInvitation({
-            email,
-            organizationId,
-            roleSlug: workosRole
-        });
-
-        // =============================
-        // INSERT / UPDATE USER (DRIZZLE)
-        // =============================
-
-        let newUser;
-
-        if (existingUser) {
-            const updated = await db.update(users).set({
-                firstName,
-                lastName,
-                phoneNumber,
-                role: workosRole,
-                region,
-                area,
-                status: "pending",
-                inviteToken: workosInvitation.id,
-                salesmanLoginId,
-                hashedPassword,
-                isTechnicalRole,
-                techLoginId,
-                techHashPassword,
-                isAdminAppUser: isAdminAppUserRole,
-                adminAppLoginId,
-                adminAppHashedPassword,
-            })
-            .where(eq(users.id, existingUser.id))
-            .returning();
-
-            newUser = updated[0];
-
-        } else {
-            const inserted = await db.insert(users).values({
+        // --- 4. TRANSACTIONAL INSERT (User + Roles) ---
+        const { newUser, emailPayload } = await db.transaction(async (tx) => {
+            
+            const newUserData: any = {
                 email,
                 firstName,
                 lastName,
                 phoneNumber,
-                role: workosRole,
+                role: orgRole || role,
                 region,
                 area,
-                workosUserId: null,
-                inviteToken: workosInvitation.id,
                 companyId: adminUser.companyId,
-                status: "pending",
-                salesmanLoginId,
-                hashedPassword,
-                isTechnicalRole,
-                techLoginId,
-                techHashPassword,
-                isAdminAppUser: isAdminAppUserRole,
-                adminAppLoginId,
-                adminAppHashedPassword,
-            }).returning();
+                status: "active",
+                isDashboardUser: !!isDashboardUser,
+                isSalesAppUser: !!isSalesAppUser,
+                isTechnicalRole: !!isTechnicalRole,
+                isAdminAppUser: !!isAdminAppUser,
+            };
 
-            newUser = inserted[0];
-        }
+            // Credential Generation Logic
+            if (newUserData.isDashboardUser) {
+                const dashPassword = generateRandomPassword();
+                newUserData.dashboardLoginId = email; 
+                newUserData.dashboardHashedPassword = dashPassword;
+            }
 
-        // =============================
-        // SEND EMAIL (UNCHANGED)
-        // =============================
+            if (newUserData.isSalesAppUser) {
+                let salesmanId = `EMP-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+                const salesPassword = generateRandomPassword();
+                newUserData.salesmanLoginId = salesmanId;
+                newUserData.hashedPassword = salesPassword;
+            }
 
-        await sendInvitationEmailResend({
-            to: email,
-            firstName,
-            lastName,
-            companyName: adminUser.companyName ?? "Best Cement",
-            adminName: `${adminUser.firstName ?? ''} ${adminUser.lastName ?? ''}`,
-            inviteUrl: workosInvitation.acceptInvitationUrl,
-            role: workosRole,
-            salesmanLoginId,
-            tempPassword: tempPasswordPlaintext,
-            techLoginId,
-            techTempPassword: techTempPasswordPlaintext,
-            adminAppLoginId,
-            adminAppTempPassword: adminAppTempPasswordPlaintext
+            if (newUserData.isTechnicalRole) {
+                let techId = `TSE-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+                const techPassword = generateRandomPassword();
+                newUserData.techLoginId = techId;
+                newUserData.techHashPassword = techPassword;
+            }
+
+            if (newUserData.isAdminAppUser) {
+                let adminId = `ADM-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+                const adminAppPassword = generateRandomPassword();
+                newUserData.adminAppLoginId = adminId;
+                newUserData.adminAppHashedPassword = adminAppPassword;
+            }
+
+            // A. Insert User
+            const inserted = await tx.insert(users).values(newUserData).returning();
+            const createdUser = inserted[0];
+
+            // B. Map and Insert Job Roles into userRoles table
+            if (jobRolesArray.length > 0) {
+                const dbRoles = await tx
+                    .select({ id: rolesTable.id })
+                    .from(rolesTable)
+                    .where(inArray(rolesTable.jobRole, jobRolesArray));
+
+                if (dbRoles.length > 0) {
+                    const roleLinks = dbRoles.map(r => ({
+                        userId: createdUser.id,
+                        roleId: r.id
+                    }));
+                    await tx.insert(userRoles).values(roleLinks);
+                }
+            }
+
+            // Prepare Email Payload
+            const safeOrgRole = (orgRole || role || '').replace(/-/g, ' ');
+            const safeJobRole = jobRolesArray.join(', ').replace(/-/g, ' ');
+            const displayRole = safeJobRole ? `${safeOrgRole} (${safeJobRole})` : safeOrgRole;
+
+            const payload = {
+                to: email,
+                firstName,
+                lastName,
+                companyName: adminUser.companyName ?? "Best Cement",
+                adminName: `${adminUser.firstName ?? ''} ${adminUser.lastName ?? ''}`.trim(),
+                role: displayRole,
+                dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
+                dashboardEmail: newUserData.isDashboardUser ? email : undefined,
+                dashboardTempPassword: newUserData.dashboardHashedPassword,
+                salesmanLoginId: newUserData.salesmanLoginId,
+                salesmanTempPassword: newUserData.hashedPassword,
+                techLoginId: newUserData.techLoginId,
+                techTempPassword: newUserData.techHashPassword,
+                adminAppLoginId: newUserData.adminAppLoginId,
+                adminAppTempPassword: newUserData.adminAppHashedPassword
+            };
+
+            return { newUser: createdUser, emailPayload: payload };
         });
 
+        // --- 5. SEND EMAIL NOTIFICATION ---
+        if (newUser.isDashboardUser || newUser.isSalesAppUser || newUser.isTechnicalRole || newUser.isAdminAppUser) {
+            await sendInvitationEmailResend(emailPayload);
+        }
+
         return NextResponse.json({
-            message: 'Invitation sent and email delivered successfully',
-            user: newUser,
-            workosInvitation
+            message: 'User created and credentials delivered successfully',
+            user: newUser
         }, { status: 201 });
 
     } catch (error: any) {
@@ -368,16 +187,15 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     await connection();
     try {
-        const claims = await getTokenClaims();
-        if (!claims?.sub)
+        const session = await verifySession();
+        if (!session || !session.userId)
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const userId = claims.sub;
+        const userId = session.userId;
 
-        const currentUserResult: AdminUser[] = await db
+        const currentUserResult = await db
             .select({
                 id: users.id,
-                workosUserId: users.workosUserId,
                 email: users.email,
                 role: users.role,
                 companyId: users.companyId,
@@ -392,7 +210,7 @@ export async function GET(request: NextRequest) {
             })
             .from(users)
             .leftJoin(companies, eq(users.companyId, companies.id))
-            .where(eq(users.workosUserId, userId))
+            .where(eq(users.id, userId))
             .limit(1);
 
         const currentUser = currentUserResult[0];
@@ -405,6 +223,7 @@ export async function GET(request: NextRequest) {
         if (url.searchParams.get("current") === "true") {
             return NextResponse.json({
                 currentUser: {
+                    id: currentUser.id,
                     role: currentUser.role,
                     firstName: currentUser.firstName,
                     lastName: currentUser.lastName,

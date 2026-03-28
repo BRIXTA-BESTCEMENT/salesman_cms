@@ -20,10 +20,17 @@ interface InvitationEmailProps {
   adminName: string;
   companyName: string;
   role: string;
-  inviteUrl: string | null;
+  inviteUrl?: string | null;
+  dashboardUrl?: string | null; // Added
   fromEmail?: string;
+  
+  // Dashboard Credentials
+  dashboardEmail?: string | null;
+  dashboardTempPassword?: string | null;
+  
+  // App Credentials
   salesmanLoginId?: string | null;
-  tempPassword?: string | null;
+  tempPassword?: string | null; // Maps to Sales App Password
   techLoginId?: string | null;
   techTempPassword?: string | null;
   adminAppLoginId?: string | null;      
@@ -42,7 +49,10 @@ export const InvitationEmail = ({
   companyName,
   role,
   inviteUrl,
+  dashboardUrl,
   fromEmail,
+  dashboardEmail,
+  dashboardTempPassword,
   salesmanLoginId,
   tempPassword,
   techLoginId,
@@ -62,7 +72,7 @@ export const InvitationEmail = ({
 
             {/* Header */}
             <Heading className="text-black text-2xl font-normal text-center p-0 my-8 mx-0">
-              Join <strong>{companyName}</strong>
+              Welcome to <strong>{companyName}</strong>
             </Heading>
 
             {/* Greeting */}
@@ -70,12 +80,13 @@ export const InvitationEmail = ({
               Hello {firstName}{lastName ? ` ${lastName}` : ""},
             </Text>
             <Text className="text-black text-sm leading-6">
-              <strong>{adminName}</strong> has invited you to join the team as a{" "}
-              <strong>{role}</strong>.
+              <strong>{adminName}</strong> has set up your accounts and assigned you the role of{" "}
+              <strong>{role}</strong>. Below are your login details for the platforms you have been granted access to.
             </Text>
+            
 
-            {/* Call to Action */}
-            {inviteUrl && (
+            {/* Old WorkOS Call to Action (Kept for backwards compatibility if needed) */}
+            {inviteUrl && !dashboardUrl && (
               <Section className="text-center mt-8 mb-8">
                 <Button
                   className="bg-[#0070f3] rounded text-white text-xs font-semibold no-underline text-center px-5 py-3"
@@ -86,7 +97,39 @@ export const InvitationEmail = ({
               </Section>
             )}
 
-            {/* Salesman Credentials (Conditional) */}
+            {/* Dashboard Credentials (NEW) */}
+            {dashboardEmail && dashboardTempPassword && (
+              <Section className="bg-orange-50 rounded p-4 mb-4 border-l-4 border-orange-500">
+                <Text className="m-0 font-bold text-orange-800 text-sm">
+                  💻 Web Dashboard Login
+                </Text>
+                <div className="mt-2">
+                  {dashboardUrl && (
+                    <Text className="m-0 text-sm text-gray-600 mb-2">
+                      URL: <Link href={dashboardUrl} className="text-blue-600">{dashboardUrl}</Link>
+                    </Text>
+                  )}
+                  <Text className="m-0 text-sm text-gray-600">
+                    Email: <span className="font-mono bg-orange-100 px-1 rounded text-black">{dashboardEmail}</span>
+                  </Text>
+                  <Text className="m-0 text-sm text-gray-600 mt-1">
+                    Password: <span className="font-mono bg-orange-100 px-1 rounded text-black">{dashboardTempPassword}</span>
+                  </Text>
+                </div>
+                {dashboardUrl && (
+                  <Section className="text-center mt-4 mb-2">
+                    <Button
+                      className="bg-[#ea580c] rounded text-white text-xs font-semibold no-underline text-center px-4 py-2"
+                      href={dashboardUrl}
+                    >
+                      Go to Dashboard
+                    </Button>
+                  </Section>
+                )}
+              </Section>
+            )}
+
+            {/* Salesman Credentials */}
             {salesmanLoginId && (
               <Section className="bg-gray-100 rounded p-4 mb-4 border-l-4 border-blue-500">
                 <Text className="m-0 font-bold text-gray-800 text-sm">
@@ -103,7 +146,7 @@ export const InvitationEmail = ({
               </Section>
             )}
 
-            {/* Technical Credentials (Conditional) */}
+            {/* Technical Credentials */}
             {techLoginId && (
               <Section className="bg-green-50 rounded p-4 mb-4 border-l-4 border-green-600">
                 <Text className="m-0 font-bold text-green-800 text-sm">
@@ -120,7 +163,7 @@ export const InvitationEmail = ({
               </Section>
             )}
 
-            {/* Admin App Credentials (Conditional) */}
+            {/* Admin App Credentials */}
             {adminAppLoginId && (
               <Section className="bg-indigo-50 rounded p-4 mb-4 border-l-4 border-indigo-600">
                 <Text className="m-0 font-bold text-indigo-800 text-sm">
@@ -137,7 +180,7 @@ export const InvitationEmail = ({
               </Section>
             )}
 
-            {inviteUrl && (
+            {inviteUrl && !dashboardUrl && (
               <>
                 <Text className="text-black text-sm leading-6">
                   or copy and paste this URL into your browser:
@@ -151,46 +194,8 @@ export const InvitationEmail = ({
             <Hr className="border border-solid border-[#eaeaea] my-6 mx-0 w-full" />
 
             <Text className="text-[#666666] text-xs leading-6">
-              This invitation was intended for <span className="text-black">{firstName} {lastName}</span>.
-              If you were not expecting this invitation, you can ignore this email.
-            </Text>
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
-  );
-};
-
-export const MagicAuthEmail = ({ code, companyName }: MagicAuthEmailProps) => {
-  return (
-    <Html>
-      <Head />
-      <Preview>Your login code for {companyName}</Preview>
-      <Tailwind>
-        <Body className="bg-white my-auto mx-auto font-sans">
-          <Container className="border border-solid border-[#eaeaea] rounded my-10 mx-auto p-5 w-[465px]">
-
-            <Heading className="text-black text-2xl font-normal text-center p-0 my-8 mx-0">
-              Sign in to <strong>{companyName}</strong>
-            </Heading>
-
-            <Text className="text-black text-sm leading-6">
-              Hello,
-            </Text>
-            <Text className="text-black text-sm leading-6">
-              Here is your one-time login code. It will expire in 10 minutes.
-            </Text>
-
-            <Section className="bg-gray-100 rounded-lg p-6 text-center my-6 border border-gray-200">
-              <Text className="m-0 text-3xl font-mono font-bold tracking-widest text-black">
-                {code}
-              </Text>
-            </Section>
-
-            <Hr className="border border-solid border-[#eaeaea] my-6 mx-0 w-full" />
-
-            <Text className="text-[#666666] text-xs leading-6">
-              If you didn't request this code, you can safely ignore this email.
+              This communication was intended for <span className="text-black">{firstName} {lastName}</span>.
+              If you were not expecting this, you can safely ignore this email.
             </Text>
           </Container>
         </Body>

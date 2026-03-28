@@ -69,11 +69,9 @@ export function ConditionalSidebar({ children }: ConditionalSidebarProps) {
                     || pathname === '/' 
                     //|| pathname === '/home/cemtemChat'
                     || pathname.startsWith('/auth')
-                    // dashboard doesnt auto apply sidebar everywhere. That decision is made by dashboardShell
                     || pathname.startsWith('/dashboard')
-                    // home doesnt auto apply sidebar everywhere. That decision is made by homeShell
                     || pathname.startsWith('/home')
-                    || pathname.startsWith('/login/magicAuth'); 
+                    || pathname.startsWith('/login'); 
   
   if (hideSidebar) {
     return <>{children}</>;

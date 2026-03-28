@@ -44,20 +44,30 @@ export const users = pgTable("users", {
 	phoneNumber: varchar("phone_number", { length: 50 }),
 	inviteToken: text(),
 	status: text().default('active').notNull(),
+
+    isDashboardUser: boolean("is_dashboard_user").default(false).notNull(),
+	dashboardLoginId: text("dashboard_login_id"),
+    dashboardHashedPassword: text("dashboard_hashed_password"),
+	
+    isSalesAppUser: boolean("is_sales_app_user").default(false).notNull(),
 	salesmanLoginId: text("salesman_login_id"),
 	hashedPassword: text("hashed_password"),
+
+	isTechnicalRole: boolean("is_technical_role").default(false).notNull(),
+	techLoginId: text("tech_login_id"),
+	techHashPassword: text("tech_hash_password"),
+
+	isAdminAppUser: boolean("is_admin_app_user").default(false).notNull(),
+	adminAppLoginId: text("admin_app_login_id"),
+	adminAppHashedPassword: text("admin_app_hashed_password"),
+
 	reportsToId: integer("reports_to_id"),
 	area: text(),
 	region: text(),
 	noOfPjp: integer("no_of_pjp"),
-	isTechnicalRole: boolean("is_technical_role").default(false).notNull(),
-	techLoginId: text("tech_login_id"),
-	techHashPassword: text("tech_hash_password"),
 	deviceId: varchar("device_id", { length: 255 }),
 	fcmToken: varchar("fcm_token", { length: 500 }),
-	adminAppLoginId: text("admin_app_login_id"),
-	adminAppHashedPassword: text("admin_app_hashed_password"),
-	isAdminAppUser: boolean("is_admin_app_user").default(false).notNull(),
+	
 }, (table) => [
 	index("idx_user_company_id").using("btree", table.companyId.asc().nullsLast().op("int4_ops")),
 	index("idx_user_device_id").using("btree", table.deviceId.asc().nullsLast().op("text_ops")),
@@ -78,6 +88,23 @@ export const users = pgTable("users", {
 	}).onUpdate("cascade").onDelete("set null"),
 	unique("uniq_user_device_id").on(table.deviceId),
 	index("idx_users_reports_to_id").on(table.reportsToId),
+]);
+
+export const roles = pgTable("roles", {
+    id: serial("id").primaryKey(),
+    orgRole: varchar("org_role", { length: 100 }), // e.g., 'President', 'General Manager', 'Executive'
+    jobRole: varchar("job_role", { length: 100 }), // e.g., 'Sales', 'Technical Sales', 'IT', 'MIS'
+    grantedPerms: text("granted_perms").array().notNull().default(sql`ARRAY[]::text[]`), 
+    permDescription: varchar("perm_description", { length: 255 }),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userRoles = pgTable("user_roles", {
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    roleId: integer("role_id").notNull().references(() => roles.id, { onDelete: "cascade" }),
+}, (t) => [
+    primaryKey({ columns: [t.userId, t.roleId] }),
 ]);
 
 export const authSessions = pgTable("auth_sessions", {

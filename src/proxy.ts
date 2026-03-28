@@ -30,15 +30,13 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   // First, run the AuthKit middleware, correctly passing both the request and event.
   const authkitResponse = await authkitMiddleware({
     middlewareAuth: {
-      enabled: true,
+      enabled: false,
       unauthenticatedPaths: [
         '/',
         '/login',
-        '/login/magicAuth',
+        '/api/auth/login',
         '/auth-invite',
         '/auth/callback',
-        '/auth/magic-auth',
-        '/auth/magic-auth/verify',
       ],
     },
   })(request, event);

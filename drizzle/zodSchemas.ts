@@ -1,7 +1,7 @@
 // drizzle/zodSchema.ts
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanentJourneyPlans, technicalSites, 
-    companies, ratings, dealerBrandMapping, brands, verifiedDealers, dailyVisitReports, 
+import { companies, users, roles, userRoles, dealers, dealerReportsAndScores, technicalVisitReports, permanentJourneyPlans, technicalSites, 
+    ratings, dealerBrandMapping, brands, verifiedDealers, dailyVisitReports, 
     salesmanLeaveApplications, salesmanAttendance, competitionReports, geoTracking, journeys, 
     giftAllocationLogs, rewards, dailyTasks, salesOrders, masonPcSide, otpVerifications, 
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
@@ -11,6 +11,7 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, salesPromoters,
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
 } from "../drizzle/index";
+import { create } from "domain";
 
 /* ================================= XXXXXXXXXXX ================================ */
 /* ========================= drizzle-zod insert schemas ========================= */
@@ -18,6 +19,8 @@ import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanen
 
 export const insertCompanySchema = createInsertSchema(companies);
 export const insertUserSchema = createInsertSchema(users);
+export const insertRolesSchema = createInsertSchema(roles);
+export const insertUserRolesSchema = createInsertSchema(userRoles);
 export const insertDailyVisitReportSchema = createInsertSchema(dailyVisitReports);
 export const insertTechnicalVisitReportSchema = createInsertSchema(technicalVisitReports);
 export const insertPermanentJourneyPlanSchema = createInsertSchema(permanentJourneyPlans);
@@ -89,6 +92,8 @@ export const insertProjectionReportsSchema = createInsertSchema(projectionReport
 
 export const selectCompanySchema = createSelectSchema(companies);
 export const selectUserSchema = createSelectSchema(users);
+export const selectRolesSchema = createSelectSchema(roles);
+export const selectUserRolesSchema = createSelectSchema(userRoles);
 export const selectDailyVisitReportSchema = createSelectSchema(dailyVisitReports);
 export const selectTechnicalVisitReportSchema = createSelectSchema(technicalVisitReports);
 export const selectPermanentJourneyPlanSchema = createSelectSchema(permanentJourneyPlans);

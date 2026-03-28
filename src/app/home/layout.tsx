@@ -1,7 +1,5 @@
 // src/app/home/layout.tsx
-
 import { Suspense } from "react";
-import { withAuth, getTokenClaims } from "@workos-inc/authkit-nextjs";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { db } from "@/lib/drizzle";
@@ -9,28 +7,7 @@ import { users, companies } from "../../../drizzle";
 import { eq } from "drizzle-orm";
 import HomeShell from "@/app/home/homeShell";
 import type { Metadata } from "next";
-
-async function refreshUserJWTIfNeeded(user: any, claims: any) {
-  if (!claims?.org_id) {
-    console.log("⚠️ JWT missing organization data, checking database...");
-
-    const result = await db
-      .select({ id: users.id, email: users.email })
-      .from(users)
-      .where(eq(users.workosUserId, user.id))
-      .limit(1);
-
-    const dbUser = result[0];
-
-    if (dbUser) {
-      console.log(
-        `🔄 User ${dbUser.email || user.id} detected with incomplete JWT - forcing refresh.`
-      );
-      return { needsRefresh: true };
-    }
-  }
-  return { needsRefresh: false };
-}
+import { verifySession } from "@/lib/auth"; // <-- IMPORT CUSTOM AUTH
 
 export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },
@@ -54,22 +31,21 @@ export async function AuthenticatedHomeLayout({
   children: React.ReactNode;
 }) {
   await connection();
-  const { user } = await withAuth();
-  const claims = await getTokenClaims();
+  
+  // 1. Verify custom session
+  const session = await verifySession();
 
-  if (!user) {
+  if (!session || !session.userId) {
     redirect("/login");
   }
 
-  // prisma.user.findUnique({ include: { company: true } })
-  let result = await db
+  // 2. Fetch User from DB using local integer ID
+  const result = await db
     .select({
       userId: users.id,
-      workosUserId: users.workosUserId,
       email: users.email,
       role: users.role,
       status: users.status,
-      inviteToken: users.inviteToken,
       firstName: users.firstName, 
       lastName: users.lastName,   
       companyId: companies.id,
@@ -77,78 +53,13 @@ export async function AuthenticatedHomeLayout({
     })
     .from(users)
     .leftJoin(companies, eq(users.companyId, companies.id))
-    .where(eq(users.workosUserId, user.id))
+    .where(eq(users.id, session.userId))
     .limit(1);
 
-  let dbUser = result[0];
+  const dbUser = result[0];
 
-  // Account Linking Logic
   if (!dbUser) {
-    const userByEmail = await db
-      .select({ id: users.id, role: users.role, email: users.email })
-      .from(users)
-      .where(eq(users.email, user.email!))
-      .limit(1);
-
-    if (userByEmail[0]) {
-      console.log(
-        `🔗 Linking existing user account ${userByEmail[0].email} with WorkOS ID ${user.id}`
-      );
-
-      await db
-        .update(users)
-        .set({
-          workosUserId: user.id,
-          status: "active",
-          inviteToken: null,
-          role: (claims?.role as string) || userByEmail[0].role,
-        })
-        .where(eq(users.id, userByEmail[0].id));
-
-      // re-fetch updated user + company
-      result = await db
-        .select({
-          userId: users.id,
-          workosUserId: users.workosUserId,
-          email: users.email,
-          role: users.role,
-          status: users.status,             
-          inviteToken: users.inviteToken,   
-          firstName: users.firstName,
-          lastName: users.lastName,
-          companyId: companies.id,
-          companyName: companies.companyName,
-        })
-        .from(users)
-        .leftJoin(companies, eq(users.companyId, companies.id))
-        .where(eq(users.id, userByEmail[0].id))
-        .limit(1);
-
-      dbUser = result[0];
-    } else {
-      console.error(
-        "❌ User exists in WorkOS but not in the local database. Redirecting to setup."
-      );
-      redirect("/setup-company");
-    }
-  }
-
-  const refreshCheck = await refreshUserJWTIfNeeded(user, claims);
-  if (refreshCheck.needsRefresh) {
-    redirect("/auth/refresh?returnTo=/home");
-  }
-
-  const workosRole = claims?.role as string | undefined;
-
-  if (workosRole && dbUser.role !== workosRole) {
-    console.log(`🔄 Updating user role from ${dbUser.role} to ${workosRole}`);
-
-    await db
-      .update(users)
-      .set({ role: workosRole })
-      .where(eq(users.id, dbUser.userId));
-
-    dbUser.role = workosRole;
+    redirect("/login");
   }
 
   if (!dbUser.companyId) {
@@ -156,8 +67,9 @@ export async function AuthenticatedHomeLayout({
     redirect("/setup-company");
   }
 
-  const finalRole = dbUser.role || "senior-executive";
-  const permissions = (claims?.permissions as string[]) || [];
+  const finalRole = dbUser.role || "junior-executive";
+  const permissions: string[] = []; // RBAC arrays go here later!
+
   const mappedUser = {
     id: dbUser.userId,
     email: dbUser.email,
@@ -167,7 +79,7 @@ export async function AuthenticatedHomeLayout({
     company: {
       id: dbUser.companyId!,
       companyName: dbUser.companyName!,
-      adminUserId: dbUser.userId.toString(), // adjust if different column exists
+      adminUserId: dbUser.userId.toString(),
     },
   };
 
@@ -175,7 +87,7 @@ export async function AuthenticatedHomeLayout({
     <HomeShell
       user={mappedUser}
       company={mappedUser.company}
-      workosRole={finalRole}
+      role={finalRole}
       permissions={permissions}
     >
       {children}

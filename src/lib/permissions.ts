@@ -738,8 +738,8 @@ export const WORKOS_ROLE_PERMISSIONS: Record<WorkOSRole, DashboardPermissions> =
       salesmanRatings: false,
     },
     logisticsIO: {
-      records: false,
-      logisticsUsers: false,
+      records: true,
+      logisticsUsers: true,
     },
     account: true,
     raiseAQuery: true,

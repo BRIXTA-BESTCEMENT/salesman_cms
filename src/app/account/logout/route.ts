@@ -1,15 +1,19 @@
 // src/app/account/logout/route.ts
-import { signOut } from '@workos-inc/authkit-nextjs';
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
-// Handle GET requests (direct link access)
 export async function GET() {
-  await signOut();
-  redirect('/');
-}
+    const cookieStore = await cookies();
+    
+    // Destroy the auth token by setting it to expire immediately
+    cookieStore.set('auth_token', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 0, // Immediately expires the cookie
+        path: '/',
+    });
 
-// Handle POST requests (form submissions)
-export async function POST() {
-  await signOut();
-  redirect('/');
+    // Redirect the user back to the landing page
+    return NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'));
 }

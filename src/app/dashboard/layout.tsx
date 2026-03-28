@@ -1,6 +1,5 @@
 // src/app/dashboard/layout.tsx
 import { Suspense } from 'react';
-import { withAuth, getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { redirect } from 'next/navigation';
 import type { Metadata } from "next";
 import { db } from '@/lib/drizzle';
@@ -8,6 +7,7 @@ import { users, companies } from '../../../drizzle';
 import { eq } from 'drizzle-orm';
 import DashboardShell from '@/app/dashboard/dashboardShell';
 import { connection } from 'next/server';
+import { verifySession } from '@/lib/auth'; // <-- IMPORT CUSTOM AUTH
 
 const allowedAdminRoles = [
   'president',
@@ -18,45 +18,14 @@ const allowedAdminRoles = [
   'senior-manager',
   'manager',
   'assistant-manager',
-  //'senior-executive', 
-  //'executive',
-  //'junior-executive',
+  'Admin', // Included your new Super Admin role
 ];
+
 const allowedNonAdminRoles = [
   'senior-executive',
   'executive',
   'junior-executive',
 ];
-// Pages that non-admin roles are allowed to access
-const nonAdminAllowedPages = [
-  '/dashboard',
-  '/dashboard/reports',
-  '/dashboard/dealerManagement',
-  '/dashboard/permanentJourneyPlan',
-  '/dashboard/salesmanAttendance',
-  '/dashboard/scoresAndRatings',
-];
-
-async function refreshUserJWTIfNeeded(user: any, claims: any) {
-  if (!claims?.org_id) {
-    console.log('⚠️ JWT missing organization data, checking database...');
-
-    const result = await db
-      .select({ id: users.id, email: users.email })
-      .from(users)
-      .where(eq(users.workosUserId, user.id))
-      .limit(1);
-
-    const dbUser = result[0];
-
-    // We now check if the user's role is in the list of allowed admin roles
-    if (dbUser) {
-      console.log(`🔄 User ${dbUser.email || user.id} detected with incomplete JWT - forcing refresh.`);
-      return { needsRefresh: true };
-    }
-  }
-  return { needsRefresh: false };
-}
 
 export const metadata: Metadata = {
   icons: {
@@ -71,119 +40,50 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    // This loading screen shows up for a fraction of a second while auth resolves
     <Suspense fallback={<p className="text-muted-foreground mt-4">Loading...</p>}>
       <AuthenticatedLayout>{children}</AuthenticatedLayout>
     </Suspense>
   );
 }
 
-// 2. DYNAMIC LAYOUT: Handles all the cookies, auth, and database checks
+// 2. DYNAMIC LAYOUT: Handles custom JWT session and database checks
 export async function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   await connection();
-  const { user } = await withAuth();
-  const claims = await getTokenClaims();
+  
+  // 1. Verify custom session
+  const session = await verifySession();
 
-  if (!user) {
+  if (!session || !session.userId) {
     redirect('/login');
   }
 
-  // Ensure the user is in the local database before proceeding.
-  let result = await db
+  // 2. Fetch User directly from DB using their local integer ID
+  const result = await db
     .select({
       id: users.id,
-      workosUserId: users.workosUserId,
       email: users.email,
       firstName: users.firstName,
       lastName: users.lastName,
       role: users.role,
       status: users.status,
-      inviteToken: users.inviteToken,
       companyId: companies.id,
       companyName: companies.companyName,
       adminUserId: companies.adminUserId,
     })
     .from(users)
     .leftJoin(companies, eq(users.companyId, companies.id))
-    .where(eq(users.workosUserId, user.id))
+    .where(eq(users.id, session.userId))
     .limit(1);
 
-  let dbUser = result[0];
+  const dbUser = result[0];
 
-  // If the user doesn't exist in the database by workosUserId,
-  // try to find them by email and link their account.
+  // If the user doesn't exist in the database, log them out.
   if (!dbUser) {
-    const userByEmailResult = await db
-      .select({ id: users.id, email: users.email, role: users.role })
-      .from(users)
-      .where(eq(users.email, user.email!))
-      .limit(1);
-
-    const userByEmail = userByEmailResult[0];
-
-    if (userByEmail) {
-      console.log(`🔗 Linking existing user account ${userByEmail.email} with WorkOS ID ${user.id}`);
-      await db
-        .update(users)
-        .set({
-          workosUserId: user.id,
-          status: 'active',
-          inviteToken: null,
-          role: (claims?.role as string) || userByEmail.role,
-        })
-        .where(eq(users.id, userByEmail.id));
-
-      // Re-fetch mapped user and company
-      result = await db
-        .select({
-          id: users.id,
-          workosUserId: users.workosUserId,
-          email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          role: users.role,
-          status: users.status,
-          inviteToken: users.inviteToken,
-          companyId: companies.id,
-          companyName: companies.companyName,
-          adminUserId: companies.adminUserId,
-        })
-        .from(users)
-        .leftJoin(companies, eq(users.companyId, companies.id))
-        .where(eq(users.id, userByEmail.id))
-        .limit(1);
-
-      dbUser = result[0];
-    } else {
-      // If they are not in the DB at all, this is a critical issue.
-      console.error('❌ User exists in WorkOS but not in the local database.');
-      redirect('/setup-company');
-    }
-  }
-
-  // All subsequent logic now assumes `dbUser` is valid.
-  const workosRole = claims?.role as string | undefined;
-  const permissions = (claims?.permissions as string[]) || [];
-
-  const refreshCheck = await refreshUserJWTIfNeeded(user, claims);
-  if (refreshCheck.needsRefresh) {
-    redirect('/auth/refresh?returnTo=/dashboard');
-  }
-
-  // Check if the user's role is out of sync and update it
-  if (workosRole && dbUser.role !== workosRole) {
-    console.log(`🔄 Updating user role from ${dbUser.role} to ${workosRole}`);
-
-    await db
-      .update(users)
-      .set({ role: workosRole })
-      .where(eq(users.id, dbUser.id));
-
-    dbUser.role = workosRole;
+    redirect('/api/auth/logout');
   }
 
   // Check for company access
@@ -193,54 +93,22 @@ export async function AuthenticatedLayout({
   }
 
   const finalRole = dbUser.role;
+  const permissions: string[] = []; // We will map RBAC array here later
   console.log('🎯 Final role being used:', finalRole);
 
-  // --- CORRECTED REDIRECT LOGIC ---
-  // const urlPath = process.env.NEXT_PUBLIC_APP_URL
-  // const headersList = await headers();
-  // const currentUrl = headersList.get('x-url') || '/';
-  // const url = new URL(currentUrl, urlPath);
-  // const isWelcomePage = url.pathname === '/dashboard/welcome';
-  // const hasNameParam = url.searchParams.has('name');
-
-  // if (allowedNonAdminRoles.includes(finalRole)) {
-  //   const isAllowedPage = nonAdminAllowedPages.includes(url.pathname);
-
-  //   if (!isAllowedPage && !(isWelcomePage && hasNameParam)) {
-  //     const name = dbUser.firstName || dbUser.email;
-  //     redirect(`/dashboard/welcome?name=${name}&error=unauthorized`);
-  //   }
-  // }
-
-  // NEW: Check if user is an Executive (Non-Admin)
-  // We show them the Welcome View to prevent 403 errors from dashboard widgets
-  // if (allowedNonAdminRoles.includes(finalRole)) {
-  //   return (
-  //     <DashboardShell
-  //       user={dbUser}
-  //       company={company}
-  //       workosRole={finalRole}
-  //       permissions={permissions}
-  //     >
-  //       {/* We ignore the passed 'children' and render WelcomeView instead */}
-  //       <SimpleWelcomePage firstName={dbUser.firstName || 'Team Member'} />
-  //     </DashboardShell>
-  //   );
-  // }
-
   // SAFETY CHECK: If they have NO valid role at all, block them.
-  // (But if they are an Executive, we let them pass so they can see specific pages)
   if (!allowedAdminRoles.includes(finalRole) && !allowedNonAdminRoles.includes(finalRole)) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
         <div className="text-center p-8 bg-white rounded-lg shadow-md">
           <h1 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h1>
           <p className="text-gray-600 mb-4">Your role ({finalRole}) does not have dashboard access.</p>
-          <form action="/account/logout" method="POST">
-            <button type="submit" className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-800 font-medium transition-colors">
-              Sign Out
-            </button>
-          </form>
+          <a 
+             href="/api/auth/logout" 
+             className="inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-800 font-medium transition-colors"
+          >
+            Sign Out
+          </a>
         </div>
       </div>
     );
@@ -264,7 +132,7 @@ export async function AuthenticatedLayout({
     <DashboardShell
       user={mappedUser}
       company={mappedUser.company}
-      workosRole={finalRole}
+      role={finalRole}
       permissions={permissions}
     >
       {children}

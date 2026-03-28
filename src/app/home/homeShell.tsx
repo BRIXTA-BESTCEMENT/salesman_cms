@@ -28,17 +28,17 @@ interface HomeShellProps {
   user: User;
   company: Company;
   children: React.ReactNode;
-  workosRole?: string;
+  role?: string;
   permissions?: string[];
 }
 
 export default function HomeShell({
   children,
-  workosRole,
+  role,
 }: HomeShellProps) {
   return (
     <SidebarProvider>
-      <AppSidebar userRole={workosRole as WorkOSRole} />
+      <AppSidebar userRole={role as WorkOSRole} />
       {/* exact same inset + padding rhythm as dashboardShell */}
       <SidebarInset className="pl-4 pt-4 md:pl-6 md:pt-6">
         <SiteHeader />

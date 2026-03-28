@@ -1,7 +1,7 @@
 // src/app/api/dashboardPagesAPI/users-and-team/users/user-locations/route.ts
 import "server-only";
 import { connection, NextResponse } from "next/server";
-import { getTokenClaims } from "@workos-inc/authkit-nextjs";
+import { verifySession } from "@/lib/auth";
 import { db } from "@/lib/drizzle";
 import { users } from "../../../../../../../drizzle";
 import { eq, isNotNull, and } from "drizzle-orm";
@@ -9,15 +9,15 @@ import { eq, isNotNull, and } from "drizzle-orm";
 export async function GET() {
   await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims?.sub) {
+    const session = await verifySession(); 
+    if (!session || !session.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const currentUserResult = await db
       .select({ companyId: users.companyId })
       .from(users)
-      .where(eq(users.workosUserId, claims.sub))
+      .where(eq(users.id, session.userId))
       .limit(1);
 
     const currentUser = currentUserResult[0];
