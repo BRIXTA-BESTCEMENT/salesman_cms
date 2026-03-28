@@ -1,21 +1,15 @@
 // src/app/api/dashboardPagesAPI/slm-leaves/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { refreshCompanyCache } from '@/app/actions/cache';
 import { db } from '@/lib/drizzle';
-import { users, salesmanLeaveApplications } from '../../../../../drizzle'; 
+import { users, salesmanLeaveApplications } from '../../../../../drizzle';
 import { eq, and, or, ilike, gte, lte, desc, getTableColumns, count, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectSalesmanLeaveApplicationSchema, insertSalesmanLeaveApplicationSchema } from '../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager'
-];
+import { selectSalesmanLeaveApplicationSchema, insertSalesmanLeaveApplicationSchema } from '../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 const frontendLeaveSchema = selectSalesmanLeaveApplicationSchema.extend({
   salesmanName: z.string(),
@@ -52,7 +46,7 @@ async function getCachedLeaves(
   'use cache';
   cacheLife('hours');
   cacheTag(`salesman-leaves-${companyId}`);
-  
+
   const filterKey = `${search}-${role}-${area}-${region}-${startDateParam}-${endDateParam}`;
   cacheTag(`salesman-leaves-${companyId}-${page}-${filterKey}`);
   cacheTag(`salesman-leaves-${companyId}`); // Broad tag for simple invalidation
@@ -134,24 +128,14 @@ async function getCachedLeaves(
 
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
-  
-  try {
-    const claims = await getTokenClaims();
 
-    if (!claims || !claims.sub) {
+  try {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Insufficient permissions.` }, { status: 403 });
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -166,7 +150,7 @@ export async function GET(request: NextRequest) {
     const endDateParam = searchParams.get('endDate');
 
     const result = await getCachedLeaves(
-      currentUser.companyId,
+      session.companyId,
       page,
       pageSize,
       search,
@@ -186,7 +170,7 @@ export async function GET(request: NextRequest) {
         totalCount: result.totalCount,
         page,
         pageSize
-      }, { status: 200 }); 
+      }, { status: 200 });
     }
 
     return NextResponse.json({
@@ -204,31 +188,23 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Insufficient permissions.` }, { status: 403 });
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await req.json();
-    
+
     const updateLeaveSchema = insertSalesmanLeaveApplicationSchema.pick({
       id: true,
       status: true,
       adminRemarks: true,
-    }).required({ id: true }); 
-    
+    }).required({ id: true });
+
     const parsedBody = updateLeaveSchema.safeParse(body);
 
     if (!parsedBody.success) {
@@ -241,10 +217,10 @@ export async function PATCH(req: NextRequest) {
       .select({ companyId: users.companyId })
       .from(salesmanLeaveApplications)
       .leftJoin(users, eq(salesmanLeaveApplications.userId, users.id))
-      .where(eq(salesmanLeaveApplications.id, id)) 
+      .where(eq(salesmanLeaveApplications.id, id))
       .limit(1);
 
-    if (!existingApp[0] || existingApp[0].companyId !== currentUser.companyId) {
+    if (!existingApp[0] || existingApp[0].companyId !== session.companyId) {
       return NextResponse.json({ message: 'Leave application not found or unauthorized' }, { status: 404 });
     }
 

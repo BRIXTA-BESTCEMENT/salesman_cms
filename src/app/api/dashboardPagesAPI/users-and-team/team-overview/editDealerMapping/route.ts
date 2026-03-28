@@ -1,27 +1,33 @@
 // src/app/api/dashboardPagesAPI/users-and-team/team-overview/editDealerMapping/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from "next/server";
-import { getTokenClaims } from "@workos-inc/authkit-nextjs";
 import { db } from '@/lib/drizzle';
 import { users, dealers } from '../../../../../../../drizzle';
 import { eq, and, or, isNull, inArray } from 'drizzle-orm';
+import { verifySession } from '@/lib/auth';
 
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager', 
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager', 
-  'senior-manager', 'manager', 'assistant-manager'];
+const allowedAdminRoles = ["Admin"];
 
 export async function GET(request: NextRequest) {
   await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims?.sub) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
+    }
 
     const url = new URL(request.url);
     const userId = parseInt(url.searchParams.get("userId") || '0');
     if (!userId) return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
 
-    const [caller] = await db.select({ companyId: users.companyId, role: users.role }).from(users).where(eq(users.workosUserId, claims.sub)).limit(1);
-    if (!caller || !allowedRoles.includes(caller.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const [caller] = await db
+      .select({ companyId: users.companyId, role: users.role })
+      .from(users).where(eq(users.id, session.userId))
+      .limit(1);
+    if (!caller || !allowedAdminRoles.includes(caller.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const area = url.searchParams.get("area");
     const region = url.searchParams.get("region");
@@ -46,8 +52,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims?.sub || !allowedRoles.includes(claims.role as string)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+    }
 
     const { userId, dealerIds } = await request.json();
 

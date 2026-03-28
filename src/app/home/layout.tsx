@@ -7,7 +7,7 @@ import { users, companies } from "../../../drizzle";
 import { eq } from "drizzle-orm";
 import HomeShell from "@/app/home/homeShell";
 import type { Metadata } from "next";
-import { verifySession } from "@/lib/auth"; // <-- IMPORT CUSTOM AUTH
+import { verifySession } from "@/lib/auth"; 
 
 export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },

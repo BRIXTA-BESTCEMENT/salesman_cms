@@ -1,18 +1,13 @@
 // src/app/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification/bulk-verify/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users, permanentJourneyPlans } from '../../../../../../../drizzle'; 
 import { eq, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { refreshCompanyCache } from '@/app/actions/cache';
 import { selectPermanentJourneyPlanSchema } from '../../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-  'Admin', 'president', 'senior-general-manager', 'general-manager',
-  'regional-sales-manager', 'senior-manager', 'manager', 'assistant-manager',
-];
+import { verifySession } from '@/lib/auth';
 
 const bulkVerifySchema = z.object({
   ids: z.array(selectPermanentJourneyPlanSchema.shape.id).min(1, "At least one PJP ID is required"),
@@ -20,22 +15,13 @@ const bulkVerifySchema = z.object({
 
 export async function PATCH(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // 1. Fetch current user and authorization
-    const currentUserResult = await db
-      .select({ role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     // 2. Parse and validate body
@@ -48,11 +34,6 @@ export async function PATCH(request: NextRequest) {
 
     const { ids } = validated.data;
 
-    /** * 3. Security Check & Filter
-     * Drizzle updateMany (via update().where()) does not support deep joins directly 
-     * in the where clause as easily as Prisma. We first verify the IDs belong to 
-     * the current user's company to ensure multi-tenancy security.
-     */
     const validPJPs = await db
       .select({ id: permanentJourneyPlans.id })
       .from(permanentJourneyPlans)
@@ -60,7 +41,7 @@ export async function PATCH(request: NextRequest) {
       .where(
         and(
           inArray(permanentJourneyPlans.id, ids),
-          eq(users.companyId, currentUser.companyId)
+          eq(users.companyId, session.companyId)
         )
       );
 
@@ -71,7 +52,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // 4. Perform Bulk Update
-    const result = await db
+    await db
       .update(permanentJourneyPlans)
       .set({
         verificationStatus: 'VERIFIED',

@@ -1,31 +1,24 @@
 // src/app/api/dashboardPagesAPI/technical-sites/route.ts
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import {
     users, technicalSites, siteAssociatedUsers, siteAssociatedDealers, dealers,
     siteAssociatedMasons, masonPcSide, bagLifts
-} from '../../../../../drizzle'; 
+} from '../../../../../drizzle';
 import { eq, desc, inArray, getTableColumns, and, or, ilike, count, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectTechnicalSiteSchema } from '../../../../../drizzle/zodSchemas';
-
-const allowedRoles = [
-    'president', 'senior-general-manager', 'general-manager',
-    'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-    'senior-manager', 'manager', 'assistant-manager',
-    'senior-executive', 'executive',
-];
+import { verifySession } from '@/lib/auth';
 
 const frontendSiteSchema = selectTechnicalSiteSchema.extend({
     latitude: z.number().nullable(),
     longitude: z.number().nullable(),
     constructionStartDate: z.string().nullable(),
     constructionEndDate: z.string().nullable(),
-    firstVisitDate: z.string().nullable(), 
+    firstVisitDate: z.string().nullable(),
     lastVisitDate: z.string().nullable(),
     createdAt: z.string(),
     updatedAt: z.string(),
@@ -71,7 +64,7 @@ async function getCachedTechnicalSites(
     'use cache';
     cacheLife('days');
     cacheTag(`technical-sites`);
-    
+
     const filterKey = `${search}-${region}-${area}-${stage}`;
     cacheTag(`technical-sites-${page}-${filterKey}`);
 
@@ -124,9 +117,9 @@ async function getCachedTechnicalSites(
             role: users.role,
             phoneNumber: users.phoneNumber
         })
-        .from(siteAssociatedUsers)
-        .innerJoin(users, eq(siteAssociatedUsers.b, users.id))
-        .where(inArray(siteAssociatedUsers.a, siteIds)),
+            .from(siteAssociatedUsers)
+            .innerJoin(users, eq(siteAssociatedUsers.b, users.id))
+            .where(inArray(siteAssociatedUsers.a, siteIds)),
 
         db.select({
             siteId: siteAssociatedDealers.b,
@@ -136,9 +129,9 @@ async function getCachedTechnicalSites(
             type: dealers.type,
             area: dealers.area
         })
-        .from(siteAssociatedDealers)
-        .innerJoin(dealers, eq(siteAssociatedDealers.a, dealers.id))
-        .where(inArray(siteAssociatedDealers.b, siteIds)),
+            .from(siteAssociatedDealers)
+            .innerJoin(dealers, eq(siteAssociatedDealers.a, dealers.id))
+            .where(inArray(siteAssociatedDealers.b, siteIds)),
 
         db.select({
             siteId: siteAssociatedMasons.b,
@@ -147,9 +140,9 @@ async function getCachedTechnicalSites(
             phoneNumber: masonPcSide.phoneNumber,
             kycStatus: masonPcSide.kycStatus
         })
-        .from(siteAssociatedMasons)
-        .innerJoin(masonPcSide, eq(siteAssociatedMasons.a, masonPcSide.id))
-        .where(inArray(siteAssociatedMasons.b, siteIds)),
+            .from(siteAssociatedMasons)
+            .innerJoin(masonPcSide, eq(siteAssociatedMasons.a, masonPcSide.id))
+            .where(inArray(siteAssociatedMasons.b, siteIds)),
 
         db.select({
             siteId: bagLifts.siteId,
@@ -160,10 +153,10 @@ async function getCachedTechnicalSites(
             purchaseDate: bagLifts.purchaseDate,
             masonName: masonPcSide.name
         })
-        .from(bagLifts)
-        .leftJoin(masonPcSide, eq(bagLifts.masonId, masonPcSide.id))
-        .where(inArray(bagLifts.siteId, siteIds))
-        .orderBy(desc(bagLifts.purchaseDate))
+            .from(bagLifts)
+            .leftJoin(masonPcSide, eq(bagLifts.masonId, masonPcSide.id))
+            .where(inArray(bagLifts.siteId, siteIds))
+            .orderBy(desc(bagLifts.purchaseDate))
     ]);
 
     // Step 3: Group relations by siteId in memory for O(1) lookup
@@ -213,10 +206,10 @@ async function getCachedTechnicalSites(
                 id: m.id, name: m.name, phoneNumber: m.phoneNumber, kycStatus: m.kycStatus
             })),
             bagLifts: siteBagLifts.map((bl: any) => ({
-                id: bl.id, 
-                bagCount: toNumber(bl.bagCount), 
-                pointsCredited: toNumber(bl.pointsCredited), 
-                status: bl.status, 
+                id: bl.id,
+                bagCount: toNumber(bl.bagCount),
+                pointsCredited: toNumber(bl.pointsCredited),
+                status: bl.status,
                 purchaseDate: bl.purchaseDate ? new Date(bl.purchaseDate).toISOString() : null,
                 masonName: bl.masonName
             })),
@@ -228,23 +221,14 @@ async function getCachedTechnicalSites(
 
 export async function GET(request: NextRequest) {
     if (typeof connection === 'function') await connection();
-    
+
     try {
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ role: users.role })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        if (!session.permissions.includes("READ")) {
+            return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
         }
 
         const { searchParams } = new URL(request.url);
@@ -252,20 +236,20 @@ export async function GET(request: NextRequest) {
         // --- Action: Fetch Distinct Filters Layout ---
         const action = searchParams.get('action');
         if (action === 'fetch_filters') {
-             const distinctRegions = await db.selectDistinct({ region: technicalSites.region }).from(technicalSites);
-             const distinctAreas = await db.selectDistinct({ area: technicalSites.area }).from(technicalSites);
-             const distinctStages = await db.selectDistinct({ stage: technicalSites.stageOfConstruction }).from(technicalSites);
+            const distinctRegions = await db.selectDistinct({ region: technicalSites.region }).from(technicalSites);
+            const distinctAreas = await db.selectDistinct({ area: technicalSites.area }).from(technicalSites);
+            const distinctStages = await db.selectDistinct({ stage: technicalSites.stageOfConstruction }).from(technicalSites);
 
-             return NextResponse.json({
-                 regions: distinctRegions.map(r => r.region).filter(Boolean).sort(),
-                 areas: distinctAreas.map(a => a.area).filter(Boolean).sort(),
-                 stages: distinctStages.map(s => s.stage).filter(Boolean).sort(),
-             }, { status: 200 });
+            return NextResponse.json({
+                regions: distinctRegions.map(r => r.region).filter(Boolean).sort(),
+                areas: distinctAreas.map(a => a.area).filter(Boolean).sort(),
+                stages: distinctStages.map(s => s.stage).filter(Boolean).sort(),
+            }, { status: 200 });
         }
 
         const page = Number(searchParams.get('page') ?? 0);
         const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
-        
+
         const search = searchParams.get('search');
         const region = searchParams.get('region');
         const area = searchParams.get('area');

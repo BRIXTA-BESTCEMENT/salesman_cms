@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, User, ArrowRight, BotMessageSquare } from 'lucide-react';
-import { verifySession } from '@/lib/auth'; // <-- IMPORT YOUR CUSTOM AUTH
+import { verifySession } from '@/lib/auth';
 
 // 1. The Static Shell
 export default function SignedInHomePage() {

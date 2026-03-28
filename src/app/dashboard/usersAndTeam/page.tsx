@@ -1,12 +1,12 @@
 // src/app/dashboard/usersAndTeam/page.tsx
 import { Suspense } from 'react';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users, companies } from '../../../../drizzle';
 import { eq } from 'drizzle-orm';
 import { UsersAndTeamTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
 import { connection } from 'next/server';
+import { verifySession } from '@/lib/auth';
 
 export default function UsersAndTeamPage() {
   return (
@@ -25,8 +25,8 @@ export default function UsersAndTeamPage() {
 }
 
 async function getAdminUser() {
-  const claims = await getTokenClaims();
-  if (!claims?.sub) {
+  const session = await verifySession();
+  if (!session || !session.userId) {
     return null;
   }
 
@@ -37,7 +37,7 @@ async function getAdminUser() {
     })
     .from(users)
     .leftJoin(companies, eq(users.companyId, companies.id))
-    .where(eq(users.workosUserId, claims.sub))
+    .where(eq(users.id, session.userId))
     .limit(1);
 
   if (result.length === 0) {

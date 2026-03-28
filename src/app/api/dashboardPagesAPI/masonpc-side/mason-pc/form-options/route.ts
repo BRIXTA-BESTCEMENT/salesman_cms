@@ -1,31 +1,22 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/form-options/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users, dealers, technicalSites } from '../../../../../../../drizzle';
 import { eq, and, asc } from 'drizzle-orm';
+import { verifySession } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
     // Opt into dynamic rendering for Next.js 15+
     if (typeof connection === 'function') await connection();
 
     try {
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !currentUser.companyId) {
-            return NextResponse.json({ error: 'User/Company not found' }, { status: 403 });
+        if (!session.permissions.includes('READ')) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         // 1. Fetch Salesmen (isTechnicalRole = true)
@@ -38,7 +29,7 @@ export async function GET(request: NextRequest) {
             .from(users)
             .where(
                 and(
-                    eq(users.companyId, currentUser.companyId),
+                    eq(users.companyId, session.companyId),
                     eq(users.isTechnicalRole, true)
                 )
             )
@@ -61,7 +52,7 @@ export async function GET(request: NextRequest) {
             .innerJoin(users, eq(dealers.userId, users.id))
             .where(
                 and(
-                    eq(users.companyId, currentUser.companyId),
+                    eq(users.companyId, session.companyId),
                     eq(dealers.verificationStatus, 'VERIFIED')
                 )
             )
@@ -81,7 +72,7 @@ export async function GET(request: NextRequest) {
                 area: technicalSites.area
             })
             .from(technicalSites)
-            .orderBy(asc(technicalSites.siteName)); 
+            .orderBy(asc(technicalSites.siteName));
 
         const formattedSites = sites.map((s) => ({
             id: s.id,

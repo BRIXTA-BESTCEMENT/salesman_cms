@@ -1,7 +1,6 @@
 // src/app/api/dashboardPageAPI/assign-tasks/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dealers, verifiedDealers, dailyTasks } from '../../../../../drizzle/schema';
@@ -10,16 +9,10 @@ import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDailyTaskSchema } from '../../../../../drizzle/zodSchemas';
 import crypto from 'crypto';
+import { verifySession } from '@/lib/auth';
 
-const allowedAssignerRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager'
-];
-
-const allowedAssigneeRoles = [
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager', 'senior-executive', 'executive', 'junior-executive'
+const assignableRoles = ['senior-regional-manager', 'regional-manager', 'deputy-manager', 'senior-area-manager', 'area-manager',
+  'senior-executive', 'executive', 'junior-executive'
 ];
 
 const assignSchema = z.object({
@@ -35,9 +28,7 @@ const assignSchema = z.object({
     requiredVisitCount: z.number().int().optional().default(1),
     route: z.string().optional().default("")
   }))
-}).refine(data => data.dealerDetails.length > 0, {
-  message: "Select at least one dealer",
-});
+}).refine(data => data.dealerDetails.length > 0, {message: "Select at least one dealer"});
 
 const apiResponseTaskSchema = selectDailyTaskSchema.extend({
   salesmanName: z.string(),
@@ -133,19 +124,12 @@ export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId, area: users.area, region: users.region })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedAssignerRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -212,8 +196,8 @@ export async function GET(request: NextRequest) {
         .from(users)
         .where(
           and(
-            eq(users.companyId, currentUser.companyId),
-            inArray(users.role, allowedAssigneeRoles)
+            eq(users.companyId, session.companyId),
+            inArray(users.role, assignableRoles)
           )
         )
         .orderBy(asc(users.firstName));
@@ -222,7 +206,7 @@ export async function GET(request: NextRequest) {
         .selectDistinct({ region: dealers.region, area: dealers.area })
         .from(dealers)
         .innerJoin(users, eq(dealers.userId, users.id))
-        .where(eq(users.companyId, currentUser.companyId));
+        .where(eq(users.companyId, session.companyId));
 
       const distinctVerifiedDealers = await db
         .selectDistinct({ region: verifiedDealers.zone, area: verifiedDealers.area })
@@ -234,7 +218,7 @@ export async function GET(request: NextRequest) {
         .innerJoin(users, eq(dailyTasks.userId, users.id))
         .where(
           and(
-            eq(users.companyId, currentUser.companyId),
+            eq(users.companyId, session.companyId),
             notIlike(dailyTasks.visitType, 'unplanned') // filter out unplanned status
           )
         );
@@ -260,7 +244,7 @@ export async function GET(request: NextRequest) {
     const toDate = searchParams.get('toDate');
 
     const result = await getCachedDailyTasks(
-      currentUser.companyId,
+      session.companyId,
       page,
       pageSize,
       search,
@@ -294,19 +278,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedAssignerRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();

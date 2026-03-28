@@ -1,7 +1,6 @@
 // src/app/dashboard/page.tsx
 import { Suspense } from 'react';
-// import { withAuth } from '@workos-inc/authkit-nextjs'; <-- REMOVED
-import { verifySession } from '@/lib/auth'; // <-- ADDED
+import { verifySession } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../drizzle'; 
 import { eq } from 'drizzle-orm';

@@ -1,7 +1,6 @@
 // src/app/api/dashboardPagesAPI/slm-geotracking/route.ts
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, journeyOps, companies } from '../../../../../drizzle';
@@ -9,23 +8,18 @@ import { eq, and, gte, lte, desc, sql, getTableColumns } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectJourneyOpsSchema } from '../../../../../drizzle/zodSchemas';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive',
-];
+import { verifySession } from '@/lib/auth';
+import { setEngine } from 'crypto';
 
 const frontendTrackingSchema = selectJourneyOpsSchema.extend({
-  id: z.string(), 
+  id: z.string(),
   salesmanName: z.string(),
   employeeId: z.string().nullable().optional(),
   workosOrganizationId: z.string().nullable().optional(),
   salesmanRole: z.string(),
   area: z.string(),
   region: z.string(),
-  
+
   latitude: z.number(),
   longitude: z.number(),
   totalDistanceTravelled: z.number(),
@@ -48,7 +42,7 @@ const frontendTrackingSchema = selectJourneyOpsSchema.extend({
   destLat: z.number().nullable(),
   destLng: z.number().nullable(),
   appRole: z.string().nullable().optional(),
-  
+
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -68,7 +62,7 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
   'use cache';
   cacheLife('minutes');
   cacheTag(`slm-geotracking-${companyId}`);
-  
+
   const filterKey = `${startDateParam}-${endDateParam}`;
   cacheTag(`slm-geotracking-${companyId}-${filterKey}`);
 
@@ -118,7 +112,7 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
       area: row.userArea ?? '',
       region: row.userRegion ?? '',
       appRole: row.appRole || payload.appRole,
-      
+
       latitude: Number(payload.latitude) || 0,
       longitude: Number(payload.longitude) || 0,
       totalDistanceTravelled: Number(payload.totalDistance) || 0,
@@ -140,7 +134,7 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
       isActive: Boolean(payload.isActive),
       destLat: Number(payload.destLat) || null,
       destLng: Number(payload.destLng) || null,
-      
+
       createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : '',
       updatedAt: row.createdAt ? new Date(row.createdAt).toISOString() : '',
     };
@@ -151,35 +145,25 @@ export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
   try {
-    const claims = await getTokenClaims();
-
-    if (!claims || !claims.sub) {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const searchParams = request.nextUrl.searchParams;
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
 
-    const formattedReports = await getCachedTracking(currentUser.companyId, startDateParam, endDateParam);
+    const formattedReports = await getCachedTracking(session.companyId, startDateParam, endDateParam);
 
     const validatedData = z.array(frontendTrackingSchema).safeParse(formattedReports);
 
     if (!validatedData.success) {
       console.error("Tracking Geo Validation Error:", validatedData.error.format());
-      
+
       const safeDataFallback = JSON.parse(
         JSON.stringify(formattedReports, (_, v) => typeof v === "bigint" ? Number(v) : v)
       );

@@ -1,12 +1,12 @@
 // src/app/dashboard/dealerManagement/page.tsx
 import { Suspense } from 'react';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../drizzle';
 import { eq } from 'drizzle-orm';
 import { DealerManagementTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
 import { connection } from 'next/server';
+import { verifySession } from '@/lib/auth';
 
 // 1. The Static Shell
 export default function DealersPage() {
@@ -27,20 +27,20 @@ export default function DealersPage() {
 
 async function getCurrentUserRole(): Promise<WorkOSRole | null> {
 
-  const claims = await getTokenClaims();
-  if (!claims?.sub) {
+  const session = await verifySession();
+  if (!session || !session.userId) {
     return null;
   }
 
   const result = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-    
-    const user = result[0];
-    
-    return (user?.role as WorkOSRole) ?? null;
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, session.userId))
+    .limit(1);
+
+  const user = result[0];
+
+  return (user?.role as WorkOSRole) ?? null;
 
 }
 

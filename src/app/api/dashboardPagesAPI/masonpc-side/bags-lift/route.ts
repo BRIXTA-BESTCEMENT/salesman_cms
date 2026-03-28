@@ -2,18 +2,12 @@
 import 'server-only';
 import { connection, NextResponse, NextRequest } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, bagLifts, masonPcSide, dealers, technicalSites } from '../../../../../../drizzle'; 
+import { users, bagLifts, masonPcSide, dealers, technicalSites } from '../../../../../../drizzle';
 import { eq, and, or, ilike, isNull, desc, aliasedTable, sql, SQL, count, gte, lte } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectBagLiftSchema } from '../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',
-];
+import { selectBagLiftSchema } from '../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 async function getCachedBagLifts(
   companyId: number,
@@ -29,7 +23,7 @@ async function getCachedBagLifts(
   'use cache';
   cacheLife('minutes');
   cacheTag(`bags-lift-${companyId}`); // generic tag for server actions
-  
+
   const filterKey = `${search}-${status}-${area}-${region}-${fromDate}-${toDate}`;
   cacheTag(`bags-lift-${companyId}-${page}-${filterKey}`);
 
@@ -38,16 +32,16 @@ async function getCachedBagLifts(
 
   const filters: SQL[] = [
     or(
-        eq(salesmen.companyId, companyId),
-        isNull(masonPcSide.userId)
+      eq(salesmen.companyId, companyId),
+      isNull(masonPcSide.userId)
     ) as SQL
   ];
 
   if (search) {
     const searchCondition = or(
-        ilike(masonPcSide.name, `%${search}%`),
-        ilike(masonPcSide.phoneNumber, `%${search}%`),
-        ilike(dealers.name, `%${search}%`)
+      ilike(masonPcSide.name, `%${search}%`),
+      ilike(masonPcSide.phoneNumber, `%${search}%`),
+      ilike(dealers.name, `%${search}%`)
     );
     if (searchCondition) filters.push(searchCondition);
   }
@@ -64,26 +58,26 @@ async function getCachedBagLifts(
     .select({
       lift: bagLifts,
       mason: {
-          name: masonPcSide.name,
-          phoneNumber: masonPcSide.phoneNumber,
+        name: masonPcSide.name,
+        phoneNumber: masonPcSide.phoneNumber,
       },
       dealerName: dealers.name,
       site: {
-          siteName: technicalSites.siteName,
-          address: technicalSites.address
+        siteName: technicalSites.siteName,
+        address: technicalSites.address
       },
       approver: {
-          firstName: approvers.firstName,
-          lastName: approvers.lastName,
-          email: approvers.email
+        firstName: approvers.firstName,
+        lastName: approvers.lastName,
+        email: approvers.email
       },
       salesman: {
-          firstName: salesmen.firstName,
-          lastName: salesmen.lastName,
-          email: salesmen.email,
-          role: salesmen.role,
-          area: salesmen.area,
-          region: salesmen.region
+        firstName: salesmen.firstName,
+        lastName: salesmen.lastName,
+        email: salesmen.email,
+        role: salesmen.role,
+        area: salesmen.area,
+        region: salesmen.region
       }
     })
     .from(bagLifts)
@@ -134,22 +128,18 @@ async function getCachedBagLifts(
 export async function GET(request: NextRequest) {
   await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) return NextResponse.json({ error: `Forbidden` }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page') ?? 0);
     const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
-    
+
     const search = searchParams.get('search');
     const status = searchParams.get('status');
     const area = searchParams.get('area');
@@ -158,15 +148,15 @@ export async function GET(request: NextRequest) {
     const toDate = searchParams.get('toDate');
 
     const result = await getCachedBagLifts(
-        currentUser.companyId,
-        page,
-        pageSize,
-        search,
-        status,
-        area,
-        region,
-        fromDate,
-        toDate
+      session.companyId,
+      page,
+      pageSize,
+      search,
+      status,
+      area,
+      region,
+      fromDate,
+      toDate
     );
 
     const schema = selectBagLiftSchema.loose().extend({
@@ -192,12 +182,12 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-        data: validatedData.data,
-        totalCount: result.totalCount,
-        page,
-        pageSize
+      data: validatedData.data,
+      totalCount: result.totalCount,
+      page,
+      pageSize
     });
-    
+
   } catch (error: any) {
     return NextResponse.json({ error: 'Internal Error', details: error.message }, { status: 500 });
   }

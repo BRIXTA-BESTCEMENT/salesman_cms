@@ -1,49 +1,23 @@
 // src/app/api/dashboardPagesAPI/add-dealers/dealer-verify/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dealers } from '../../../../../../drizzle'; 
+import { users, dealers } from '../../../../../../drizzle';
 import { eq, and, asc } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDealerSchema, insertDealerSchema } from '../../../../../../drizzle/zodSchemas';
 import { refreshCompanyCache } from '@/app/actions/cache';
+import { verifySession } from '@/lib/auth';
 
-const allowedRoles = [
-    'president',
-    'senior-general-manager',
-    'general-manager',
-    'regional-sales-manager',
-    'senior-manager',
-    'manager',
-    'assistant-manager',
-];
-
-/**
- * GET: Fetch all dealers with verificationStatus = 'Pending' for the current user's company.
- */
 export async function GET(request: NextRequest) {
     await connection();
     try {
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) {
-            return NextResponse.json({ error: 'Unauthorized: No claims found' }, { status: 401 });
+        const session = await verifySession();
+        if (!session || !session.userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        // 2. Fetch Current User for robust role and companyId check
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        // 3. Authorization Check (Role and Existence)
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ 
-                error: `Forbidden: Your role (${currentUser?.role || 'None'}) is not authorized for verification.` 
-            }, { status: 403 });
+        if (!session.permissions.includes('READ')) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         // 4. Fetch pending dealers for the current user's company
@@ -75,12 +49,12 @@ export async function GET(request: NextRequest) {
             .leftJoin(users, eq(dealers.userId, users.id))
             .where(
                 and(
-                    eq(users.companyId, currentUser.companyId),
+                    eq(users.companyId, session.companyId),
                     eq(dealers.verificationStatus, 'PENDING')
                 )
             )
             .orderBy(asc(dealers.createdAt));
-        
+
         // 5. Validate and return data
         const frontendDealerSchema = selectDealerSchema.partial().loose();
         const validatedDealers = z.array(frontendDealerSchema).safeParse(pendingDealers);
@@ -104,25 +78,13 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
     try {
         // 1. Authentication Check
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) {
-            return NextResponse.json({ error: 'Unauthorized: No claims found' }, { status: 401 });
+        const session = await verifySession();
+        if (!session || !session.userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        // 2. Fetch Current User
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        // 3. Authorization Check
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ 
-                error: `Forbidden: Your role (${currentUser?.role || 'None'}) is not authorized to verify/reject dealers.` 
-            }, { status: 403 });
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         // Get dealerId from query parameters
@@ -159,7 +121,7 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ error: 'Dealer not found' }, { status: 404 });
         }
 
-        if (dealerToUpdate.userCompanyId !== currentUser.companyId) {
+        if (dealerToUpdate.userCompanyId !== session.companyId) {
             return NextResponse.json({ error: 'Forbidden: Cannot update a dealer from another company' }, { status: 403 });
         }
 

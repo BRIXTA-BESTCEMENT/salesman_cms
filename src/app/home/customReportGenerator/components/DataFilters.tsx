@@ -1,14 +1,12 @@
 // src/app/home/customReportGenerator/components/DataFilter.tsx
 'use client';
 
-import * as React from 'react';
 import { Plus, X, ListFilter, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TableColumn } from '../customTableHeaders';
 
 // --- NEW IMPORTS FOR DATE PICKER ---

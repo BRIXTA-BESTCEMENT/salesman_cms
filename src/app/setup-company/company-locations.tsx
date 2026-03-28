@@ -1,7 +1,5 @@
 // src/app/setup-company/comapny-locations.tsx
 'use client';
-
-import { BASE_URL } from '@/lib/Reusable-constants';
 import * as React from 'react';
 import { toast } from 'sonner';
 

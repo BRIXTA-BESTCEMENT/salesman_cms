@@ -1,13 +1,13 @@
 // src/app/api/dashboardPagesAPI/users-and-team/team-overview/dataFetch/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../../../../drizzle';
 import { eq, and, asc, aliasedTable } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectUserSchema } from '../../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 // Explicitly define the UserRow type
 type UserRow = InferSelectModel<typeof users>;
@@ -16,30 +16,22 @@ export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    // Basic safety check
-    if (!currentUser) {
-      return NextResponse.json({ error: `Forbidden` }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const roleParam = request.nextUrl.searchParams.get('role');
     const roleFilter = roleParam && roleParam !== 'all' ? roleParam : undefined;
 
     const managers = aliasedTable(users, 'managers');
-    
+
     // Simple conditions: Just their company, and optionally a specific role
     const conditions = [
-      eq(users.companyId, currentUser.companyId),
+      eq(users.companyId, session.companyId),
       ...(roleFilter ? [eq(users.role, roleFilter)] : []),
     ];
 

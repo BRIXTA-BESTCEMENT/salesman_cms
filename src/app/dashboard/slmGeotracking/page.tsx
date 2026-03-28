@@ -1,12 +1,12 @@
 // src/app/dashboard/slmGeotracking/page.tsx
 import { Suspense } from 'react';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../drizzle';
 import { eq } from 'drizzle-orm';
-import { GeotrackingTabs } from './tabsLoader'; 
+import { GeotrackingTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
 import { connection } from 'next/server';
+import { verifySession } from '@/lib/auth';
 
 export default function GeotrackingPage() {
   return (
@@ -25,22 +25,22 @@ export default function GeotrackingPage() {
 }
 
 async function getCurrentUserRole(): Promise<WorkOSRole | null> {
-  
-    const claims = await getTokenClaims();
-    if (!claims?.sub) {
-      return null; // Not logged in
-    }
 
-    const result = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-    
-    const user = result[0];
-    
-    return (user?.role as WorkOSRole) ?? null;
-  
+  const session = await verifySession();
+  if (!session || !session.userId) {
+    return null;
+  }
+
+  const result = await db
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, session.userId))
+    .limit(1);
+
+  const user = result[0];
+
+  return (user?.role as WorkOSRole) ?? null;
+
 }
 
 export async function GeotrackingDynamicContent() {
@@ -48,24 +48,24 @@ export async function GeotrackingDynamicContent() {
   const userRole = await getCurrentUserRole();
   const roleToCheck = userRole ?? 'junior-executive'; // Default to lowest role
 
- // --- PERMISSION CHECKS ---
+  // --- PERMISSION CHECKS ---
   const canSeeGeotracking = hasPermission(roleToCheck, 'salesmanGeotracking.slmGeotracking');
   const canSeeLiveLocation = hasPermission(roleToCheck, 'salesmanGeotracking.salesmanLiveLocation');
 
   // If user has NEITHER, show access denied
   if (!canSeeGeotracking && !canSeeLiveLocation) {
     return (
-        <div className="flex flex-col items-center justify-center h-[50vh]">
-            <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
-            <p className="text-muted-foreground">You do not have permission to view Geotracking or Live Maps.</p>
-        </div>
+      <div className="flex flex-col items-center justify-center h-[50vh]">
+        <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
+        <p className="text-muted-foreground">You do not have permission to view Geotracking or Live Maps.</p>
+      </div>
     );
   }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-6">
-      
-      <GeotrackingTabs 
+
+      <GeotrackingTabs
         canSeeGeotracking={canSeeGeotracking}
         canSeeLiveLocation={canSeeLiveLocation}
       />

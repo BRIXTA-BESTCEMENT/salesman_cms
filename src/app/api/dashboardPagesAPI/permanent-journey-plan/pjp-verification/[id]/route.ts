@@ -1,22 +1,12 @@
 // src/app/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification/[id]/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, permanentJourneyPlans, dealers, technicalSites } from '../../../../../../../drizzle'; 
+import { users, permanentJourneyPlans, dealers, technicalSites } from '../../../../../../../drizzle';
 import { eq } from 'drizzle-orm';
 import { refreshCompanyCache } from '@/app/actions/cache';
-import { selectPermanentJourneyPlanSchema, insertPermanentJourneyPlanSchema } from '../../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-    'president',
-    'senior-general-manager',
-    'general-manager',
-    'regional-sales-manager',
-    'senior-manager',
-    'manager',
-    'assistant-manager',
-];
+import { selectPermanentJourneyPlanSchema, insertPermanentJourneyPlanSchema } from '../../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 /**
  * Helper function to verify PJP ownership and existence
@@ -25,7 +15,7 @@ async function verifyPJP(pjpId: string, currentUserCompanyId: number) {
     if (!pjpId) {
         throw new Error("PJP ID is required for verification/modification.");
     }
-    
+
     const results = await db
         .select({
             pjp: permanentJourneyPlans,
@@ -52,7 +42,7 @@ async function verifyPJP(pjpId: string, currentUserCompanyId: number) {
 /**
  * PUT: Update the verificationStatus of a PJP (VERIFIED or REJECTED).
  */
-export async function PUT(request: NextRequest, 
+export async function PUT(request: NextRequest,
     { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id: pjpId } = await params;
@@ -61,33 +51,25 @@ export async function PUT(request: NextRequest,
             return NextResponse.json({ error: 'Missing PJP ID in request URL' }, { status: 400 });
         }
 
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
-        const verificationResult = await verifyPJP(pjpId, currentUser.companyId);
+        const verificationResult = await verifyPJP(pjpId, session.companyId);
         if (verificationResult.error) {
             return NextResponse.json({ error: verificationResult.error }, { status: verificationResult.status });
         }
 
         const body = await request.json();
         // Use insert schema to pick required validation fields
-        const pjpVerificationUpdateSchema = insertPermanentJourneyPlanSchema.pick({ 
+        const pjpVerificationUpdateSchema = insertPermanentJourneyPlanSchema.pick({
             verificationStatus: true,
-            additionalVisitRemarks: true 
+            additionalVisitRemarks: true
         });
         const validatedBody = pjpVerificationUpdateSchema.safeParse(body);
 
@@ -123,7 +105,7 @@ export async function PUT(request: NextRequest,
 /**
  * PATCH: Modify PJP data fields and set status to 'VERIFIED'.
  */
-export async function PATCH(request: NextRequest, 
+export async function PATCH(request: NextRequest,
     { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id: pjpId } = await params;
@@ -132,30 +114,22 @@ export async function PATCH(request: NextRequest,
             return NextResponse.json({ error: 'Missing PJP ID' }, { status: 400 });
         }
 
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
-        const verify = await verifyPJP(pjpId, currentUser.companyId);
+        const verify = await verifyPJP(pjpId, session.companyId);
         if (verify.error) return NextResponse.json({ error: verify.error }, { status: verify.status });
 
         // Use baked schema for full modification validation, marking fields optional for PATCH
         const pjpModificationSchema = insertPermanentJourneyPlanSchema.partial().loose();
         const v = pjpModificationSchema.safeParse(await request.json());
-        
+
         if (!v.success) {
             return NextResponse.json({ error: 'Invalid PJP modification data.', details: v.error.issues }, { status: 400 });
         }
@@ -170,7 +144,7 @@ export async function PATCH(request: NextRequest,
             if (!siteExists[0]) return NextResponse.json({ error: 'Invalid siteId' }, { status: 400 });
         }
 
-        const updatedPJPResult = await db
+        await db
             .update(permanentJourneyPlans)
             .set({
                 ...v.data,

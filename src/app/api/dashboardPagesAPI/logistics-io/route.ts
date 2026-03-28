@@ -2,50 +2,22 @@
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/drizzle';
-import { users, logisticsIO } from '../../../../../drizzle'; 
+import { users, logisticsIO } from '../../../../../drizzle';
 import { eq, and, gte, lte, ilike, desc } from 'drizzle-orm';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { z } from 'zod';
-import { selectLogisticsIOSchema } from '../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-  'president', 
-  'senior-general-manager', 
-  'general-manager',
-  'assistant-sales-manager', 
-  'area-sales-manager', 
-  'regional-sales-manager',
-  'senior-manager', 
-  'manager', 
-  'assistant-manager',
-];
+import { selectLogisticsIOSchema } from '../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
   try {
-    const claims = await getTokenClaims();
-
-    // 1. Authentication Check
-    if (!claims || !claims.sub) {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // 2. Fetch Current User to check role
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    // --- ROLE-BASED AUTHORIZATION ---
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json(
-        { error: `Forbidden: Only the following roles can view logistics data: ${allowedRoles.join(', ')}` }, 
-        { status: 403 }
-      );
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     // --- 3. FILTER LOGIC ---
@@ -89,20 +61,20 @@ export async function GET(request: NextRequest) {
 
     // 5. Map Data to Schema
     const formattedRecords = logisticsRecords.map((record) => {
-        return {
-            ...record,
-            // Fallback null arrays to empty arrays so Zod validation passes safely
-            invoiceNos: record.invoiceNos ?? [],
-            billNos: record.billNos ?? [],
-            gateOutInvoiceNos: record.gateOutInvoiceNos ?? [],
-            gateOutBillNos: record.gateOutBillNos ?? [],
-            
-            // Note: Drizzle's date() natively returns standard strings ('YYYY-MM-DD')
-            // Timestamps are already strings due to `mode: 'string'` in your schema.
-            // We ensure strict ISO string format for timestamps just in case.
-            createdAt: record.createdAt ? new Date(record.createdAt).toISOString() : new Date().toISOString(),
-            updatedAt: record.updatedAt ? new Date(record.updatedAt).toISOString() : new Date().toISOString(),
-        };
+      return {
+        ...record,
+        // Fallback null arrays to empty arrays so Zod validation passes safely
+        invoiceNos: record.invoiceNos ?? [],
+        billNos: record.billNos ?? [],
+        gateOutInvoiceNos: record.gateOutInvoiceNos ?? [],
+        gateOutBillNos: record.gateOutBillNos ?? [],
+
+        // Note: Drizzle's date() natively returns standard strings ('YYYY-MM-DD')
+        // Timestamps are already strings due to `mode: 'string'` in your schema.
+        // We ensure strict ISO string format for timestamps just in case.
+        createdAt: record.createdAt ? new Date(record.createdAt).toISOString() : new Date().toISOString(),
+        updatedAt: record.updatedAt ? new Date(record.updatedAt).toISOString() : new Date().toISOString(),
+      };
     });
 
     // 6. Zod Validation using the Drizzle-baked schema
@@ -113,7 +85,7 @@ export async function GET(request: NextRequest) {
       console.error("Logistics Validation Error:", validatedData.error.format());
       // Return unvalidated data as fallback so the UI table doesn't completely crash, 
       // but the console logs the exact Zod error to fix later.
-      return NextResponse.json(formattedRecords, { status: 200 }); 
+      return NextResponse.json(formattedRecords, { status: 200 });
     }
 
     return NextResponse.json(validatedData.data, { status: 200 });
@@ -121,7 +93,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching logistics reports:', error);
     return NextResponse.json(
-      { message: 'Failed to fetch logistics reports', error: (error as Error).message }, 
+      { message: 'Failed to fetch logistics reports', error: (error as Error).message },
       { status: 500 }
     );
   }

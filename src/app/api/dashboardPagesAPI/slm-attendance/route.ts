@@ -2,20 +2,13 @@
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, salesmanAttendance } from '../../../../../drizzle'; 
+import { users, salesmanAttendance } from '../../../../../drizzle';
 import { eq, and, or, ilike, gte, lte, desc, getTableColumns, count, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectSalesmanAttendanceSchema } from '../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive'
-];
+import { selectSalesmanAttendanceSchema } from '../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 const frontendAttendanceSchema = selectSalesmanAttendanceSchema.extend({
   salesmanName: z.string(),
@@ -23,7 +16,7 @@ const frontendAttendanceSchema = selectSalesmanAttendanceSchema.extend({
   location: z.string().nullable().optional(),
   inTime: z.string().nullable(),
   outTime: z.string().nullable(),
-  
+
   inTimeLatitude: z.number().nullable(),
   inTimeLongitude: z.number().nullable(),
   inTimeAccuracy: z.number().nullable(),
@@ -36,13 +29,13 @@ const frontendAttendanceSchema = selectSalesmanAttendanceSchema.extend({
   outTimeSpeed: z.number().nullable(),
   outTimeHeading: z.number().nullable(),
   outTimeAltitude: z.number().nullable(),
-  
+
   createdAt: z.string(),
   updatedAt: z.string(),
   salesmanRole: z.string(),
   area: z.string(),
   region: z.string(),
-  role: z.string().nullable().optional(), 
+  role: z.string().nullable().optional(),
 });
 
 type AttendanceRow = InferSelectModel<typeof salesmanAttendance> & {
@@ -55,7 +48,7 @@ type AttendanceRow = InferSelectModel<typeof salesmanAttendance> & {
 };
 
 async function getCachedAttendance(
-  companyId: number, 
+  companyId: number,
   page: number,
   pageSize: number,
   search: string | null,
@@ -63,15 +56,15 @@ async function getCachedAttendance(
   companyRole: string | null,
   area: string | null,
   region: string | null,
-  startDateParam: string | null, 
+  startDateParam: string | null,
   endDateParam: string | null
 ) {
   'use cache';
   cacheLife('hours');
-  cacheTag(`salesman-attendance-${companyId}`); 
-  
+  cacheTag(`salesman-attendance-${companyId}`);
+
   const filterKey = `${search}-${jobTitle}-${companyRole}-${area}-${region}-${startDateParam}-${endDateParam}`;
-  cacheTag(`salesman-attendance-${companyId}-${page}-${filterKey}`); 
+  cacheTag(`salesman-attendance-${companyId}-${page}-${filterKey}`);
 
   const filters: SQL[] = [eq(users.companyId, companyId)];
 
@@ -128,7 +121,7 @@ async function getCachedAttendance(
   const formattedData = attendanceRecords.map((row) => {
     const salesmanName = [row.userFirstName, row.userLastName]
       .filter(Boolean).join(' ') || row.userEmail || 'N/A';
-    
+
     const toNum = (val: any) => (val ? Number(val) : null);
 
     return {
@@ -138,7 +131,7 @@ async function getCachedAttendance(
       location: row.locationName,
       inTime: row.inTimeTimestamp ? new Date(row.inTimeTimestamp).toISOString() : null,
       outTime: row.outTimeTimestamp ? new Date(row.outTimeTimestamp).toISOString() : null,
-      
+
       inTimeLatitude: toNum(row.inTimeLatitude) ?? 0,
       inTimeLongitude: toNum(row.inTimeLongitude) ?? 0,
       inTimeAccuracy: toNum(row.inTimeAccuracy),
@@ -151,13 +144,13 @@ async function getCachedAttendance(
       outTimeSpeed: toNum(row.outTimeSpeed),
       outTimeHeading: toNum(row.outTimeHeading),
       outTimeAltitude: toNum(row.outTimeAltitude),
-      
+
       createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
       updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
       salesmanRole: row.userRole ?? '',
       area: row.userArea ?? '',
       region: row.userRegion ?? '',
-      role: row.role ?? row.userRole ?? '', 
+      role: row.role ?? row.userRole ?? '',
     };
   });
 
@@ -168,22 +161,12 @@ export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
   try {
-    const claims = await getTokenClaims();
-
-    if (!claims || !claims.sub) {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -199,15 +182,15 @@ export async function GET(request: NextRequest) {
     const endDateParam = searchParams.get('endDate');
 
     const result = await getCachedAttendance(
-      currentUser.companyId, 
-      page, 
-      pageSize, 
-      search, 
-      jobTitle, 
-      companyRole, 
-      area, 
-      region, 
-      startDateParam, 
+      session.companyId,
+      page,
+      pageSize,
+      search,
+      jobTitle,
+      companyRole,
+      area,
+      region,
+      startDateParam,
       endDateParam
     );
 
@@ -220,7 +203,7 @@ export async function GET(request: NextRequest) {
         totalCount: result.totalCount,
         page,
         pageSize
-      }, { status: 200 }); 
+      }, { status: 200 });
     }
 
     return NextResponse.json({
@@ -232,9 +215,9 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error fetching salesman attendance:', error);
-    return NextResponse.json({ 
-      message: 'Failed to fetch salesman attendance reports', 
-      error: (error as Error).message 
+    return NextResponse.json({
+      message: 'Failed to fetch salesman attendance reports',
+      error: (error as Error).message
     }, { status: 500 });
   }
 }

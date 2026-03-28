@@ -1,11 +1,11 @@
 // src/app/api/me/route.ts
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../drizzle';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { verifySession } from '@/lib/auth';
 
 // Schema for validating returned user info
 const currentUserSchema = z.object({
@@ -20,10 +20,10 @@ const currentUserSchema = z.object({
 export async function GET() {
   await connection();
   try {
-    const claims = await getTokenClaims();
+    const session = await verifySession();
 
     // 1. Authentication Check
-    if (!claims || !claims.sub) {
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -38,7 +38,7 @@ export async function GET() {
         companyId: users.companyId,
       })
       .from(users)
-      .where(eq(users.workosUserId, claims.sub))
+      .where(eq(users.id, session.userId))
       .limit(1);
 
     const currentUser = result[0];

@@ -1,36 +1,22 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/rewards/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, rewards, rewardCategories, schemeToRewards } from '../../../../../../drizzle';
+import { rewards, rewardCategories, schemeToRewards } from '../../../../../../drizzle';
 import { eq, asc } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectRewardsSchema, insertRewardsSchema } from '../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive',
-];
+import { selectRewardsSchema, insertRewardsSchema } from '../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 export async function GET() {
   await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Access denied.` }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     // 1. Fetch raw records with LEFT JOINs
@@ -51,11 +37,11 @@ export async function GET() {
 
     rawRecords.forEach((row) => {
       const rewardId = row.reward.id;
-      
+
       if (!rewardsMap.has(rewardId)) {
         rewardsMap.set(rewardId, {
           ...row.reward,
-          name: row.reward.itemName, 
+          name: row.reward.itemName,
           categoryName: row.categoryName ?? 'Uncategorized',
           schemeIds: [], // Initialize the array the frontend is looking for
           createdAt: new Date(row.reward.createdAt).toISOString(),
@@ -83,28 +69,24 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    if (!currentUserResult[0] || !allowedRoles.includes(currentUserResult[0].role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();
-    
+
     const parsed = insertRewardsSchema.parse({
-        itemName: body.name, 
-        pointCost: body.pointCost,
-        stock: body.stock,
-        totalAvailableQuantity: body.stock, 
-        categoryId: body.categoryId,
-        isActive: body.isActive ?? true,
+      itemName: body.name,
+      pointCost: body.pointCost,
+      stock: body.stock,
+      totalAvailableQuantity: body.stock,
+      categoryId: body.categoryId,
+      isActive: body.isActive ?? true,
     });
 
     const [newReward] = await db

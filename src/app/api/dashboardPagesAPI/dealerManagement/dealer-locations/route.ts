@@ -1,29 +1,20 @@
 // src/app/api/dashboardPagesAPI/dealerManagement/dealer-locations/route.ts
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dealers } from '../../../../../../drizzle'; 
+import { users, dealers } from '../../../../../../drizzle';
 import { eq, or, isNull, asc } from 'drizzle-orm';
+import { verifySession } from '@/lib/auth';
 
 export async function GET() {
   await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const currentUserResult = await db
-      .select({ companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-      
-    const currentUser = currentUserResult[0];
-    
-    if (!currentUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     // Use Promise.all to fetch regions and areas in parallel
@@ -35,19 +26,19 @@ export async function GET() {
         .leftJoin(users, eq(dealers.userId, users.id))
         .where(
           or(
-            eq(users.companyId, currentUser.companyId),
+            eq(users.companyId, session.companyId),
             isNull(dealers.userId) // Include orphans so their regions appear in filters
           )
         )
         .orderBy(asc(dealers.region)),
-        
+
       db
         .selectDistinct({ area: dealers.area })
         .from(dealers)
         .leftJoin(users, eq(dealers.userId, users.id))
         .where(
           or(
-            eq(users.companyId, currentUser.companyId),
+            eq(users.companyId, session.companyId),
             isNull(dealers.userId)
           )
         )
@@ -58,7 +49,7 @@ export async function GET() {
     const regions = uniqueRegions
       .map((r) => r.region)
       .filter((r): r is string => Boolean(r && r.trim() !== ""));
-      
+
     const areas = uniqueAreas
       .map((a) => a.area)
       .filter((a): a is string => Boolean(a && a.trim() !== ""));
@@ -68,7 +59,7 @@ export async function GET() {
   } catch (error: any) {
     console.error('Error fetching locations:', error);
     return NextResponse.json(
-      { error: `Failed to fetch locations: ${error.message}` }, 
+      { error: `Failed to fetch locations: ${error.message}` },
       { status: 500 }
     );
   }

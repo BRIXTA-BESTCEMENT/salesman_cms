@@ -1,20 +1,20 @@
 // src/app/api/company/route.ts
 import { NextResponse } from 'next/server';
 import { connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { getCompanyInfo } from '@/lib/company-service';
+import { verifySession } from '@/lib/auth';
 
 export async function GET() {
   await connection();
-  
-  try {
-    const claims = await getTokenClaims();
 
-    if (!claims || !claims.sub) {
+  try {
+    const session = await verifySession();
+
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const companyData = await getCompanyInfo(claims.sub);
+    const companyData = await getCompanyInfo(session.companyId);
 
     if (!companyData) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });

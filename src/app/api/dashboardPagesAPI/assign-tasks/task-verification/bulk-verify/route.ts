@@ -1,17 +1,12 @@
 // src/app/api/dashboardPagesAPI/assign-tasks/task-verification/bulk-verify/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dailyTasks } from '../../../../../../../drizzle'; 
+import { users, dailyTasks } from '../../../../../../../drizzle';
 import { eq, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectDailyTaskSchema } from '../../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-  'Admin', 'president', 'senior-general-manager', 'general-manager',
-  'regional-sales-manager', 'senior-manager', 'manager', 'assistant-manager',
-];
+import { selectDailyTaskSchema } from '../../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 const bulkVerifySchema = z.object({
   ids: z.array(selectDailyTaskSchema.shape.id).min(1, "At least one Task ID is required"),
@@ -19,19 +14,13 @@ const bulkVerifySchema = z.object({
 
 export async function PATCH(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -50,7 +39,7 @@ export async function PATCH(request: NextRequest) {
       .where(
         and(
           inArray(dailyTasks.id, ids),
-          eq(users.companyId, currentUser.companyId)
+          eq(users.companyId, session.companyId)
         )
       );
 

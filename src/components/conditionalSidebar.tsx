@@ -4,7 +4,6 @@
 import { usePathname } from 'next/navigation';
 import { AppSidebar } from './app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { WorkOSRole } from '@/lib/permissions';
 import { useEffect, useState } from 'react';
 
 interface ConditionalSidebarProps {
@@ -13,7 +12,8 @@ interface ConditionalSidebarProps {
 
 interface CurrentUser {
   id: number;
-  role: WorkOSRole;
+  role: string; // Now 'Admin', 'manager', etc.
+  permissions: string[]; // ['READ', 'WRITE', 'UPDATE']
   firstName: string;
   lastName: string;
   email: string;
@@ -35,32 +35,13 @@ export function ConditionalSidebar({ children }: ConditionalSidebarProps) {
           setCurrentUser(data.currentUser);
         } else {
           console.error('Failed to fetch current user:', response.statusText);
-          // Fallback user
-          setCurrentUser({
-            id: 0,
-            role: 'junior-executive',
-            firstName: 'Guest',
-            lastName: 'User',
-            email: 'guest@example.com',
-            companyName: 'My Company'
-          });
         }
       } catch (error) {
         console.error('Error fetching current user:', error);
-        // Fallback user
-        setCurrentUser({
-          id: 0,
-          role: 'junior-executive',
-          firstName: 'Guest',
-          lastName: 'User',
-          email: 'guest@example.com',
-          companyName: 'My Company'
-        });
       } finally {
         setLoading(false);
       }
     };
-    
     fetchCurrentUser();
   }, []);
   
@@ -92,7 +73,10 @@ export function ConditionalSidebar({ children }: ConditionalSidebarProps) {
   
   return (
     <SidebarProvider>
-      <AppSidebar userRole={currentUser?.role || 'junior-executive'} />
+      <AppSidebar 
+        userRole={currentUser?.role || 'junior-executive'} 
+        permissions={currentUser?.permissions || []}
+      />
       <main className="flex-1 w-full">
         {children}
       </main>

@@ -1,32 +1,22 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/schemes-offers/route.ts
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, schemesOffers } from '../../../../../../drizzle'; 
+import { users, schemesOffers } from '../../../../../../drizzle';
 import { eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectSchemesOffersSchema, insertSchemesOffersSchema } from '../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive',];
+import { selectSchemesOffersSchema, insertSchemesOffersSchema } from '../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 export async function GET() {
   await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    if (!currentUserResult[0] || !allowedRoles.includes(currentUserResult[0].role)) {
-      return NextResponse.json({ error: `Forbidden` }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const schemes = await db
@@ -52,17 +42,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    if (!currentUserResult[0] || !allowedRoles.includes(currentUserResult[0].role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();

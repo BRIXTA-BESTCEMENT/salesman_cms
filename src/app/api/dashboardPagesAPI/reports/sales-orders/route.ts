@@ -1,7 +1,6 @@
 // src/app/api/dashboardPagesAPI/reports/sales-orders/route.ts
 import 'server-only';
 import { connection, NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dealers, salesOrders } from '../../../../../../drizzle';
@@ -9,13 +8,7 @@ import { eq, desc, and, or, ilike, getTableColumns, count, SQL } from 'drizzle-o
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectSalesOrderSchema } from '../../../../../../drizzle/zodSchemas';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive', 'junior-executive'
-];
+import { verifySession } from '@/lib/auth';
 
 const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
   salesmanName: z.string(),
@@ -26,7 +19,7 @@ const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
   dealerAddress: z.string(),
   area: z.string(),
   region: z.string(),
-  
+
   orderQty: z.number().nullable(),
   itemPrice: z.number().nullable(),
   discountPercentage: z.number().nullable(),
@@ -35,7 +28,7 @@ const frontendSalesOrderSchema = selectSalesOrderSchema.extend({
   receivedPayment: z.number().nullable(),
   pendingPayment: z.number().nullable(),
   orderTotal: z.number(),
-  
+
   orderDate: z.string(),
   deliveryDate: z.string().nullable(),
   receivedPaymentDate: z.string().nullable(),
@@ -84,7 +77,7 @@ async function getCachedSalesOrders(
     );
     if (searchCondition) filters.push(searchCondition);
   }
-  
+
   if (role) filters.push(eq(users.role, role));
   if (area) filters.push(eq(dealers.area, area));
   if (region) filters.push(eq(dealers.region, region));
@@ -147,12 +140,12 @@ async function getCachedSalesOrders(
       dealerAddress: row.dealerAddress || '',
       area: row.dealerArea || '',
       region: row.dealerRegion || '',
-      
+
       orderDate: toDate(row.orderDate) as string,
       deliveryDate: toDate(row.deliveryDate),
       receivedPaymentDate: toDate(row.receivedPaymentDate),
       estimatedDelivery: toDate(row.deliveryDate),
-      
+
       paymentAmount: toNum(row.paymentAmount),
       receivedPayment,
       pendingPayment,
@@ -161,7 +154,7 @@ async function getCachedSalesOrders(
       discountPercentage: toNum(row.discountPercentage),
       itemPriceAfterDiscount: toNum(row.itemPriceAfterDiscount),
       orderTotal,
-      
+
       remarks: null,
       createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
       updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : new Date().toISOString(),
@@ -173,40 +166,27 @@ async function getCachedSalesOrders(
 
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
-  
-  try {
-    const claims = await getTokenClaims();
 
-    if (!claims || !claims.sub) {
+  try {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json(
-        { error: 'Forbidden: Your role does not have access to this data.' },
-        { status: 403 }
-      );
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page') ?? 0);
     const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
-    
+
     const search = searchParams.get('search');
     const role = searchParams.get('role');
     const area = searchParams.get('area');
     const region = searchParams.get('region');
 
     const result = await getCachedSalesOrders(
-      currentUser.companyId,
+      session.companyId,
       page,
       pageSize,
       search,
@@ -218,13 +198,13 @@ export async function GET(request: NextRequest) {
     const validated = z.array(frontendSalesOrderSchema).safeParse(result.data);
 
     if (!validated.success) {
-        console.error("Sales Orders Validation Error:", validated.error.format());
-        return NextResponse.json({
-          data: result.data,
-          totalCount: result.totalCount,
-          page,
-          pageSize
-        }, { status: 200 }); 
+      console.error("Sales Orders Validation Error:", validated.error.format());
+      return NextResponse.json({
+        data: result.data,
+        totalCount: result.totalCount,
+        page,
+        pageSize
+      }, { status: 200 });
     }
 
     return NextResponse.json({

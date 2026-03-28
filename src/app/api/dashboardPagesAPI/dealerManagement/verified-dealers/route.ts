@@ -2,19 +2,12 @@
 import 'server-only';
 import { connection, NextResponse, NextRequest } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, verifiedDealers } from '../../../../../../drizzle/schema'; 
+import { verifiedDealers } from '../../../../../../drizzle/schema';
 import { eq, desc, and, or, ilike, sql, SQL, count } from 'drizzle-orm';
 import { z } from 'zod';
-import { selectVerifiedDealersSchema } from '../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive', 'junior-executive'
-];
+import { selectVerifiedDealersSchema } from '../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 const frontendVerifiedDealerSchema = selectVerifiedDealersSchema;
 
@@ -28,7 +21,7 @@ async function getCachedVerifiedDealers(
 ) {
     'use cache';
     cacheLife('days');
-    
+
     const filterKey = `${search}-${zone}-${area}-${segment}`;
     cacheTag(`verified-dealers-list-${page}-${filterKey}`);
 
@@ -42,7 +35,7 @@ async function getCachedVerifiedDealers(
         );
         if (searchCondition) filters.push(searchCondition);
     }
-    
+
     if (zone) filters.push(eq(verifiedDealers.zone, zone));
     if (area) filters.push(eq(verifiedDealers.area, area));
     if (segment) filters.push(eq(verifiedDealers.dealerSegment, segment));
@@ -69,48 +62,35 @@ async function getCachedVerifiedDealers(
 
 export async function GET(request: NextRequest) {
     if (typeof connection === 'function') await connection();
-    
-    try {
-        const claims = await getTokenClaims();
 
-        if (!claims || !claims.sub) {
+    try {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-            
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json(
-                { error: `Forbidden: Only authorized roles can view verified dealers.` }, 
-                { status: 403 }
-            );
+        if (!session.permissions.includes('READ')) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         const { searchParams } = new URL(request.url);
-        
+
         // --- Action: Fetch Distinct Filters Layout ---
         const action = searchParams.get('action');
         if (action === 'fetch_filters') {
-             const distinctZones = await db.selectDistinct({ zone: verifiedDealers.zone }).from(verifiedDealers);
-             const distinctAreas = await db.selectDistinct({ area: verifiedDealers.area }).from(verifiedDealers);
-             const distinctSegments = await db.selectDistinct({ segment: verifiedDealers.dealerSegment }).from(verifiedDealers);
+            const distinctZones = await db.selectDistinct({ zone: verifiedDealers.zone }).from(verifiedDealers);
+            const distinctAreas = await db.selectDistinct({ area: verifiedDealers.area }).from(verifiedDealers);
+            const distinctSegments = await db.selectDistinct({ segment: verifiedDealers.dealerSegment }).from(verifiedDealers);
 
-             return NextResponse.json({
-                 uniqueZones: distinctZones.map(z => z.zone).filter(Boolean).sort(),
-                 uniqueAreas: distinctAreas.map(a => a.area).filter(Boolean).sort(),
-                 uniqueSegments: distinctSegments.map(s => s.segment).filter(Boolean).sort(),
-             }, { status: 200 });
+            return NextResponse.json({
+                uniqueZones: distinctZones.map(z => z.zone).filter(Boolean).sort(),
+                uniqueAreas: distinctAreas.map(a => a.area).filter(Boolean).sort(),
+                uniqueSegments: distinctSegments.map(s => s.segment).filter(Boolean).sort(),
+            }, { status: 200 });
         }
 
         const page = Number(searchParams.get('page') ?? 0);
         const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
-        
+
         const search = searchParams.get('search');
         const zone = searchParams.get('zone');
         const area = searchParams.get('area');
@@ -134,7 +114,7 @@ export async function GET(request: NextRequest) {
                 totalCount: result.totalCount,
                 page,
                 pageSize
-            }, { status: 200 }); 
+            }, { status: 200 });
         }
 
         return NextResponse.json({
@@ -147,7 +127,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error('Error fetching verified dealers (GET):', error);
         return NextResponse.json(
-            { error: 'Failed to fetch verified dealers', details: (error as Error).message }, 
+            { error: 'Failed to fetch verified dealers', details: (error as Error).message },
             { status: 500 }
         );
     }

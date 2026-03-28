@@ -4,12 +4,12 @@
 // to create a single, comprehensive report.
 import 'server-only';
 import { connection, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dealers, brands, dealerBrandMapping } from '../../../../../../drizzle'; 
+import { users, dealers, brands, dealerBrandMapping } from '../../../../../../drizzle';
 import { eq, asc } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDealerBrandMappingSchema } from '../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 export const dealerBrandMappingSchema = selectDealerBrandMappingSchema.loose().refine(
   (data) => {
@@ -29,13 +29,6 @@ export const dealerBrandMappingSchema = selectDealerBrandMappingSchema.loose().r
     path: ['dynamic_brand_fields'],
   }
 );
-// -------------------------------------------------
-
-// A list of roles that are allowed to access this endpoint.
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive','executive'];
 
 // Helper function to fetch all unique brand names for a given company.
 async function getAllBrandNames(companyId: number) {
@@ -48,15 +41,15 @@ async function getAllBrandNames(companyId: number) {
     .innerJoin(users, eq(dealers.userId, users.id))
     .where(eq(users.companyId, companyId))
     .orderBy(asc(brands.brandName));
-    
+
   return brandsData.map(b => b.name);
 }
 
 // Helper for Decimal/Numeric fields (Drizzle returns these as strings by default)
 function toNumberOrNull(val: any): number | null {
-    if (val === null || val === undefined || val === '') return null;
-    const n = Number(val);
-    return Number.isFinite(n) ? n : null;
+  if (val === null || val === undefined || val === '') return null;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : null;
 }
 
 // Main API handler for the brand mapping data.
@@ -64,27 +57,16 @@ export async function GET() {
   await connection();
   try {
     // 1. Authentication Check: Verify the user is logged in
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) {
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // 2. Fetch Current User to check their role and companyId
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-      
-    const currentUser = currentUserResult[0];
-
-    // 3. Role-based Authorization Check: Ensure the user's role is allowed
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden: Your role does not have access to this data.` }, { status: 403 });
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     // 4. Fetch all brands for the user's company to create dynamic columns
-    const allBrands = await getAllBrandNames(currentUser.companyId);
+    const allBrands = await getAllBrandNames(session.companyId);
 
     // 5. Fetch dealer brand mappings for the user's company, including related data.
     const brandMappingsData = await db
@@ -104,7 +86,7 @@ export async function GET() {
       .innerJoin(dealers, eq(dealerBrandMapping.dealerId, dealers.id))
       .innerJoin(brands, eq(dealerBrandMapping.brandId, brands.id))
       .innerJoin(users, eq(dealers.userId, users.id))
-      .where(eq(users.companyId, currentUser.companyId));
+      .where(eq(users.companyId, session.companyId));
 
     // An object to hold the processed data, grouped by dealerId.
     const aggregatedData: Record<string, any> = {};
@@ -148,7 +130,7 @@ export async function GET() {
     console.error('API Error:', error);
     // Return a generic error message to the client, logging the specific error internally
     return NextResponse.json(
-      { error: 'Failed to fetch brand mapping data', details: (error as Error).message }, 
+      { error: 'Failed to fetch brand mapping data', details: (error as Error).message },
       { status: 500 }
     );
   }

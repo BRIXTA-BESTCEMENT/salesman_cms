@@ -1,20 +1,13 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/rewards-redemption/[id]/route.ts
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, rewardRedemptions, rewards, pointsLedger, masonPcSide } from '../../../../../../../drizzle'; 
+import { users, rewardRedemptions, rewards, pointsLedger, masonPcSide } from '../../../../../../../drizzle';
 import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { refreshCompanyCache } from '@/app/actions/cache';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',
-];
+import { verifySession } from '@/lib/auth';
 
 const redemptionUpdateSchema = z.object({
   status: z.enum(['approved', 'shipped', 'delivered', 'rejected']),
@@ -27,18 +20,14 @@ export async function PATCH(
 ) {
   try {
     const { id: redemptionId } = await params;
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -65,7 +54,7 @@ export async function PATCH(
 
     const record = existingResult[0];
     if (!record) return NextResponse.json({ error: 'Record not found' }, { status: 404 });
-    if (record.masonCompanyId !== currentUser.companyId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    if (record.masonCompanyId !== session.companyId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
 
     const currentStatus = record.redemption.status.toLowerCase();
     if (currentStatus === 'delivered') return NextResponse.json({ error: 'Cannot update a delivered order.' }, { status: 400 });
@@ -114,15 +103,15 @@ export async function PATCH(
         })
         .where(eq(rewardRedemptions.id, redemptionId))
         .returning();
-      
+
       return updated;
     });
 
     await refreshCompanyCache('rewards-redemption');
     if (newStatus === 'approved' || newStatus === 'rejected') await refreshCompanyCache('rewards');
     if (newStatus === 'rejected') {
-        await refreshCompanyCache('points-ledger');
-        await refreshCompanyCache('mason-pc');
+      await refreshCompanyCache('points-ledger');
+      await refreshCompanyCache('mason-pc');
     }
 
     return NextResponse.json({ success: true, data: finalResult });

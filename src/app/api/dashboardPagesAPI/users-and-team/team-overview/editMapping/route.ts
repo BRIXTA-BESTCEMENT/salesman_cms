@@ -1,16 +1,11 @@
 // src/app/api/dashboardPagesAPI/users-and-team/team-overview/editMapping/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../../../../drizzle';
 import { eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
-import { ROLE_HIERARCHY } from '@/lib/roleHierarchy';
-
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager', 
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager', 
-  'senior-manager', 'manager', 'assistant-manager'];
+import { verifySession } from '@/lib/auth';
 
 const editMappingSchema = z.object({
   userId: z.number(),
@@ -20,8 +15,14 @@ const editMappingSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims?.sub || !allowedRoles.includes(claims.role as string)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+    }
 
     const body = await request.json();
     const { userId, reportsToId, managesIds } = editMappingSchema.parse(body);
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
     await db.transaction(async (tx) => {
       // Unassign current reports that are no longer in the list
       await tx.update(users).set({ reportsToId: null }).where(eq(users.reportsToId, userId));
-      
+
       // Assign new reports
       if (managesIds.length > 0) {
         await tx.update(users).set({ reportsToId: userId }).where(inArray(users.id, managesIds));

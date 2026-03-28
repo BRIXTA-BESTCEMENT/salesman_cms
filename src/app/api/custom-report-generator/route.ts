@@ -1,11 +1,11 @@
 // src/app/api/custom-report-generator/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../drizzle';
 import { eq } from 'drizzle-orm';
 import { transformerMap } from '@/lib/reports-transformer';
 import { exportTablesToCSVZip, generateAndStreamXlsxMulti } from '@/lib/download-utils';
+import { verifySession } from '@/lib/auth';
 
 interface TableColumn {
     table: string;
@@ -23,15 +23,15 @@ type ReportTableId = keyof typeof transformerMap;
 
 // --- Auth Check ---
 async function getAuthClaims() {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub || !claims.org_id) {
-        return new NextResponse('Unauthorized', { status: 401 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const result = await db
         .select({ companyId: users.companyId, role: users.role })
         .from(users)
-        .where(eq(users.workosUserId, claims.sub))
+        .where(eq(users.id, session.userId))
         .limit(1);
 
     const currentUser = result[0];
@@ -39,7 +39,7 @@ async function getAuthClaims() {
     if (!currentUser) {
         return new NextResponse('User not found', { status: 404 });
     }
-    return { claims, currentUser };
+    return { session, currentUser };
 }
 
 // Helper to safely parse dates, especially the en-IN DD/MM/YYYY format from the transformer

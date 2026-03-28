@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    // 1. Find user by Dashboard Login ID (which is their email)
+    // 1. Find user by Dashboard Login ID
     const userResult = await db
       .select()
       .from(users)
@@ -24,39 +24,45 @@ export async function POST(request: NextRequest) {
 
     const user = userResult[0];
 
+    // 2. IMMEDIATE SECURITY CHECK
+    // We check existence and password BEFORE trying to fetch roles
+    if (!user || !user.isDashboardUser || user.dashboardHashedPassword !== password) {
+      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+    }
+
+    // 3. FETCH ROLES & PERMISSIONS
+    // Since we know the user is valid now, we fetch their assigned Job Roles and the associated CRUD permissions
     const userRolesResult = await db
       .select({
         jobRole: roles.jobRole,
-        permissions: roles.grantedPerms
+        permissions: roles.grantedPerms 
       })
       .from(userRoles)
       .leftJoin(roles, eq(userRoles.roleId, roles.id))
       .where(eq(userRoles.userId, user.id));
 
-    const jobRoleNames = userRolesResult.map(r => r.jobRole);
-    const allPermissions = Array.from(new Set(userRolesResult.flatMap(r => r.permissions)));
+    // Map names and flatten all permission arrays into one unique list for the JWT
+    const jobRoleNames = userRolesResult.map(r => r.jobRole).filter(Boolean) as string[];
+    const allPerms = Array.from(
+      new Set(userRolesResult.flatMap(r => r.permissions || []))
+    );
 
-    // 2. Verify Access & Password (Plain text comparison for now)
-    if (!user || !user.isDashboardUser || user.dashboardHashedPassword !== password) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
-    }
-
+    // 4. Update Status if needed
     if (user.status !== 'active') {
-      // Automatically activate them if they were pending
       await db.update(users).set({ status: 'active' }).where(eq(users.id, user.id));
     }
 
-    // 3. Create the JWT payload
+    // 5. Create the JWT payload
     const sessionData = {
       userId: user.id,
       email: user.email,
       orgRole: user.role,           // e.g., 'executive'
       jobRoles: jobRoleNames,        // e.g., ['Sales-Marketing', 'Technical-Sales']
-      permissions: allPermissions,   // Combined array of all granted permissions
+      permissions: allPerms,         // e.g., ['READ', 'WRITE', 'UPDATE']
       companyId: user.companyId,
     };
 
-    // 4. Encrypt and set cookie
+    // 6. Encrypt and set cookie
     const token = await encrypt(sessionData);
     const cookieStore = await cookies();
 

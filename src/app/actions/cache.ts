@@ -1,11 +1,11 @@
 // src/app/actions/cache.ts
 'use server';
-
+import { NextResponse } from 'next/server';
 import { revalidateTag } from 'next/cache';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users } from '../../../drizzle'; 
+import { users } from '../../../drizzle';
 import { eq } from 'drizzle-orm';
+import { verifySession } from '@/lib/auth';
 
 /**
  * Securely clears the Next.js cache for a specific data prefix for the current company.
@@ -13,13 +13,15 @@ import { eq } from 'drizzle-orm';
  */
 export async function refreshCompanyCache(cachePrefix: string) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) throw new Error('Unauthorized');
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const result = await db
       .select({ companyId: users.companyId })
       .from(users)
-      .where(eq(users.workosUserId, claims.sub))
+      .where(eq(users.id, session.userId))
       .limit(1);
 
     const currentUser = result[0];
@@ -28,15 +30,15 @@ export async function refreshCompanyCache(cachePrefix: string) {
 
     // Define tags that are global and shouldn't get a companyId attached
     const globalTags = ['technical-sites',];
-    
+
     // If it's a global tag, use it exactly as is. Otherwise, append the companyId.
-    const targetTag = globalTags.includes(cachePrefix) 
-      ? cachePrefix 
+    const targetTag = globalTags.includes(cachePrefix)
+      ? cachePrefix
       : `${cachePrefix}-${currentUser.companyId}`;
-    
+
     // Nuke the cache!
-    revalidateTag(targetTag, {expire : 0});
-    
+    revalidateTag(targetTag, { expire: 0 });
+
     return { success: true, message: `Cache cleared for ${targetTag}` };
   } catch (error) {
     console.error('Error clearing cache:', error);

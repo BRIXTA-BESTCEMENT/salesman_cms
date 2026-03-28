@@ -1,23 +1,17 @@
 // src/app/api/dashboardPagesAPI/users-and-team/users/[userId]/route.ts
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
-import { verifySession } from '@/lib/auth'; // Swapped from WorkOS
+import { verifySession } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
 import { users, companies, roles as rolesTable, userRoles } from '../../../../../../../drizzle';
 import { eq, and, ne, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { generateRandomPassword, sendInvitationEmailResend } from '@/app/api/dashboardPagesAPI/users-and-team/users/helpers';
 
-const allowedAdminRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'regional-sales-manager', 'area-sales-manager', 'senior-manager',
-  'manager', 'assistant-manager', 'Admin'
-];
-
 const updateUserSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
-  email: z.string().email().optional(),
+  email: z.string().optional(),
   orgRole: z.string().optional(),
   jobRole: z.union([z.string(), z.array(z.string())]).optional(), // Support array from frontend
   role: z.string().optional(),
@@ -43,6 +37,10 @@ export async function PUT(
     if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+    }
 
     const adminUserResult = await db
       .select({
@@ -59,9 +57,6 @@ export async function PUT(
       .limit(1);
 
     const adminUser = adminUserResult[0];
-    if (!adminUser || !allowedAdminRoles.includes(adminUser.role)) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
-    }
 
     const body = await request.json();
     const parsedBody = updateUserSchema.safeParse(body);
@@ -228,9 +223,11 @@ export async function GET(
     const { userId } = await params;
 
     const session = await verifySession();
-
     if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const adminUserResult = await db
@@ -243,10 +240,6 @@ export async function GET(
       .limit(1);
 
     const adminUser = adminUserResult[0];
-
-    if (!adminUser || !allowedAdminRoles.includes(adminUser.role)) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
-    }
 
     const targetUserResult = await db
       .select({

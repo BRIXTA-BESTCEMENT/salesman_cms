@@ -1,49 +1,25 @@
 // src/app/api/dashboardPagesAPI/add-dealers/dealer-verify/bulk-verify/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dealers } from '../../../../../../../drizzle'; 
+import { users, dealers } from '../../../../../../../drizzle';
 import { eq, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { refreshCompanyCache } from '@/app/actions/cache';
+import { verifySession } from '@/lib/auth';
 
-// Roles allowed to perform verification
-const allowedRoles = [
-    'president',
-    'senior-general-manager',
-    'general-manager',
-    'regional-sales-manager',
-    'senior-manager',
-    'manager',
-    'assistant-manager',
-    'senior-executive',
-    'executive'
-];
-
-const bulkVerifySchema = z.object({
-    ids: z.array(z.string()).min(1, "At least one dealer ID is required"),
-});
+const bulkVerifySchema = z.object({ ids: z.array(z.string()).min(1, "At least one dealer ID is required"), });
 
 export async function PATCH(request: NextRequest) {
     try {
         // 1. Authentication
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        // 2. Fetch User & Authorization
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         // 3. Parse Body
@@ -64,7 +40,7 @@ export async function PATCH(request: NextRequest) {
             .where(
                 and(
                     inArray(dealers.id, ids),
-                    eq(users.companyId, currentUser.companyId),
+                    eq(users.companyId, session.companyId),
                     eq(dealers.verificationStatus, 'PENDING') // Only verify currently pending ones
                 )
             );

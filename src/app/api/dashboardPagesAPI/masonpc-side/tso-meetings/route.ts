@@ -1,20 +1,13 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/tso-meetings/route.ts
 import 'server-only';
 import { connection, NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, tsoMeetings } from '../../../../../../drizzle';
 import { eq, and, or, ilike, desc, count, SQL } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectTsoMeetingSchema } from '../../../../../../drizzle/zodSchemas';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive',
-];
+import { verifySession } from '@/lib/auth';
 
 const meetingResponseSchema = selectTsoMeetingSchema.loose().extend({
   totalExpenses: z.number().nullable(), 
@@ -106,19 +99,12 @@ async function getCachedTsoMeetings(
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: `Forbidden` }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes('READ')) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -131,7 +117,7 @@ export async function GET(request: NextRequest) {
     const region = searchParams.get('region');
 
     const result = await getCachedTsoMeetings(
-      currentUser.companyId,
+      session.companyId,
       page,
       pageSize,
       search,

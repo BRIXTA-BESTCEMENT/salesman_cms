@@ -1,20 +1,13 @@
 // src/app/api/dashboardPagesAPI/reports/tso-performance-metrics/route.ts
 import 'server-only';
 import { connection, NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, technicalVisitReports, tsoMeetings } from '../../../../../../drizzle';
 import { eq, desc, and, or, ilike, SQL, sql, gte, lte } from 'drizzle-orm';
 import { z } from 'zod';
 import { TSO_AOP_TARGETS } from '@/lib/Reusable-constants';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',
-];
+import { verifySession } from '@/lib/auth';
 
 // Reusable schema for the metric nodes
 const metricNode = z.object({
@@ -174,18 +167,13 @@ export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
   try {
-    const claims = await getTokenClaims();
-    if (!claims?.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-    if (!currentUser || !allowedRoles.includes(currentUser.role))
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page') ?? 0);
@@ -203,7 +191,7 @@ export async function GET(request: NextRequest) {
       // 1st day of current month
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
       // Last day of current month
-      const lastDay = new Date(); 
+      const lastDay = new Date();
       lastDay.setHours(23, 59, 59, 999);
 
       startDate = startDate || firstDay.toISOString();
@@ -211,7 +199,7 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await getCachedTsoPerformanceMetrics(
-      currentUser.companyId, page, pageSize, search, area, region, startDate, endDate
+      session.companyId, page, pageSize, search, area, region, startDate, endDate
     );
 
     const validated = z.array(tsoPerformanceMetricSchema).safeParse(result.data);

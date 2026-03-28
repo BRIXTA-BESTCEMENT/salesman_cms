@@ -1,7 +1,6 @@
 // src/app/api/dashboardPagesAPI/permanent-journey-plan/route.ts
 import 'server-only';
 import { connection, NextRequest, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, permanentJourneyPlans, dailyTasks, dealers, technicalSites } from '../../../../../drizzle';
@@ -10,13 +9,7 @@ import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectPermanentJourneyPlanSchema } from '../../../../../drizzle/zodSchemas';
 import { refreshCompanyCache } from '@/app/actions/cache';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',
-];
+import { verifySession } from '@/lib/auth';
 
 const getISTDate = (date: string | Date | null) => {
   if (!date) return '';
@@ -168,19 +161,12 @@ async function getCachedPJPs(
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -192,14 +178,14 @@ export async function GET(request: NextRequest) {
         .selectDistinct({ id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email })
         .from(permanentJourneyPlans)
         .innerJoin(users, eq(permanentJourneyPlans.userId, users.id))
-        .where(eq(users.companyId, currentUser.companyId))
+        .where(eq(users.companyId, session.companyId))
         .orderBy(asc(users.firstName));
         
       const distinctStatuses = await db
         .selectDistinct({ status: permanentJourneyPlans.status })
         .from(permanentJourneyPlans)
         .innerJoin(users, eq(permanentJourneyPlans.userId, users.id))
-        .where(eq(users.companyId, currentUser.companyId));
+        .where(eq(users.companyId, session.companyId));
 
       return NextResponse.json({
         salesmen: distinctSalesmen,
@@ -219,7 +205,7 @@ export async function GET(request: NextRequest) {
     const toDate = searchParams.get('toDate');
 
     const result = await getCachedPJPs(
-      currentUser.companyId,
+      session.companyId,
       page,
       pageSize,
       search,
@@ -252,19 +238,12 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes("DELETE")) {
+      return NextResponse.json({ error: 'Forbidden: DELETE access required' }, { status: 403 });
     }
 
     const url = new URL(request.url);
@@ -280,7 +259,7 @@ export async function DELETE(request: NextRequest) {
 
     const pjpToDelete = pjpToDeleteResult[0];
 
-    if (!pjpToDelete || pjpToDelete.companyId !== currentUser.companyId) {
+    if (!pjpToDelete || pjpToDelete.companyId !== session.companyId) {
       return NextResponse.json({ error: 'Forbidden or Not Found' }, { status: 403 });
     }
 

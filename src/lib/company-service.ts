@@ -14,7 +14,7 @@ export interface CompanyInfo {
   pendingUsers: number;
 }
 
-export async function getCompanyInfo(workosUserId: string): Promise<CompanyInfo | null> {
+export async function getCompanyInfo(id: number): Promise<CompanyInfo | null> {
   try {
     // Equivalent of prisma.user.findUnique({ include: { company: true } })
     const result = await db
@@ -28,7 +28,7 @@ export async function getCompanyInfo(workosUserId: string): Promise<CompanyInfo 
       })
       .from(users)
       .leftJoin(companies, eq(users.companyId, companies.id))
-      .where(eq(users.workosUserId, workosUserId))
+      .where(eq(users.id, id))
       .limit(1);
 
     const user = result[0];

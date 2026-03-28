@@ -2,7 +2,6 @@
 import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users, dealers } from '../../../../../drizzle';
 import { eq, and, or, ilike, desc, aliasedTable, getTableColumns, SQL, count } from 'drizzle-orm';
@@ -10,13 +9,7 @@ import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDealerSchema } from '../../../../../drizzle/zodSchemas';
 import { refreshCompanyCache } from '@/app/actions/cache';
-
-const allowedRoles = [
-    'president', 'senior-general-manager', 'general-manager',
-    'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-    'senior-manager', 'manager', 'assistant-manager',
-    'senior-executive', 'executive', 'junior-executive'
-];
+import { verifySession } from '@/lib/auth';
 
 const frontendDealerSchema = selectDealerSchema.extend({
     totalPotential: z.number(),
@@ -126,22 +119,12 @@ export async function GET(request: NextRequest) {
     if (typeof connection === 'function') await connection();
 
     try {
-        const claims = await getTokenClaims();
-
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: `Forbidden: Only the following roles can access dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
+        if (!session.permissions.includes('READ')) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         const { searchParams } = new URL(request.url);
@@ -154,7 +137,7 @@ export async function GET(request: NextRequest) {
         const type = searchParams.get('type');
 
         const result = await getCachedDealersByCompany(
-            currentUser.companyId,
+            session.companyId,
             page,
             pageSize,
             search,
@@ -184,22 +167,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const claims = await getTokenClaims();
-
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: `Forbidden: Only the following roles can add dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         const body = await request.json();
@@ -246,7 +220,7 @@ export async function POST(request: NextRequest) {
 
         const newDealerResult = await db.insert(dealers).values({
             id: crypto.randomUUID(),
-            userId: currentUser.id,
+            userId: session.userId,
             name: name,
             type: type,
             region: region,
@@ -279,22 +253,12 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
     try {
-        const claims = await getTokenClaims();
-
-        if (!claims || !claims.sub) {
+        const session = await verifySession();
+        if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        const currentUserResult = await db
-            .select({ id: users.id, role: users.role, companyId: users.companyId })
-            .from(users)
-            .where(eq(users.workosUserId, claims.sub))
-            .limit(1);
-
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-            return NextResponse.json({ error: `Forbidden: Only the following roles can delete dealers: ${allowedRoles.join(', ')}` }, { status: 403 });
+        if (!session.permissions.includes('DELETE')) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
         }
 
         const url = new URL(request.url);
@@ -317,7 +281,7 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Dealer not found' }, { status: 404 });
         }
 
-        if (dealerToDelete.userCompanyId !== currentUser.companyId) {
+        if (dealerToDelete.userCompanyId !== session.companyId) {
             return NextResponse.json({ error: 'Forbidden: Cannot delete a dealer from another company' },
                 { status: 403 });
         }

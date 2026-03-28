@@ -1,36 +1,28 @@
 // src/app/api/dashboardPagesAPI/users-and-team/team-overview/editRole/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
+import { verifySession } from '@/lib/auth';
 import { db } from '@/lib/drizzle';
-import { users, companies } from '../../../../../../../drizzle';
-import { eq } from 'drizzle-orm';
+import { users } from '../../../../../../../drizzle';
+import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import { WorkOS } from '@workos-inc/node';
 import { canAssignRole } from '@/lib/roleHierarchy';
-
-if (!process.env.WORKOS_API_KEY) {
-  throw new Error("Missing WORKOS_API_KEY");
-}
-const workos = new WorkOS(process.env.WORKOS_API_KEY);
-
-const allowedRoles = ['president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager', 'senior-executive', 'executive'];
 
 const editRoleSchema = z.object({
   userId: z.number(),
-  newRole: z.string().refine(role => allowedRoles.includes(role), { message: 'Invalid role' }),
+  newRole: z.string().min(1, "New role is required"),
 });
 
 export async function POST(request: NextRequest) {
   try {
-    const claims = await getTokenClaims();
-    const currentUserRole = claims?.role as string;
-    const workosOrganizationId = claims?.org_id;
-
-    if (!claims?.sub || !workosOrganizationId || !allowedRoles.includes(currentUserRole)) {
+    // 1. Verify custom session
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -45,53 +37,30 @@ export async function POST(request: NextRequest) {
 
     const { userId, newRole } = validatedBody.data;
 
-    if (!canAssignRole(currentUserRole, newRole)) {
-      return NextResponse.json({ error: 'Forbidden: You cannot assign this role' }, { status: 403 });
+    // 2. Check Hierarchy (Logic stays the same, just uses session.role)
+    if (!canAssignRole(session.orgRole, newRole)) {
+      return NextResponse.json({ error: 'Forbidden: You cannot assign this role level' }, { status: 403 });
     }
 
+    // 3. Update the database
     const updatedUser = await db.transaction(async (tx) => {
-
-      const result = await tx
-        .select({
-          workosUserId: users.workosUserId,
-          orgId: companies.workosOrganizationId,
-        })
+      const [targetUser] = await tx
+        .select({ id: users.id, companyId: users.companyId })
         .from(users)
-        .leftJoin(companies, eq(users.companyId, companies.id))
         .where(eq(users.id, userId))
         .limit(1);
 
-      const userToUpdate = result[0];
-
-      const organizationId =
-        (userToUpdate?.orgId as string | null | undefined) ??
-        (workosOrganizationId as string | null | undefined);
-
-      const shouldUpdateWorkOS =
-        !!userToUpdate?.workosUserId && !!organizationId;
-
-      if (shouldUpdateWorkOS) {
-        const { data: memberships } =
-          await workos.userManagement.listOrganizationMemberships({
-            userId: userToUpdate.workosUserId!,
-            organizationId: organizationId!,
-          });
-
-        const userMembership = memberships.find(
-          m => m.userId === userToUpdate.workosUserId
-        );
-
-        if (userMembership?.id) {
-          await workos.userManagement.updateOrganizationMembership(
-            userMembership.id,
-            { roleSlug: newRole }
-          );
-        }
+      if (!targetUser || targetUser.companyId !== session.companyId) {
+        throw new Error("User not found or belongs to a different company");
       }
 
+      // Perform the update
       const [updated] = await tx
         .update(users)
-        .set({ role: newRole })
+        .set({
+          role: newRole,
+          updatedAt: sql`now()`
+        })
         .where(eq(users.id, userId))
         .returning();
 

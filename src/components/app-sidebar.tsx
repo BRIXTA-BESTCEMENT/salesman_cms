@@ -1,7 +1,7 @@
 // src/components/app-sidebar.tsx
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,60 +13,32 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail,
 } from "@/components/ui/sidebar"
-import { hasPermission, WorkOSRole, PermPath } from '@/lib/permissions';
 import Image from 'next/image';
 
 interface Props {
-  userRole: WorkOSRole;
-  // ... other props
+  userRole: string; // Changed from WorkOSRole to string
+  permissions: string[]; // New: ['READ', 'WRITE', 'UPDATE']
 }
 
 interface CompanyInfo {
   companyName: string;
   adminName: string;
-  totalUsers: number;
 }
 
 interface MenuItem {
   title: string;
   url?: string;
-  permission: PermPath | 'logout' | 'account';
+  requiredPerm?: string | string[] | 'public' | 'logout'; 
   items?: MenuItem[];
 }
-
-// Permission mapping for each menu item
-const ITEM_PERMISSIONS = {
-  "Home": 'home' as const,
-  "CemTem ChatBot": 'cemtemChat' as const,
-  "Custom Report Generator": 'customReportGenerator' as const,
-
-  "Business Dashboard": 'dashboard' as const,
-  "Users & Team": 'usersAndTeam.userManagement' as const,
-  "Assign Tasks": 'assignTasks.tasksList' as const,
-  "Dealers": 'dealerManagement.listDealers' as const,
-  "Technical Sites": 'technicalSites.listSites' as const,
-  "Reports": 'reports.dailyVisitReports' as const,
-  "Salesman Geotracking": 'salesmanGeotracking.slmGeotracking' as const,
-  "Salesman Attendance": 'salesmanAttendance' as const,
-  "Salesman Leaves": 'salesmanLeaves' as const,
-  "Permanent Journey Plan": 'permanentJourneyPlan.pjpList' as const,
-  "Mason - Petty Contractor": 'masonpcSide.masonpc' as const,
-  "Scores And Ratings": 'scoresAndRatings.salesmanRatings' as const,
-  "Logistics IO": 'logisticsIO.records' as const,
-
-  "Account": 'account' as const,
-  "Raise A Querry": 'raiseAQuery' as const,
-  "Logout": 'logout' as const,
-};
 
 // Define menu items with the new nested structure
 const menuItems: MenuItem[] = [
   {
     title: "Home",
     url: "/home",
-    permission: ITEM_PERMISSIONS["Home"],
+    requiredPerm: 'public',
     items: [
       // {
       //   title: "CemTem ChatBot",
@@ -76,97 +48,92 @@ const menuItems: MenuItem[] = [
       {
         title: "Custom Report Generator",
         url: "/home/customReportGenerator",
-        permission: ITEM_PERMISSIONS["Custom Report Generator"]
+        requiredPerm: ['READ']
       },
     ],
   },
   {
     title: "Business Dashboard",
     url: "/dashboard",
-    permission: ITEM_PERMISSIONS["Business Dashboard"],
+    requiredPerm: 'public',
     items: [
       {
         title: "Users & Team",
         url: "/dashboard/usersAndTeam",
-        permission: ITEM_PERMISSIONS["Users & Team"]
+        requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
       {
         title: "Dealers",
         url: "/dashboard/dealerManagement",
-        permission: ITEM_PERMISSIONS["Dealers"]
+        requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
       {
         title: "Technical Sites",
         url: "/dashboard/technicalSites",
-        permission: ITEM_PERMISSIONS["Technical Sites"]
+        requiredPerm: ['READ']
       },
       {
         title: "Reports",
         url: "/dashboard/reports",
-        permission: ITEM_PERMISSIONS["Reports"]
+        requiredPerm: ['READ']
       },
       {
         title: "PJPs (Sales Side)", // Assign Tasks hander
         url: "/dashboard/assignTasks",
-        permission: ITEM_PERMISSIONS["Assign Tasks"]
+        requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
       {
         title: "PJPs (Technical Side)", // Permanent Journey Plan handler
         url: "/dashboard/permanentJourneyPlan",
-        permission: ITEM_PERMISSIONS["Permanent Journey Plan"]
+        requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
       {
         title: "Salesman Geotracking",
         url: "/dashboard/slmGeotracking",
-        permission: ITEM_PERMISSIONS["Salesman Geotracking"]
+        requiredPerm: ['READ']
       },
       {
         title: "Salesman Leaves",
         url: "/dashboard/slmLeaves",
-        permission: ITEM_PERMISSIONS["Salesman Leaves"]
+        requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
       {
         title: "Salesman Attendance",
         url: "/dashboard/slmAttendance",
-        permission: ITEM_PERMISSIONS["Salesman Attendance"]
+        requiredPerm: ['READ']
       },
       // {
       //   title: "Scores & Ratings",
       //   url: "/dashboard/scoresAndRatings",
-      //   permission: ITEM_PERMISSIONS["Scores And Ratings"]
+      //   requiredPerm: ['READ']
       // },
       {
         title: "Mason - PC Side",
         url: "/dashboard/masonpcSide",
-        permission: ITEM_PERMISSIONS["Mason - Petty Contractor"]
+        requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
       {
         title: "Logistics IO",
         url: "/dashboard/logisticsIO",
-        permission: ITEM_PERMISSIONS["Logistics IO"]
+        requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
     ],
   },
   {
     title: "Account",
     url: "/account",
-    permission: ITEM_PERMISSIONS["Account"],
+    requiredPerm: 'public',
     items: [
-      // {
-      //   title: "Raise A Querry",
-      //   url: "/account/query",
-      //   permission: ITEM_PERMISSIONS["Raise A Querry"]
-      // },
       {
         title: "Logout",
         url: "/account/logout",
-        permission: ITEM_PERMISSIONS["Logout"]
+        requiredPerm: ['logout']
       },
     ],
   },
 ]
 
-export function AppSidebar({ userRole }: Props) {
+export function AppSidebar({ userRole, permissions = [] }: Props) {
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -189,42 +156,39 @@ export function AppSidebar({ userRole }: Props) {
     fetchCompanyInfo();
   }, []);
 
-  // Recursive function to filter menu items based on user permissions
-  const filterMenuItems = (items: MenuItem[], role: WorkOSRole): MenuItem[] => {
+  // Filter based on the 'permissions' array from the DB
+  const filterItems = useCallback((items: MenuItem[]): MenuItem[] => {
+    
+    if (!permissions) return [];
+
     return items.reduce((acc, item) => {
-      // Special cases for links that are always visible
-      if (item.permission === 'logout' || item.permission === 'account') {
-        acc.push(item);
+      const { requiredPerm } = item;
+
+      // 1. Handle Public/Special items
+      if (!requiredPerm || requiredPerm === 'public' || requiredPerm === 'logout') {
+        acc.push(item.items ? { ...item, items: filterItems(item.items) } : item);
         return acc;
       }
 
-      // Check for sub-items first
-      if (item.items) {
-        const filteredSubItems = filterMenuItems(item.items, role);
-        if (filteredSubItems.length > 0) {
-          // If the group has visible children, add the group
-          acc.push({ ...item, items: filteredSubItems });
-        } else if (item.url && hasPermission(role, item.permission as PermPath)) {
-          // If no visible children, check if the main link itself is permitted
-          // (e.g., for "Business Dashboard" which links to /dashboard)
-          acc.push({ ...item, items: [] }); // Add without children
-        }
-      }
-      // Check for single items (links with no children)
-      else if (item.url) {
-        if (hasPermission(role, item.permission as PermPath)) {
+      // 2. Handle Multiple Permissions (Check if user has ALL)
+      const requiredArray = Array.isArray(requiredPerm) ? requiredPerm : [requiredPerm];
+      
+      // Now 'permissions' is correctly scoped from the props
+      const hasAllAccess = requiredArray.every(p => permissions.includes(p));
+
+      if (hasAllAccess) {
+        if (item.items) {
+          acc.push({ ...item, items: filterItems(item.items) });
+        } else {
           acc.push(item);
         }
       }
+      
       return acc;
     }, [] as MenuItem[]);
-  };
+  }, [permissions]); // Re-run if permissions change
 
-  const accessibleMenuItems = useMemo(() => {
-    // Pass the userRole to the filter function
-    return filterMenuItems(menuItems, userRole);
-  }, [userRole]);
-
+  const accessibleMenuItems = useMemo(() => filterItems(menuItems), [filterItems]);
 
   return (
     <Sidebar className="hidden md:flex w-64 shrink-0 border-r">

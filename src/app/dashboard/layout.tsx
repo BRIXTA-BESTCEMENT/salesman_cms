@@ -7,7 +7,7 @@ import { users, companies } from '../../../drizzle';
 import { eq } from 'drizzle-orm';
 import DashboardShell from '@/app/dashboard/dashboardShell';
 import { connection } from 'next/server';
-import { verifySession } from '@/lib/auth'; // <-- IMPORT CUSTOM AUTH
+import { verifySession } from '@/lib/auth';
 
 const allowedAdminRoles = [
   'president',
@@ -18,7 +18,7 @@ const allowedAdminRoles = [
   'senior-manager',
   'manager',
   'assistant-manager',
-  'Admin', // Included your new Super Admin role
+  'Admin',
 ];
 
 const allowedNonAdminRoles = [

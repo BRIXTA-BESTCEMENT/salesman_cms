@@ -1,6 +1,6 @@
 // src/app/page.tsx
 import { Suspense } from 'react';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
+import { verifySession } from '@/lib/auth'; 
 import { redirect } from 'next/navigation';
 import SignedOutHomePage from '@/app/home/signedOutHomePage'; 
 import { connection } from 'next/server';
@@ -18,10 +18,10 @@ export default function LandingPage() {
 // 2. This is the Dynamic Component. It runs at request-time.
 async function AuthBoundary() {
   await connection();
-  const claims = await getTokenClaims();
+  const session = await verifySession();
 
   // If the user is signed in, render the signed-in page.
-  if (claims && claims.sub) {
+  if (!session || !session.userId) {
     redirect('/dashboard'); // Redirect to the security gate
   }
 

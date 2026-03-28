@@ -1,12 +1,12 @@
 // src/app/dashboard/technicalSites/page.tsx
 import { Suspense } from 'react';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
 import { users } from '../../../../drizzle';
 import { eq } from 'drizzle-orm';
 import { TechnicalSitesTabs } from './tabsLoader';
 import { hasPermission, WorkOSRole } from '@/lib/permissions';
 import { connection } from 'next/server';
+import { verifySession } from '@/lib/auth';
 
 export default function TechnicalSitesPage() {
   return (
@@ -25,28 +25,28 @@ export default function TechnicalSitesPage() {
 }
 
 async function getCurrentUserRole(): Promise<WorkOSRole | null> {
-  
-    const claims = await getTokenClaims();
-    if (!claims?.sub) {
-      return null;
-    }
 
-    const result = await db
-      .select({ role: users.role })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-    
-    const user = result[0];
-    
-    return (user?.role as WorkOSRole) ?? null;
-  
+  const session = await verifySession();
+  if (!session || !session.userId) {
+    return null;
+  }
+
+  const result = await db
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, sessionStorage.usderId))
+    .limit(1);
+
+  const user = result[0];
+
+  return (user?.role as WorkOSRole) ?? null;
+
 }
 
 export async function TechnicalSitesDynamicContent() {
   await connection();
   const userRole = await getCurrentUserRole();
-  const roleToCheck = userRole ?? 'junior-executive'; 
+  const roleToCheck = userRole ?? 'junior-executive';
 
   const canViewSites = hasPermission(roleToCheck, 'technicalSites.listSites');
 

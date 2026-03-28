@@ -1,17 +1,11 @@
 // src/app/api/dashboardPagesAPI/users-and-team/users/route.ts
 import "server-only";
 import { connection, NextRequest, NextResponse } from "next/server";
-import { verifySession } from "@/lib/auth"; // Swapped to your custom auth
+import { verifySession } from "@/lib/auth";
 import { db } from "@/lib/drizzle";
 import { users, companies, roles as rolesTable, userRoles } from "../../../../../../drizzle";
 import { eq, and, desc, inArray } from "drizzle-orm";
 import { generateRandomPassword, sendInvitationEmailResend } from "./helpers";
-
-const allowedAdminRoles = [
-    "president", "senior-general-manager", "general-manager",
-    "regional-sales-manager", "area-sales-manager", "senior-manager",
-    "manager", "assistant-manager", "Admin"
-];
 
 // =================
 // POST ROUTE 
@@ -19,10 +13,12 @@ const allowedAdminRoles = [
 
 export async function POST(request: NextRequest) {
     try {
-        // --- 1. ADMIN AUTHORIZATION ---
         const session = await verifySession();
         if (!session || !session.userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        if (!session.permissions.includes("WRITE")) {
+            return NextResponse.json({ error: 'Forbidden: WRITE access required' }, { status: 403 });
         }
 
         const adminUserResult = await db
@@ -41,16 +37,13 @@ export async function POST(request: NextRequest) {
             .limit(1);
 
         const adminUser = adminUserResult[0];
-
-        if (!adminUser || !allowedAdminRoles.includes(adminUser.role)) {
-            return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
-        }
+        if (!adminUser) return NextResponse.json({ error: 'Admin record not found' }, { status: 404 });
 
         // --- 2. PARSE REQUEST DATA ---
         const body = await request.json();
-        const { 
-            email, firstName, lastName, phoneNumber, role, jobRole, orgRole, region, area, 
-            isDashboardUser, isSalesAppUser, isTechnicalRole, isAdminAppUser 
+        const {
+            email, firstName, lastName, phoneNumber, role, jobRole, orgRole, region, area,
+            isDashboardUser, isSalesAppUser, isTechnicalRole, isAdminAppUser
         } = body;
 
         // jobRole is likely an array now based on your multi-role requirement
@@ -73,7 +66,7 @@ export async function POST(request: NextRequest) {
 
         // --- 4. TRANSACTIONAL INSERT (User + Roles) ---
         const { newUser, emailPayload } = await db.transaction(async (tx) => {
-            
+
             const newUserData: any = {
                 email,
                 firstName,
@@ -93,26 +86,26 @@ export async function POST(request: NextRequest) {
             // Credential Generation Logic
             if (newUserData.isDashboardUser) {
                 const dashPassword = generateRandomPassword();
-                newUserData.dashboardLoginId = email; 
+                newUserData.dashboardLoginId = email;
                 newUserData.dashboardHashedPassword = dashPassword;
             }
 
             if (newUserData.isSalesAppUser) {
-                let salesmanId = `EMP-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+                let salesmanId = `EMP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
                 const salesPassword = generateRandomPassword();
                 newUserData.salesmanLoginId = salesmanId;
                 newUserData.hashedPassword = salesPassword;
             }
 
             if (newUserData.isTechnicalRole) {
-                let techId = `TSE-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+                let techId = `TSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
                 const techPassword = generateRandomPassword();
                 newUserData.techLoginId = techId;
                 newUserData.techHashPassword = techPassword;
             }
 
             if (newUserData.isAdminAppUser) {
-                let adminId = `ADM-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+                let adminId = `ADM-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
                 const adminAppPassword = generateRandomPassword();
                 newUserData.adminAppLoginId = adminId;
                 newUserData.adminAppHashedPassword = adminAppPassword;
@@ -188,10 +181,16 @@ export async function GET(request: NextRequest) {
     await connection();
     try {
         const session = await verifySession();
-        if (!session || !session.userId)
+        if (!session || !session.userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-        const userId = session.userId;
+        const url = new URL(request.url);
+        const isCurrentOnly = url.searchParams.get("current") === "true";
+
+        if (!isCurrentOnly && !session.permissions.includes("READ")) {
+            return NextResponse.json({ error: "Forbidden: READ access required" }, { status: 403 });
+        }
 
         const currentUserResult = await db
             .select({
@@ -210,15 +209,13 @@ export async function GET(request: NextRequest) {
             })
             .from(users)
             .leftJoin(companies, eq(users.companyId, companies.id))
-            .where(eq(users.id, userId))
+            .where(eq(users.id, session.userId))
             .limit(1);
 
         const currentUser = currentUserResult[0];
 
         if (!currentUser)
             return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-        const url = new URL(request.url);
 
         if (url.searchParams.get("current") === "true") {
             return NextResponse.json({
@@ -233,15 +230,9 @@ export async function GET(request: NextRequest) {
                     isTechnical: currentUser.isTechnicalRole,
                     isAdminAppUser: currentUser.isAdminAppUser,
                     deviceId: currentUser.deviceId,
+                    permissions: session.permissions || []
                 },
             });
-        }
-
-        if (!allowedAdminRoles.includes(currentUser.role)) {
-            return NextResponse.json(
-                { error: "Admin access required" },
-                { status: 403 }
-            );
         }
 
         const companyUsers = await db
@@ -260,6 +251,7 @@ export async function GET(request: NextRequest) {
                 isTechnical: currentUser.isTechnicalRole,
                 isAdminAppUser: currentUser.isAdminAppUser,
                 deviceId: currentUser.deviceId,
+                permissions: session.permissions || []
             },
         });
     } catch (error: any) {

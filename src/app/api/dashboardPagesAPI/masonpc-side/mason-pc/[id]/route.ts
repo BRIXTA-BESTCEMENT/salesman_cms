@@ -1,13 +1,13 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/mason-pc/[id]/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, masonPcSide, kycSubmissions, pointsLedger } from '../../../../../../../drizzle'; 
+import { users, masonPcSide, kycSubmissions, pointsLedger } from '../../../../../../../drizzle';
 import { eq, and, desc, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { calculateJoiningBonusPoints } from '@/lib/pointsCalcLogic';
 import { refreshCompanyCache } from '@/app/actions/cache';
+import { verifySession } from '@/lib/auth';
 
 const kycUpdateSchema = z.object({
     verificationStatus: z.enum(['VERIFIED', 'REJECTED']).optional(),
@@ -28,24 +28,17 @@ const submissionStatusMap: Record<'VERIFIED' | 'REJECTED', string> = {
     REJECTED: 'rejected',
 };
 
-const allowedRoles = [
-    'president', 'senior-general-manager', 'general-manager',
-    'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-    'senior-manager', 'manager', 'assistant-manager',
-    'senior-executive', 'executive',
-];
-
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id: masonPcId } = await params;
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-        const currentUserResult = await db.select({ id: users.id, role: users.role, companyId: users.companyId }).from(users).where(eq(users.workosUserId, claims.sub)).limit(1);
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
+        const session = await verifySession();
+        if (!session || !session.userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+        }
         const body = await request.json();
         const parsed = kycUpdateSchema.safeParse(body);
         if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
@@ -57,13 +50,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             mason: masonPcSide,
             companyId: users.companyId
         }).from(masonPcSide)
-          .leftJoin(users, eq(masonPcSide.userId, users.id))
-          .where(eq(masonPcSide.id, masonPcId)).limit(1);
+            .leftJoin(users, eq(masonPcSide.userId, users.id))
+            .where(eq(masonPcSide.id, masonPcId)).limit(1);
 
         const record = existing[0];
         if (!record) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        
-        if (record.companyId && record.companyId !== currentUser.companyId) {
+
+        if (record.companyId && record.companyId !== session.companyId) {
             return NextResponse.json({ error: 'Forbidden: External company record.' }, { status: 403 });
         }
 

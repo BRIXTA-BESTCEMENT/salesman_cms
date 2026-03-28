@@ -1,20 +1,15 @@
 // src/app/api/dashboardPagesAPI/assign-tasks/task-verification/[id]/route.ts
 import 'server-only';
 import { NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { users, dailyTasks, dealers } from '../../../../../../../drizzle'; 
+import { users, dailyTasks, dealers } from '../../../../../../../drizzle';
 import { eq } from 'drizzle-orm';
-import { insertDailyTaskSchema } from '../../../../../../../drizzle/zodSchemas'; 
-
-const allowedRoles = [
-    'president', 'senior-general-manager', 'general-manager',
-    'regional-sales-manager', 'senior-manager', 'manager', 'assistant-manager',
-];
+import { insertDailyTaskSchema } from '../../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
 async function verifyTask(taskId: string, currentUserCompanyId: number) {
     if (!taskId) throw new Error("Task ID is required.");
-    
+
     const results = await db
         .select({ task: dailyTasks, user: { companyId: users.companyId } })
         .from(dailyTasks)
@@ -38,15 +33,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         const { id: taskId } = await params;
         if (!taskId) return NextResponse.json({ error: 'Missing Task ID' }, { status: 400 });
 
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-        const currentUserResult = await db.select({ id: users.id, role: users.role, companyId: users.companyId }).from(users).where(eq(users.workosUserId, claims.sub)).limit(1);
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
-        const verificationResult = await verifyTask(taskId, currentUser.companyId);
+        const session = await verifySession();
+        if (!session || !session.userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+        }
+        const verificationResult = await verifyTask(taskId, session.companyId);
         if (verificationResult.error) return NextResponse.json({ error: verificationResult.error }, { status: verificationResult.status });
 
         const body = await request.json();
@@ -73,20 +68,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         const { id: taskId } = await params;
         if (!taskId) return NextResponse.json({ error: 'Missing Task ID' }, { status: 400 });
 
-        const claims = await getTokenClaims();
-        if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-        const currentUserResult = await db.select({ id: users.id, role: users.role, companyId: users.companyId }).from(users).where(eq(users.workosUserId, claims.sub)).limit(1);
-        const currentUser = currentUserResult[0];
-
-        if (!currentUser || !allowedRoles.includes(currentUser.role)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
-        const verify = await verifyTask(taskId, currentUser.companyId);
+        const session = await verifySession();
+        if (!session || !session.userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+        if (!hasRequiredPerms) {
+            return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+        }
+        const verify = await verifyTask(taskId, sessionStorage.companyId);
         if (verify.error) return NextResponse.json({ error: verify.error }, { status: verify.status });
 
         const taskModificationSchema = insertDailyTaskSchema.partial().loose();
         const v = taskModificationSchema.safeParse(await request.json());
-        
+
         if (!v.success) return NextResponse.json({ error: 'Invalid Task modification data.', details: v.error.issues }, { status: 400 });
 
         if (v.data.dealerId) {

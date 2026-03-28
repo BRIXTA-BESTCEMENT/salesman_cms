@@ -1,25 +1,19 @@
 // src/app/api/dashboardPagesAPI/routes/dvr-and-tvr/route.ts
 import 'server-only';
 import { connection, NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
-import { 
-  users, 
-  dailyVisitReports, 
-  technicalVisitReports, 
-  dealers, 
-  dailyTasks 
+import {
+  users,
+  dailyVisitReports,
+  technicalVisitReports,
+  dealers,
+  dailyTasks
 } from '../../../../../../drizzle';
-import { 
-  eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, inArray 
+import {
+  eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, inArray
 } from 'drizzle-orm';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-];
+import { verifySession } from '@/lib/auth';
 
 async function getCachedHybridReports(
   companyId: number,
@@ -30,7 +24,7 @@ async function getCachedHybridReports(
   'use cache';
   cacheLife('hours');
   cacheTag(`hybrid-reports-${companyId}`);
-  
+
   // Unique cache tag based on active filters and pagination
   const filterKey = `${search || 'none'}`;
   cacheTag(`hybrid-reports-${companyId}-${page}-${filterKey}`);
@@ -69,16 +63,16 @@ async function getCachedHybridReports(
       userEmail: users.email,
       dealerNameStr: dealers.name,
       subDealerNameStr: subDealers.name,
-      pjpTaskStatus: dailyTasks.status, 
+      pjpTaskStatus: dailyTasks.status,
       pjpVisitType: dailyTasks.visitType,
     })
     .from(dailyVisitReports)
     .innerJoin(users, eq(dailyVisitReports.userId, users.id))
     .leftJoin(
-      dailyTasks, 
+      dailyTasks,
       or(
-        eq(dailyVisitReports.dailyTaskId, dailyTasks.id), 
-        and( 
+        eq(dailyVisitReports.dailyTaskId, dailyTasks.id),
+        and(
           eq(dailyVisitReports.userId, dailyTasks.userId),
           eq(dailyVisitReports.reportDate, dailyTasks.taskDate),
           eq(dailyVisitReports.dealerId, dailyTasks.dealerId)
@@ -174,21 +168,14 @@ async function getCachedHybridReports(
 
 export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
-  
+
   try {
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -197,7 +184,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
 
     const cachedResult = await getCachedHybridReports(
-      currentUser.companyId,
+      session.companyId,
       page,
       pageSize,
       search
@@ -211,9 +198,9 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error fetching hybrid Kamrup-TSO reports:', error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch hybrid reports', 
-      details: (error as Error).message 
+    return NextResponse.json({
+      error: 'Failed to fetch hybrid reports',
+      details: (error as Error).message
     }, { status: 500 });
   }
 }

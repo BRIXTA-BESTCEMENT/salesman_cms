@@ -1,11 +1,8 @@
 // src/app/api/dashboardPagesAPI/masonpc-side/bags-lift/[id]/route.ts
 import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { db } from '@/lib/drizzle';
-import { 
-  users, bagLifts, masonPcSide, pointsLedger 
-} from '../../../../../../../drizzle'; 
+import { users, bagLifts, masonPcSide, pointsLedger } from '../../../../../../../drizzle';
 import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
@@ -14,13 +11,7 @@ import {
   calculateExtraBonusPoints,
   checkReferralBonusTrigger
 } from '@/lib/pointsCalcLogic';
-
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',
-];
+import { verifySession } from '@/lib/auth';
 
 const bagLiftUpdateSchema = z.object({
   status: z.enum(['approved', 'rejected']),
@@ -33,18 +24,14 @@ export async function PATCH(
 ) {
   try {
     const { id: bagLiftId } = await params;
-    const claims = await getTokenClaims();
-    if (!claims || !claims.sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const currentUserResult = await db
-      .select({ id: users.id, role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const session = await verifySession();
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const hasRequiredPerms = session.permissions.includes('UPDATE') || session.permissions.includes('WRITE');
+    if (!hasRequiredPerms) {
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -67,7 +54,7 @@ export async function PATCH(
 
     const record = existing[0];
     if (!record) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    if (record.masonCompanyId !== currentUser.companyId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    if (record.masonCompanyId !== session.companyId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
 
     const currentStatus = record.bagLift.status;
     const points = record.bagLift.pointsCredited;
@@ -83,7 +70,7 @@ export async function PATCH(
         const [updatedBagLift] = await tx.update(bagLifts)
           .set({
             status: 'approved',
-            approvedBy: currentUser.id,
+            approvedBy: session.userId,
             approvedAt: new Date().toISOString()
           })
           .where(eq(bagLifts.id, bagLiftId))
@@ -129,20 +116,20 @@ export async function PATCH(
 
         // Referral Logic
         if (record.mason.referredByUser) {
-            const referralPoints = checkReferralBonusTrigger(record.mason.bagsLifted || 0, updatedBagLift.bagCount);
-            if (referralPoints > 0) {
-                await tx.insert(pointsLedger).values({
-                    id: randomUUID(),
-                    masonId: record.mason.referredByUser,
-                    points: referralPoints,
-                    sourceType: 'referral_bonus',
-                    memo: `Referral bonus for Mason ${masonId} hitting milestone.`,
-                    createdAt: new Date().toISOString()
-                });
-                await tx.update(masonPcSide)
-                    .set({ pointsBalance: sql`${masonPcSide.pointsBalance} + ${referralPoints}` })
-                    .where(eq(masonPcSide.id, record.mason.referredByUser));
-            }
+          const referralPoints = checkReferralBonusTrigger(record.mason.bagsLifted || 0, updatedBagLift.bagCount);
+          if (referralPoints > 0) {
+            await tx.insert(pointsLedger).values({
+              id: randomUUID(),
+              masonId: record.mason.referredByUser,
+              points: referralPoints,
+              sourceType: 'referral_bonus',
+              memo: `Referral bonus for Mason ${masonId} hitting milestone.`,
+              createdAt: new Date().toISOString()
+            });
+            await tx.update(masonPcSide)
+              .set({ pointsBalance: sql`${masonPcSide.pointsBalance} + ${referralPoints}` })
+              .where(eq(masonPcSide.id, record.mason.referredByUser));
+          }
         }
         return updatedBagLift;
       }
@@ -150,7 +137,7 @@ export async function PATCH(
       // SCENARIO B: REJECTING APPROVED
       else if (newStatus === 'rejected' && currentStatus === 'approved') {
         const [updatedBagLift] = await tx.update(bagLifts)
-          .set({ status: 'rejected', approvedBy: currentUser.id })
+          .set({ status: 'rejected', approvedBy: session.userId })
           .where(eq(bagLifts.id, bagLiftId))
           .returning();
 
@@ -175,7 +162,7 @@ export async function PATCH(
 
       // SCENARIO C: PENDING -> REJECTED
       const [simpleUpdate] = await tx.update(bagLifts)
-        .set({ status: newStatus, approvedBy: currentUser.id })
+        .set({ status: newStatus, approvedBy: session.userId })
         .where(eq(bagLifts.id, bagLiftId))
         .returning();
       return simpleUpdate;

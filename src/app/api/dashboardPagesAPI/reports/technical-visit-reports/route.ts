@@ -1,7 +1,6 @@
 // src/app/api/dashboardPagesAPI/reports/technical-visit-reports/route.ts
 import 'server-only';
 import { connection, NextResponse, NextRequest } from 'next/server';
-import { getTokenClaims } from '@workos-inc/authkit-nextjs';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, technicalVisitReports } from '../../../../../../drizzle';
@@ -9,13 +8,9 @@ import { count, eq, desc, getTableColumns, and, or, ilike, SQL } from 'drizzle-o
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectTechnicalVisitReportSchema } from '../../../../../../drizzle/zodSchemas';
+import { verifySession } from '@/lib/auth';
 
-const allowedRoles = [
-  'president', 'senior-general-manager', 'general-manager',
-  'assistant-sales-manager', 'area-sales-manager', 'regional-sales-manager',
-  'senior-manager', 'manager', 'assistant-manager',
-  'senior-executive', 'executive',
-];
+const allowedRoles = ["Admin"];
 
 const getISTDateString = (date: string | Date | null) => {
   if (!date) return '';
@@ -72,7 +67,7 @@ async function getCachedTechnicalVisitReports(
   'use cache';
   cacheLife('hours');
   cacheTag(`technical-visit-reports-${companyId}`);
-  
+
   const filterKey = `${search}-${role}-${area}-${region}-${customerType}`;
   cacheTag(`technical-visit-reports-${companyId}-${page}-${filterKey}`);
 
@@ -88,7 +83,7 @@ async function getCachedTechnicalVisitReports(
     );
     if (searchCondition) filters.push(searchCondition);
   }
-  
+
   if (role) filters.push(eq(users.role, role));
   if (area) filters.push(eq(users.area, area));
   if (region) filters.push(eq(users.region, region));
@@ -117,7 +112,7 @@ async function getCachedTechnicalVisitReports(
     .select({ count: count() })
     .from(technicalVisitReports)
     .leftJoin(users, eq(technicalVisitReports.userId, users.id))
-    .where(whereClause); 
+    .where(whereClause);
 
   const totalCount = Number(totalCountResult[0].count);
 
@@ -167,26 +162,19 @@ export async function GET(request: NextRequest) {
   if (typeof connection === 'function') await connection();
 
   try {
-    const claims = await getTokenClaims();
-    if (!claims?.sub)
+    const session = await verifySession();
+    if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentUserResult = await db
-      .select({ role: users.role, companyId: users.companyId })
-      .from(users)
-      .where(eq(users.workosUserId, claims.sub))
-      .limit(1);
-
-    const currentUser = currentUserResult[0];
-
-    if (!currentUser || !allowedRoles.includes(currentUser.role))
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    if (!session.permissions.includes("READ")) {
+      return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page') ?? 0);
     // Hard cap at 500 to protect the server and front-end memory
     const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
-    
+
     const search = searchParams.get('search');
     const role = searchParams.get('role');
     const area = searchParams.get('area');
@@ -194,7 +182,7 @@ export async function GET(request: NextRequest) {
     const customerType = searchParams.get('customerType');
 
     const result = await getCachedTechnicalVisitReports(
-      currentUser.companyId,
+      session.companyId,
       page,
       pageSize,
       search,

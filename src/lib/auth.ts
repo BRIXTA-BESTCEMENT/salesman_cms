@@ -27,19 +27,23 @@ export async function decrypt(input: string): Promise<any> {
 
 export async function verifySession() {
   const cookieStore = await cookies();
-  const session = cookieStore.get('auth_token')?.value;
+  const token = cookieStore.get('auth_token')?.value;
+  if (!token) return null;
 
-  if (!session) return null;
-
-  const payload = await decrypt(session);
+  const payload = await decrypt(token);
   if (!payload) return null;
 
-  return payload as {
-    companyId: number;
-    userId: number;
-    email: string;
-    orgRole: string;
-    jobRoles: string[];
-    permissions: string[];
+  return {
+    userId: payload.userId as number,
+    companyId: payload.companyId as number,
+    orgRole: payload.orgRole as string,
+    permissions: (payload.permissions as string[]) || [], 
   };
+}
+
+// Simple helper function to use in routes
+export function hasPermission(sessionPerms: string[], required: string): boolean {
+  // Allow a "Admin" bypass 
+  if (sessionPerms.includes('admin:*') || sessionPerms.includes('*')) return true;
+  return sessionPerms.includes(required);
 }
