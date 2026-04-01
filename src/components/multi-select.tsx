@@ -1,7 +1,7 @@
 // src/components/multi-select.tsx
 "use client";
 
-import * as React from "react";
+import React from "react";
 import { Check, ChevronDown } from "lucide-react"; // Make sure you have lucide-react installed
 
 import { cn } from "@/lib/utils"; // Assuming you have this utility for class merging
@@ -30,6 +30,8 @@ interface MultiSelectProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  variant?: string;
+  maxCount?: number | string;
 }
 
 export function MultiSelect({

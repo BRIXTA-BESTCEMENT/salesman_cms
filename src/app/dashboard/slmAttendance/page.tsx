@@ -1,7 +1,7 @@
 // src/app/dashboard/slmAttendance/page.tsx
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
@@ -11,28 +11,27 @@ import { DateRange } from "react-day-picker";
 
 // Import your Shadcn UI components
 import { Button } from '@/components/ui/button';
-import { IconCheck, IconX, IconCalendar } from '@tabler/icons-react';
-import { ExternalLink, Users, CheckCircle2, RefreshCw, Search, Loader2 } from 'lucide-react';
+import { IconCheck, IconX } from '@tabler/icons-react';
+import { ExternalLink, Users, CheckCircle2, RefreshCw, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import {
   Card, CardContent, CardHeader, CardTitle,
 } from "@/components/ui/card";
 
-// Import the reusable DataTable
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { cn } from '@/lib/utils';
-import { selectSalesmanAttendanceSchema } from '../../../../drizzle/zodSchemas';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 import SyncLocationBtn from '@/app/home/customReportGenerator/syncLocationBtn';
+
+import { selectSalesmanAttendanceSchema } from '../../../../drizzle/zodSchemas';
 
 const extendedSalesmanAttendanceSchema = selectSalesmanAttendanceSchema.extend({
   salesmanName: z.string().optional().catch("Unknown"),
@@ -67,75 +66,41 @@ interface LocationsResponse {
   regions: string[];
 }
 
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1.5 w-full">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-10 w-full bg-background border-border shadow-sm">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
-
 export default function SlmAttendancePage() {
   const router = useRouter();
-  const [attendanceReports, setAttendanceReports] = React.useState<SalesmanAttendanceReport[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const [attendanceReports, setAttendanceReports] = useState<SalesmanAttendanceReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [page, setPage] = React.useState(0);
-  const [pageSize] = React.useState(500);
-  const [totalCount, setTotalCount] = React.useState(0);
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
-  const [jobTitleFilter, setJobTitleFilter] = React.useState('all');
-  const [companyCategoryFilter, setCompanyCategoryFilter] = React.useState('all');
-  const [areaFilter, setAreaFilter] = React.useState('all');
-  const [regionFilter, setRegionFilter] = React.useState('all');
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
+  // --- Standardized Filter State ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
+  const [companyCategoryFilter, setCompanyCategoryFilter] = useState('all');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
 
-  const [availableAreas, setAvailableAreas] = React.useState<string[]>([]);
-  const [availableRegions, setAvailableRegions] = React.useState<string[]>([]);
+  // --- Backend Filter Options ---
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
-  const [isLoadingLocations, setIsLoadingLocations] = React.useState(true);
-  const [locationError, setLocationError] = React.useState<string | null>(null);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
-  const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
-  const [selectedReport, setSelectedReport] = React.useState<SalesmanAttendanceReport | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<SalesmanAttendanceReport | null>(null);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  React.useEffect(() => {
+  // Reset page when filters change
+  useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, jobTitleFilter, companyCategoryFilter, areaFilter, regionFilter, dateRange]);
+  }, [debouncedSearchQuery, companyCategoryFilter, areaFilters, zoneFilters, dateRange]);
 
-  const fetchAttendanceReports = React.useCallback(async () => {
+  const fetchAttendanceReports = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -144,10 +109,11 @@ export default function SlmAttendancePage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (jobTitleFilter !== 'all') url.searchParams.append('jobTitle', jobTitleFilter);
       if (companyCategoryFilter !== 'all') url.searchParams.append('companyRole', companyCategoryFilter);
-      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      
+      // Multi-select arrays joined by comma
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
 
       if (dateRange?.from) url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
       if (dateRange?.to) {
@@ -187,7 +153,6 @@ export default function SlmAttendancePage() {
       }).filter(Boolean) as SalesmanAttendanceReport[];
 
       setAttendanceReports(validatedData);
-      toast.success("Salesman attendance reports loaded successfully!");
     } catch (e: any) {
       console.error("Failed to fetch salesman attendance reports:", e);
       setError(e.message || "Failed to fetch reports.");
@@ -195,9 +160,9 @@ export default function SlmAttendancePage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, jobTitleFilter, companyCategoryFilter, areaFilter, regionFilter, dateRange, router]);
+  }, [page, pageSize, debouncedSearchQuery, companyCategoryFilter, areaFilters, zoneFilters, dateRange, router]);
 
-  const fetchLocations = React.useCallback(async () => {
+  const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     setLocationError(null);
     try {
@@ -219,15 +184,24 @@ export default function SlmAttendancePage() {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchAttendanceReports();
   }, [fetchAttendanceReports]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLocations();
   }, [fetchLocations]);
 
-  const todayStats = React.useMemo(() => {
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => availableRegions.map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.map(a => ({ label: a, value: a })), [availableAreas]);
+  const roleOptions = useMemo(() => [
+    { label: 'All Company Roles', value: 'all' },
+    { label: 'Sales', value: 'SALES' },
+    { label: 'Technical', value: 'TECHNICAL' }
+  ], []);
+
+  const todayStats = useMemo(() => {
     const todayStr = format(new Date(), 'yyyy-MM-dd');
 
     const reportsForToday = attendanceReports.filter(report => {
@@ -249,10 +223,10 @@ export default function SlmAttendancePage() {
   };
 
   const LocationCell = ({ locationName, lat, lng }: { locationName: string, lat?: number, lng?: number }) => {
-    const [address, setAddress] = React.useState(locationName);
-    const [isFetching, setIsFetching] = React.useState(false);
+    const [address, setAddress] = useState(locationName);
+    const [isFetching, setIsFetching] = useState(false);
 
-    const fetchAddress = React.useCallback(async () => {
+    const fetchAddress = useCallback(async () => {
       if (!lat || !lng) return;
 
       setIsFetching(true);
@@ -276,7 +250,7 @@ export default function SlmAttendancePage() {
       }
     }, [lat, lng]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if ((locationName === 'Live Location' || locationName === 'Live Location (GPS Only)') && lat && lng) {
         const delay = Math.random() * 3000;
         const timer = setTimeout(() => {
@@ -328,10 +302,6 @@ export default function SlmAttendancePage() {
     } catch (e) {
       return 'Invalid Date';
     }
-  };
-
-  const handleSalesmanAttendanceOrderChange = (newOrder: SalesmanAttendanceReport[]) => {
-    console.log("New salesman attendance report order:", newOrder.map(r => r.id));
   };
 
   const salesmanAttendanceColumns: ColumnDef<SalesmanAttendanceReport>[] = [
@@ -442,8 +412,8 @@ export default function SlmAttendancePage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h2 className="text-3xl font-bold tracking-tight">Salesman Attendance</h2>
@@ -496,40 +466,35 @@ export default function SlmAttendancePage() {
           </Card>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar 
+            showSearch={true}
+            showDateRange={true}
+            showZone={true}
+            showArea={true}
+            showRole={true} // Enabled to filter by SALES/TECHNICAL
+            showStatus={false}
 
-            <div className="flex flex-col space-y-1.5">
-              <label className="text-sm font-medium text-muted-foreground">Report Duration</label>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full justify-start h-10 border-border", !dateRange && "text-muted-foreground")}>
-                      <IconCalendar className="mr-2 h-4 w-4" />
-                      {dateRange?.from ? (dateRange.to ? `${format(dateRange.from, "dd MMM")} - ${format(dateRange.to, "dd MMM, y")}` : format(dateRange.from, "dd MMM, y")) : "Select Range"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0"><Calendar mode="range" selected={dateRange} onSelect={setDateRange} numberOfMonths={2} /></PopoverContent>
-                </Popover>
-                {dateRange && <Button variant="ghost" size="sm" onClick={() => setDateRange(undefined)} className="h-10 text-xs">Clear</Button>}
-              </div>
-            </div>
+            searchVal={searchQuery}
+            dateRangeVal={dateRange}
+            zoneVals={zoneFilters}
+            areaVals={areaFilters}
+            roleVal={companyCategoryFilter}
 
-            <div className="flex flex-col space-y-1.5">
-              <label className="text-sm font-medium text-muted-foreground">Search Records</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Salesman name or location..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-10 border-border bg-background" />
-              </div>
-            </div>
+            zoneOptions={zoneOptions}
+            areaOptions={areaOptions}
+            roleOptions={roleOptions}
 
-            {renderSelectFilter('Company Role', companyCategoryFilter, setCompanyCategoryFilter, ['SALES', 'TECHNICAL'], false)}
-            {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
-            {renderSelectFilter('Region (Zone)', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
-
-          </div>
-          {(locationError) && <p className="text-xs text-red-500 mt-4 italic">Failed to load some locations.</p>}
+            onSearchChange={setSearchQuery}
+            onDateRangeChange={setDateRange}
+            onZoneChange={setZoneFilters}
+            onAreaChange={setAreaFilters}
+            onRoleChange={setCompanyCategoryFilter}
+          />
         </div>
+        
+        {(locationError) && <p className="text-xs text-red-500 mt-2 italic">Failed to load some locations.</p>}
 
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
           {loading && attendanceReports.length === 0 ? (
@@ -549,7 +514,7 @@ export default function SlmAttendancePage() {
               columns={salesmanAttendanceColumns}
               data={attendanceReports}
               enableRowDragging={false}
-              onRowOrderChange={handleSalesmanAttendanceOrderChange}
+              onRowOrderChange={() => {}}
             />
           )}
         </div>
@@ -557,6 +522,7 @@ export default function SlmAttendancePage() {
 
       {selectedReport && (
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+          {/* Keep your existing detailed modal exactly as it is! */}
           <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-background">
             <DialogHeader>
               <DialogTitle>Salesman Attendance Details</DialogTitle>

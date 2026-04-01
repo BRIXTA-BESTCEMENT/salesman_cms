@@ -1,66 +1,28 @@
 // src/app/dashboard/team-overview/teamOverview.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { ColumnDef } from '@tanstack/react-table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
-import { Search, Loader2 } from 'lucide-react'; // Added Icons
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { SUPER_USER_ROLES, ORG_ROLE_WEIGHTS } from '@/lib/roleHierarchy';
+import { Loader2 } from 'lucide-react'; 
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 import TeamEditModal, { TeamMember } from '@/app/dashboard/usersAndTeam/teamEdit';
-
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[200px] min-w-[150px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
-
-// Combine super users and standard organizational roles for the filter dropdown
-const allRoles = [...SUPER_USER_ROLES, ...Object.keys(ORG_ROLE_WEIGHTS)];
 
 export function TeamOverview() {
   const [teamData, setTeamData] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- Filter State ---
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRole, setSelectedRole] = useState<string>('all');
+  const debouncedSearch = useDebounce(searchQuery, 500);
+
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
 
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
@@ -70,17 +32,15 @@ export function TeamOverview() {
   const editMappingURI = `/api/dashboardPagesAPI/users-and-team/team-overview/editMapping`;
   const editDealerMappingURI = `/api/dashboardPagesAPI/users-and-team/team-overview/editDealerMapping`;
   const editMasonMappingURI = `/api/dashboardPagesAPI/users-and-team/team-overview/editMasonMapping`;
-  const currentUserURI = `/api/me`;
+  const currentUserURI = `/api/dashboardPagesAPI/users-and-team/users`;
 
   // --- 1. Data Loading ---
-  const loadTeamData = useCallback(async (roleOverride?: string) => {
+  const loadTeamData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const roleToUse = roleOverride ?? selectedRole;
+      // Fetching all data so we can filter smoothly on the client side
       const url = new URL(dataFetchURI, window.location.origin);
-      if (roleToUse && roleToUse !== 'all') url.searchParams.append('role', roleToUse);
-
       const response = await fetch(url.toString());
       if (!response.ok) throw new Error('Failed to fetch team data');
 
@@ -92,7 +52,7 @@ export function TeamOverview() {
     } finally {
       setIsLoading(false);
     }
-  }, [dataFetchURI, selectedRole]);
+  }, [dataFetchURI]);
 
   const fetchCurrentUser = useCallback(async () => {
     try {
@@ -135,7 +95,6 @@ export function TeamOverview() {
         body: JSON.stringify({ userId, reportsToId, managesIds }),
       });
       if (!res.ok) {
-        // Parse the error message from your API route if it exists
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.error || 'Failed to update hierarchy');
       }
@@ -143,8 +102,8 @@ export function TeamOverview() {
       toast.success('Hierarchy updated!');
       await loadTeamData();
     } catch (err: any) {
-      toast.error(err.message); // Now you will actually see WHY it failed!
-      throw err; // Rethrow so the modal knows to stop spinning
+      toast.error(err.message); 
+      throw err; 
     }
   }, [editMappingURI, loadTeamData]);
 
@@ -171,17 +130,52 @@ export function TeamOverview() {
   }, [editMasonMappingURI, loadTeamData]);
 
 
-  // --- 3. Table Configuration ---
-  const filteredData = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    return teamData.filter((member) => {
-      if (!q) return true;
-      const nameMatch = member.name?.toLowerCase().includes(q) || false;
-      const roleMatch = member.orgRole?.toLowerCase().includes(q) || false;
-      return nameMatch || roleMatch;
-    });
-  }, [teamData, searchQuery]);
+  // --- 3. Derived Options for Filters (Memoized) ---
+  const roleOptions = useMemo(() => {
+    const roles = new Set<string>();
+    teamData.forEach(member => { if (member.orgRole) roles.add(member.orgRole); });
+    return [
+      { label: 'All Roles', value: 'all' },
+      ...Array.from(roles).sort().map(r => ({ label: r.replace(/-/g, ' '), value: r }))
+    ];
+  }, [teamData]);
 
+  const zoneOptions = useMemo(() => {
+    const regions = new Set<string>();
+    // Note: Assuming TeamMember has a 'region' field. If it's named differently, update here.
+    teamData.forEach(member => { if ((member as any).region) regions.add((member as any).region); });
+    return Array.from(regions).sort().map(r => ({ label: r, value: r }));
+  }, [teamData]);
+
+  const areaOptions = useMemo(() => {
+    const areas = new Set<string>();
+    // Note: Assuming TeamMember has an 'area' field.
+    teamData.forEach(member => { if ((member as any).area) areas.add((member as any).area); });
+    return Array.from(areas).sort().map(a => ({ label: a, value: a }));
+  }, [teamData]);
+
+  // --- 4. Client Side Filtering Logic ---
+  const filteredData = useMemo(() => {
+    return teamData.filter(member => {
+      const fullName = (member.name || '').toLowerCase();
+      const search = debouncedSearch.toLowerCase(); 
+      const matchesSearch = !debouncedSearch || fullName.includes(search);
+
+      const matchesRole = roleFilter === 'all' || member.orgRole === roleFilter;
+      
+      // Defensively checking region/area in case TeamMember doesn't expose them cleanly
+      const memberRegion = (member as any).region;
+      const memberArea = (member as any).area;
+
+      const matchesZone = zoneFilters.length === 0 || (memberRegion && zoneFilters.includes(memberRegion));
+      const matchesArea = areaFilters.length === 0 || (memberArea && areaFilters.includes(memberArea));
+
+      return matchesSearch && matchesRole && matchesZone && matchesArea;
+    });
+  }, [teamData, debouncedSearch, roleFilter, zoneFilters, areaFilters]);
+
+
+  // --- 5. Column Definitions ---
   const columns: ColumnDef<TeamMember>[] = useMemo(() => [
     { accessorKey: 'name', header: 'Member Name' },
     { 
@@ -228,7 +222,7 @@ export function TeamOverview() {
   ], [teamData, currentUserRole, handleSaveRole, handleSaveMapping, handleSaveDealerMapping, handleSaveMasonMapping]);
 
 
-  // --- 4. Render ---
+  // --- 6. Render ---
   if (isLoading && teamData.length === 0) {
     return (
       <Card className="border border-border/30 bg-card/50 backdrop-blur-lg">
@@ -247,35 +241,31 @@ export function TeamOverview() {
       </CardHeader>
       <CardContent>
 
-        {/* --- Filter Components (Updated Style) --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6">
+        {/* --- Unified Global Filter Bar --- */}
+        <GlobalFilterBar 
+          showSearch={true}
+          showRole={true}
+          showZone={true}
+          showArea={true}
+          showDateRange={false}
+          showStatus={false}
 
-          {/* 1. Search Input */}
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Search Team</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name or role..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9"
-              />
-            </div>
-          </div>
+          searchVal={searchQuery}
+          roleVal={roleFilter}
+          zoneVals={zoneFilters}
+          areaVals={areaFilters}
 
-          {/* 2. Role Filter */}
-          {renderSelectFilter(
-            'Role',
-            selectedRole,
-            (val) => { setSelectedRole(val); loadTeamData(val); },
-            allRoles,
-            isLoading && teamData.length > 0 // Only show spinner in dropdown if refreshing
-          )}
-        </div>
-        {/* --- End Filter Components --- */}
+          roleOptions={roleOptions}
+          zoneOptions={zoneOptions}
+          areaOptions={areaOptions}
 
-        {/* Table */}
+          onSearchChange={setSearchQuery}
+          onRoleChange={setRoleFilter}
+          onZoneChange={setZoneFilters}
+          onAreaChange={setAreaFilters}
+        />
+
+        {/* --- Data Table --- */}
         {error ? (
           <div className="text-center text-red-500 py-8">Error: {error}</div>
         ) : filteredData.length === 0 ? (

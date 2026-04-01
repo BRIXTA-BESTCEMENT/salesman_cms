@@ -5,20 +5,22 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
 import {
-    Search, ShieldAlert, Factory, User, ShieldCheck,
-    Truck, Scale, Store
+    ShieldAlert, Factory, User, ShieldCheck,
+    Truck, Scale, Store, Loader2, RefreshCw
 } from 'lucide-react';
 
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// Standard Components
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search'; 
 import { AddLogisticsUserDialog } from '../logisticsIO/addUser-dialog';
+
+// UI Components
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-// Update this to match your exact Drizzle schema interface if needed
 interface LogisticsUser {
-    id: string; // Kept in interface for React keys, but not shown in columns
+    id: string; 
     userName: string;
     userRole: string;
     sourceName?: string | null;
@@ -31,35 +33,26 @@ export default function LogisticsUsersList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // --- Filters ---
+    // --- Standardized Filter State ---
     const [searchQuery, setSearchQuery] = useState('');
-    const [filterRole, setFilterRole] = useState<string>('all');
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
+    const [roleFilter, setRoleFilter] = useState<string>('all');
 
     // --- Fetch Data ---
     const fetchUsers = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const params = new URLSearchParams();
-            if (searchQuery) params.append('search', searchQuery);
-            if (filterRole && filterRole !== 'all') params.append('role', filterRole);
+            const url = new URL(API_URL, window.location.origin);
+            if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+            if (roleFilter !== 'all') url.searchParams.append('role', roleFilter);
+            url.searchParams.append('pageSize', '500');
 
-            // Requesting a large page size for a simplified client-side table, 
-            // adjust if you want proper server-side pagination.
-            params.append('pageSize', '500');
-
-            const response = await fetch(`${API_URL}?${params.toString()}`);
+            const response = await fetch(url.toString());
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
             const result = await response.json();
-
-            // The API returns { data: [...], totalCount, page, pageSize }
-            if (result.data) {
-                setUsers(result.data);
-            } else {
-                setUsers([]);
-            }
-
+            setUsers(result.data || []);
         } catch (e: any) {
             console.error('Failed to fetch logistics users:', e);
             setError(e.message || 'An unknown error occurred.');
@@ -67,16 +60,20 @@ export default function LogisticsUsersList() {
         } finally {
             setLoading(false);
         }
-    }, [searchQuery, filterRole]);
+    }, [debouncedSearchQuery, roleFilter]);
 
-    // Fetch on mount and when filters change
     useEffect(() => {
-        // Adding a slight debounce for the search query to prevent spamming the API
-        const timeoutId = setTimeout(() => {
-            fetchUsers();
-        }, 300);
-        return () => clearTimeout(timeoutId);
-    }, [searchQuery, filterRole, fetchUsers]);
+        fetchUsers();
+    }, [fetchUsers]);
+
+    // --- Filter Options Mapping ---
+    const roleOptions = useMemo(() => [
+        { label: 'All Roles', value: 'all' },
+        { label: 'Gate Operators', value: 'GATE' },
+        { label: 'Weighbridge Operators', value: 'WB' },
+        { label: 'Store Operators', value: 'STORE' },
+        { label: 'Admins', value: 'ADMIN' },
+    ], []);
 
     // --- Columns Definition ---
     const columns: ColumnDef<LogisticsUser>[] = [
@@ -99,8 +96,6 @@ export default function LogisticsUsersList() {
             accessorKey: 'userRole',
             cell: ({ row }) => {
                 const role = (row.original.userRole || '').toUpperCase();
-
-                // Define aesthetic styling based on the role
                 let badgeStyle = "bg-slate-100 text-slate-600 border-slate-200";
                 let Icon = ShieldAlert;
 
@@ -119,7 +114,7 @@ export default function LogisticsUsersList() {
                 }
 
                 return (
-                    <Badge variant="outline" className={`${badgeStyle} px-2.5 py-1`}>
+                    <Badge variant="outline" className={`${badgeStyle} px-2.5 py-1 shadow-none border-0`}>
                         <Icon className="w-3.5 h-3.5 mr-1.5" />
                         {role || 'UNKNOWN'}
                     </Badge>
@@ -146,85 +141,71 @@ export default function LogisticsUsersList() {
         }
     ];
 
-    if (error) {
-        return (
-            <div className="flex flex-col items-center justify-center py-12 text-red-500 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900">
-                <ShieldAlert className="h-8 w-8 mb-2 opacity-80" />
-                <p className="font-medium">Error: {error}</p>
-                <Button variant="outline" className="mt-4" onClick={fetchUsers}>Try Again</Button>
-            </div>
-        );
-    }
-
     return (
-        <div className="space-y-4">
-            {/* --- Filter Bar --- */}
-            <div className="bg-card border rounded-lg p-4 shadow-sm flex flex-wrap gap-4 items-end">
-                <div className="flex flex-col space-y-1.5 w-full sm:w-[300px]">
-                    <label className="text-xs font-semibold text-muted-foreground">Search Users</label>
-                    <div className="relative">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search by username or factory..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 h-9"
-                        />
+        <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+            <div className="flex-1 space-y-6 w-full">
+                
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-3xl font-bold tracking-tight">Logistics Operator Accounts</h2>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Button variant="outline" size="sm" onClick={fetchUsers} disabled={loading}>
+                            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                            Refresh
+                        </Button>
+                        <AddLogisticsUserDialog />
                     </div>
                 </div>
 
-                <div className="flex flex-col space-y-1.5 w-[200px]">
-                    <label className="text-xs font-semibold text-muted-foreground">Filter by Role</label>
-                    <Select value={filterRole} onValueChange={setFilterRole}>
-                        <SelectTrigger className="h-9">
-                            <SelectValue placeholder="All Roles" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Roles</SelectItem>
-                            <SelectItem value="GATE">Gate Operators</SelectItem>
-                            <SelectItem value="WB">Weighbridge Operators</SelectItem>
-                            <SelectItem value="STORE">Store Operators</SelectItem>
-                        </SelectContent>
-                    </Select>
+                {/* --- Unified Global Filter Bar --- */}
+                <div className="w-full relative z-50">
+                    <GlobalFilterBar 
+                        showSearch={true}
+                        showRole={true} // Using Role slot for userRole
+                        showStatus={false}
+                        showDateRange={false}
+                        showZone={false}
+                        showArea={false}
 
-                </div>
+                        searchVal={searchQuery}
+                        roleVal={roleFilter}
 
-                <Button
-                    onClick={fetchUsers}
-                    variant="secondary"
-                    size="sm"
-                    className="h-9 mb-px"
-                    disabled={loading}
-                >
-                    Refresh List
-                </Button>
+                        roleOptions={roleOptions}
 
-                <div className="mb-px border-l pl-4 border-border ml-auto">
-                    <AddLogisticsUserDialog />
-                </div>
-            </div>
-
-            {/* --- Data Table --- */}
-            {loading && users.length === 0 ? (
-                <div className="h-64 flex flex-col items-center justify-center text-muted-foreground border rounded-lg bg-card/50">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-                    <p>Loading operator accounts...</p>
-                </div>
-            ) : users.length === 0 ? (
-                <div className="h-64 flex flex-col items-center justify-center text-muted-foreground rounded-lg border border-dashed bg-card/50">
-                    <User className="h-8 w-8 mb-2 opacity-20" />
-                    <p>No logistics users found matching your filters.</p>
-                </div>
-            ) : (
-                <div className="rounded-md border bg-card shadow-sm overflow-hidden">
-                    <DataTableReusable
-                        columns={columns}
-                        data={users}
-                        enableRowDragging={false}
-                        onRowOrderChange={() => { }}
+                        onSearchChange={setSearchQuery}
+                        onRoleChange={setRoleFilter}
                     />
                 </div>
-            )}
+
+                {error ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-red-500 bg-destructive/10 rounded-lg border border-destructive/20">
+                        <ShieldAlert className="h-8 w-8 mb-2 opacity-80" />
+                        <p className="font-medium">Error: {error}</p>
+                        <Button variant="outline" className="mt-4" onClick={fetchUsers}>Try Again</Button>
+                    </div>
+                ) : (
+                    <div className="bg-card p-1 rounded-lg border border-border shadow-sm relative z-0">
+                        {loading && users.length === 0 ? (
+                            <div className="h-64 flex flex-col items-center justify-center text-muted-foreground">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                                <p>Loading operator accounts...</p>
+                            </div>
+                        ) : users.length === 0 ? (
+                            <div className="h-64 flex flex-col items-center justify-center text-muted-foreground py-12">
+                                <User className="h-8 w-8 mb-2 opacity-20" />
+                                <p>No logistics users found matching the filters.</p>
+                            </div>
+                        ) : (
+                            <DataTableReusable
+                                columns={columns}
+                                data={users}
+                                enableRowDragging={false}
+                            />
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

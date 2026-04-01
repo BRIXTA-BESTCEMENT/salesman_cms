@@ -37,9 +37,9 @@ export function DealerManagementTabs({
         {canSeeVerifyDealers && (
           <TabsTrigger value="verifyDealers">Verify Dealers</TabsTrigger>
         )}
-        {canSeeBrandMapping && (
+        {/* {canSeeBrandMapping && (
           <TabsTrigger value="dealerBrandMapping">Dealer Brand Mapping</TabsTrigger>
-        )}
+        )} */}
         {canSeeListVerifiedDealers && (
           <TabsTrigger value="ListVerifiedDealers">List Verified-Dealers</TabsTrigger>
         )}
@@ -56,11 +56,11 @@ export function DealerManagementTabs({
           <VerifyDealersPage />
         </TabsContent>
       )}
-      {canSeeBrandMapping && (
+      {/* {canSeeBrandMapping && (
         <TabsContent value="dealerBrandMapping" className="space-y-4">
           <DealerBrandMappingPage />
         </TabsContent>
-      )}
+      )} */}
       {canSeeListVerifiedDealers && (
         <TabsContent value="ListVerifiedDealers" className="space-y-4">
           <ListVerifiedDealersPage />

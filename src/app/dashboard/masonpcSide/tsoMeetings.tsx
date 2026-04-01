@@ -1,26 +1,27 @@
 // src/app/dashboard/masonpcSide/tsoMeetings.tsx
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
+
 import {
-  Search, Loader2,
-  Eye, User, Calendar, MapPin, Store, Users, ExternalLink,
+  Loader2, Eye, User, Calendar, MapPin, Store, Users, ExternalLink,
   Wallet, Gift, Camera, Image as ImageIcon
 } from 'lucide-react';
 
-// Import the reusable DataTable
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { selectTsoMeetingSchema } from '../../../../drizzle/zodSchemas';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search';   
 
 // UI Components
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,6 +36,8 @@ import {
 // API Endpoints
 const TSO_MEETINGS_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/tso-meetings`;
 const LOCATION_API_ENDPOINT = `/api/dashboardPagesAPI/users-and-team/users/user-locations`;
+
+import { selectTsoMeetingSchema } from '../../../../drizzle/zodSchemas';
 
 interface LocationsResponse {
   areas: string[];
@@ -51,39 +54,16 @@ const extendedMeetingSchema = selectTsoMeetingSchema.loose().extend({
 
 type TsoMeeting = z.infer<typeof extendedMeetingSchema>;
 
-// --- HELPER FUNCTIONS ---
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9 bg-background border-input">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
+// --- CONSTANTS ---
+const MEETING_TYPES = [
+  'Retailer Meet',
+  'Mason Meet',
+  'Architect Meet',
+  'Contractor Meet',
+  'Engineer Meet'
+];
 
+// --- HELPER FUNCTIONS ---
 const formatDate = (dateString: string | null | undefined) => {
   if (!dateString) return 'N/A';
   try {
@@ -136,28 +116,24 @@ export default function TsoMeetingsPage() {
   const [selectedReport, setSelectedReport] = useState<TsoMeeting | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  // --- Filter States ---
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [areaFilter, setAreaFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  // --- Filter Options States ---
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+
+  // --- Backend Filter Options ---
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
-
   const [locationError, setLocationError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
+  // Reset page when filters change
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, areaFilter, regionFilter]);
+  }, [debouncedSearchQuery, areaFilters, zoneFilters,]);
 
   // --- Data Fetching Functions ---
   const fetchTsoMeetings = useCallback(async () => {
@@ -169,16 +145,12 @@ export default function TsoMeetingsPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      
+      // Join arrays for multi-select
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
 
       const response = await fetch(url.toString());
-      if (!response.ok) {
-        if (response.status === 401) { router.push('/login'); return; }
-        if (response.status === 403) { router.push('/dashboard'); return; }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const result = await response.json();
       const rawData = result.data || result;
       setTotalCount(result.totalCount || 0);
@@ -196,7 +168,7 @@ export default function TsoMeetingsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [router, page, pageSize, debouncedSearchQuery, areaFilter, regionFilter]);
+  }, [router, page, pageSize, debouncedSearchQuery, areaFilters, zoneFilters]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -221,6 +193,10 @@ export default function TsoMeetingsPage() {
   useEffect(() => {
     fetchLocations();
   }, [fetchLocations]);
+
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => availableRegions.sort().map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.sort().map(a => ({ label: a, value: a })), [availableAreas]);
 
   // --- Define Columns ---
   const tsoMeetingColumns = useMemo<ColumnDef<TsoMeeting>[]>(() => [
@@ -273,8 +249,9 @@ export default function TsoMeetingsPage() {
   ], []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
+        
         <div className="flex items-center justify-between space-y-2">
           <div className="flex items-center gap-4">
              <h2 className="text-3xl font-bold tracking-tight">TSO Meetings</h2>
@@ -288,38 +265,30 @@ export default function TsoMeetingsPage() {
           />
         </div>
 
-        {/* --- Filter Components --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Creator / Dealer Search</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Name, Dealer, Market..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9 bg-background border-input"
-              />
-            </div>
-          </div>
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar 
+            showSearch={true}
+            showRole={false} 
+            showZone={true}
+            showArea={true}
+            showDateRange={false}
+            showStatus={false}
 
-          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
-          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+            searchVal={searchQuery}
+            zoneVals={zoneFilters}
+            areaVals={areaFilters}
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setAreaFilter('all');
-              setRegionFilter('all');
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-          </Button>
+            zoneOptions={zoneOptions}
+            areaOptions={areaOptions}
 
-          {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>};
+            onSearchChange={setSearchQuery}
+            onZoneChange={setZoneFilters}
+            onAreaChange={setAreaFilters}
+          />
         </div>
+
+        {locationError && <p className="text-xs text-red-500 w-full mt-2 italic">Location Filter Error: {locationError}</p>}
 
         {/* Data Table Section */}
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">

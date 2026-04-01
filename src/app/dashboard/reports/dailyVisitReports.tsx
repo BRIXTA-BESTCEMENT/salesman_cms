@@ -1,14 +1,13 @@
-// app/dashboard/reports/dailyVisitReports.tsx
+// src/app/dashboard/reports/dailyVisitReports.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
   Loader2,
-  Search,
   Eye,
   MapPin,
   User,
@@ -17,13 +16,15 @@ import {
   LogIn,
   LogOut,
 } from 'lucide-react';
-
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { Input } from '@/components/ui/input';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search'; 
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -35,7 +36,6 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { selectDailyVisitReportSchema } from '../../../../drizzle/zodSchemas';
-
 
 const extendedDailyVisitReportSchema = selectDailyVisitReportSchema.extend({
   reportDate: z.string().nullable().optional(),
@@ -76,37 +76,13 @@ const CUSTOMER_TYPE_OPTIONS = [
   'Other'
 ];
 
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9 w-full bg-background border-input">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
+const PJP_STATUS_OPTIONS = [
+  'Completed',
+  'Assigned',
+  'Approved',
+  'Verified',
+  'Failed',
+];
 
 const InfoField = ({
   label,
@@ -140,37 +116,28 @@ export default function DailyVisitReportsPage() {
   const [selectedReport, setSelectedReport] = useState<DailyVisitReport | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
 
-  // Filters state
-  const [areaFilter, setAreaFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
+  // --- Standardized Filter State ---
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
   const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
   const [pjpStatusFilter, setPjpStatusFilter] = useState('all');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  
+  // --- Backend Filter Options ---
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
 
-  const [page, setPage] = useState(0);
-  const [pageSize] = useState(500);
-
-  const PJP_STATUS_OPTIONS = [
-    'Completed',
-    'Assigned',
-    'Approved',
-    'Verified',
-    'Failed',
-  ];
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
+  // Reset page when filters change
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, areaFilter, regionFilter, customerTypeFilter, pjpStatusFilter]);
+  }, [debouncedSearchQuery, areaFilters, zoneFilters, customerTypeFilter, pjpStatusFilter, dateRange]);
 
   const fetchReports = useCallback(async () => {
     setLoading(true);
@@ -180,10 +147,20 @@ export default function DailyVisitReportsPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      
+      // Join arrays for multi-select
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
+      
       if (customerTypeFilter !== 'all') url.searchParams.append('customerType', customerTypeFilter);
       if (pjpStatusFilter !== 'all') url.searchParams.append('pjpStatus', pjpStatusFilter);
+
+      if (dateRange?.from) url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
+      if (dateRange?.to) {
+        url.searchParams.append('endDate', format(dateRange.to, 'yyyy-MM-dd'));
+      } else if (dateRange?.from) {
+        url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
+      }
 
       const response = await fetch(url.toString());
 
@@ -207,7 +184,7 @@ export default function DailyVisitReportsPage() {
     } finally {
       setLoading(false);
     }
-  }, [router, page, pageSize, debouncedSearchQuery, areaFilter, regionFilter, customerTypeFilter, pjpStatusFilter]);
+  }, [router, page, pageSize, debouncedSearchQuery, areaFilters, zoneFilters, customerTypeFilter, pjpStatusFilter, dateRange]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -228,6 +205,18 @@ export default function DailyVisitReportsPage() {
   useEffect(() => {
     fetchLocations();
   }, [fetchLocations]);
+
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => availableRegions.sort().map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.sort().map(a => ({ label: a, value: a })), [availableAreas]);
+  const customerTypeOptions = useMemo(() => [
+    { label: 'All Types', value: 'all' },
+    ...CUSTOMER_TYPE_OPTIONS.map(c => ({ label: c, value: c }))
+  ], []);
+  const pjpStatusOptions = useMemo(() => [
+    { label: 'All Statuses', value: 'all' },
+    ...PJP_STATUS_OPTIONS.map(s => ({ label: s, value: s }))
+  ], []);
 
   const isDealerVisit = (r: DailyVisitReport) => !!r.dealerType;
 
@@ -369,55 +358,51 @@ export default function DailyVisitReportsPage() {
   ], []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
 
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Daily Visit Reports
-          </h2>
-          <Badge variant="outline" className="text-base px-4 py-1">
-            Total Reports: {totalCount}
-          </Badge>
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-bold tracking-tight">Daily Visit Reports</h2>
+            <Badge variant="outline" className="text-base px-4 py-1">
+              Total Reports: {totalCount}
+            </Badge>
+          </div>
           <RefreshDataButton
             cachePrefix="daily-visit-reports"
             onRefresh={fetchReports}
           />
         </div>
 
-        {/* -------------------- FILTERS BLOCK -------------------- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Name, Dealer, or Party..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9 bg-background border-input"
-              />
-            </div>
-          </div>
-          {renderSelectFilter('Customer Type', customerTypeFilter, setCustomerTypeFilter, CUSTOMER_TYPE_OPTIONS)}
-          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
-          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
-          {renderSelectFilter('PJP Status', pjpStatusFilter, setPjpStatusFilter, PJP_STATUS_OPTIONS)}
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar 
+            showSearch={true}
+            showRole={true} // Using Role slot for Customer Type!
+            showZone={true}
+            showArea={true}
+            showDateRange={true}
+            showStatus={true} // PJP Status mapped to Status
 
+            searchVal={searchQuery}
+            roleVal={customerTypeFilter}
+            zoneVals={zoneFilters}
+            areaVals={areaFilters}
+            statusVal={pjpStatusFilter}
+            dateRangeVal={dateRange}
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setCustomerTypeFilter('all');
-              setAreaFilter('all');
-              setRegionFilter('all');
-              setPjpStatusFilter('all'); 
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-          </Button>
+            roleOptions={customerTypeOptions}
+            zoneOptions={zoneOptions}
+            areaOptions={areaOptions}
+            statusOptions={pjpStatusOptions}
+
+            onSearchChange={setSearchQuery}
+            onRoleChange={setCustomerTypeFilter}
+            onZoneChange={setZoneFilters}
+            onAreaChange={setAreaFilters}
+            onStatusChange={setPjpStatusFilter}
+            onDateRangeChange={setDateRange}
+          />
         </div>
 
         <div className="bg-card p-1 rounded-lg border shadow-sm">

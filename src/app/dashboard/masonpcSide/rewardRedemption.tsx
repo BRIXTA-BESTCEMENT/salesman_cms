@@ -4,15 +4,18 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
-import { Search, Loader2, IndianRupee, Package, CheckCircle, XCircle, Truck, Check, Eye } from 'lucide-react';
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { Loader2, IndianRupee, Package, CheckCircle, XCircle, Truck, Check, Eye } from 'lucide-react';
 
-// Import the reusable DataTable
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
+
 // UI Components
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -40,25 +43,7 @@ type RedemptionRecord = {
 };
 
 // Options
-const STATUS_OPTIONS = ['PENDING', 'PLACED', 'APPROVED', 'REJECTED', 'SHIPPED', 'DELIVERED'];
-
-// --- HELPER FUNCTIONS ---
-const renderSelectFilter = (label: string, value: string, onValueChange: (v: string) => void, options: string[]) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="h-9"><SelectValue placeholder={`Select ${label}`} /></SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
-        {options.map(opt => (
-          <SelectItem key={opt} value={opt}>
-            {opt.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
+const STATUS_OPTIONS = ['PENDING', 'APPROVED', 'REJECTED', 'SHIPPED', 'DELIVERED'];
 
 const formatDate = (dateString: string) => {
   try {
@@ -83,40 +68,81 @@ export default function RewardsRedemptionPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filter States
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState('all');
+
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
 
   // Action States
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false); // New View Modal State
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<RedemptionRecord | null>(null);
   const [actionType, setActionType] = useState<'approved' | 'rejected' | 'shipped' | 'delivered' | null>(null);
   const [fulfillmentNote, setFulfillmentNote] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // --- Data Fetching ---
+  // Inside RewardsRedemptionPage component
+
+  // 1. Update the useEffect for resetting page
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchQuery, statusFilter, dateRange]);
+
+  // 2. Update the fetchRedemptionRecords dependencies
   const fetchRedemptionRecords = useCallback(async () => {
-    setIsLoading(true); setError(null);
+    setIsLoading(true);
+    setError(null);
     try {
-      const response = await fetch(REDEMPTION_API_ENDPOINT);
+      const url = new URL(REDEMPTION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('pageSize', pageSize.toString());
+
+      // CRITICAL: Ensure we use the debounced query here
+      if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
+      if (statusFilter !== 'all') url.searchParams.append('status', statusFilter);
+
+      if (dateRange?.from) url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
+      if (dateRange?.to) {
+        url.searchParams.append('endDate', format(dateRange.to, 'yyyy-MM-dd'));
+      } else if (dateRange?.from) {
+        url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
+      }
+
+      const response = await fetch(url.toString());
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data: RedemptionRecord[] = await response.json();
-      setRedemptionRecords(data);
-      toast.success("Records updated");
+
+      const data = await response.json();
+      // Since the API now returns the filtered list directly:
+      setRedemptionRecords(Array.isArray(data) ? data : data.data);
+
+      toast.success("Log updated");
     } catch (error: any) {
-      console.error("Fetch error:", error);
       setError(error.message);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+    // Add debouncedSearchQuery to the dependency array
+  }, [page, pageSize, debouncedSearchQuery, statusFilter, dateRange]);
 
-  useEffect(() => { fetchRedemptionRecords(); }, [fetchRedemptionRecords]);
+  useEffect(() => {
+    fetchRedemptionRecords();
+  }, [fetchRedemptionRecords]);
+
+  // --- Mapped Options ---
+  const statusOptions = useMemo(() => [
+    { label: 'All Statuses', value: 'all' },
+    ...STATUS_OPTIONS.map(opt => ({
+      label: opt.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      value: opt
+    }))
+  ], []);
 
   // --- Handlers ---
-
-  // Opens the action modal (Approve/Reject/etc)
   const handleActionClick = (record: RedemptionRecord, type: 'approved' | 'rejected' | 'shipped' | 'delivered') => {
     setSelectedRecord(record);
     setActionType(type);
@@ -124,7 +150,6 @@ export default function RewardsRedemptionPage() {
     setIsActionModalOpen(true);
   };
 
-  // Opens the view modal (Details)
   const handleViewClick = (record: RedemptionRecord) => {
     setSelectedRecord(record);
     setIsViewModalOpen(true);
@@ -153,22 +178,13 @@ export default function RewardsRedemptionPage() {
 
       toast.success(`Order ${actionType} successfully!`, { id: toastId });
       setIsActionModalOpen(false);
-      fetchRedemptionRecords(); // Refresh table
+      fetchRedemptionRecords();
     } catch (e: any) {
       toast.error(e.message, { id: toastId });
     } finally {
       setIsProcessing(false);
     }
   };
-
-  // --- Filtering ---
-  const filteredRecords = useMemo(() => {
-    return redemptionRecords.filter((record) => {
-      const nameMatch = !searchQuery || record.masonName.toLowerCase().includes(searchQuery.toLowerCase());
-      const statusMatch = statusFilter === 'all' || record.status.toLowerCase() === statusFilter.toLowerCase();
-      return nameMatch && statusMatch;
-    });
-  }, [redemptionRecords, searchQuery, statusFilter]);
 
   // --- Columns ---
   const redemptionColumns: ColumnDef<RedemptionRecord>[] = [
@@ -212,7 +228,7 @@ export default function RewardsRedemptionPage() {
 
         return (
           <div className="flex gap-2 items-center">
-            {/* View Button (Always visible) */}
+            {/* View Button */}
             <Button
               variant="outline"
               size="sm"
@@ -264,27 +280,38 @@ export default function RewardsRedemptionPage() {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Rewards Redemption Log</h2>
           <RefreshDataButton
-          cachePrefix="rewards-redemption"
-          onRefresh={fetchRedemptionRecords}
-        />
+            cachePrefix="rewards-redemption"
+            onRefresh={fetchRedemptionRecords}
+          />
         </div>
 
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px]">
-            <label className="text-sm font-medium text-muted-foreground">Mason Name</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 h-9" />
-            </div>
-          </div>
-          {renderSelectFilter('Status', statusFilter, (v) => setStatusFilter(v), STATUS_OPTIONS)}
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar
+            showSearch={true}
+            showDateRange={true}
+            showRole={false}
+            showZone={false} // Hidden as no territory data exists here
+            showArea={false}
+            showStatus={true}
+
+            searchVal={searchQuery}
+            dateRangeVal={dateRange}
+            statusVal={statusFilter}
+
+            statusOptions={statusOptions}
+
+            onSearchChange={setSearchQuery}
+            onDateRangeChange={setDateRange}
+            onStatusChange={setStatusFilter}
+          />
         </div>
 
-        <div className="bg-card p-6 rounded-lg border border-border">
+        <div className="bg-card p-1 rounded-lg border border-border">
           {isLoading ? (
             <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>
           ) : (
-            <DataTableReusable columns={redemptionColumns} data={filteredRecords} enableRowDragging={false} />
+            <DataTableReusable columns={redemptionColumns} data={redemptionRecords} enableRowDragging={false} />
           )}
         </div>
       </div>
@@ -367,7 +394,6 @@ export default function RewardsRedemptionPage() {
                     <span className="text-sm font-medium">Name:</span>
                     <span className="text-sm">{selectedRecord.masonName}</span>
                   </div>
-                  {/* You could add Mason Phone here if available in API response */}
                 </div>
               </div>
 

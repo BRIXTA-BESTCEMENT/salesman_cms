@@ -1,23 +1,27 @@
 // src/app/dashboard/masonpcSide/bagsLift.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import {
- MapPin, Search, Loader2, Check, X, Eye, ExternalLink, CalendarIcon
-} from 'lucide-react';
 import { format } from 'date-fns';
 import { DateRange } from "react-day-picker";
+import {
+ MapPin, Loader2, Check, X, Eye, ExternalLink
+} from 'lucide-react';
 
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
+
 import { selectBagLiftSchema } from '../../../../drizzle/zodSchemas'; 
 
+// UI Components
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import {
@@ -25,9 +29,6 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { IconCalendar } from '@tabler/icons-react';
 
 const BAG_LIFT_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/bags-lift`;
 const BAG_LIFT_ACTION_API_BASE = `/api/dashboardPagesAPI/masonpc-side/bags-lift`;
@@ -62,38 +63,6 @@ const formatIndianNumber = (num: number) => {
   return new Intl.NumberFormat('en-IN').format(num);
 };
 
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9 w-full bg-background border-input">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
-
 const formatDate = (dateString: string | null | undefined) => {
   if (!dateString) return 'N/A';
   try {
@@ -122,23 +91,24 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 export default function BagsLiftPage() {
-  const [bagLiftRecords, setBagLiftRecords] = React.useState<BagLiftRecord[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [bagLiftRecords, setBagLiftRecords] = useState<BagLiftRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [page, setPage] = useState(0);
   const [pageSize] = useState(500);
   const [totalCount, setTotalCount] = useState(0);
 
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [areaFilter, setAreaFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  const statusOptions = ['pending', 'approved', 'rejected'];
-
+  // --- Backend Filter Options ---
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
@@ -149,19 +119,13 @@ export default function BagsLiftPage() {
   const [selectedRecord, setSelectedRecord] = useState<BagLiftRecord | null>(null);
   const [isUpdatingId, setIsUpdatingId] = useState<string | null>(null);
 
-  // Debounce Search
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
   // Reset page when filters change
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, statusFilter, areaFilter, regionFilter, dateRange]);
+  }, [debouncedSearchQuery, statusFilter, areaFilters, zoneFilters, dateRange]);
 
 
-  const fetchBagLiftRecords = React.useCallback(async () => {
+  const fetchBagLiftRecords = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -171,8 +135,10 @@ export default function BagsLiftPage() {
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
       if (statusFilter !== 'all') url.searchParams.append('status', statusFilter);
-      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      
+      // Join arrays for multi-select
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
 
       if (dateRange?.from) url.searchParams.append('fromDate', format(dateRange.from, "yyyy-MM-dd"));
       if (dateRange?.to) {
@@ -182,19 +148,6 @@ export default function BagsLiftPage() {
       }
 
       const response = await fetch(url.toString());
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error('You are not authenticated. Redirecting to login.');
-          window.location.href = '/login';
-          return;
-        }
-        if (response.status === 403) {
-          toast.error('You do not have permission to access this page. Redirecting.');
-          window.location.href = '/dashboard';
-          return;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       const result = await response.json();
       const data: any[] = result.data || result;
       
@@ -214,7 +167,7 @@ export default function BagsLiftPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, statusFilter, areaFilter, regionFilter, dateRange]);
+  }, [page, pageSize, debouncedSearchQuery, statusFilter, areaFilters, zoneFilters, dateRange]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -235,13 +188,23 @@ export default function BagsLiftPage() {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchBagLiftRecords();
   }, [fetchBagLiftRecords]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLocations();
   }, [fetchLocations]);
+
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => availableRegions.sort().map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.sort().map(a => ({ label: a, value: a })), [availableAreas]);
+  const statusOptions = useMemo(() => [
+    { label: 'All Statuses', value: 'all' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Approved', value: 'approved' },
+    { label: 'Rejected', value: 'rejected' }
+  ], []);
 
   const openViewModal = (record: BagLiftRecord) => {
     setSelectedRecord(record);
@@ -395,8 +358,8 @@ export default function BagsLiftPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -445,61 +408,35 @@ export default function BagsLiftPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Search Mason / Dealer</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Name or Phone..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9 bg-background border-input"
-              />
-            </div>
-          </div>
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar 
+            showSearch={true}
+            showRole={false}
+            showZone={true}
+            showArea={true}
+            showDateRange={true}
+            showStatus={true}
 
-          <div className="flex flex-col space-y-1.5 w-full sm:w-[280px]">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Purchase Date</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-9 bg-background border-input", !dateRange && "text-muted-foreground")}>
-                  <IconCalendar className="mr-2 h-4 w-4" />
-                  {dateRange?.from ? (
-                    dateRange.to ? (
-                      <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
-                    ) : (format(dateRange.from, "LLL dd, y"))
-                  ) : (
-                    <span>Select Date Range</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="range" defaultMonth={dateRange?.from || new Date()} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
-              </PopoverContent>
-            </Popover>
-          </div>
+            searchVal={searchQuery}
+            dateRangeVal={dateRange}
+            zoneVals={zoneFilters}
+            areaVals={areaFilters}
+            statusVal={statusFilter}
 
-          {renderSelectFilter('Status', statusFilter, setStatusFilter, statusOptions)}
-          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
-          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+            zoneOptions={zoneOptions}
+            areaOptions={areaOptions}
+            statusOptions={statusOptions}
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setStatusFilter('all');
-              setAreaFilter('all');
-              setRegionFilter('all');
-              setDateRange(undefined);
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-          </Button>
-
-          {locationError && <p className="text-xs text-red-500 w-full mt-2">Location Filter Error: {locationError}</p>}
+            onSearchChange={setSearchQuery}
+            onDateRangeChange={setDateRange}
+            onZoneChange={setZoneFilters}
+            onAreaChange={setAreaFilters}
+            onStatusChange={setStatusFilter}
+          />
         </div>
+
+        {locationError && <p className="text-xs text-red-500 w-full mt-2 italic">Location Filter Error: {locationError}</p>}
 
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
           {isLoading && bagLiftRecords.length === 0 ? (

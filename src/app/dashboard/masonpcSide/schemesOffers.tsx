@@ -5,15 +5,15 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import {
-  Search, Loader2, IndianRupee, Eye,
-} from 'lucide-react';
+import { Search, Loader2, IndianRupee, Eye } from 'lucide-react';
 
 // Reusable Components
 import { DataTableReusable } from '@/components/data-table-reusable';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search'; 
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AddSchemesRewards } from '@/app/dashboard/masonpcSide/add-schemes-rewards';
@@ -33,7 +33,6 @@ type RewardRecord = {
 };
 
 type SchemeOffer = z.infer<typeof selectSchemesOffersSchema>;
-
 type CategoryOption = { id: number; name: string; };
 
 // API Endpoints
@@ -53,7 +52,11 @@ export default function SchemesRewardsManagement() {
 
   // --- Filter States ---
   const [schemeSearch, setSchemeSearch] = useState('');
+  const debouncedSchemeSearch = useDebounce(schemeSearch, 500);
+
   const [rewardSearch, setRewardSearch] = useState('');
+  const debouncedRewardSearch = useDebounce(rewardSearch, 500);
+  
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -76,7 +79,6 @@ export default function SchemesRewardsManagement() {
       setSchemes(schemesData);
       setRewards(rewardsData);
       setCategories(categoriesData.filter((c: any) => c.name));
-      toast.success("Dashboard data synchronized");
     } catch (err: any) {
       setError(err.message);
       toast.error("Error syncing data");
@@ -100,24 +102,37 @@ export default function SchemesRewardsManagement() {
     return { text: 'Active', color: 'bg-green-100 text-green-700' };
   };
 
+  // --- Mapped Options for Filter Bar ---
+  const categoryOptions = useMemo(() => [
+    { label: 'All Categories', value: 'all' },
+    ...categories.map(c => ({ label: c.name, value: c.name }))
+  ], [categories]);
+
+  const statusOptions = useMemo(() => [
+    { label: 'All Statuses', value: 'all' },
+    { label: 'Active', value: 'Active' },
+    { label: 'Inactive', value: 'Inactive' },
+    { label: 'Low Stock', value: 'Low Stock' },
+    { label: 'Out of Stock', value: 'Out of Stock' }
+  ], []);
+
   // --- Memoized Filtered Data ---
   const filteredSchemes = useMemo(() => {
-    return schemes.filter(s => s.name.toLowerCase().includes(schemeSearch.toLowerCase()));
-  }, [schemes, schemeSearch]);
+    return schemes.filter(s => s.name.toLowerCase().includes(debouncedSchemeSearch.toLowerCase()));
+  }, [schemes, debouncedSchemeSearch]);
 
   const filteredRewards = useMemo(() => {
+    const search = debouncedRewardSearch.toLowerCase();
     return rewards.filter(r => {
-      console.log('Reward:', r.name, 'Schemes:', r.schemeIds, 'Selected:', selectedScheme?.id);
-      const matchesScheme = !selectedScheme ||
-        (r.schemeIds && r.schemeIds.some(id => id.toLowerCase() === selectedScheme.id.toLowerCase()));
-      const matchesSearch = r.name.toLowerCase().includes(rewardSearch.toLowerCase());
+      const matchesScheme = !selectedScheme || (r.schemeIds && r.schemeIds.some(id => id.toLowerCase() === selectedScheme.id.toLowerCase()));
+      const matchesSearch = !search || r.name.toLowerCase().includes(search);
       const matchesCategory = categoryFilter === 'all' || r.categoryName === categoryFilter;
       const statusData = getRewardStatus(r.isActive, r.stock);
       const matchesStatus = statusFilter === 'all' || statusData.text === statusFilter;
 
       return matchesScheme && matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [rewards, rewardSearch, categoryFilter, statusFilter, selectedScheme]);
+  }, [rewards, debouncedRewardSearch, categoryFilter, statusFilter, selectedScheme]);
 
   // --- Column Definitions ---
   const schemeColumns: ColumnDef<SchemeOffer>[] = [
@@ -128,18 +143,13 @@ export default function SchemesRewardsManagement() {
       id: "actions",
       header: "Action",
       cell: ({ row }) => {
-        // Compare current row ID with selected scheme ID
         const isCurrentlySelected = selectedScheme?.id === row.original.id;
-
         return (
           <Button
             variant={isCurrentlySelected ? "default" : "outline"}
             size="sm"
             className={isCurrentlySelected ? "bg-[#facc15] text-black hover:bg-[#eab308]" : ""}
-            onClick={() => {
-              // Toggle logic: If clicking the one already selected, clear it (null)
-              setSelectedScheme(isCurrentlySelected ? null : row.original);
-            }}
+            onClick={() => setSelectedScheme(isCurrentlySelected ? null : row.original)}
           >
             <Eye className="w-4 h-4 mr-2" />
             {isCurrentlySelected ? "Viewing" : "View Rewards"}
@@ -150,11 +160,7 @@ export default function SchemesRewardsManagement() {
   ];
 
   const rewardColumns: ColumnDef<RewardRecord>[] = [
-    {
-      accessorKey: "name",
-      header: "Reward Name",
-      enableSorting: true,
-    },
+    { accessorKey: "name", header: "Reward Name", enableSorting: true },
     {
       accessorKey: "categoryName",
       header: "Category",
@@ -175,15 +181,14 @@ export default function SchemesRewardsManagement() {
       enableSorting: true,
     },
     {
-      accessorKey: "createdAt",
-      header: "Created On",
-      cell: ({ row }) => formatDate(row.original.createdAt)
+      id: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = getRewardStatus(row.original.isActive, row.original.stock);
+        return <Badge variant="outline" className={`${status.color} shadow-none border-0`}>{status.text}</Badge>
+      }
     },
-    {
-      accessorKey: "updatedAt",
-      header: "Last Update",
-      cell: ({ row }) => formatDate(row.original.updatedAt)
-    },
+    { accessorKey: "createdAt", header: "Created On", cell: ({ row }) => formatDate(row.original.createdAt) },
   ];
 
   if (loading) return (
@@ -200,8 +205,6 @@ export default function SchemesRewardsManagement() {
           <h1 className="text-3xl font-bold">Marketing & Rewards</h1>
           <p className="text-muted-foreground">Manage schemes and their associated reward items</p>
         </div>
-
-        {/* CONSOLIDATED ADD SCHEMES/REWARDS BUTTON */}
         <AddSchemesRewards onSuccess={fetchData} />
       </div>
 
@@ -232,8 +235,8 @@ export default function SchemesRewardsManagement() {
       {/* Bottom Table: Rewards */}
       {selectedScheme && (
         <Card className={selectedScheme ? "border-primary/50 shadow-md" : ""}>
-          <CardHeader className="pb-3">
-            <div className="flex flex-col md:flex-row justify-between gap-4">
+          <CardHeader className="pb-3 border-b mb-4">
+            <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
               <div>
                 <CardTitle className="flex items-center gap-2">
                   {selectedScheme ? (
@@ -246,36 +249,32 @@ export default function SchemesRewardsManagement() {
                   </Button>
                 )}
               </div>
-
-              <div className="flex flex-wrap gap-2">
-                <div className="relative w-48">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search rewards..."
-                    className="pl-8 h-9"
-                    value={rewardSearch}
-                    onChange={(e) => setRewardSearch(e.target.value)}
-                  />
-                </div>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-[140px] h-9"><SelectValue placeholder="Category" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map(c => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[140px] h-9"><SelectValue placeholder="Status" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </CardHeader>
           <CardContent>
+            
+            <div className="mb-4">
+              <GlobalFilterBar 
+                showSearch={true}
+                showRole={true} // Used for Category
+                showStatus={true}
+                showDateRange={false}
+                showZone={false}
+                showArea={false}
+
+                searchVal={rewardSearch}
+                roleVal={categoryFilter}
+                statusVal={statusFilter}
+
+                roleOptions={categoryOptions}
+                statusOptions={statusOptions}
+
+                onSearchChange={setRewardSearch}
+                onRoleChange={setCategoryFilter}
+                onStatusChange={setStatusFilter}
+              />
+            </div>
+
             <DataTableReusable columns={rewardColumns} data={filteredRewards} />
           </CardContent>
         </Card>

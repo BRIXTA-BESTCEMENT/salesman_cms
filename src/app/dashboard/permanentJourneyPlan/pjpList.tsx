@@ -1,34 +1,30 @@
 // src/app/dashboard/permanentJourneyPlan/pjpList.tsx
 'use client';
 
-import React from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
 import {
   Eye, MapPin, User, Calendar as CalendarIcon, Target, Users, Route, ClipboardList, Loader2
 } from 'lucide-react';
-import { IconCalendar } from '@tabler/icons-react';
-import { format } from "date-fns";
-import { DateRange } from "react-day-picker";
-import { Calendar } from "@/components/ui/calendar";
 
 // Shadcn UI Components
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Reusable Components
-import { cn } from '@/lib/utils';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search'; 
 import { selectPermanentJourneyPlanSchema } from '../../../../drizzle/zodSchemas';
 
 const extendedPjpSchema = selectPermanentJourneyPlanSchema.extend({
@@ -62,55 +58,31 @@ const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: str
 );
 
 export default function PJPListPage() {
-  const [pjps, setPjps] = React.useState<PermanentJourneyPlan[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const [pjps, setPjps] = useState<PermanentJourneyPlan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Pagination & Backend Meta
-  const [page, setPage] = React.useState(0);
-  const [pageSize] = React.useState(500);
-  const [totalCount, setTotalCount] = React.useState(0);
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
 
-  // Filters
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
-  const [selectedStatusFilter, setSelectedStatusFilter] = React.useState<string>('all');
-  const [selectedSalesmanFilter, setSelectedSalesmanFilter] = React.useState<string>('all');
-
-  // Filter Options
-  const [salesmen, setSalesmen] = React.useState<{id: number, firstName: string | null, lastName: string | null, email: string}[]>([]);
-  const [statuses, setStatuses] = React.useState<string[]>([]);
+  // --- Standardized Filter State ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   // Modal State
-  const [selectedPjp, setSelectedPjp] = React.useState<PermanentJourneyPlan | null>(null);
-  const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
-
-  // Debounce search
-  React.useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+  const [selectedPjp, setSelectedPjp] = useState<PermanentJourneyPlan | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   // Reset page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, selectedStatusFilter, selectedSalesmanFilter, dateRange]);
+  }, [debouncedSearchQuery, dateRange]);
 
-  const fetchFilters = React.useCallback(async () => {
-    try {
-      const res = await fetch(`/api/dashboardPagesAPI/permanent-journey-plan?action=fetch_filters`);
-      if (res.ok) {
-        const data = await res.json();
-        setSalesmen(data.salesmen || []);
-        setStatuses(data.statuses || []);
-      }
-    } catch (e) {
-      console.error("Failed to load PJP filters", e);
-    }
-  }, []);
-
-  const fetchPjps = React.useCallback(async () => {
+  const fetchPjps = useCallback(async () => {
     setLoading(true);
     try {
       const url = new URL(`/api/dashboardPagesAPI/permanent-journey-plan`, window.location.origin);
@@ -119,8 +91,6 @@ export default function PJPListPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (selectedSalesmanFilter !== 'all') url.searchParams.append('salesmanId', selectedSalesmanFilter);
-      if (selectedStatusFilter !== 'all') url.searchParams.append('status', selectedStatusFilter);
       
       if (dateRange?.from) url.searchParams.append('fromDate', format(dateRange.from, "yyyy-MM-dd"));
       if (dateRange?.to) {
@@ -130,14 +100,12 @@ export default function PJPListPage() {
       }
 
       const response = await fetch(url.toString());
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
       const result = await response.json();
       const data: any[] = result.data || result;
       
       setTotalCount(result.totalCount || 0);
 
-      const validatedData = data.map((item) => {
+      const validatedData = data.map((item: any) => {
         const validated = extendedPjpSchema.parse(item);
         return { ...validated, id: validated.id.toString() };
       });
@@ -148,13 +116,12 @@ export default function PJPListPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, selectedSalesmanFilter, selectedStatusFilter, dateRange]);
+  }, [page, pageSize, debouncedSearchQuery, dateRange]);
 
-  React.useEffect(() => { fetchFilters(); }, [fetchFilters]);
-  React.useEffect(() => { fetchPjps(); }, [fetchPjps]);
+  useEffect(() => { fetchPjps(); }, [fetchPjps]);
 
   // Summary Stats based on loaded subset (reflecting current active filters/page)
-  const stats = React.useMemo(() => {
+  const stats = useMemo(() => {
     const todayStr = new Date().toISOString().split('T')[0];
 
     const todaysPlans = pjps.filter(p => {
@@ -219,8 +186,8 @@ export default function PJPListPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
              <h2 className="text-3xl font-bold tracking-tight">Weekly Technical PJPs</h2>
@@ -292,57 +259,22 @@ export default function PJPListPage() {
           </div>
         </div>
 
-        {/* --- Filters --- */}
-        <div className="flex flex-wrap gap-4 p-5 rounded-xl bg-card border shadow-sm items-end">
-          <div className="flex flex-col space-y-1.5 w-full md:w-[250px]">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Search Plans</label>
-            <Input placeholder="Salesman or area..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-background" />
-          </div>
-          
-          <div className="flex flex-col space-y-1.5 w-full sm:w-[300px]">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Filter by Date</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-9 bg-background", !dateRange && "text-muted-foreground")}>
-                  <IconCalendar className="mr-2 h-4 w-4" />
-                  {dateRange?.from ? (
-                    dateRange.to ? (
-                      <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
-                    ) : (format(dateRange.from, "LLL dd, y"))
-                  ) : (
-                    <span>Select Date Range</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="range" defaultMonth={dateRange?.from || new Date()} selected={dateRange} onSelect={(range) => setDateRange(range)} numberOfMonths={2} />
-              </PopoverContent>
-            </Popover>
-          </div>
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar 
+            showSearch={true}
+            showRole={false} 
+            showZone={false}
+            showArea={false}
+            showDateRange={true}
+            showStatus={false} 
 
-          <div className="flex flex-col space-y-1.5 w-[220px]">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Salesman</label>
-            <Select value={selectedSalesmanFilter} onValueChange={setSelectedSalesmanFilter}>
-              <SelectTrigger className="bg-background"><SelectValue placeholder="All" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Salesmen</SelectItem>
-                {salesmen.map(s => <SelectItem key={s.id} value={s.id.toString()}>{`${s.firstName || ''} ${s.lastName || ''}`.trim() || s.email}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+            searchVal={searchQuery}
+            dateRangeVal={dateRange}
 
-          <div className="flex flex-col space-y-1.5 w-40">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Status</label>
-            <Select value={selectedStatusFilter} onValueChange={setSelectedStatusFilter}>
-              <SelectTrigger className="bg-background"><SelectValue placeholder="All" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {statuses.map(st => <SelectItem key={st} value={st}>{st}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button variant="ghost" className="text-muted-foreground" onClick={() => { setSearchQuery(""); setSelectedSalesmanFilter("all"); setSelectedStatusFilter("all"); setDateRange(undefined); }}>Clear</Button>
+            onSearchChange={setSearchQuery}
+            onDateRangeChange={setDateRange}
+          />
         </div>
 
         <div className="bg-card p-1 rounded-lg border shadow-sm">

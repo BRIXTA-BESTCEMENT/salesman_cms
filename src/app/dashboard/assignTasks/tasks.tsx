@@ -5,30 +5,28 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { ColumnDef } from '@tanstack/react-table';
 import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 // Icons
-import { Eye, MapPin, User, Calendar as CalendarIcon, Target, Route, Phone, ClipboardList, Clock, Hash, Loader2, Search } from 'lucide-react';
-import { IconCalendar } from "@tabler/icons-react";
+import { Eye, MapPin, User, Calendar as CalendarIcon, Target, Route, Phone, ClipboardList, Clock, Hash, Loader2 } from 'lucide-react';
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { DataTableReusable } from '@/components/data-table-reusable';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+
+// Standard Components
+import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search'; 
+import { AssignTasksDialog } from "@/app/dashboard/assignTasks/assign-tasks-dialog";
 
 // Types & Schemas
 import { selectDailyTaskSchema } from '../../../../drizzle/zodSchemas';
 import { z } from "zod";
-import { AssignTasksDialog } from "@/app/dashboard/assignTasks/assign-tasks-dialog";
 
 type Salesman = { id: number; firstName: string | null; lastName: string | null; email: string; salesmanLoginId: string | null; area: string | null; region: string | null; };
 type DailyTaskRecord = z.infer<typeof selectDailyTaskSchema> & { salesmanName?: string; relatedDealerName?: string; assignedByUserName?: string };
@@ -46,18 +44,18 @@ export default function TasksListPage() {
   // Data States
   const [tasks, setTasks] = useState<DailyTaskRecord[]>([]);
   const [salesmen, setSalesmen] = useState<Salesman[]>([]);
-  const [uniqueZones, setUniqueZones] = useState<string[]>([]);
-  const [uniqueAreas, setUniqueAreas] = useState<string[]>([]);
-  const [uniqueStatuses, setUniqueStatuses] = useState<string[]>([]);
+  const [availableZones, setAvailableZones] = useState<string[]>([]);
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+  const [availableStatuses, setAvailableStatuses] = useState<string[]>([]);
 
-  // Filter States
-  const [tableSearchQuery, setTableSearchQuery] = useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [tableDateRange, setTableDateRange] = useState<DateRange | undefined>();
-  const [tableSelectedZone, setTableSelectedZone] = useState<string>("all");
-  const [tableSelectedArea, setTableSelectedArea] = useState<string>("all");
-  const [tableSelectedSalesman, setTableSelectedSalesman] = useState<string>("all");
-  const [tableSelectedStatus, setTableSelectedStatus] = useState<string>("all");
+  // --- Standardized Filter State ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   // Pagination & Loading
   const [loading, setLoading] = useState(true);
@@ -71,16 +69,10 @@ export default function TasksListPage() {
 
   const apiURI = `/api/dashboardPagesAPI/assign-tasks`;
 
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(tableSearchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [tableSearchQuery]);
-
   // Reset page when any filter changes
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, tableSelectedZone, tableSelectedArea, tableSelectedSalesman, tableSelectedStatus, tableDateRange]);
+  }, [debouncedSearchQuery, zoneFilters, areaFilters, statusFilter, dateRange]);
 
   const fetchFilters = useCallback(async () => {
     try {
@@ -88,9 +80,9 @@ export default function TasksListPage() {
       if (response.ok) {
         const data = await response.json();
         setSalesmen(data.salesmen || []);
-        setUniqueZones(data.uniqueZones || []);
-        setUniqueAreas(data.uniqueAreas || []);
-        setUniqueStatuses(data.uniqueStatuses || []);
+        setAvailableZones(data.uniqueZones || []);
+        setAvailableAreas(data.uniqueAreas || []);
+        setAvailableStatuses(data.uniqueStatuses || []);
       }
     } catch (e) {
       console.error("Failed to load task filters", e);
@@ -105,19 +97,15 @@ export default function TasksListPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (tableSelectedZone !== 'all') url.searchParams.append('zone', tableSelectedZone);
-      if (tableSelectedArea !== 'all') url.searchParams.append('area', tableSelectedArea);
-      if (tableSelectedSalesman !== 'all') url.searchParams.append('salesmanId', tableSelectedSalesman);
-      if (tableSelectedStatus !== 'all') url.searchParams.append('status', tableSelectedStatus);
+      if (zoneFilters.length > 0) url.searchParams.append('zone', zoneFilters.join(','));
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (statusFilter !== 'all') url.searchParams.append('status', statusFilter);
       
-      if (tableDateRange?.from) {
-        url.searchParams.append('fromDate', format(tableDateRange.from, "yyyy-MM-dd"));
-      }
-      if (tableDateRange?.to) {
-        url.searchParams.append('toDate', format(tableDateRange.to, "yyyy-MM-dd"));
-      } else if (tableDateRange?.from) {
-        // If only "from" is selected, filter strictly for that day
-        url.searchParams.append('toDate', format(tableDateRange.from, "yyyy-MM-dd"));
+      if (dateRange?.from) url.searchParams.append('fromDate', format(dateRange.from, "yyyy-MM-dd"));
+      if (dateRange?.to) {
+        url.searchParams.append('toDate', format(dateRange.to, "yyyy-MM-dd"));
+      } else if (dateRange?.from) {
+        url.searchParams.append('toDate', format(dateRange.from, "yyyy-MM-dd"));
       }
 
       const response = await fetch(url.toString());
@@ -131,7 +119,7 @@ export default function TasksListPage() {
     } finally {
       setLoading(false);
     }
-  }, [apiURI, page, pageSize, debouncedSearchQuery, tableSelectedZone, tableSelectedArea, tableSelectedSalesman, tableSelectedStatus, tableDateRange]);
+  }, [apiURI, page, pageSize, debouncedSearchQuery, zoneFilters, areaFilters, statusFilter, dateRange]);
 
   useEffect(() => {
     fetchFilters();
@@ -141,6 +129,13 @@ export default function TasksListPage() {
     fetchTasks();
   }, [fetchTasks]);
 
+  const zoneOptions = useMemo(() => availableZones.sort().map(z => ({ label: z, value: z })), [availableZones]);
+  const areaOptions = useMemo(() => availableAreas.sort().map(a => ({ label: a, value: a })), [availableAreas]);
+  const statusOptions = useMemo(() => [
+    { label: 'All Statuses', value: 'all' },
+    ...availableStatuses.map(st => ({ label: st, value: st }))
+  ], [availableStatuses]);
+
   const taskColumns: ColumnDef<DailyTaskRecord>[] = [
     { accessorKey: 'salesmanName', header: 'Salesman' },
     { 
@@ -148,7 +143,8 @@ export default function TasksListPage() {
       header: 'Date', 
       cell: ({ row }) => { 
         const dateStr = row.original.taskDate; 
-        return dateStr ? format(new Date(dateStr), "MMM dd, yyyy") : "N/A"; 
+        if (!dateStr) return "N/A";
+        return format(parseISO(dateStr), "dd-MM-yyyy"); 
       } 
     },
     { 
@@ -202,129 +198,68 @@ export default function TasksListPage() {
   ];
 
   return (
-    <div className="container mx-auto p-4 flex flex-col min-h-screen">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">Weekly Sales PJPs</h1>
-            <Badge variant="outline" className="text-base px-4 py-1">Total Pjps: {totalCount}</Badge>
-        </div>
-        <div className="flex items-center gap-3">
-          <RefreshDataButton cachePrefix="assign-tasks" onRefresh={fetchTasks} />
-          {/* <Button onClick={() => setIsFormOpen(true)}>+ New PJP Assignment</Button> */}
-        </div>
-      </div>
-
-      <AssignTasksDialog 
-        isOpen={isFormOpen} 
-        setIsOpen={setIsFormOpen} 
-        salesmen={salesmen} 
-        uniqueZones={uniqueZones} 
-        uniqueAreas={uniqueAreas} 
-        onSuccess={fetchTasks} 
-      /> 
-
-      {/* --- COHESIVE FILTER BAR UI --- */}
-      <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
-        
-        <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-          <label className="text-xs font-semibold text-muted-foreground uppercase">Search Tasks</label>
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Salesman or dealer..." 
-              value={tableSearchQuery} 
-              onChange={(e) => setTableSearchQuery(e.target.value)} 
-              className="pl-8 h-9 bg-background border-input"
-            />
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-bold tracking-tight">Weekly Sales PJPs</h1>
+              <Badge variant="outline" className="text-base px-4 py-1">Total Pjps: {totalCount}</Badge>
+          </div>
+          <div className="flex items-center gap-3">
+            <RefreshDataButton cachePrefix="assign-tasks" onRefresh={fetchTasks} />
           </div>
         </div>
-        
-        <div className="flex flex-col space-y-1 w-full sm:w-[260px]">
-          <label className="text-xs font-semibold text-muted-foreground uppercase">Filter by Date</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-9 bg-background", !tableDateRange && "text-muted-foreground")}>
-                <IconCalendar className="mr-2 h-4 w-4" />
-                {tableDateRange?.from ? (tableDateRange.to ? (<>{format(tableDateRange.from, "LLL dd, y")} - {format(tableDateRange.to, "LLL dd, y")}</>) : (format(tableDateRange.from, "LLL dd, y"))) : (<span>Select Date Range</span>)}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start"><Calendar mode="range" defaultMonth={tableDateRange?.from || new Date()} selected={tableDateRange} onSelect={setTableDateRange} numberOfMonths={2} /></PopoverContent>
-          </Popover>
-        </div>
-        
-        <div className="flex flex-col space-y-1 w-[140px]">
-          <label className="text-xs font-semibold text-muted-foreground uppercase">Zone</label>
-          <Select value={tableSelectedZone} onValueChange={(val) => { setTableSelectedZone(val); setTableSelectedArea("all"); }}>
-            <SelectTrigger className="h-9 bg-background border-input"><SelectValue placeholder="All" /></SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All Zones</SelectItem>
-                {uniqueZones.map(z => (<SelectItem key={z} value={z}>{z}</SelectItem>))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex flex-col space-y-1 w-[140px]">
-          <label className="text-xs font-semibold text-muted-foreground uppercase">Area</label>
-          <Select value={tableSelectedArea} onValueChange={setTableSelectedArea}>
-            <SelectTrigger className="h-9 bg-background border-input"><SelectValue placeholder="All" /></SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All Areas</SelectItem>
-                {uniqueAreas.map(a => (<SelectItem key={a} value={a}>{a}</SelectItem>))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex flex-col space-y-1 w-48">
-          <label className="text-xs font-semibold text-muted-foreground uppercase">Salesman</label>
-          <Select value={tableSelectedSalesman} onValueChange={setTableSelectedSalesman}>
-            <SelectTrigger className="h-9 bg-background border-input"><SelectValue placeholder="All" /></SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All Salesmen</SelectItem>
-                {salesmen.map(s => (<SelectItem key={s.id} value={s.id.toString()}>{`${s.firstName || ''} ${s.lastName || ''}`.trim() || s.email}</SelectItem>))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex flex-col space-y-1 w-[140px]">
-          <label className="text-xs font-semibold text-muted-foreground uppercase">Status</label>
-          <Select value={tableSelectedStatus} onValueChange={setTableSelectedStatus}>
-            <SelectTrigger className="h-9 bg-background border-input"><SelectValue placeholder="All" /></SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {uniqueStatuses.map(st => (<SelectItem key={st} value={st}>{st}</SelectItem>))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <Button 
-          variant="ghost" 
-          className="mb-0.5 text-muted-foreground hover:text-destructive" 
-          onClick={() => { 
-            setTableSearchQuery(""); 
-            setTableDateRange(undefined); 
-            setTableSelectedZone("all"); 
-            setTableSelectedArea("all"); 
-            setTableSelectedSalesman("all"); 
-            setTableSelectedStatus("all"); 
-          }}
-        >
-          Clear Filters
-        </Button>
-      </div>
 
-      <div className="bg-card p-1 rounded-lg border mt-6 flex-1 shadow-sm">
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-             <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
-             <p className="text-muted-foreground">Loading tasks...</p>
-          </div>
-        ) : tasks.length === 0 ? (
-          <div className="text-center text-muted-foreground py-8">
-             No tasks found matching the selected filters.
-          </div>
-        ) : (
-          <DataTableReusable columns={taskColumns} data={tasks} enableRowDragging={false} onRowOrderChange={() => { }} />
-        )}
+        <AssignTasksDialog 
+          isOpen={isFormOpen} 
+          setIsOpen={setIsFormOpen} 
+          salesmen={salesmen} 
+          uniqueZones={availableZones} 
+          uniqueAreas={availableAreas} 
+          onSuccess={fetchTasks} 
+        /> 
+
+        <div className="w-full">
+          <GlobalFilterBar 
+            showSearch={true}
+            showDateRange={true}
+            showZone={true}
+            showArea={true}
+            showRole={false} // Hidden: Dropdown not required as Search handles salesman
+            showStatus={true} 
+
+            searchVal={searchQuery}
+            dateRangeVal={dateRange}
+            zoneVals={zoneFilters}
+            areaVals={areaFilters}
+            statusVal={statusFilter}
+
+            zoneOptions={zoneOptions}
+            areaOptions={areaOptions}
+            statusOptions={statusOptions}
+
+            onSearchChange={setSearchQuery}
+            onDateRangeChange={setDateRange}
+            onZoneChange={setZoneFilters}
+            onAreaChange={setAreaFilters}
+            onStatusChange={setStatusFilter}
+          />
+        </div>
+
+        <div className="bg-card p-1 rounded-lg border shadow-sm flex-1">
+          {loading && tasks.length === 0 ? (
+            <div className="flex justify-center items-center h-64">
+               <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+               <p className="text-muted-foreground">Loading tasks...</p>
+            </div>
+          ) : tasks.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12">
+               No tasks found matching the selected filters.
+            </div>
+          ) : (
+            <DataTableReusable columns={taskColumns} data={tasks} enableRowDragging={false} onRowOrderChange={() => { }} />
+          )}
+        </div>
       </div>
 
       {selectedTask && (
@@ -337,11 +272,12 @@ export default function TasksListPage() {
               </DialogTitle>
               <DialogDescription className="mt-1 flex items-center gap-4 text-xs font-medium">
                 <span className="flex items-center gap-1"><User className="w-3 h-3 text-primary" /> {selectedTask.salesmanName}</span>
-                <span className="flex items-center gap-1"><CalendarIcon className="w-3 h-3 text-primary" /> {selectedTask.taskDate ? format(new Date(selectedTask.taskDate), "MMM dd, yyyy") : "N/A"}</span>
+                {/* MODIFIED: Formatting to DD-MM-YYYY */}
+                <span className="flex items-center gap-1"><CalendarIcon className="w-3 h-3 text-primary" /> {selectedTask.taskDate ? format(parseISO(selectedTask.taskDate), "dd-MM-yyyy") : "N/A"}</span>
               </DialogDescription>
             </div>
             <div className="p-6 space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className="bg-primary/5 border-primary/10">
                   <CardHeader className="p-3 border-b border-dashed"><CardTitle className="text-xs uppercase flex items-center gap-2"><MapPin className="w-3 h-3" /> Visit Location</CardTitle></CardHeader>
                   <CardContent className="p-3 space-y-3">
@@ -360,8 +296,8 @@ export default function TasksListPage() {
                 </Card>
               </div>
               <Card className="bg-primary/5 border-primary/10">
-                <CardHeader className="p-3 border-b border-orange-100"><CardTitle className="text-xs uppercase font-bold">Dealer Information</CardTitle></CardHeader>
-                <CardContent className="p-4 grid grid-cols-3 gap-4">
+                <CardHeader className="p-3 border-b border-orange-100"><CardTitle className="text-xs uppercase font-bold text-orange-800">Dealer Information</CardTitle></CardHeader>
+                <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InfoField label="Dealer Name" value={selectedTask.relatedDealerName || selectedTask.dealerNameSnapshot} />
                   <InfoField label="Dealer Mobile" value={selectedTask.dealerMobile} icon={Phone} />
                 </CardContent>

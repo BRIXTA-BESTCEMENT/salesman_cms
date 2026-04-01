@@ -1,18 +1,19 @@
 // src/app/dashboard/masonpcSide/pointsLedger.tsx
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
-import { Search, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
-// Import the reusable DataTable
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-// UI Components for Filtering
-import { Input } from '@/components/ui/input';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search';
+
+// UI Components
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 
 const POINTS_LEDGER_API_ENDPOINT = `/api/dashboardPagesAPI/masonpc-side/points-ledger`;
@@ -29,30 +30,6 @@ type PointsLedgerRecord = {
 };
 
 const SOURCE_TYPE_OPTIONS = ['BAG_LIFT', 'MEETING', 'SCHEME', 'BONUS', 'REDEMPTION', 'ADJUSTMENT'];
-
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="h-9 bg-background border-input">
-        <SelectValue placeholder={`Select ${label}`} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} 
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
 
 const formatDate = (dateString: string | null | undefined) => {
   if (!dateString) return 'N/A';
@@ -90,15 +67,11 @@ export default function PointsLedgerPage() {
   const [pageSize] = useState(500);
   const [totalCount, setTotalCount] = useState(0);
 
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState(''); 
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
   const [sourceTypeFilter, setSourceTypeFilter] = useState('all'); 
-
-  // Debounce Search
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -117,21 +90,6 @@ export default function PointsLedgerPage() {
       if (sourceTypeFilter !== 'all') url.searchParams.append('sourceType', sourceTypeFilter);
 
       const response = await fetch(url.toString());
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error('You are not authenticated. Redirecting to login.');
-          window.location.href = '/login';
-          return;
-        }
-        if (response.status === 403) {
-          toast.error('You do not have permission to access this page. Redirecting.');
-          window.location.href = '/dashboard';
-          return;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const result = await response.json();
       setLedgerRecords(result.data || []);
       setTotalCount(result.totalCount || 0);
@@ -149,6 +107,15 @@ export default function PointsLedgerPage() {
   useEffect(() => {
     fetchPointsLedgerRecords();
   }, [fetchPointsLedgerRecords]);
+
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const sourceTypeOptions = useMemo(() => [
+    { label: 'All Source Types', value: 'all' },
+    ...SOURCE_TYPE_OPTIONS.map(opt => ({ 
+      label: opt.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), 
+      value: opt 
+    }))
+  ], []);
 
   const ledgerColumns: ColumnDef<PointsLedgerRecord>[] = [
     {
@@ -208,13 +175,10 @@ export default function PointsLedgerPage() {
     },
   ];
 
-  const handleLedgerOrderChange = (newOrder: PointsLedgerRecord[]) => {
-    console.log("New Ledger order:", newOrder.map(r => r.id));
-  };
-
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
+        
         <div className="flex items-center justify-between space-y-2">
           <div className="flex items-center gap-4">
               <h2 className="text-3xl font-bold tracking-tight">Points Ledger</h2>
@@ -228,32 +192,24 @@ export default function PointsLedgerPage() {
           />
         </div>
 
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Mason Name / Memo</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9 bg-background border-input"
-              />
-            </div>
-          </div>
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar 
+            showSearch={true}
+            showDateRange={false}
+            showRole={false}
+            showZone={false} // Disabled since ledger doesn't have territory data
+            showArea={false}
+            showStatus={true} // Using Status slot for Source Type
 
-          {renderSelectFilter('Source Type', sourceTypeFilter, setSourceTypeFilter, SOURCE_TYPE_OPTIONS)}
+            searchVal={searchQuery}
+            statusVal={sourceTypeFilter}
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setSourceTypeFilter('all');
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-          </Button>
+            statusOptions={sourceTypeOptions}
+
+            onSearchChange={setSearchQuery}
+            onStatusChange={setSourceTypeFilter}
+          />
         </div>
 
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
@@ -274,7 +230,7 @@ export default function PointsLedgerPage() {
               columns={ledgerColumns}
               data={ledgerRecords}
               enableRowDragging={false}
-              onRowOrderChange={handleLedgerOrderChange}
+              onRowOrderChange={() => {}}
             />
           )}
         </div>

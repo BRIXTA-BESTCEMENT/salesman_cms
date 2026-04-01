@@ -1,19 +1,23 @@
 // src/app/dashboard/masonpcSide/masonpc.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import {
-  Loader2, Search, Check, X, Eye, ExternalLink, Save, ChevronsUpDown 
+  Loader2, Check, X, Eye, ExternalLink, Save, ChevronsUpDown 
 } from 'lucide-react';
 
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search'; 
+
+// UI Components
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -66,38 +70,6 @@ export interface MasonPcFullDetails {
 interface LocationsResponse { areas: string[]; regions: string[]; }
 interface OptionItem { id: string | number; name: string; }
 
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9 bg-background border-input">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
-
 const formatDocKey = (key: string): string => {
   if (key === 'aadhaarFrontUrl') return 'Aadhaar Front';
   if (key === 'aadhaarBackUrl') return 'Aadhaar Back';
@@ -106,6 +78,7 @@ const formatDocKey = (key: string): string => {
   return key.replace('Url', '').replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
 };
 
+// SearchableSelect is kept for the Modal assignment drop-downs
 interface SearchableSelectProps {
   options: OptionItem[];
   value: string; 
@@ -121,7 +94,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder, isLoading = f
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal" disabled={isLoading}>
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal bg-background" disabled={isLoading}>
           {value === 'null' ? placeholder : (selectedItem?.name || placeholder)}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -151,24 +124,27 @@ const SearchableSelect = ({ options, value, onChange, placeholder, isLoading = f
 };
 
 export default function MasonPcPage() {
-  const [allMasonPcRecords, setAllMasonPcRecords] = React.useState<MasonPcFullDetails[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [allMasonPcRecords, setAllMasonPcRecords] = useState<MasonPcFullDetails[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [page, setPage] = useState(0);
   const [pageSize] = useState(500);
   const [totalCount, setTotalCount] = useState(0);
 
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [areaFilter, setAreaFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
-  const [kycStatusFilter, setKycStatusFilter] = useState<KycVerificationStatus | 'all'>('all');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+  const [kycStatusFilter, setKycStatusFilter] = useState('all');
 
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
 
+  // Modal states
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<MasonPcFullDetails | null>(null);
@@ -183,16 +159,12 @@ export default function MasonPcPage() {
   const [editData, setEditData] = useState({ userId: 'null', dealerId: 'null', siteId: 'null' });
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
+  // Reset page when filters change
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, areaFilter, regionFilter, kycStatusFilter]);
+  }, [debouncedSearchQuery, areaFilters, zoneFilters, kycStatusFilter]);
 
-  const fetchMasonPcRecords = React.useCallback(async () => {
+  const fetchMasonPcRecords = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -201,25 +173,14 @@ export default function MasonPcPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (kycStatusFilter && kycStatusFilter !== 'all') url.searchParams.set('kycStatus', kycStatusFilter);
-      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      
+      // Join arrays for multi-select
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
+      
+      if (kycStatusFilter !== 'all') url.searchParams.set('kycStatus', kycStatusFilter);
 
       const response = await fetch(url.toString());
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error('You are not authenticated. Redirecting to login.');
-          window.location.href = '/login';
-          return;
-        }
-        if (response.status === 403) {
-          toast.error('You do not have permission to access this page. Redirecting.');
-          window.location.href = '/dashboard';
-          return;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
       const result = await response.json();
       setAllMasonPcRecords(result.data || []);
       setTotalCount(result.totalCount || 0);
@@ -231,7 +192,7 @@ export default function MasonPcPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, kycStatusFilter, areaFilter, regionFilter]);
+  }, [page, pageSize, debouncedSearchQuery, kycStatusFilter, areaFilters, zoneFilters]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -261,14 +222,26 @@ export default function MasonPcPage() {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchMasonPcRecords();
   }, [fetchMasonPcRecords]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLocations();
     fetchDropdownData();
   }, [ fetchLocations, fetchDropdownData]);
+
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => availableRegions.map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.map(a => ({ label: a, value: a })), [availableAreas]);
+  const statusOptions = useMemo(() => [
+    { label: 'All Statuses', value: 'all' },
+    { label: 'Pending', value: 'PENDING' },
+    { label: 'Verified', value: 'VERIFIED' },
+    { label: 'Rejected', value: 'REJECTED' },
+    { label: 'None', value: 'NONE' },
+  ], []);
+
 
   const handleVerificationAction = async (id: string, action: 'VERIFIED' | 'REJECTED', remarks: string = '') => {
     setIsUpdatingId(id);
@@ -467,20 +440,10 @@ export default function MasonPcPage() {
     },
   ];
 
-  if (isLoading && allMasonPcRecords.length === 0) return <div className="flex justify-center items-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-
-  if (error) return (
-    <div className="text-center text-red-500 min-h-screen pt-10">
-      Error: {error}
-      <Button onClick={() => fetchMasonPcRecords()} className="ml-4">Retry</Button>
-    </div>
-  );
-
-  const kycStatusOptions: KycVerificationStatus[] = ['PENDING', 'VERIFIED', 'REJECTED', 'NONE'];
-
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-8 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
+        
         <div className="flex items-center justify-between space-y-2">
           <div className="flex items-center gap-4">
              <h2 className="text-3xl font-bold tracking-tight">Mason/PC KYC Verification</h2>
@@ -494,47 +457,45 @@ export default function MasonPcPage() {
           />
         </div>
 
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full relative z-50">
+          <GlobalFilterBar 
+            showSearch={true}
+            showRole={false}
+            showZone={true}
+            showArea={true}
+            showDateRange={false}
+            showStatus={true} // Using Status slot for KYC Status
 
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Search Mason</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Name, Phone, Dealer..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9 bg-background border-input"
-              />
-            </div>
-          </div>
+            searchVal={searchQuery}
+            zoneVals={zoneFilters}
+            areaVals={areaFilters}
+            statusVal={kycStatusFilter}
 
-          {renderSelectFilter('KYC Status', kycStatusFilter, (v) => { setKycStatusFilter(v as KycVerificationStatus | 'all'); }, kycStatusOptions, false)}
-          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
-          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+            zoneOptions={zoneOptions}
+            areaOptions={areaOptions}
+            statusOptions={statusOptions}
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setKycStatusFilter('all');
-              setAreaFilter('all');
-              setRegionFilter('all');
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-          </Button>
+            onSearchChange={setSearchQuery}
+            onZoneChange={setZoneFilters}
+            onAreaChange={setAreaFilters}
+            onStatusChange={setKycStatusFilter}
+          />
         </div>
 
-        <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm relative z-0">
           {isLoading && allMasonPcRecords.length === 0 ? (
              <div className="flex justify-center items-center h-64">
-               <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+               <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
                <p className="text-muted-foreground">Loading Masons...</p>
              </div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-12 flex flex-col items-center">
+              <p>Error: {error}</p>
+              <Button onClick={fetchMasonPcRecords} variant="outline" className="mt-4">Retry</Button>
+            </div>
           ) : allMasonPcRecords.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">No Mason/PC records found matching the selected filters.</div>
+            <div className="text-center text-muted-foreground py-12">No Mason/PC records found matching the selected filters.</div>
           ) : (
             <DataTableReusable<MasonPcFullDetails, unknown>
               columns={masonPcColumns}

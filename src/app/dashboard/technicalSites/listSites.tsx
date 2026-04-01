@@ -1,22 +1,18 @@
 // src/app/dashboard/technicalSites/listSites.tsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
-import {
-  Search,
-  MapPin,
-  ExternalLink,
-  Loader2
-} from 'lucide-react';
+import { MapPin, ExternalLink, Loader2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { Badge } from '@/components/ui/badge';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 
 import { selectTechnicalSiteSchema } from '../../../../drizzle/zodSchemas';
 
@@ -55,43 +51,11 @@ const extendedTechnicalSiteSchema = selectTechnicalSiteSchema.extend({
   bagLifts: z.array(siteBagLiftSchema).optional().catch([]),
 });
 
-type TechnicalSiteRecord = Omit<z.infer<typeof extendedTechnicalSiteSchema>, 'id'> & { 
-  id: string; 
+type TechnicalSiteRecord = Omit<z.infer<typeof extendedTechnicalSiteSchema>, 'id'> & {
+  id: string;
 };
 
 const API_URL = `/api/dashboardPagesAPI/technical-sites`;
-
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9 bg-background border-input">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
 
 export default function ListSitesPage() {
   const [sites, setSites] = useState<TechnicalSiteRecord[]>([]);
@@ -102,28 +66,25 @@ export default function ListSitesPage() {
   const [pageSize] = useState(500);
   const [totalCount, setTotalCount] = useState(0);
 
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [filterRegion, setFilterRegion] = useState<string>('all');
-  const [filterArea, setFilterArea] = useState<string>('all');
-  const [filterStage, setFilterStage] = useState<string>('all');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [stageFilter, setStageFilter] = useState<string>('all');
+
+  // --- Backend Filter Options ---
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableStages, setAvailableStages] = useState<string[]>([]);
-  const [filtersLoading, setFiltersLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
+  // Reset page to 0 when filters change
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, filterRegion, filterArea, filterStage]);
+  }, [debouncedSearchQuery, zoneFilters, areaFilters, stageFilter]);
 
   const fetchFilters = useCallback(async () => {
-    setFiltersLoading(true);
     try {
       const response = await fetch(`${API_URL}?action=fetch_filters`);
       if (response.ok) {
@@ -134,8 +95,6 @@ export default function ListSitesPage() {
       }
     } catch (e) {
       console.error("Failed to load site filters", e);
-    } finally {
-      setFiltersLoading(false);
     }
   }, []);
 
@@ -148,15 +107,14 @@ export default function ListSitesPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (filterRegion !== 'all') url.searchParams.append('region', filterRegion);
-      if (filterArea !== 'all') url.searchParams.append('area', filterArea);
-      if (filterStage !== 'all') url.searchParams.append('stage', filterStage);
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+
+      if (stageFilter !== 'all') url.searchParams.append('stage', stageFilter);
 
       const response = await fetch(url.toString());
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
       const result = await response.json();
       const data = result.data || result;
       setTotalCount(result.totalCount || 0);
@@ -165,9 +123,8 @@ export default function ListSitesPage() {
         ...site,
         id: site.id?.toString() || `${Math.random()}`
       })) as TechnicalSiteRecord[];
-      
+
       setSites(validatedSites);
-      toast.success('Technical sites loaded successfully!');
     } catch (e: any) {
       console.error('Failed to fetch sites:', e);
       const message = e instanceof z.ZodError
@@ -178,7 +135,7 @@ export default function ListSitesPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, filterRegion, filterArea, filterStage]);
+  }, [page, pageSize, debouncedSearchQuery, zoneFilters, areaFilters, stageFilter]);
 
   useEffect(() => {
     fetchFilters();
@@ -187,6 +144,15 @@ export default function ListSitesPage() {
   useEffect(() => {
     fetchSites();
   }, [fetchSites]);
+
+
+  const zoneOptions = useMemo(() => availableRegions.map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.map(a => ({ label: a, value: a })), [availableAreas]);
+  const stageOptions = useMemo(() => [
+    { label: 'All Stages', value: 'all' },
+    ...availableStages.map(s => ({ label: s, value: s }))
+  ], [availableStages]);
+
 
   const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
     if (!lat || !lng) return null;
@@ -343,13 +309,13 @@ export default function ListSitesPage() {
   return (
     <div className="container mx-auto p-4 max-w-[100vw] overflow-hidden">
       <div className="flex flex-col gap-4">
-        
+
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold">Technical Sites</h1>
-              <Badge variant="outline" className="text-base px-4 py-1">
-                 Total Sites: {totalCount}
-              </Badge>
+            <h1 className="text-2xl font-bold">Technical Sites</h1>
+            <Badge variant="outline" className="text-base px-4 py-1">
+              Total Sites: {totalCount}
+            </Badge>
           </div>
           <RefreshDataButton
             cachePrefix="technical-sites"
@@ -357,44 +323,36 @@ export default function ListSitesPage() {
           />
         </div>
 
-        <div className="flex flex-wrap items-end gap-4 mb-2 p-4 bg-card border rounded-lg shadow-sm">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Search Sites</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Name, Contact, Address..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9 bg-background border-input"
-              />
-            </div>
-          </div>
+        {/* --- Unified Global Filter Bar --- */}
+        <GlobalFilterBar
+          showSearch={true}
+          showRole={false}
+          showZone={true}
+          showArea={true}
+          showDateRange={false}
+          showStatus={true} 
 
-          {renderSelectFilter('Stage', filterStage, setFilterStage, availableStages, filtersLoading)}
-          {renderSelectFilter('Region', filterRegion, setFilterRegion, availableRegions, filtersLoading)}
-          {renderSelectFilter('Area', filterArea, setFilterArea, availableAreas, filtersLoading)}
+          searchVal={searchQuery}
+          zoneVals={zoneFilters}
+          areaVals={areaFilters}
+          statusVal={stageFilter}
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setFilterStage('all');
-              setFilterRegion('all');
-              setFilterArea('all');
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-          </Button>
-        </div>
+          zoneOptions={zoneOptions}
+          areaOptions={areaOptions}
+          statusOptions={stageOptions}
+
+          onSearchChange={setSearchQuery}
+          onZoneChange={setZoneFilters}
+          onAreaChange={setAreaFilters}
+          onStatusChange={setStageFilter}
+        />
 
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
           {loading && sites.length === 0 ? (
-             <div className="flex justify-center items-center h-64">
-               <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
-               <p className="text-muted-foreground">Loading technical sites...</p>
-             </div>
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+              <p className="text-muted-foreground">Loading technical sites...</p>
+            </div>
           ) : error ? (
             <div className="text-center text-red-500 py-12 flex flex-col items-center">
               <p>Error: {error}</p>

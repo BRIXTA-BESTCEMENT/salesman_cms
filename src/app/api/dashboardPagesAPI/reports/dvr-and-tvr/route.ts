@@ -11,7 +11,7 @@ import {
   dailyTasks
 } from '../../../../../../drizzle';
 import {
-  eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, inArray
+  eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, inArray, gte, lte
 } from 'drizzle-orm';
 import { verifySession } from '@/lib/auth';
 
@@ -19,14 +19,16 @@ async function getCachedHybridReports(
   companyId: number,
   page: number,
   pageSize: number,
-  search: string | null
+  search: string | null,
+  startDate: string | null, 
+  endDate: string | null    
 ) {
   'use cache';
   cacheLife('hours');
   cacheTag(`hybrid-reports-${companyId}`);
 
   // Unique cache tag based on active filters and pagination
-  const filterKey = `${search || 'none'}`;
+  const filterKey = `${search || 'none'}-${startDate || 'all'}-${endDate || 'all'}`;
   cacheTag(`hybrid-reports-${companyId}-${page}-${filterKey}`);
 
   const subDealers = aliasedTable(dealers, 'subDealers');
@@ -52,6 +54,9 @@ async function getCachedHybridReports(
       )
     );
   }
+
+  if (startDate) dvrFilters.push(gte(dailyVisitReports.reportDate, startDate));
+  if (endDate) dvrFilters.push(lte(dailyVisitReports.reportDate, endDate));
 
   const dvrWhereClause = and(...dvrFilters);
 
@@ -127,6 +132,9 @@ async function getCachedHybridReports(
     );
   }
 
+  if (startDate) tvrFilters.push(gte(technicalVisitReports.reportDate, startDate));
+  if (endDate) tvrFilters.push(lte(technicalVisitReports.reportDate, endDate));
+
   const tvrWhereClause = and(...tvrFilters);
 
   const rawTvrs = await db
@@ -183,11 +191,16 @@ export async function GET(request: NextRequest) {
     const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
     const search = searchParams.get('search');
 
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
     const cachedResult = await getCachedHybridReports(
       session.companyId,
       page,
       pageSize,
-      search
+      search,
+      startDate,
+      endDate
     );
 
     return NextResponse.json({

@@ -1,31 +1,29 @@
 // src/app/dashboard/slmLeaves/page.tsx
 'use client';
 
-import React from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { UniqueIdentifier } from '@dnd-kit/core';
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { Loader2 } from 'lucide-react';
 
 // Import your Shadcn UI components
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge'; 
-import { Input } from '@/components/ui/input'; 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Search, Loader2 } from 'lucide-react';
-import { IconCalendar } from '@tabler/icons-react';
 
-// Import the reusable DataTable
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
+
 import { selectSalesmanLeaveApplicationSchema } from '../../../../drizzle/zodSchemas';
 
 const extendedSalesmanLeaveApplicationSchema = selectSalesmanLeaveApplicationSchema.extend({
@@ -50,48 +48,46 @@ interface LocationsResponse {
 
 export default function SlmLeavesPage() {
   const router = useRouter();
-  const [leaveApplications, setLeaveApplications] = React.useState<SalesmanLeaveApplication[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const [leaveApplications, setLeaveApplications] = useState<SalesmanLeaveApplication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // --- Pagination & Filters ---
-  const [page, setPage] = React.useState(0);
-  const [pageSize] = React.useState(500);
-  const [totalCount, setTotalCount] = React.useState(0);
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
-  const [areaFilter, setAreaFilter] = React.useState('all');
-  const [regionFilter, setRegionFilter] = React.useState('all');
+  // --- Standardized Filter State ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
 
-  const [availableAreas, setAvailableAreas] = React.useState<string[]>([]);
-  const [availableRegions, setAvailableRegions] = React.useState<string[]>([]);
+  // --- Backend Filter Options ---
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
 
-  const [isLoadingLocations, setIsLoadingLocations] = React.useState(true);
-  const [locationError, setLocationError] = React.useState<string | null>(null);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [currentAction, setCurrentAction] = React.useState<{
+  // --- Dialog State ---
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentAction, setCurrentAction] = useState<{
     id: UniqueIdentifier;
     type: "Approved" | "Rejected";
     salesmanName: string;
   } | null>(null);
-  const [actionRemarks, setActionRemarks] = React.useState("");
-  const [isSubmittingAction, setIsSubmittingAction] = React.useState(false);
-
-  // Debounce search
-  React.useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+  const [actionRemarks, setActionRemarks] = useState("");
+  const [isSubmittingAction, setIsSubmittingAction] = useState(false);
 
   // Reset page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, areaFilter, regionFilter, dateRange]);
+  }, [debouncedSearchQuery, areaFilters, zoneFilters, dateRange]);
 
-  const fetchLocations = React.useCallback(async () => {
+  const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     setLocationError(null);
     try {
@@ -113,7 +109,7 @@ export default function SlmLeavesPage() {
   }, []);
 
   const apiURI = `/api/dashboardPagesAPI/slm-leaves`
-  const fetchLeaveApplications = React.useCallback(async () => {
+  const fetchLeaveApplications = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -122,8 +118,10 @@ export default function SlmLeavesPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+      
+      // Multi-select arrays joined by comma
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
 
       if (dateRange?.from) url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
       if (dateRange?.to) {
@@ -171,16 +169,21 @@ export default function SlmLeavesPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, areaFilter, regionFilter, dateRange, router]);
+  }, [page, pageSize, debouncedSearchQuery, areaFilters, zoneFilters, dateRange, router]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLeaveApplications();
   }, [fetchLeaveApplications]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLocations();
   }, [fetchLocations]);
 
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => availableRegions.map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.map(a => ({ label: a, value: a })), [availableAreas]);
+
+  // --- Action Handlers ---
   const handleLeaveAction = async (id: UniqueIdentifier, newStatus: "Approved" | "Rejected", remarks: string | null = null) => {
     try {
       const response = await fetch(apiURI, {
@@ -232,7 +235,8 @@ export default function SlmLeavesPage() {
     setCurrentAction(null);
   };
 
-  const salesmanLeaveColumns: ColumnDef<SalesmanLeaveApplication>[] = [
+  // --- Table Columns ---
+  const salesmanLeaveColumns: ColumnDef<SalesmanLeaveApplication>[] = useMemo(() => [
     { accessorKey: "salesmanName", header: "Salesman" },
     { accessorKey: "leaveType", header: "Leave Type" },
     { accessorKey: "startDate", header: "Start Date" },
@@ -299,7 +303,7 @@ export default function SlmLeavesPage() {
         );
       },
     },
-  ];
+  ], []);
 
   if (loading && leaveApplications.length === 0) {
     return (
@@ -336,95 +340,34 @@ export default function SlmLeavesPage() {
           />
         </div>
 
-        {/* --- Filters Section --- */}
-        <div className="rounded-lg border border-border mb-6 bg-card p-6 shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* --- Unified Global Filter Bar --- */}
+        <GlobalFilterBar 
+          showSearch={true}
+          showDateRange={true}
+          showZone={true}
+          showArea={true}
+          showRole={false}
+          showStatus={false}
 
-            {/* 1) Date Range */}
-            <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-muted-foreground">Filter by Leave Date Range</label>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="date"
-                      variant="outline"
-                      className="w-full h-9 justify-start text-left font-normal bg-background"
-                    >
-                      <IconCalendar className="mr-2 h-4 w-4" />
-                      {dateRange?.from
-                        ? (dateRange.to
-                          ? `${format(dateRange.from, "LLL dd, y")} - ${format(dateRange.to, "LLL dd, y")}`
-                          : `${format(dateRange.from, "LLL dd, y")}`)
-                        : "Select range"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="range"
-                      defaultMonth={dateRange?.from || addDays(new Date(), -7)}
-                      selected={dateRange}
-                      onSelect={setDateRange}
-                      numberOfMonths={2}
-                    />
-                  </PopoverContent>
-                </Popover>
+          searchVal={searchQuery}
+          dateRangeVal={dateRange}
+          zoneVals={zoneFilters}
+          areaVals={areaFilters}
 
-                {dateRange && (
-                  <Button variant="ghost" onClick={() => setDateRange(undefined)} className="h-9">
-                    Clear
-                  </Button>
-                )}
-              </div>
-            </div>
+          zoneOptions={zoneOptions}
+          areaOptions={areaOptions}
 
-            {/* 2) Search */}
-            <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-muted-foreground">Search Fields</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Salesman, Reason, Status..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-9 border-border bg-background"
-                />
-              </div>
-            </div>
+          onSearchChange={setSearchQuery}
+          onDateRangeChange={setDateRange}
+          onZoneChange={setZoneFilters}
+          onAreaChange={setAreaFilters}
+        />
 
-            <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-muted-foreground">Area</label>
-              <Select value={areaFilter} onValueChange={setAreaFilter} disabled={isLoadingLocations}>
-                <SelectTrigger className="h-9 bg-background">
-                  {isLoadingLocations ? <span className="text-muted-foreground">Loading…</span> : <SelectValue placeholder="All Areas" />}
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Areas</SelectItem>
-                  {availableAreas.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-muted-foreground">Region(Zone)</label>
-              <Select value={regionFilter} onValueChange={setRegionFilter} disabled={isLoadingLocations}>
-                <SelectTrigger className="h-9 bg-background">
-                  {isLoadingLocations ? <span className="text-muted-foreground">Loading…</span> : <SelectValue placeholder="All Regions" />}
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  {availableRegions.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {(locationError) && (
-              <div className="sm:col-span-2 lg:col-span-4">
-                {locationError && <p className="text-xs text-red-500">Location Filter Error: {locationError}</p>}
-              </div>
-            )}
+        {(locationError) && (
+          <div className="mb-4">
+            <p className="text-xs text-red-500">Location Filter Error: {locationError}</p>
           </div>
-        </div>
+        )}
 
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">
           {leaveApplications.length === 0 && !loading && !error ? (

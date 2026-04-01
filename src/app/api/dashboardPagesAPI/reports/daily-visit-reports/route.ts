@@ -4,7 +4,7 @@ import { connection, NextResponse, NextRequest } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dailyVisitReports, dealers, dailyTasks } from '../../../../../../drizzle';
-import { eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, isNull, notIlike } from 'drizzle-orm';
+import { eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, isNull, notIlike, gte, lte } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDailyVisitReportSchema } from '../../../../../../drizzle/zodSchemas';
@@ -59,14 +59,16 @@ async function getCachedDailyVisitReports(
   search: string | null,
   area: string | null,
   region: string | null,
-  pjpStatus: string | null
+  pjpStatus: string | null,
+  startDate: string | null, 
+  endDate: string | null    
 ) {
   'use cache';
   cacheLife('hours');
   cacheTag(`daily-visit-reports-${companyId}`);
 
   // Unique cache tag based on active filters
-  const filterKey = `${search}-${area}-${region}`;
+  const filterKey = `${search}-${area}-${region}-${startDate}-${endDate}-${pjpStatus}`;
   cacheTag(`daily-visit-reports-${companyId}-${page}-${filterKey}`);
 
   const subDealers = aliasedTable(dealers, 'subDealers');
@@ -86,6 +88,9 @@ async function getCachedDailyVisitReports(
 
   if (area) filters.push(eq(users.area, area));
   if (region) filters.push(eq(users.region, region));
+
+  if (startDate) filters.push(gte(dailyVisitReports.reportDate, startDate));
+  if (endDate) filters.push(lte(dailyVisitReports.reportDate, endDate));
 
   if (pjpStatus && pjpStatus !== 'all') {
     if (pjpStatus.toLowerCase() === 'unplanned') {
@@ -230,6 +235,9 @@ export async function GET(request: NextRequest) {
     const region = searchParams.get('region');
     const pjpStatus = searchParams.get('pjpStatus');
 
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
     const result = await getCachedDailyVisitReports(
       session.companyId,
       page,
@@ -238,6 +246,8 @@ export async function GET(request: NextRequest) {
       area,
       region,
       pjpStatus,
+      startDate,
+      endDate
     );
 
     const validatedReports = z.array(frontendDVRSchema).safeParse(result.data);

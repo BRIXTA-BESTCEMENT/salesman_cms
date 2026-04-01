@@ -1,17 +1,19 @@
 // src/app/dashboard/dealerManagement/listVerifiedDealers.tsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
-import { Loader2, Search, MapPin } from 'lucide-react'; 
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, MapPin } from 'lucide-react'; 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
+// Reusable Components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar'; 
+import { useDebounce } from '@/hooks/use-debounce-search';
+
 import { selectVerifiedDealersSchema } from '../../../../drizzle/zodSchemas';
 
 const extendedVerifiedDealersSchema = selectVerifiedDealersSchema.partial().extend({
@@ -41,38 +43,6 @@ type VerifiedDealerRecord = z.infer<typeof extendedVerifiedDealersSchema>;
 
 const VERIFIED_DEALERS_API = `/api/dashboardPagesAPI/dealerManagement/verified-dealers`;
 
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9 bg-background border-input">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
-
 export default function ListVerifiedDealersPage() {
   const [dealers, setDealers] = useState<VerifiedDealerRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,26 +52,22 @@ export default function ListVerifiedDealersPage() {
   const [pageSize] = useState(500);
   const [totalCount, setTotalCount] = useState(0);
 
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [filterZone, setFilterZone] = useState<string>('all');
-  const [filterArea, setFilterArea] = useState<string>('all');
-  const [filterSegment, setFilterSegment] = useState<string>('all');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
 
+  // --- Backend Filter Options ---
   const [uniqueZones, setUniqueZones] = useState<string[]>([]);
   const [uniqueAreas, setUniqueAreas] = useState<string[]>([]);
   const [uniqueSegments, setUniqueSegments] = useState<string[]>([]);
 
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
   // Reset page on filter change
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, filterZone, filterArea, filterSegment]);
+  }, [debouncedSearchQuery, zoneFilters, areaFilters]);
 
   const fetchFilters = useCallback(async () => {
     try {
@@ -126,17 +92,13 @@ export default function ListVerifiedDealersPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (filterZone !== 'all') url.searchParams.append('zone', filterZone);
-      if (filterArea !== 'all') url.searchParams.append('area', filterArea);
-      if (filterSegment !== 'all') url.searchParams.append('segment', filterSegment);
+      
+      // Join arrays for multi-select
+      if (zoneFilters.length > 0) url.searchParams.append('zone', zoneFilters.join(','));
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
 
       const response = await fetch(url.toString());
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
       const result = await response.json();
-      
       const rawData = result.data || result;
       setTotalCount(result.totalCount || 0);
 
@@ -153,7 +115,7 @@ export default function ListVerifiedDealersPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, filterZone, filterArea, filterSegment]);
+  }, [page, pageSize, debouncedSearchQuery, zoneFilters, areaFilters]);
 
   useEffect(() => {
     fetchFilters();
@@ -162,6 +124,10 @@ export default function ListVerifiedDealersPage() {
   useEffect(() => {
     fetchVerifiedDealers();
   }, [fetchVerifiedDealers]);
+
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => uniqueZones.sort().map(r => ({ label: r, value: r })), [uniqueZones]);
+  const areaOptions = useMemo(() => uniqueAreas.sort().map(a => ({ label: a, value: a })), [uniqueAreas]);
 
   const columns: ColumnDef<VerifiedDealerRecord>[] = [
     { 
@@ -173,11 +139,6 @@ export default function ListVerifiedDealersPage() {
           {row.original.alias && <span className="text-xs text-muted-foreground">Alias: {row.original.alias}</span>}
         </div>
       )
-    },
-    { 
-      accessorKey: 'dealerSegment', 
-      header: 'Segment',
-      cell: info => info.getValue() || '-'
     },
     {
       header: 'Location',
@@ -267,43 +228,33 @@ export default function ListVerifiedDealersPage() {
         />
       </div>
 
-      <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border mb-6 shadow-sm">
-        
-        <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-          <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Name or Alias..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9 bg-background border-input"
-            />
-          </div>
-        </div>
+      {/* --- Unified Global Filter Bar --- */}
+      <div className="w-full mb-6 relative z-50">
+        <GlobalFilterBar 
+          showSearch={true}
+          showRole={false} 
+          showZone={true}
+          showArea={true}
+          showDateRange={false}
+          showStatus={false}
 
-        {renderSelectFilter('Segment', filterSegment, setFilterSegment, uniqueSegments, loading)}
-        {renderSelectFilter('Zone', filterZone, setFilterZone, uniqueZones, loading)}
-        {renderSelectFilter('Area', filterArea, setFilterArea, uniqueAreas, loading)}
+          searchVal={searchQuery}
+          zoneVals={zoneFilters}
+          areaVals={areaFilters}
 
-        <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setFilterSegment('all');
-              setFilterZone('all');
-              setFilterArea('all');
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-        </Button>
+          zoneOptions={zoneOptions}
+          areaOptions={areaOptions}
+
+          onSearchChange={setSearchQuery}
+          onZoneChange={setZoneFilters}
+          onAreaChange={setAreaFilters}
+        />
       </div>
 
       {dealers.length === 0 ? (
         <div className="text-center py-12 bg-card text-muted-foreground rounded-lg border shadow-sm">No verified dealers found matching your filters.</div>
       ) : (
-        <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden p-1">
+        <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden p-1 relative z-0">
           <DataTableReusable
             columns={columns}
             data={dealers}

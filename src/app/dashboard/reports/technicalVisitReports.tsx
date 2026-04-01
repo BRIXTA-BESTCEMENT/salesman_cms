@@ -1,24 +1,25 @@
-// app/dashboard/reports/technicalVisitReports.tsx
+// src/app/dashboard/reports/technicalVisitReports.tsx
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
-  Loader2, Search, Eye, ExternalLink, MapPin,
+  Loader2, Eye, ExternalLink, MapPin,
   User, Calendar, Briefcase, Store, HardHat, Camera,
   Image as ImageIcon, LogIn, LogOut,
   RefreshCw, Wrench, Users,
 } from 'lucide-react';
-
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -88,42 +89,10 @@ const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
 
 const getCustomerTypeBadgeColor = (type: string | null) => {
   if (!type) return 'secondary';
-  if (type === 'IHB/Site') return 'default'; 
-  if (type.includes('Dealer')) return 'destructive'; 
-  return 'outline'; 
+  if (type === 'IHB/Site') return 'default';
+  if (type.includes('Dealer')) return 'destructive';
+  return 'outline';
 };
-
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-    <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9 w-full bg-background border-input">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
 
 const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: string, value: React.ReactNode, icon?: any, fullWidth?: boolean }) => (
   <div className={`flex flex-col space-y-1.5 ${fullWidth ? 'col-span-2' : ''}`}>
@@ -139,36 +108,37 @@ const InfoField = ({ label, value, icon: Icon, fullWidth = false }: { label: str
 
 export default function TechnicalVisitReportsPage() {
   const router = useRouter();
-  const [technicalReports, setTechnicalReports] = React.useState<TechnicalVisitReport[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [technicalReports, setTechnicalReports] = useState<TechnicalVisitReport[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedReport, setSelectedReport] = useState<TechnicalVisitReport | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(500);
+  const [totalCount, setTotalCount] = useState(0);
+
+  // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [areaFilter, setAreaFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
   const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
+  // --- Backend Filter Options ---
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
 
-  const [page, setPage] = React.useState(0);
-  const [pageSize] = React.useState(500); 
-  const [totalCount, setTotalCount] = React.useState(0);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
+  // Reset page when filters change
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchQuery, areaFilter, regionFilter, customerTypeFilter]);
+  }, [debouncedSearchQuery, areaFilters, zoneFilters, customerTypeFilter, dateRange]);
 
-  const fetchTechnicalReports = React.useCallback(async () => {
+  const fetchTechnicalReports = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -177,9 +147,19 @@ export default function TechnicalVisitReportsPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-      if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+
+      // Join arrays for multi-select
+      if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+      if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
+
       if (customerTypeFilter !== 'all') url.searchParams.append('customerType', customerTypeFilter);
+
+      if (dateRange?.from) url.searchParams.append('startDate', format(dateRange.from, 'yyyy-MM-dd'));
+      if (dateRange?.to) {
+        url.searchParams.append('endDate', format(dateRange.to, 'yyyy-MM-dd'));
+      } else if (dateRange?.from) {
+        url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
+      }
 
       const response = await fetch(url.toString());
       const result = await response.json();
@@ -211,7 +191,7 @@ export default function TechnicalVisitReportsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [router, page, pageSize, debouncedSearchQuery, areaFilter, regionFilter, customerTypeFilter]);
+  }, [router, page, pageSize, debouncedSearchQuery, areaFilters, zoneFilters, customerTypeFilter, dateRange]);
 
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
@@ -225,13 +205,21 @@ export default function TechnicalVisitReportsPage() {
     } finally { setIsLoadingLocations(false); }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchTechnicalReports();
   }, [fetchTechnicalReports]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchLocations();
   }, [fetchLocations]);
+
+  // --- Map raw string arrays to `{ label, value }` Options ---
+  const zoneOptions = useMemo(() => availableRegions.sort().map(r => ({ label: r, value: r })), [availableRegions]);
+  const areaOptions = useMemo(() => availableAreas.sort().map(a => ({ label: a, value: a })), [availableAreas]);
+  const customerTypeOptions = useMemo(() => [
+    { label: 'All Customer Types', value: 'all' },
+    ...CUSTOMER_TYPE_OPTIONS.map(c => ({ label: c, value: c }))
+  ], []);
 
   const isDealerVisit = (r: TechnicalVisitReport) => r.customerType?.includes('Dealer');
   const isIHBVisit = (r: TechnicalVisitReport) => r.customerType === 'IHB' || r.customerType === 'IHB/Site';
@@ -461,49 +449,47 @@ export default function TechnicalVisitReportsPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Technical Visit Reports</h2>
-          <Badge variant="outline" className="text-base px-4 py-1">
-            Total Reports: {totalCount}
-          </Badge>
-
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-bold tracking-tight">Technical Visit Reports</h2>
+            <Badge variant="outline" className="text-base px-4 py-1">
+              Total Reports: {totalCount}
+            </Badge>
+          </div>
           <RefreshDataButton
             cachePrefix="technical-visit-reports"
             onRefresh={fetchTechnicalReports}
           />
         </div>
 
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Name, Site, or Party..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9 bg-background border-input"
-              />
-            </div>
-          </div>
-          {renderSelectFilter('Customer Type', customerTypeFilter, setCustomerTypeFilter, CUSTOMER_TYPE_OPTIONS)}
-          {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
-          {renderSelectFilter('Region', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full">
+          <GlobalFilterBar
+            showSearch={true}
+            showRole={true} // Using Role slot for Customer Type!
+            showZone={true}
+            showArea={true}
+            showDateRange={true}
+            showStatus={false}
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchQuery('');
-              setCustomerTypeFilter('all');
-              setAreaFilter('all');
-              setRegionFilter('all');
-            }}
-            className="mb-0.5 text-muted-foreground hover:text-destructive"
-          >
-            Clear Filters
-          </Button>
+            searchVal={searchQuery}
+            roleVal={customerTypeFilter}
+            zoneVals={zoneFilters}
+            areaVals={areaFilters}
+            dateRangeVal={dateRange}
+
+            roleOptions={customerTypeOptions}
+            zoneOptions={zoneOptions}
+            areaOptions={areaOptions}
+
+            onSearchChange={setSearchQuery}
+            onRoleChange={setCustomerTypeFilter}
+            onZoneChange={setZoneFilters}
+            onAreaChange={setAreaFilters}
+            onDateRangeChange={setDateRange}
+          />
         </div>
 
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">

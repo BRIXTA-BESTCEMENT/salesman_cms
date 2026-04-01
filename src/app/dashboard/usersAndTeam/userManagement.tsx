@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Edit, UserCheck, UserX, Loader2, Search, Smartphone, Copy, Check, KeyRound } from 'lucide-react';
+import { Edit, UserCheck, UserX, Loader2, Smartphone, Copy, Check, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,10 +28,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useUserLocations } from '@/components/reusable-user-locations';
-
+import { useDebounce } from '@/hooks/use-debounce-search';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { ColumnDef } from '@tanstack/react-table';
 import { Zone, ORG_ROLES, JOB_ROLES } from '@/lib/Reusable-constants';
@@ -88,38 +88,6 @@ interface GeneratedCredentials {
   adminPassword?: string;
 }
 
-const renderSelectFilter = (
-  label: string,
-  value: string,
-  onValueChange: (v: string) => void,
-  options: string[],
-  isLoading: boolean = false
-) => (
-  <div className="flex flex-col space-y-1 w-full sm:w-[200px] min-w-[150px]">
-    <label className="text-sm font-medium text-muted-foreground">{label}</label>
-    <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-      <SelectTrigger className="h-9">
-        {isLoading ? (
-          <div className="flex flex-row items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <SelectValue placeholder={`Select ${label}`} />
-        )}
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All {label}s</SelectItem>
-        {options.map(option => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
-
 const isUserEffectivelyActive = (user: User) => {
   if (user.inviteToken) return false;
   if (user.status?.toLowerCase().startsWith('pending')) return false;
@@ -140,8 +108,11 @@ export default function UsersManagement({ adminUser }: Props) {
 
   // --- Filter states
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 500);
+
   const [roleFilter, setRoleFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
+  const [zoneFilters, setZoneFilters] = useState<string[]>([]);
+  const [areaFilters, setAreaFilters] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -299,30 +270,40 @@ export default function UsersManagement({ adminUser }: Props) {
   const roleOptions = useMemo(() => {
     const roles = new Set<string>();
     users.forEach(u => { if (u.orgRole) roles.add(u.orgRole); });
-    return Array.from(roles).sort();
+    return [
+      { label: 'All Roles', value: 'all' },
+      ...Array.from(roles).sort().map(r => ({ label: r.replace(/-/g, ' '), value: r }))
+    ];
   }, [users]);
 
-  const regionOptions = useMemo(() => {
+  const zoneOptions = useMemo(() => {
     const regions = new Set<string>();
     users.forEach(u => { if (u.region) regions.add(u.region); });
-    return Array.from(regions).sort();
+    // MultiSelect doesn't need an "All" option, it handles "All" when the array is empty
+    return Array.from(regions).sort().map(r => ({ label: r, value: r }));
+  }, [users]);
+
+  const areaOptions = useMemo(() => {
+    const areas = new Set<string>();
+    users.forEach(u => { if (u.area) areas.add(u.area); });
+    // MultiSelect doesn't need an "All" option, it handles "All" when the array is empty
+    return Array.from(areas).sort().map(r => ({ label: r, value: r }));
   }, [users]);
 
   // --- Client Side Filtering Logic ---
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-      const search = searchQuery.toLowerCase();
-      const matchesSearch = !searchQuery ||
-        fullName.includes(search) ||
-        (user.email || '').toLowerCase().includes(search);
+      const search = debouncedSearch.toLowerCase(); 
+      const matchesSearch = !debouncedSearch || fullName.includes(search);
 
       const matchesRole = roleFilter === 'all' || user.orgRole === roleFilter;
-      const matchesRegion = regionFilter === 'all' || user.region === regionFilter;
+      const matchesZone = zoneFilters.length === 0 || (user.region && zoneFilters.includes(user.region));
+      const matchesArea = areaFilters.length === 0 || (user.area && areaFilters.includes(user.area));
 
-      return matchesSearch && matchesRole && matchesRegion;
+      return matchesSearch && matchesRole && matchesZone && matchesArea;
     });
-  }, [users, searchQuery, roleFilter, regionFilter]);
+  }, [users, searchQuery, roleFilter, zoneFilters, areaFilters]);
 
   // Defined columns
   const columns: ColumnDef<User>[] = useMemo(() => [
@@ -757,24 +738,33 @@ export default function UsersManagement({ adminUser }: Props) {
           </Alert>
         )}
 
-        {/* --- Filter Components --- */}
-        <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border">
-          <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-            <label className="text-sm font-medium text-muted-foreground">Search User</label>
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9"
-              />
-            </div>
-          </div>
+        {/* --- Unified Global Filter Bar --- */}
+        <GlobalFilterBar 
+          // 1. Toggles
+          showSearch={true}
+          showRole={true}
+          showZone={true}
+          showArea={true}
+          showDateRange={false}
+          showStatus={false}
 
-          {renderSelectFilter('Role', roleFilter, setRoleFilter, roleOptions, loading)}
-          {renderSelectFilter('Region(Zone)', regionFilter, setRegionFilter, regionOptions, loading)}
-        </div>
+          // 2. Values
+          searchVal={searchQuery}
+          roleVal={roleFilter}
+          zoneVals={zoneFilters}
+          areaVals={areaFilters}
+
+          // 3. Options
+          roleOptions={roleOptions}
+          zoneOptions={zoneOptions}
+          areaOptions={areaOptions}
+
+          // 4. Setters
+          onSearchChange={setSearchQuery}
+          onRoleChange={setRoleFilter}
+          onZoneChange={setZoneFilters}
+          onAreaChange={setAreaFilters}
+        />
 
         <Card>
           <CardHeader>

@@ -92,9 +92,9 @@ export function ReportsTabs({
         {canSeeSalesOrders && (
           <TabsTrigger value="salesOrderReport">Sales Orders</TabsTrigger>
         )}
-        {canSeeCompetition && (
+        {/* {canSeeCompetition && (
           <TabsTrigger value="competitionReport">Competition Report</TabsTrigger>
-        )}
+        )} */}
         
       </TabsList>
 
@@ -124,11 +124,11 @@ export function ReportsTabs({
           <SalesOrdersTable />
         </TabsContent>
       )}
-      {canSeeCompetition && (
+      {/* {canSeeCompetition && (
         <TabsContent value="competitionReport" className="space-y-4">
           <CompetitionReportsPage />
         </TabsContent>
-      )}
+      )} */}
       
     </Tabs>
   );

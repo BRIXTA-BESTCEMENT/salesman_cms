@@ -4,13 +4,11 @@ import { connection, NextResponse, NextRequest } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, technicalVisitReports } from '../../../../../../drizzle';
-import { count, eq, desc, getTableColumns, and, or, ilike, SQL } from 'drizzle-orm';
+import { count, eq, desc, getTableColumns, and, or, ilike, SQL, gte, lte } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectTechnicalVisitReportSchema } from '../../../../../../drizzle/zodSchemas';
 import { verifySession } from '@/lib/auth';
-
-const allowedRoles = ["Admin"];
 
 const getISTDateString = (date: string | Date | null) => {
   if (!date) return '';
@@ -59,13 +57,15 @@ async function getCachedTechnicalVisitReports(
   search: string | null,
   area: string | null,
   region: string | null,
-  customerType: string | null
+  customerType: string | null,
+  startDate: string | null, 
+  endDate: string | null
 ) {
   'use cache';
   cacheLife('hours');
   cacheTag(`technical-visit-reports-${companyId}`);
 
-  const filterKey = `${search}-${area}-${region}-${customerType}`;
+  const filterKey = `${search}-${area}-${region}-${startDate}-${endDate}-${customerType}`;
   cacheTag(`technical-visit-reports-${companyId}-${page}-${filterKey}`);
 
   // Strictly type as SQL[] to prevent undefined errors in and()
@@ -84,6 +84,9 @@ async function getCachedTechnicalVisitReports(
   if (area) filters.push(eq(users.area, area));
   if (region) filters.push(eq(users.region, region));
   if (customerType) filters.push(eq(technicalVisitReports.customerType, customerType));
+
+  if (startDate) filters.push(gte(technicalVisitReports.reportDate, startDate));
+  if (endDate) filters.push(lte(technicalVisitReports.reportDate, endDate));
 
   const whereClause = and(...filters);
 
@@ -174,6 +177,9 @@ export async function GET(request: NextRequest) {
     const region = searchParams.get('region');
     const customerType = searchParams.get('customerType');
 
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
     const result = await getCachedTechnicalVisitReports(
       session.companyId,
       page,
@@ -181,7 +187,9 @@ export async function GET(request: NextRequest) {
       search,
       area,
       region,
-      customerType
+      customerType,
+      startDate,
+      endDate
     );
 
     const validated = z

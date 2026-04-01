@@ -4,7 +4,7 @@ import { connection, NextResponse, NextRequest } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dealers, salesOrders } from '../../../../../../drizzle';
-import { eq, desc, and, or, ilike, getTableColumns, count, SQL } from 'drizzle-orm';
+import { eq, desc, and, or, ilike, getTableColumns, count, SQL, gte, lte } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectSalesOrderSchema } from '../../../../../../drizzle/zodSchemas';
@@ -56,13 +56,15 @@ async function getCachedSalesOrders(
   pageSize: number,
   search: string | null,
   area: string | null,
-  region: string | null
+  region: string | null,
+  startDate: string | null,
+  endDate: string | null
 ) {
   'use cache';
   cacheLife('hours');
   cacheTag(`sales-orders-${companyId}`);
 
-  const filterKey = `${search}-${area}-${region}`;
+  const filterKey = `${search}-${area}-${region}-${startDate}-${endDate}`;
   cacheTag(`sales-orders-${companyId}-${page}-${filterKey}`);
 
   const filters: SQL[] = [eq(users.companyId, companyId)];
@@ -78,6 +80,9 @@ async function getCachedSalesOrders(
 
   if (area) filters.push(eq(dealers.area, area));
   if (region) filters.push(eq(dealers.region, region));
+
+  if (startDate) filters.push(gte(salesOrders.orderDate, startDate));
+  if (endDate) filters.push(lte(salesOrders.orderDate, endDate));
 
   const whereClause = and(...filters);
 
@@ -177,9 +182,11 @@ export async function GET(request: NextRequest) {
     const pageSize = Math.min(Number(searchParams.get('pageSize') ?? 500), 500);
 
     const search = searchParams.get('search');
-    const role = searchParams.get('role');
     const area = searchParams.get('area');
     const region = searchParams.get('region');
+
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
 
     const result = await getCachedSalesOrders(
       session.companyId,
@@ -187,7 +194,9 @@ export async function GET(request: NextRequest) {
       pageSize,
       search,
       area,
-      region
+      region,
+      startDate,
+      endDate
     );
 
     const validated = z.array(frontendSalesOrderSchema).safeParse(result.data);

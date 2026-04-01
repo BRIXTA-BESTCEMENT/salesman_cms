@@ -10,18 +10,15 @@ import { DateRange } from "react-day-picker";
 import { format, startOfMonth } from "date-fns";
 
 import {
-    Loader2, Search, Eye, MapPin, User,
-    Activity, Calendar as CalendarIcon
+    Loader2, Eye, MapPin, User, Activity
 } from 'lucide-react';
 
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import {
     Dialog,
     DialogContent,
@@ -31,7 +28,6 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { cn } from "@/lib/utils";
 
 // --- Validation Schema ---
 const metricNode = z.object({
@@ -72,38 +68,6 @@ interface LocationsResponse {
 }
 
 // --- Helpers ---
-const renderSelectFilter = (
-    label: string,
-    value: string,
-    onValueChange: (v: string) => void,
-    options: string[],
-    isLoading: boolean = false
-) => (
-    <div className="flex flex-col space-y-1 w-full sm:w-[150px] min-w-[120px]">
-        <label className="text-xs font-semibold text-muted-foreground uppercase">{label}</label>
-        <Select value={value} onValueChange={onValueChange} disabled={isLoading}>
-            <SelectTrigger className="h-9 w-full bg-background border-input">
-                {isLoading ? (
-                    <div className="flex flex-row items-center space-x-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span className="text-muted-foreground">Loading...</span>
-                    </div>
-                ) : (
-                    <SelectValue placeholder={`Select ${label}`} />
-                )}
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {options.map(option => (
-                    <SelectItem key={option} value={option}>
-                        {option}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
-    </div>
-);
-
 const MetricProgressCard = ({ title, data, colorClass = "bg-primary" }: { title: string, data: { aop: number, mtd: number, pct: number }, colorClass?: string }) => (
     <Card className="shadow-sm border">
         <CardContent className="p-4 flex flex-col gap-2">
@@ -134,16 +98,15 @@ export default function TsoPerformanceMetricsPage() {
     const [selectedMetric, setSelectedMetric] = useState<TsoPerformanceMetric | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-    // Filters
+    // --- Standardized Filter State ---
     const [searchQuery, setSearchQuery] = useState('');
-    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-    const [areaFilter, setAreaFilter] = useState('all');
-    const [regionFilter, setRegionFilter] = useState('all');
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
     
-    // --- DateRange State ---
-    const [tableDateRange, setTableDateRange] = useState<DateRange | undefined>({from: startOfMonth(new Date()), to: new Date() });
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({from: startOfMonth(new Date()), to: new Date() });
+    const [areaFilters, setAreaFilters] = useState<string[]>([]);
+    const [zoneFilters, setZoneFilters] = useState<string[]>([]);
 
-    // Location Data
+    // --- Backend Filter Options ---
     const [availableAreas, setAvailableAreas] = useState<string[]>([]);
     const [availableRegions, setAvailableRegions] = useState<string[]>([]);
     const [isLoadingLocations, setIsLoadingLocations] = useState(true);
@@ -152,16 +115,10 @@ export default function TsoPerformanceMetricsPage() {
     const [pageSize] = useState(100);
     const [totalCount, setTotalCount] = useState(0);
 
-    // Debounce search
-    useEffect(() => {
-        const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 500);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
-
     // Reset page on filter change
     useEffect(() => {
         setPage(0);
-    }, [debouncedSearchQuery, areaFilter, regionFilter, tableDateRange]);
+    }, [debouncedSearchQuery, areaFilters, zoneFilters, dateRange]);
 
     const fetchMetrics = useCallback(async () => {
         setIsLoading(true);
@@ -171,18 +128,20 @@ export default function TsoPerformanceMetricsPage() {
             url.searchParams.append('pageSize', pageSize.toString());
 
             if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-            if (areaFilter !== 'all') url.searchParams.append('area', areaFilter);
-            if (regionFilter !== 'all') url.searchParams.append('region', regionFilter);
+            
+            // Join arrays for multi-select
+            if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
+            if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
             
             // --- Parse DateRange for API ---
-            if (tableDateRange?.from) {
-                url.searchParams.append('startDate', format(tableDateRange.from, "yyyy-MM-dd"));
+            if (dateRange?.from) {
+                url.searchParams.append('startDate', format(dateRange.from, "yyyy-MM-dd"));
             }
-            if (tableDateRange?.to) {
-                url.searchParams.append('endDate', format(tableDateRange.to, "yyyy-MM-dd"));
-            } else if (tableDateRange?.from) {
+            if (dateRange?.to) {
+                url.searchParams.append('endDate', format(dateRange.to, "yyyy-MM-dd"));
+            } else if (dateRange?.from) {
                 // If only "from" is selected, filter strictly for that day
-                url.searchParams.append('endDate', format(tableDateRange.from, "yyyy-MM-dd"));
+                url.searchParams.append('endDate', format(dateRange.from, "yyyy-MM-dd"));
             }
 
             const response = await fetch(url.toString());
@@ -217,7 +176,7 @@ export default function TsoPerformanceMetricsPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [router, page, pageSize, debouncedSearchQuery, areaFilter, regionFilter, tableDateRange]);
+    }, [router, page, pageSize, debouncedSearchQuery, areaFilters, zoneFilters, dateRange]);
 
     const fetchLocations = useCallback(async () => {
         setIsLoadingLocations(true);
@@ -238,6 +197,10 @@ export default function TsoPerformanceMetricsPage() {
     useEffect(() => {
         fetchLocations();
     }, [fetchLocations]);
+
+    // --- Map raw string arrays to `{ label, value }` Options ---
+    const zoneOptions = useMemo(() => availableRegions.sort().map(r => ({ label: r, value: r })), [availableRegions]);
+    const areaOptions = useMemo(() => availableAreas.sort().map(a => ({ label: a, value: a })), [availableAreas]);
 
     // --- Table Columns ---
     const columns = useMemo<ColumnDef<TsoPerformanceMetric>[]>(() => [
@@ -307,13 +270,15 @@ export default function TsoPerformanceMetricsPage() {
     ], []);
 
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground">
-            <div className="flex-1 space-y-6 p-8 pt-6">
+        <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+            <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-3xl font-bold tracking-tight">TSO Performance Metrics</h2>
-                    <Badge variant="outline" className="text-base px-4 py-1">
-                        Active Personnel: {totalCount}
-                    </Badge>
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-3xl font-bold tracking-tight">TSO Performance Metrics</h2>
+                        <Badge variant="outline" className="text-base px-4 py-1">
+                            Active Personnel: {totalCount}
+                        </Badge>
+                    </div>
 
                     <RefreshDataButton
                         cachePrefix="tso-performance-metrics"
@@ -321,69 +286,29 @@ export default function TsoPerformanceMetricsPage() {
                     />
                 </div>
 
-                {/* --- COHESIVE FILTER BAR UI --- */}
-                <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-card border shadow-sm">
-                    <div className="flex flex-col space-y-1 w-full sm:w-[250px] min-w-[150px]">
-                        <label className="text-xs font-semibold text-muted-foreground uppercase">Search</label>
-                        <div className="relative">
-                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Name, area, region..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-8 h-9 bg-background border-input"
-                            />
-                        </div>
-                    </div>
-                    
-                    {/* --- DateRange Picker Popover --- */}
-                    <div className="flex flex-col space-y-1 w-full sm:w-[260px]">
-                        <label className="text-xs font-semibold text-muted-foreground uppercase">Filter by Date</label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button 
-                                    variant={"outline"} 
-                                    className={cn("w-full justify-start text-left font-normal h-9 bg-background", !tableDateRange && "text-muted-foreground")}
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {tableDateRange?.from ? (
-                                        tableDateRange.to ? (
-                                            <>{format(tableDateRange.from, "LLL dd, y")} - {format(tableDateRange.to, "LLL dd, y")}</>
-                                        ) : (
-                                            format(tableDateRange.from, "LLL dd, y")
-                                        )
-                                    ) : (
-                                        <span>Select Date Range</span>
-                                    )}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar 
-                                    mode="range" 
-                                    defaultMonth={tableDateRange?.from || new Date()} 
-                                    selected={tableDateRange} 
-                                    onSelect={setTableDateRange} 
-                                    numberOfMonths={2} 
-                                />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
+                {/* --- Unified Global Filter Bar --- */}
+                <div className="w-full">
+                    <GlobalFilterBar 
+                        showSearch={true}
+                        showRole={false}
+                        showZone={true}
+                        showArea={true}
+                        showDateRange={true}
+                        showStatus={false}
 
-                    {renderSelectFilter('Area', areaFilter, setAreaFilter, availableAreas, isLoadingLocations)}
-                    {renderSelectFilter('Zone(Region)', regionFilter, setRegionFilter, availableRegions, isLoadingLocations)}
+                        searchVal={searchQuery}
+                        dateRangeVal={dateRange}
+                        zoneVals={zoneFilters}
+                        areaVals={areaFilters}
 
-                    <Button
-                        variant="ghost"
-                        onClick={() => {
-                            setSearchQuery('');
-                            setAreaFilter('all');
-                            setRegionFilter('all');
-                            setTableDateRange(undefined);
-                        }}
-                        className="mb-0.5 text-muted-foreground hover:text-destructive"
-                    >
-                        Clear Filters
-                    </Button>
+                        zoneOptions={zoneOptions}
+                        areaOptions={areaOptions}
+
+                        onSearchChange={setSearchQuery}
+                        onDateRangeChange={setDateRange}
+                        onZoneChange={setZoneFilters}
+                        onAreaChange={setAreaFilters}
+                    />
                 </div>
 
                 {/* Data Table */}

@@ -7,30 +7,28 @@ import { toast } from 'sonner';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   Loader2,
-  Search,
   Check,
   ChevronsUpDown,
   ClipboardCheck,
-  FilterX,
   Store,
-  HardHat
+  HardHat,
+  X
 } from 'lucide-react';
-import { IconCalendar } from '@tabler/icons-react';
-import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 
+// Import standard components
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search'; 
+
+// UI Components
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Card, CardContent } from '@/components/ui/card';
-import { Zone } from '@/lib/Reusable-constants';
-import { Calendar } from "@/components/ui/calendar"; // The actual UI component
-// Combobox / Searchable Dropdown Imports
+
 import {
   Command,
   CommandEmpty,
@@ -67,7 +65,6 @@ const extendedVerificationSchema = selectPermanentJourneyPlanSchema.extend({
   route: z.string().nullable().optional(),
   additionalVisitRemarks: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  // Safely coerce numbers that might come as strings from DB aggregations
   noOfConvertedBags: z.coerce.number().optional().catch(0),
   noOfMasonPcSchemes: z.coerce.number().optional().catch(0),
   plannedNewSiteVisits: z.coerce.number().optional().catch(0),
@@ -79,16 +76,15 @@ const extendedVerificationSchema = selectPermanentJourneyPlanSchema.extend({
 type PermanentJourneyPlanVerification = z.infer<typeof extendedVerificationSchema>;
 interface PJPModificationState extends PermanentJourneyPlanVerification { id: string; }
 
-// --- TYPES FOR DROPDOWNS ---
 interface OptionItem {
   id: string;
   name: string;
-  address?: string; // Used to auto-fill route
+  address?: string;
   area?: string;
   region?: string;
 }
 
-// --- SEARCHABLE SELECT COMPONENT ---
+// SearchableSelect kept for the Review Modal
 interface SearchableSelectProps {
   options: OptionItem[];
   value: string;
@@ -104,7 +100,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder, isLoading }: 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className="w-full justify-between font-normal h-10" disabled={isLoading}>
+        <Button variant="outline" role="combobox" className="w-full justify-between font-normal h-10 bg-background" disabled={isLoading}>
           {value === 'null' || !value ? placeholder : (selectedItem?.name || placeholder)}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -148,39 +144,23 @@ export default function PJPVerifyPage() {
   const [allDealers, setAllDealers] = useState<OptionItem[]>([]);
   const [allSites, setAllSites] = useState<OptionItem[]>([]);
 
-  // Selection States
-  const [selectedDealerId, setSelectedDealerId] = useState<string>('null');
-  const [selectedSiteId, setSelectedSiteId] = useState<string>('null');
+  // --- Standardized Filter State ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Modal/UI States
   const [isModificationDialogOpen, setIsModificationDialogOpen] = useState(false);
   const [pjpToModify, setPjpToModify] = useState<PJPModificationState | null>(null);
   const [isPatching, setIsPatching] = useState(false);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSalesmanFilter, setSelectedSalesmanFilter] = useState<string>('all');
-  const [selectedRegionFilter, setSelectedRegionFilter] = useState<string>('all');
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-
-  const [verifyAllpjps, setVerifyAllPjps] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedDealerId, setSelectedDealerId] = useState<string>('null');
+  const [selectedSiteId, setSelectedSiteId] = useState<string>('null');
 
   const API_BASE = `/api/dashboardPagesAPI/permanent-journey-plan`;
   const OPTIONS_API = `/api/dashboardPagesAPI/masonpc-side/mason-pc/form-options`;
   const BULK_VERIFY = `/api/dashboardPagesAPI/permanent-journey-plan/pjp-verification/bulk-verify`;
-
-  // Helper to toggle a single selection
-  const toggleSelect = (id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id); // Deselect if already there
-      } else {
-        next.add(id);    // Select if not there
-      }
-      return next;
-    });
-  };
 
   const fetchDependencies = useCallback(async () => {
     try {
@@ -190,7 +170,7 @@ export default function PJPVerifyPage() {
         setAllDealers(data.dealers || []);
         setAllSites(data.sites || []);
       }
-    } catch (e) { toast.error("Error loading dependency data."); }
+    } catch (e) { console.error("Error loading dependencies"); }
   }, []);
 
   const fetchPendingPJPs = useCallback(async () => {
@@ -203,6 +183,72 @@ export default function PJPVerifyPage() {
   }, []);
 
   useEffect(() => { fetchPendingPJPs(); fetchDependencies(); }, [fetchPendingPJPs, fetchDependencies]);
+
+  // --- Client Side Filtering ---
+  const filteredPJPs = useMemo(() => {
+    return pendingPJPs.filter(pjp => {
+      const search = debouncedSearchQuery.toLowerCase();
+      const matchesSearch = !search || 
+        (pjp.salesmanName || '').toLowerCase().includes(search) ||
+        pjp.areaToBeVisited.toLowerCase().includes(search);
+
+      let matchesDate = true;
+      if (dateRange?.from) {
+        const planDate = new Date(pjp.planDate);
+        const fromDate = new Date(dateRange.from);
+        const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
+
+        planDate.setHours(0, 0, 0, 0);
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+        matchesDate = planDate >= fromDate && planDate <= toDate;
+      }
+
+      return matchesSearch && matchesDate;
+    });
+  }, [pendingPJPs, debouncedSearchQuery, dateRange]);
+
+  // --- Handlers ---
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(new Set(filteredPJPs.map(p => p.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleBulkVerify = async () => {
+    const idsToVerify = Array.from(selectedIds);
+    if (idsToVerify.length === 0) return;
+
+    setIsPatching(true);
+    try {
+      const res = await fetch(`${BULK_VERIFY}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: idsToVerify }),
+      });
+
+      if (res.ok) {
+        toast.success(`${idsToVerify.length} plans verified!`);
+        setSelectedIds(new Set());
+        fetchPendingPJPs();
+      }
+    } catch (error) {
+      toast.error("Bulk verification failed");
+    } finally {
+      setIsPatching(false);
+    }
+  };
 
   const openModificationDialog = (pjp: PermanentJourneyPlanVerification) => {
     setPjpToModify({
@@ -241,67 +287,6 @@ export default function PJPVerifyPage() {
     } catch (e: any) { toast.error(e.message); } finally { setIsPatching(false); }
   };
 
-  const selectAll = () => {
-    if (selectedIds.size === filteredPJPs.length && filteredPJPs.length > 0) {
-      setSelectedIds(new Set());
-    }
-    else {
-      setSelectedIds(new Set(filteredPJPs.map(p => p.id)));
-    }
-  };
-
-  const handleBulkVerify = async () => {
-    const idsToVerify = Array.from(selectedIds);
-
-    if (idsToVerify.length === 0) return;
-
-    setIsPatching(true);
-    try {
-      const res = await fetch(`${BULK_VERIFY}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: Array.from(selectedIds) }),
-      });
-
-      if (res.ok) {
-        toast.success(`${idsToVerify.length} plans verified!`);
-        setSelectedIds(new Set()); // Reset checkboxes
-        fetchPendingPJPs();        // Refresh the list
-      }
-    } catch (error) {
-      toast.error("Bulk verification failed");
-    } finally {
-      setVerifyAllPjps(false);
-    }
-  };
-
-  // --- FILTER LOGIC ---
-  const filteredPJPs = useMemo(() => {
-    return pendingPJPs.filter(pjp => {
-      const matchesSearch = (pjp.salesmanName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pjp.areaToBeVisited.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesSalesman = selectedSalesmanFilter === 'all' || pjp.salesmanName === selectedSalesmanFilter;
-      const matchesRegion = selectedRegionFilter === 'all' || selectedRegionFilter === 'All Zone' || pjp.salesmanRegion === selectedRegionFilter;
-
-      let matchesDate = true;
-      if (dateRange && dateRange.from) {
-        const planDate = new Date(pjp.planDate); // Assuming YYYY-MM-DD string
-        const fromDate = new Date(dateRange.from);
-        // If 'to' is undefined, default to 'from' (single day selection)
-        const toDate = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
-
-        // Normalize all times to midnight (00:00:00) to compare dates only
-        planDate.setHours(0, 0, 0, 0);
-        fromDate.setHours(0, 0, 0, 0);
-        toDate.setHours(23, 59, 59, 999); // Set end of range to end of day
-
-        matchesDate = planDate >= fromDate && planDate <= toDate;
-      }
-
-      return matchesSearch && matchesSalesman && matchesRegion && matchesDate;
-    });
-  }, [pendingPJPs, searchQuery, selectedSalesmanFilter, selectedRegionFilter, dateRange]);
-
   const pjpVerificationColumns: ColumnDef<PermanentJourneyPlanVerification>[] = [
     { accessorKey: 'salesmanName', header: 'Salesman' },
     { accessorKey: 'planDate', header: 'Date' },
@@ -321,22 +306,20 @@ export default function PJPVerifyPage() {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button variant="default" size="sm" className="bg-green-600" onClick={() => openModificationDialog(row.original)}>Review & Verify</Button>
-        </div>
+        <Button variant="outline" size="sm" className="h-8 text-blue-600 border-blue-200" onClick={() => openModificationDialog(row.original)}>
+          Review & Verify
+        </Button>
       )
     },
     {
       id: 'select',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase text-white">Select</span>
+        <div className="flex items-center justify-center">
           <input
-            name='Select'
             type="checkbox"
             onChange={selectAll}
             checked={selectedIds.size === filteredPJPs.length && filteredPJPs.length > 0}
-            className="h-4 w-4 rounded border-slate-700 bg-slate-800 cursor-pointer"
+            className="h-4 w-4 rounded border-slate-300 text-primary cursor-pointer"
           />
         </div>
       ),
@@ -346,167 +329,92 @@ export default function PJPVerifyPage() {
             type="checkbox"
             checked={selectedIds.has(row.original.id)}
             onChange={() => toggleSelect(row.original.id)}
-            className="h-4 w-4 rounded border-slate-700 bg-slate-800 cursor-pointer"
+            className="h-4 w-4 rounded border-slate-300 text-primary cursor-pointer"
           />
         </div>
       ),
+      size: 40,
     },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground space-y-6 p-8 pt-6">
-      <div className="flex items-center gap-3">
-        <h2 className="text-3xl font-bold tracking-tight text-white">PJP Verification Queue</h2>
-        <RefreshDataButton
-          cachePrefix="pjp-verification"
-          onRefresh={fetchPendingPJPs}
-        />
-      </div>
-
-      {/* --- BULK ACTION BAR --- */}
-      {selectedIds.size > 0 && (
-        <div className="flex items-center justify-between p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
-          <div className="flex items-center gap-4">
-            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-black font-bold">
-              {selectedIds.size}
-            </div>
-            <div>
-              <p className="text-white font-medium">Items Selected</p>
-              <p className="text-xs text-amber-500/80">Bulk verify will approve these plans without modifications.</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedIds(new Set())}
-              className="text-slate-400 hover:text-white"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleBulkVerify}
-              disabled={verifyAllpjps}
-              className="bg-primary text-white font-bold"
-            >
-              {verifyAllpjps ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
-              Verify Selected PJPs
-            </Button>
+    <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
+      <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl font-bold tracking-tight">PJP Verification Queue</h2>
+            <RefreshDataButton cachePrefix="pjp-verification" onRefresh={fetchPendingPJPs} />
           </div>
         </div>
-      )}
 
-      <Card className="shadow-xl bg-slate-900/20 border-slate-800">
-        <CardContent className="p-6">
-
-          {/* --- FIXED FILTER SECTION WITH BORDERS --- */}
-          <div className="flex flex-wrap gap-4 mb-8 p-4 rounded-xl border border-slate-800 items-end">
-            {/* 1. Date Range Picker */}
-            <div className="space-y-1.5 flex flex-col w-full sm:w-[300px]">
-              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Plan Date Range</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal h-10 border-slate-700 bg-slate-800/50 text-white",
-                      !dateRange && "text-slate-400"
-                    )}
-                  >
-                    <IconCalendar className="mr-2 h-4 w-4" />
-                    {dateRange?.from ? (
-                      dateRange.to ? (
-                        <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
-                      ) : (format(dateRange.from, "LLL dd, y"))
-                    ) : (
-                      <span>All Dates</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 border-slate-800 bg-slate-900" align="start">
-                  <Calendar
-                    mode="range"
-                    defaultMonth={dateRange?.from || new Date()}
-                    selected={dateRange}
-                    onSelect={setDateRange}
-                    numberOfMonths={2}
-                    className="bg-slate-900 text-white border-slate-800"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="space-y-1.5 flex flex-col">
-              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Search Queue</Label>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
-                <Input
-                  placeholder="Salesman or Area..."
-                  className="w-[250px] pl-9 border-slate-700 text-white focus:border-amber-500 transition-colors"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
+        {/* --- BULK ACTION BAR --- */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-8 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold">
+                {selectedIds.size}
+              </div>
+              <div>
+                <p className="text-amber-900 font-medium">Items Selected</p>
+                <p className="text-xs text-amber-700">Bulk verify will approve these plans without modifications.</p>
               </div>
             </div>
-
-            <div className="space-y-1.5 flex flex-col">
-              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Salesman</Label>
-              <Select value={selectedSalesmanFilter} onValueChange={setSelectedSalesmanFilter}>
-                <SelectTrigger className="w-[200px] border-slate-700 text-white">
-                  <SelectValue placeholder="All Salesmen" />
-                </SelectTrigger>
-                <SelectContent className=" border-slate-800 text-white">
-                  <SelectItem value="all">All Salesmen</SelectItem>
-                  {Array.from(new Set(pendingPJPs.map(p => p.salesmanName)))
-                    .filter((name): name is string => Boolean(name))
-                    .sort()
-                    .map(n => (
-                    <SelectItem key={n} value={n}>{n}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex gap-3">
+              <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())} className="text-amber-800 hover:bg-amber-100">
+                Cancel
+              </Button>
+              <Button onClick={handleBulkVerify} disabled={isPatching} className="bg-amber-600 hover:bg-amber-700 text-white font-bold">
+                {isPatching ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
+                Verify Selected PJPs
+              </Button>
             </div>
+          </div>
+        )}
 
-            <div className="space-y-1.5 flex flex-col">
-              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Region</Label>
-              <Select value={selectedRegionFilter} onValueChange={setSelectedRegionFilter}>
-                <SelectTrigger className="w-[200px] border-slate-700 text-white">
-                  <SelectValue placeholder="All Regions" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800 text-white">
-                  {Zone.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}
-                </SelectContent>
-              </Select>
+        {/* --- Unified Global Filter Bar --- */}
+        <div className="w-full relative z-50">
+          <GlobalFilterBar 
+            showSearch={true}
+            showRole={false} 
+            showZone={false} 
+            showArea={false}
+            showDateRange={true}
+            showStatus={false}
+
+            searchVal={searchQuery}
+            dateRangeVal={dateRange}
+
+            onSearchChange={setSearchQuery}
+            onDateRangeChange={setDateRange}
+          />
+        </div>
+
+        <div className="bg-card p-1 rounded-lg border border-border shadow-sm relative z-0">
+          {loading && pendingPJPs.length === 0 ? (
+            <div className="flex flex-col justify-center items-center h-64 gap-2">
+               <Loader2 className="h-8 w-8 animate-spin text-primary" />
+               <p className="text-muted-foreground">Loading verification queue...</p>
             </div>
-
-            <Button
-              variant="ghost"
-              className="text-slate-500 hover:text-white hover:bg-slate-800 h-10 transition-all"
-              onClick={() => { setSearchQuery(""); setSelectedSalesmanFilter("all"); setSelectedRegionFilter("all"); }}
-            >
-              <FilterX className="w-4 h-4 mr-2" /> Reset Filters
-            </Button>
-          </div>
-
-          {/* Table Container */}
-          <div className="rounded-md border border-slate-800">
-            <DataTableReusable
-              columns={pjpVerificationColumns}
-              data={filteredPJPs}
-            />
-          </div>
-        </CardContent>
-      </Card>
+          ) : filteredPJPs.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12">
+               No pending plans found matching the filters.
+            </div>
+          ) : (
+            <DataTableReusable columns={pjpVerificationColumns} data={filteredPJPs} />
+          )}
+        </div>
+      </div>
 
       <Dialog open={isModificationDialogOpen} onOpenChange={setIsModificationDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto text-slate-100">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-background">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary"><ClipboardCheck /> Review & Link PJP</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><ClipboardCheck className="text-primary" /> Review & Link PJP</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handlePatchPJP} className="space-y-6 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Store className="w-3 h-3" /> Link Dealer</Label>
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1"><Store className="w-3 h-3" /> Link Dealer</Label>
                 <SearchableSelect
                   options={allDealers}
                   value={selectedDealerId}
@@ -519,7 +427,7 @@ export default function PJPVerifyPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><HardHat className="w-3 h-3" /> Link Site</Label>
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1"><HardHat className="w-3 h-3" /> Link Site</Label>
                 <SearchableSelect
                   options={allSites}
                   value={selectedSiteId}
@@ -534,35 +442,38 @@ export default function PJPVerifyPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1"><Label className="text-xs">Plan Date</Label><Input type="date" value={pjpToModify?.planDate ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, planDate: e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
-              <div className="space-y-1"><Label className="text-xs">Route Address</Label><Input value={pjpToModify?.route ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, route: e.target.value } : null)} className="bg-slate-800 border-slate-700 text-xs font-mono" /></div>
+              <div className="space-y-1"><Label className="text-xs">Plan Date</Label><Input type="date" value={pjpToModify?.planDate ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, planDate: e.target.value } : null)} className="bg-muted/50" /></div>
+              <div className="space-y-1"><Label className="text-xs">Route Address</Label><Input value={pjpToModify?.route ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, route: e.target.value } : null)} className="bg-muted/50 text-xs font-mono" /></div>
             </div>
 
-            <Separator className="bg-slate-800" />
+            <Separator />
 
             <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-1"><Label className="text-xs">New Sites</Label><Input type="number" value={pjpToModify?.plannedNewSiteVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedNewSiteVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
-              <div className="space-y-1"><Label className="text-xs">Follow-ups</Label><Input type="number" value={pjpToModify?.plannedFollowUpSiteVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedFollowUpSiteVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
-              <div className="space-y-1"><Label className="text-xs">Dealers</Label><Input type="number" value={pjpToModify?.plannedNewDealerVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedNewDealerVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
-              <div className="space-y-1"><Label className="text-xs">Influencers</Label><Input type="number" value={pjpToModify?.plannedInfluencerVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedInfluencerVisits: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
-              <div className="space-y-1"><Label className="text-xs">Bags</Label><Input type="number" value={pjpToModify?.noOfConvertedBags ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, noOfConvertedBags: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
-              <div className="space-y-1"><Label className="text-xs">Schemes</Label><Input type="number" value={pjpToModify?.noOfMasonPcSchemes ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, noOfMasonPcSchemes: +e.target.value } : null)} className="bg-slate-800 border-slate-700" /></div>
+              <div className="space-y-1"><Label className="text-xs">New Sites</Label><Input type="number" value={pjpToModify?.plannedNewSiteVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedNewSiteVisits: +e.target.value } : null)} className="bg-muted/50" /></div>
+              <div className="space-y-1"><Label className="text-xs">Follow-ups</Label><Input type="number" value={pjpToModify?.plannedFollowUpSiteVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedFollowUpSiteVisits: +e.target.value } : null)} className="bg-muted/50" /></div>
+              <div className="space-y-1"><Label className="text-xs">Dealers</Label><Input type="number" value={pjpToModify?.plannedNewDealerVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedNewDealerVisits: +e.target.value } : null)} className="bg-muted/50" /></div>
+              <div className="space-y-1"><Label className="text-xs">Influencers</Label><Input type="number" value={pjpToModify?.plannedInfluencerVisits ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, plannedInfluencerVisits: +e.target.value } : null)} className="bg-muted/50" /></div>
+              <div className="space-y-1"><Label className="text-xs">Bags</Label><Input type="number" value={pjpToModify?.noOfConvertedBags ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, noOfConvertedBags: +e.target.value } : null)} className="bg-muted/50" /></div>
+              <div className="space-y-1"><Label className="text-xs">Schemes</Label><Input type="number" value={pjpToModify?.noOfMasonPcSchemes ?? 0} onChange={e => setPjpToModify(p => p ? { ...p, noOfMasonPcSchemes: +e.target.value } : null)} className="bg-muted/50" /></div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase font-bold text-slate-500">Influencer Detail</Label>
+              <Label className="text-[10px] uppercase font-bold text-muted-foreground">Influencer Detail</Label>
               <div className="grid grid-cols-3 gap-2">
-                <Input placeholder="Name" value={pjpToModify?.influencerName ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, influencerName: e.target.value } : null)} className="bg-slate-800 border-slate-700" />
-                <Input placeholder="Activity" value={pjpToModify?.activityType ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, activityType: e.target.value } : null)} className="bg-slate-800 border-slate-700" />
-                <Input placeholder="Phone" value={pjpToModify?.influencerPhone ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, influencerPhone: e.target.value } : null)} className="bg-slate-800 border-slate-700" />
+                <Input placeholder="Name" value={pjpToModify?.influencerName ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, influencerName: e.target.value } : null)} className="bg-muted/50" />
+                <Input placeholder="Activity" value={pjpToModify?.activityType ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, activityType: e.target.value } : null)} className="bg-muted/50" />
+                <Input placeholder="Phone" value={pjpToModify?.influencerPhone ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, influencerPhone: e.target.value } : null)} className="bg-muted/50" />
               </div>
             </div>
 
-            <Textarea placeholder="Verification Remarks..." value={pjpToModify?.additionalVisitRemarks ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, additionalVisitRemarks: e.target.value } : null)} className="bg-slate-800 border-slate-700 h-20" />
+            <div className="space-y-2">
+              <Label className="text-xs">Verification Remarks</Label>
+              <Textarea placeholder="Verification Remarks..." value={pjpToModify?.additionalVisitRemarks ?? ''} onChange={e => setPjpToModify(p => p ? { ...p, additionalVisitRemarks: e.target.value } : null)} className="bg-muted/50 h-20" />
+            </div>
 
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsModificationDialogOpen(false)} className="border-slate-700 text-slate-300">Cancel</Button>
-              <Button type="submit" disabled={isPatching} className="bg-primary hover:bg-primary/50 text-white font-bold">
+              <Button type="button" variant="outline" onClick={() => setIsModificationDialogOpen(false)}>Cancel</Button>
+              <Button type="submit" disabled={isPatching}>
                 {isPatching ? <Loader2 className="animate-spin mr-2" /> : null} Finalize & Verify
               </Button>
             </DialogFooter>
