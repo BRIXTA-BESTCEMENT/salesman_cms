@@ -20,8 +20,8 @@ import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { GlobalFilterBar } from '@/components/global-filter-bar'; 
-import { useDebounce } from '@/hooks/use-debounce-search'; 
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -128,7 +128,7 @@ export default function DailyVisitReportsPage() {
   const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
   const [pjpStatusFilter, setPjpStatusFilter] = useState('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-  
+
   // --- Backend Filter Options ---
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [availableRegions, setAvailableRegions] = useState<string[]>([]);
@@ -147,11 +147,11 @@ export default function DailyVisitReportsPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      
+
       // Join arrays for multi-select
       if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
       if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
-      
+
       if (customerTypeFilter !== 'all') url.searchParams.append('customerType', customerTypeFilter);
       if (pjpStatusFilter !== 'all') url.searchParams.append('pjpStatus', pjpStatusFilter);
 
@@ -162,13 +162,15 @@ export default function DailyVisitReportsPage() {
         url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
 
-      if (!response.ok) {
-        if (response.status === 401) return router.push('/login');
-        if (response.status === 403) return router.push('/dashboard');
-        throw new Error(`HTTP error! ${response.status}`);
-      }
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
 
       const result = await response.json();
       setTotalCount(result.totalCount || 0);
@@ -189,7 +191,16 @@ export default function DailyVisitReportsPage() {
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (response.ok) {
         const data: LocationsResponse = await response.json();
         setAvailableAreas(data.areas || []);
@@ -265,7 +276,7 @@ export default function DailyVisitReportsPage() {
 
         const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
           if (!lat || !lng) return null;
-          return `http://maps.google.com/?q=${lat},${lng}`; 
+          return `http://maps.google.com/?q=${lat},${lng}`;
         };
 
         const mapLink = getGoogleMapsLink(latitude, longitude);
@@ -330,7 +341,7 @@ export default function DailyVisitReportsPage() {
       cell: ({ row }) => {
         const status = row.original.pjpStatus || "Unplanned";
         const isUnplanned = status.toUpperCase() === 'UNPLANNED';
-        
+
         return isUnplanned ? (
           <Badge variant="destructive" className="shadow-none tracking-wide">Unplanned</Badge>
         ) : (
@@ -376,7 +387,7 @@ export default function DailyVisitReportsPage() {
 
         {/* --- Unified Global Filter Bar --- */}
         <div className="w-full">
-          <GlobalFilterBar 
+          <GlobalFilterBar
             showSearch={true}
             showRole={true} // Using Role slot for Customer Type!
             showZone={true}

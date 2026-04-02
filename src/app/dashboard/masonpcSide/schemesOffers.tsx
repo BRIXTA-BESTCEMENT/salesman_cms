@@ -9,8 +9,8 @@ import { Search, Loader2, IndianRupee, Eye } from 'lucide-react';
 
 // Reusable Components
 import { DataTableReusable } from '@/components/data-table-reusable';
-import { GlobalFilterBar } from '@/components/global-filter-bar'; 
-import { useDebounce } from '@/hooks/use-debounce-search'; 
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -56,7 +56,7 @@ export default function SchemesRewardsManagement() {
 
   const [rewardSearch, setRewardSearch] = useState('');
   const debouncedRewardSearch = useDebounce(rewardSearch, 500);
-  
+
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -64,10 +64,27 @@ export default function SchemesRewardsManagement() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
+      const fetchConfig: RequestInit = {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      };
+
+      const schemesUrl = new URL(SCHEMES_OFFERS_API_ENDPOINT, window.location.origin);
+      schemesUrl.searchParams.append('_t', Date.now().toString());
+
+      const rewardsUrl = new URL(REWARDS_API_ENDPOINT, window.location.origin);
+      rewardsUrl.searchParams.append('_t', Date.now().toString());
+
+      const categoriesUrl = new URL(CATEGORIES_API_ENDPOINT, window.location.origin);
+      categoriesUrl.searchParams.append('_t', Date.now().toString());
+
       const [schemesRes, rewardsRes, categoriesRes] = await Promise.all([
-        fetch(SCHEMES_OFFERS_API_ENDPOINT),
-        fetch(REWARDS_API_ENDPOINT),
-        fetch(CATEGORIES_API_ENDPOINT)
+        fetch(schemesUrl.toString(), fetchConfig),
+        fetch(rewardsUrl.toString(), fetchConfig),
+        fetch(categoriesUrl.toString(), fetchConfig)
       ]);
 
       if (!schemesRes.ok || !rewardsRes.ok) throw new Error("Failed to load data");
@@ -252,9 +269,9 @@ export default function SchemesRewardsManagement() {
             </div>
           </CardHeader>
           <CardContent>
-            
+
             <div className="mb-4">
-              <GlobalFilterBar 
+              <GlobalFilterBar
                 showSearch={true}
                 showRole={true} // Used for Category
                 showStatus={true}

@@ -161,17 +161,19 @@ export default function TechnicalVisitReportsPage() {
         url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       const result = await response.json();
       const rawData: TechnicalVisitReport[] = result.data || [];
-
       setTotalCount(result.totalCount || 0);
-
-      if (!response.ok) {
-        if (response.status === 401) { router.push('/login'); return; }
-        if (response.status === 403) { router.push('/dashboard'); return; }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       const validatedData = rawData.map((item) => {
         try {
@@ -196,7 +198,16 @@ export default function TechnicalVisitReportsPage() {
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (response.ok) {
         const data: LocationsResponse = await response.json();
         setAvailableAreas(data.areas || []);

@@ -15,8 +15,8 @@ import { Button } from '@/components/ui/button';
 
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { RefreshDataButton } from '@/components/RefreshDataButton';
-import { GlobalFilterBar } from '@/components/global-filter-bar'; 
-import { useDebounce } from '@/hooks/use-debounce-search'; 
+import { GlobalFilterBar } from '@/components/global-filter-bar';
+import { useDebounce } from '@/hooks/use-debounce-search';
 
 import { selectSalesOrderSchema } from '../../../../drizzle/zodSchemas';
 
@@ -201,7 +201,7 @@ export default function SalesOrdersTable() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      
+
       // Join arrays for multi-select
       if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
       if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
@@ -214,31 +214,24 @@ export default function SalesOrdersTable() {
         url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
-      const response = await fetch(url.toString());
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error('You are not authenticated. Redirecting to login.');
-          router.push('/login');
-          return;
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
-        if (response.status === 403) {
-          toast.error('You do not have permission to access this page. Redirecting.');
-          router.push('/dashboard');
-          return;
-        }
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
+      });
 
       const result = await response.json();
       const orders: any[] = result.data || [];
-      
+
       setTotalCount(result.totalCount || 0);
-      
+
       const validatedOrders = z.array(extendedSalesOrderSchema).parse(orders).map(order => ({
         ...order,
-        id: order.id?.toString() || `${Math.random()}`, 
+        id: order.id?.toString() || `${Math.random()}`,
       })) as SalesOrder[];
 
       setData(validatedOrders);
@@ -256,9 +249,18 @@ export default function SalesOrdersTable() {
     setIsLoadingLocations(true);
     setLocationError(null);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      
+
       const data: LocationsResponse = await response.json();
       const safeAreas = Array.isArray(data.areas) ? data.areas.filter(Boolean) : [];
       const safeRegions = Array.isArray(data.regions) ? data.regions.filter(Boolean) : [];
@@ -288,7 +290,7 @@ export default function SalesOrdersTable() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground w-full">
       <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 w-full">
-        
+
         <div className="flex items-center justify-between space-y-2">
           <div className="flex items-center gap-4">
             <h2 className="text-3xl font-bold tracking-tight">Sales Orders</h2>
@@ -304,7 +306,7 @@ export default function SalesOrdersTable() {
 
         {/* --- Unified Global Filter Bar --- */}
         <div className="w-full">
-          <GlobalFilterBar 
+          <GlobalFilterBar
             showSearch={true}
             showRole={false}
             showZone={true}
@@ -326,7 +328,7 @@ export default function SalesOrdersTable() {
             onAreaChange={setAreaFilters}
           />
         </div>
-        
+
         {locationError && <p className="text-xs text-red-500 w-full mt-2 italic">Location Filter Error: {locationError}</p>}
 
         <div className="bg-card p-1 rounded-lg border border-border shadow-sm">

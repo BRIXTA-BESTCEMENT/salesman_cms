@@ -55,7 +55,19 @@ export default function VerifyDealersPage() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${apiURI}?status=PENDING`);
+            const url = new URL(apiURI, window.location.origin);
+            url.searchParams.append('status', 'PENDING'); 
+
+            url.searchParams.append('_t', Date.now().toString());
+
+            const response = await fetch(url.toString(), {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
+            
             const data = await response.json();
             const dealersArray = Array.isArray(data) ? data : data.dealers;
 

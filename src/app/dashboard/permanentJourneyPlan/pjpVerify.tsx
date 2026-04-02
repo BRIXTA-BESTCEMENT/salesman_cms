@@ -164,7 +164,17 @@ export default function PJPVerifyPage() {
 
   const fetchDependencies = useCallback(async () => {
     try {
-      const res = await fetch(OPTIONS_API);
+      const url = new URL(OPTIONS_API, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const res = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (res.ok) {
         const data = await res.json();
         setAllDealers(data.dealers || []);
@@ -176,7 +186,17 @@ export default function PJPVerifyPage() {
   const fetchPendingPJPs = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/pjp-verification`);
+      const url = new URL(`${API_BASE}/pjp-verification`, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       const data = await response.json();
       setPendingPJPs(z.array(extendedVerificationSchema).parse(data.plans || data));
     } catch (e: any) { toast.error("Error loading verification queue."); } finally { setLoading(false); }

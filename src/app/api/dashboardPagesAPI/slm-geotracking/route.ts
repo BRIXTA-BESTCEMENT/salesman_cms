@@ -4,7 +4,7 @@ import { connection, NextRequest, NextResponse } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, journeyOps, companies } from '../../../../../drizzle';
-import { eq, and, gte, lte, desc, sql, getTableColumns } from 'drizzle-orm';
+import { eq, and, or, gte, lte, desc, sql, getTableColumns, SQL } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectJourneyOpsSchema } from '../../../../../drizzle/zodSchemas';
@@ -60,10 +60,15 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
   const filterKey = `${startDateParam}-${endDateParam}`;
   cacheTag(`slm-geotracking-${companyId}-${filterKey}`);
 
-  const filters = [eq(users.companyId, companyId)];
+  const filters: (SQL | undefined)[] = [eq(users.companyId, companyId)];
 
   // JSONB Filter for status: 'COMPLETED' using native Drizzle SQL tag
-  filters.push(sql`${journeyOps.payload} @> '{"status": "COMPLETED"}'::jsonb`);
+  filters.push(
+    or(
+      sql`${journeyOps.payload} @> '{"status": "COMPLETED"}'::jsonb`,
+      eq(journeyOps.type, 'STOP')
+    )
+  );
 
   if (startDateParam) {
     const start = new Date(startDateParam);
@@ -99,7 +104,7 @@ async function getCachedTracking(companyId: number, startDateParam: string | nul
       id: String(row.opId), // Convert BigInt to string to prevent JSON serialization errors
       salesmanName: row.userFirstName && row.userLastName ? `${row.userFirstName} ${row.userLastName}` : row.userEmail || 'Unknown',
       employeeId: row.userSalesmanLoginId ?? null,
-      
+
       area: row.userArea ?? '',
       region: row.userRegion ?? '',
 

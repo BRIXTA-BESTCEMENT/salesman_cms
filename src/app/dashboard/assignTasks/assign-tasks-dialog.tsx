@@ -105,8 +105,22 @@ export function AssignTasksDialog({ isOpen, setIsOpen, salesmen, uniqueZones, un
     setSelectedDealerIds([]); 
 
     try {
-      const params = new URLSearchParams({ action: 'fetch_dealers', zone: selectedZone, area: selectedArea });
-      const response = await fetch(`${apiURI}?${params.toString()}`);
+      const url = new URL(apiURI, window.location.origin);
+      url.searchParams.append('action', 'fetch_dealers');
+
+      if (selectedZone) url.searchParams.append('zone', selectedZone);
+      if (selectedArea) url.searchParams.append('area', selectedArea);
+      
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (!response.ok) throw new Error("Failed to fetch dealers");
       const data = await response.json();
       setDealers(data.dealers || []);

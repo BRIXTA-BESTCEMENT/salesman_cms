@@ -150,7 +150,16 @@ export default function TsoMeetingsPage() {
       if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
       if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       const result = await response.json();
       const rawData = result.data || result;
       setTotalCount(result.totalCount || 0);
@@ -173,7 +182,17 @@ export default function TsoMeetingsPage() {
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (response.ok) {
         const data: LocationsResponse = await response.json();
         setAvailableAreas(Array.isArray(data.areas) ? data.areas.filter(Boolean) : []);

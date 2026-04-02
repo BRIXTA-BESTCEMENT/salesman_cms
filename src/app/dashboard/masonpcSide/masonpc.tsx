@@ -180,7 +180,16 @@ export default function MasonPcPage() {
       
       if (kycStatusFilter !== 'all') url.searchParams.set('kycStatus', kycStatusFilter);
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       const result = await response.json();
       setAllMasonPcRecords(result.data || []);
       setTotalCount(result.totalCount || 0);
@@ -197,7 +206,17 @@ export default function MasonPcPage() {
   const fetchLocations = useCallback(async () => {
     setIsLoadingLocations(true);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (response.ok) {
         const data: LocationsResponse = await response.json();
         setAvailableAreas(Array.isArray(data.areas) ? data.areas.filter(Boolean).sort() : []);
@@ -210,7 +229,17 @@ export default function MasonPcPage() {
 
   const fetchDropdownData = useCallback(async () => {
     try {
-      const res = await fetch(MASON_PC_FORM_OPTIONS);
+      const url = new URL(MASON_PC_FORM_OPTIONS, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const res = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (res.ok) {
         const data = await res.json();
         setTechUsers(data.users || []);

@@ -113,8 +113,15 @@ export default function RewardsRedemptionPage() {
         url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
 
       const data = await response.json();
       // Since the API now returns the filtered list directly:

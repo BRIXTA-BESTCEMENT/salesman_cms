@@ -91,7 +91,16 @@ export default function SlmLeavesPage() {
     setIsLoadingLocations(true);
     setLocationError(null);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data: LocationsResponse = await response.json();
 
@@ -130,21 +139,15 @@ export default function SlmLeavesPage() {
         url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error('You are not authenticated. Redirecting to login.');
-          router.push('/login');
-          return;
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
-        if (response.status === 403) {
-          toast.error('You do not have permission to access this page. Redirecting.');
-          router.push('/dashboard');
-          return;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      });
 
       const result = await response.json();
       const data = result.data || result;

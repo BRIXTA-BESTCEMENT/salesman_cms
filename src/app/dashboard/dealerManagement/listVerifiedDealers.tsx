@@ -71,7 +71,17 @@ export default function ListVerifiedDealersPage() {
 
   const fetchFilters = useCallback(async () => {
     try {
-      const response = await fetch(`${VERIFIED_DEALERS_API}?action=fetch_filters`);
+      const url = new URL(VERIFIED_DEALERS_API, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (response.ok) {
         const data = await response.json();
         setUniqueZones(data.uniqueZones || []);
@@ -97,7 +107,16 @@ export default function ListVerifiedDealersPage() {
       if (zoneFilters.length > 0) url.searchParams.append('zone', zoneFilters.join(','));
       if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       const result = await response.json();
       const rawData = result.data || result;
       setTotalCount(result.totalCount || 0);

@@ -101,8 +101,8 @@ export default function TsoPerformanceMetricsPage() {
     // --- Standardized Filter State ---
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
-    
-    const [dateRange, setDateRange] = useState<DateRange | undefined>({from: startOfMonth(new Date()), to: new Date() });
+
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: startOfMonth(new Date()), to: new Date() });
     const [areaFilters, setAreaFilters] = useState<string[]>([]);
     const [zoneFilters, setZoneFilters] = useState<string[]>([]);
 
@@ -128,11 +128,11 @@ export default function TsoPerformanceMetricsPage() {
             url.searchParams.append('pageSize', pageSize.toString());
 
             if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-            
+
             // Join arrays for multi-select
             if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
             if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
-            
+
             // --- Parse DateRange for API ---
             if (dateRange?.from) {
                 url.searchParams.append('startDate', format(dateRange.from, "yyyy-MM-dd"));
@@ -144,14 +144,17 @@ export default function TsoPerformanceMetricsPage() {
                 url.searchParams.append('endDate', format(dateRange.from, "yyyy-MM-dd"));
             }
 
-            const response = await fetch(url.toString());
-            const result = await response.json();
+            url.searchParams.append('_t', Date.now().toString());
 
-            if (!response.ok) {
-                if (response.status === 401) { router.push('/login'); return; }
-                if (response.status === 403) { router.push('/dashboard'); return; }
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            const response = await fetch(url.toString(), {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
+
+            const result = await response.json();
 
             const rawData: TsoPerformanceMetric[] = result.data || [];
             setTotalCount(result.totalCount || 0);
@@ -181,7 +184,16 @@ export default function TsoPerformanceMetricsPage() {
     const fetchLocations = useCallback(async () => {
         setIsLoadingLocations(true);
         try {
-            const response = await fetch(LOCATION_API_ENDPOINT);
+            const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+            url.searchParams.append('_t', Date.now().toString());
+
+            const response = await fetch(url.toString(), {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
             if (response.ok) {
                 const data: LocationsResponse = await response.json();
                 setAvailableAreas(data.areas || []);
@@ -288,7 +300,7 @@ export default function TsoPerformanceMetricsPage() {
 
                 {/* --- Unified Global Filter Bar --- */}
                 <div className="w-full">
-                    <GlobalFilterBar 
+                    <GlobalFilterBar
                         showSearch={true}
                         showRole={false}
                         showZone={true}

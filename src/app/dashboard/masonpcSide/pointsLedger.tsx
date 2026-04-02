@@ -89,7 +89,16 @@ export default function PointsLedgerPage() {
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
       if (sourceTypeFilter !== 'all') url.searchParams.append('sourceType', sourceTypeFilter);
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       const result = await response.json();
       setLedgerRecords(result.data || []);
       setTotalCount(result.totalCount || 0);

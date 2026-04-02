@@ -15,7 +15,7 @@ export async function refreshCompanyCache(cachePrefix: string) {
   try {
     const session = await verifySession();
     if (!session || !session.userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return { success: false, error: 'Unauthorized' };
     }
 
     const result = await db

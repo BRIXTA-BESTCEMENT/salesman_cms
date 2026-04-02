@@ -42,8 +42,15 @@ export function TeamOverview({ currentUserRole }: TeamOverviewProps) {
     try {
       // Fetching all data so we can filter smoothly on the client side
       const url = new URL(dataFetchURI, window.location.origin);
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error('Failed to fetch team data');
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
 
       const data: TeamMember[] = await response.json();
       setTeamData(data);

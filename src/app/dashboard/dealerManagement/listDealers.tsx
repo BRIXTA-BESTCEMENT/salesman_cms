@@ -73,7 +73,17 @@ export default function ListDealersPage() {
     setLoadingTypes(true);
     setTypesError(null);
     try {
-      const res = await fetch(DEALER_TYPES_API);
+      const url = new URL(DEALER_TYPES_API, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const res = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json() as { type: string[] };
       const safe = Array.isArray(data.type) ? data.type.filter(Boolean) : [];
@@ -102,7 +112,16 @@ export default function ListDealersPage() {
       
       if (typeFilter !== 'all') url.searchParams.append('type', typeFilter);
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       const result = await response.json();
       const rawData = result.data || result; 
       setTotalCount(result.totalCount || 0);

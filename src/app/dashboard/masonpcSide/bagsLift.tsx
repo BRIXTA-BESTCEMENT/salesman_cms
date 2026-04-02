@@ -147,7 +147,16 @@ export default function BagsLiftPage() {
         url.searchParams.append('toDate', format(dateRange.from, "yyyy-MM-dd"));
       }
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       const result = await response.json();
       const data: any[] = result.data || result;
       
@@ -173,10 +182,17 @@ export default function BagsLiftPage() {
     setIsLoadingLocations(true);
     setLocationError(null);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       const data: LocationsResponse = await response.json();
       setAvailableAreas(Array.isArray(data.areas) ? data.areas.filter(Boolean).sort() : []);
       setAvailableRegions(Array.isArray(data.regions) ? data.regions.filter(Boolean).sort() : []);

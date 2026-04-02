@@ -99,7 +99,16 @@ export default function PJPListPage() {
         url.searchParams.append('toDate', format(dateRange.from, "yyyy-MM-dd"));
       }
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       const result = await response.json();
       const data: any[] = result.data || result;
       

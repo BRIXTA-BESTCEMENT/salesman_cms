@@ -118,7 +118,16 @@ export default function SalesmanGeoTrackingPage() {
     setIsLoadingLocations(true);
     setLocationError(null);
     try {
-      const response = await fetch(LOCATION_API_ENDPOINT);
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data: LocationsResponse = await response.json();
 
@@ -149,13 +158,16 @@ export default function SalesmanGeoTrackingPage() {
         url.searchParams.append('endDate', format(dateRange.to, 'yyyy-MM-dd'));
       }
 
-      const res = await fetch(url.toString());
-      if (!res.ok) {
-        if (res.status === 401) {
-          toast.error('You are not authenticated.');
+      url.searchParams.append('_t', Date.now().toString());
+
+      const res = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         }
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+      });
+      
       const rawData = await res.json();
 
       const validatedData = rawData

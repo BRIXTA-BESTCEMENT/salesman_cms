@@ -49,10 +49,17 @@ export default function CompetitionReportsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/dashboardPagesAPI/reports/competition-reports`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const url = new URL(`/api/dashboardPagesAPI/reports/competition-reports`, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       const data: any[] = await response.json();
       
       const validatedData = data.map((item) => {

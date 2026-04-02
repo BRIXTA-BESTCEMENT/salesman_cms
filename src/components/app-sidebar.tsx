@@ -107,11 +107,11 @@ const menuItems: MenuItem[] = [
         url: "/dashboard/masonpcSide",
         requiredPerm: ['READ', 'WRITE', 'UPDATE']
       },
-      {
-        title: "Logistics IO",
-        url: "/dashboard/logisticsIO",
-        requiredPerm: ['READ', 'WRITE', 'UPDATE']
-      },
+      // {
+      //   title: "Logistics IO",
+      //   url: "/dashboard/logisticsIO",
+      //   requiredPerm: ['READ', 'WRITE', 'UPDATE']
+      // },
     ],
   },
   {

@@ -94,9 +94,9 @@ const getGoogleMapsLink = (lat?: number | null, lng?: number | null) => {
 
 const getTvrCustomerTypeBadgeColor = (type: string | null) => {
   if (!type) return 'secondary';
-  if (type === 'IHB/Site') return 'default'; 
-  if (type.includes('Dealer')) return 'destructive'; 
-  return 'outline'; 
+  if (type === 'IHB/Site') return 'default';
+  if (type.includes('Dealer')) return 'destructive';
+  return 'outline';
 };
 
 // --- REUSABLE UI COMPONENTS ---
@@ -118,7 +118,7 @@ export default function HybridReportsPage() {
 
   const [dvrs, setDvrs] = useState<DailyVisitReport[]>([]);
   const [tvrs, setTvrs] = useState<TechnicalVisitReport[]>([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [totalDvrCount, setTotalDvrCount] = useState(0);
   const [totalTvrCount, setTotalTvrCount] = useState(0);
@@ -132,7 +132,7 @@ export default function HybridReportsPage() {
   // --- Standardized Filter State ---
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  
+
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [areaFilters, setAreaFilters] = useState<string[]>([]);
   const [zoneFilters, setZoneFilters] = useState<string[]>([]);
@@ -163,11 +163,11 @@ export default function HybridReportsPage() {
       url.searchParams.append('pageSize', pageSize.toString());
 
       if (debouncedSearchQuery) url.searchParams.append('search', debouncedSearchQuery);
-      
+
       // Join arrays for multi-select
       if (areaFilters.length > 0) url.searchParams.append('area', areaFilters.join(','));
       if (zoneFilters.length > 0) url.searchParams.append('region', zoneFilters.join(','));
-      
+
       if (customerTypeFilter !== 'all') url.searchParams.append('customerType', customerTypeFilter);
 
       // Add Date Params
@@ -178,16 +178,18 @@ export default function HybridReportsPage() {
         url.searchParams.append('endDate', format(dateRange.from, 'yyyy-MM-dd'));
       }
 
-      const response = await fetch(url.toString());
+      url.searchParams.append('_t', Date.now().toString());
 
-      if (!response.ok) {
-        if (response.status === 401) return router.push('/login');
-        if (response.status === 403) return router.push('/dashboard');
-        throw new Error(`HTTP error! ${response.status}`);
-      }
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
 
       const result = await response.json();
-      
+
       setTotalDvrCount(result.dvrs.totalCount || 0);
       setTotalTvrCount(result.tvrs.totalCount || 0);
 
@@ -196,7 +198,7 @@ export default function HybridReportsPage() {
       }).filter(Boolean) as DailyVisitReport[];
 
       const validatedTvrs = (result.tvrs.data || []).map((item: any) => {
-        try { 
+        try {
           const v = extendedTechnicalVisitReportSchema.parse(item);
           return { ...v, id: (v as any).id?.toString() || `${Math.random()}` } as TechnicalVisitReport;
         } catch (e) { return null; }
@@ -214,13 +216,22 @@ export default function HybridReportsPage() {
 
   const fetchLocations = useCallback(async () => {
     try {
-      const locRes = await fetch(LOCATION_API_ENDPOINT);
-      if (locRes.ok) {
-        const data: LocationsResponse = await locRes.json();
+      const url = new URL(LOCATION_API_ENDPOINT, window.location.origin);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      if (response.ok) {
+        const data: LocationsResponse = await response.json();
         setAvailableAreas(data.areas || []);
         setAvailableRegions(data.regions || []);
       }
-    } catch(e) {
+    } catch (e) {
       console.error("Failed to load locations", e);
     }
   }, []);
@@ -231,7 +242,7 @@ export default function HybridReportsPage() {
   // --- Map raw string arrays to `{ label, value }` Options ---
   const zoneOptions = useMemo(() => availableRegions.sort().map(r => ({ label: r, value: r })), [availableRegions]);
   const areaOptions = useMemo(() => availableAreas.sort().map(a => ({ label: a, value: a })), [availableAreas]);
-  
+
   // Dynamically swap the customer type options based on the active tab!
   const customerTypeOptions = useMemo(() => {
     const types = activeTab === 'dvr' ? DVR_CUSTOMER_TYPES : TVR_CUSTOMER_TYPES;
@@ -244,7 +255,7 @@ export default function HybridReportsPage() {
 
   // --- DVR SPECIFIC LOGIC & COLUMNS ---
   const isDealerVisit = (r: DailyVisitReport) => !!r.dealerType;
-  
+
   const dvrColumns = useMemo<ColumnDef<DailyVisitReport>[]>(() => [
     {
       accessorKey: "customerType", header: "Form Type",
@@ -269,16 +280,16 @@ export default function HybridReportsPage() {
     { accessorKey: "region", header: "Region" },
     { accessorKey: "area", header: "Area" },
     { accessorKey: "reportDate", header: "Date" },
-    { 
-      accessorKey: 'pjpStatus', header: 'PJP Status', 
-      cell: ({ row }) => { 
-        const status = row.original.pjpStatus || "Unplanned"; 
+    {
+      accessorKey: 'pjpStatus', header: 'PJP Status',
+      cell: ({ row }) => {
+        const status = row.original.pjpStatus || "Unplanned";
         const upperStatus = status.toUpperCase();
-        if (upperStatus === 'COMPLETED') return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 shadow-none tracking-wide">{status}</Badge>; 
-        if (upperStatus === 'APPROVED' || upperStatus === 'VERIFIED') return <Badge className="bg-green-100 text-green-800 border-green-200 shadow-none tracking-wide">{status}</Badge>; 
-        if (upperStatus === 'ASSIGNED') return <Badge className="bg-blue-100 text-blue-800 border-blue-200 shadow-none tracking-wide">{status}</Badge>; 
-        return <Badge variant="secondary" className="shadow-none tracking-wide">{status}</Badge>; 
-      } 
+        if (upperStatus === 'COMPLETED') return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 shadow-none tracking-wide">{status}</Badge>;
+        if (upperStatus === 'APPROVED' || upperStatus === 'VERIFIED') return <Badge className="bg-green-100 text-green-800 border-green-200 shadow-none tracking-wide">{status}</Badge>;
+        if (upperStatus === 'ASSIGNED') return <Badge className="bg-blue-100 text-blue-800 border-blue-200 shadow-none tracking-wide">{status}</Badge>;
+        return <Badge variant="secondary" className="shadow-none tracking-wide">{status}</Badge>;
+      }
     },
     {
       id: "actions", header: "Actions",
@@ -456,7 +467,7 @@ export default function HybridReportsPage() {
 
         {/* --- Unified Global Filter Bar --- */}
         <div className="w-full">
-          <GlobalFilterBar 
+          <GlobalFilterBar
             showSearch={true}
             showRole={true} // Customer Type mapped to Role
             showZone={true}
@@ -589,13 +600,13 @@ export default function HybridReportsPage() {
                   {selectedDvr.inTimeImageUrl && (
                     <div className="border rounded-lg overflow-hidden shadow-sm">
                       <div className="bg-emerald-50 px-4 py-2 text-sm font-semibold border-b flex items-center gap-2 text-emerald-800"><LogIn className="w-4 h-4" /> Check-In Selfie</div>
-                      <a href={selectedDvr.inTimeImageUrl} target="_blank" rel="noreferrer"><img src={selectedDvr.inTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check In"/></a>
+                      <a href={selectedDvr.inTimeImageUrl} target="_blank" rel="noreferrer"><img src={selectedDvr.inTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check In" /></a>
                     </div>
                   )}
                   {selectedDvr.outTimeImageUrl && (
                     <div className="border rounded-lg overflow-hidden shadow-sm">
                       <div className="bg-orange-50 px-4 py-2 text-sm font-semibold border-b flex items-center gap-2 text-orange-800"><LogOut className="w-4 h-4" /> Check-Out Selfie</div>
-                      <a href={selectedDvr.outTimeImageUrl} target="_blank" rel="noreferrer"><img src={selectedDvr.outTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check Out"/></a>
+                      <a href={selectedDvr.outTimeImageUrl} target="_blank" rel="noreferrer"><img src={selectedDvr.outTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check Out" /></a>
                     </div>
                   )}
                 </div>
@@ -663,7 +674,7 @@ export default function HybridReportsPage() {
                     <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
                       <div className="bg-muted px-4 py-2 text-sm font-semibold border-b flex justify-between items-center"><span className="flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Site / Shop Overview</span></div>
                       <a href={selectedTvr.sitePhotoUrl} target="_blank" rel="noreferrer" className="block relative group">
-                        <img src={selectedTvr.sitePhotoUrl} className="w-full h-auto max-h-[500px] object-contain bg-black/5" alt="Site Evidence"/>
+                        <img src={selectedTvr.sitePhotoUrl} className="w-full h-auto max-h-[500px] object-contain bg-black/5" alt="Site Evidence" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"><ExternalLink className="text-white w-5 h-5" /><span className="text-white font-medium text-sm">View Full Image</span></div>
                       </a>
                     </div>
@@ -672,7 +683,7 @@ export default function HybridReportsPage() {
                     <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
                       <div className="bg-emerald-50 px-4 py-2 text-sm font-semibold border-b flex justify-between items-center text-emerald-800"><span className="flex items-center gap-2"><LogIn className="w-4 h-4" /> Check-In Selfie</span></div>
                       <a href={selectedTvr.inTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
-                        <img src={selectedTvr.inTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check In"/>
+                        <img src={selectedTvr.inTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check In" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"><ExternalLink className="text-white w-5 h-5" /><span className="text-white font-medium text-sm">View Full Image</span></div>
                       </a>
                     </div>
@@ -681,7 +692,7 @@ export default function HybridReportsPage() {
                     <div className="border rounded-lg overflow-hidden bg-background shadow-sm">
                       <div className="bg-orange-50 px-4 py-2 text-sm font-semibold border-b flex justify-between items-center text-orange-800"><span className="flex items-center gap-2"><LogOut className="w-4 h-4" /> Check-Out Selfie</span></div>
                       <a href={selectedTvr.outTimeImageUrl} target="_blank" rel="noreferrer" className="block relative group">
-                        <img src={selectedTvr.outTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check Out"/>
+                        <img src={selectedTvr.outTimeImageUrl} className="w-full h-auto max-h-[400px] object-contain bg-black/5" alt="Check Out" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"><ExternalLink className="text-white w-5 h-5" /><span className="text-white font-medium text-sm">View Full Image</span></div>
                       </a>
                     </div>

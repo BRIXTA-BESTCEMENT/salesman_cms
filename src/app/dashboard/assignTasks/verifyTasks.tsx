@@ -160,7 +160,17 @@ export default function VerifyTasksPage() {
 
     const fetchDependencies = useCallback(async () => {
         try {
-            const res = await fetch(OPTIONS_API);
+            const url = new URL(OPTIONS_API, window.location.origin);
+            url.searchParams.append('_t', Date.now().toString());
+
+            const res = await fetch(url.toString(), {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
+
             if (res.ok) {
                 const data = await res.json();
                 setAllDealers(data.dealers || []);
@@ -171,7 +181,16 @@ export default function VerifyTasksPage() {
     const fetchPendingTasks = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE}`);
+            const url = new URL(API_BASE, window.location.origin);
+            url.searchParams.append('_t', Date.now().toString());
+
+            const response = await fetch(url.toString(), {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
             const data = await response.json();
             setPendingTasks(z.array(frontendTaskSchema.loose()).parse(data.tasks || data));
         } catch (e: any) { toast.error("Error loading verification queue."); } finally { setLoading(false); }

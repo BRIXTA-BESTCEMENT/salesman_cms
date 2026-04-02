@@ -54,10 +54,25 @@ export function AddSchemesRewards({ onSuccess }: AddSchemesRewardsProps) {
 
   const fetchOptions = useCallback(async () => {
     try {
+      const fetchConfig: RequestInit = {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      };
+
+      const sUrl = new URL('/api/dashboardPagesAPI/masonpc-side/schemes-offers', window.location.origin);
+      sUrl.searchParams.append('_t', Date.now().toString());
+
+      const cUrl = new URL('/api/dashboardPagesAPI/masonpc-side/reward-categories', window.location.origin);
+      cUrl.searchParams.append('_t', Date.now().toString());
+
       const [sRes, cRes] = await Promise.all([
-        fetch('/api/dashboardPagesAPI/masonpc-side/schemes-offers'),
-        fetch('/api/dashboardPagesAPI/masonpc-side/reward-categories')
+        fetch(sUrl.toString(), fetchConfig),
+        fetch(cUrl.toString(), fetchConfig)
       ]);
+
       if (sRes.ok) setSchemes(await sRes.json());
       if (cRes.ok) setCategories(await cRes.json());
     } catch (e) {
@@ -142,18 +157,18 @@ export function AddSchemesRewards({ onSuccess }: AddSchemesRewardsProps) {
           <TabsContent value="scheme" className="space-y-4 py-2">
             <div className="grid gap-2">
               <Label>Scheme Name</Label>
-              <Input 
-                placeholder="e.g., Monsoon Dhamaka 2024" 
-                value={schemeForm.name} 
-                onChange={e => setSchemeForm(p => ({ ...p, name: e.target.value }))} 
+              <Input
+                placeholder="e.g., Monsoon Dhamaka 2024"
+                value={schemeForm.name}
+                onChange={e => setSchemeForm(p => ({ ...p, name: e.target.value }))}
               />
             </div>
             <div className="grid gap-2">
               <Label>Description</Label>
-              <Textarea 
-                placeholder="Details about points slabs or eligibility..." 
-                value={schemeForm.description} 
-                onChange={e => setSchemeForm(p => ({ ...p, description: e.target.value }))} 
+              <Textarea
+                placeholder="Details about points slabs or eligibility..."
+                value={schemeForm.description}
+                onChange={e => setSchemeForm(p => ({ ...p, description: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -177,10 +192,10 @@ export function AddSchemesRewards({ onSuccess }: AddSchemesRewardsProps) {
           <TabsContent value="reward" className="space-y-4 py-2 max-h-[60vh] overflow-y-auto pr-2">
             <div className="grid gap-2">
               <Label>Item Name</Label>
-              <Input 
-                placeholder="e.g., Samsung Galaxy M14" 
-                value={rewardForm.name} 
-                onChange={e => setRewardForm(p => ({ ...p, name: e.target.value }))} 
+              <Input
+                placeholder="e.g., Samsung Galaxy M14"
+                value={rewardForm.name}
+                onChange={e => setRewardForm(p => ({ ...p, name: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -209,9 +224,9 @@ export function AddSchemesRewards({ onSuccess }: AddSchemesRewardsProps) {
               <div className="grid grid-cols-1 gap-2">
                 {schemes.map(s => (
                   <div key={s.id} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`link-${s.id}`} 
-                      checked={rewardForm.schemeIds.includes(s.id)} 
+                    <Checkbox
+                      id={`link-${s.id}`}
+                      checked={rewardForm.schemeIds.includes(s.id)}
                       onCheckedChange={checked => {
                         setRewardForm(p => ({
                           ...p,

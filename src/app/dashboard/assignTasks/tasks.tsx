@@ -76,7 +76,17 @@ export default function TasksListPage() {
 
   const fetchFilters = useCallback(async () => {
     try {
-      const response = await fetch(`${apiURI}?action=fetch_filters`);
+      const url = new URL(apiURI, window.location.origin);
+      url.searchParams.append('action', 'fetch_filters');
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setSalesmen(data.salesmen || []);
@@ -108,8 +118,15 @@ export default function TasksListPage() {
         url.searchParams.append('toDate', format(dateRange.from, "yyyy-MM-dd"));
       }
 
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error("Failed to fetch tasks");
+     url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       
       const result = await response.json();
       setTasks(result.data || []);

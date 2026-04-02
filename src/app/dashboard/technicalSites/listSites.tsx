@@ -86,7 +86,17 @@ export default function ListSitesPage() {
 
   const fetchFilters = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}?action=fetch_filters`);
+      const url = new URL(API_URL, window.location.origin);
+      url.searchParams.append('action', 'fetch_filters');
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setAvailableRegions(data.regions || []);
@@ -112,8 +122,15 @@ export default function ListSitesPage() {
 
       if (stageFilter !== 'all') url.searchParams.append('stage', stageFilter);
 
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      url.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
 
       const result = await response.json();
       const data = result.data || result;

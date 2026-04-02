@@ -133,11 +133,19 @@ export default function UsersManagement({ adminUser }: Props) {
     fetchUsers();
   }, []);
 
-  const apiURI = `/api/dashboardPagesAPI/users-and-team/users`;
+  const API_URL = `/api/dashboardPagesAPI/users-and-team/users`;
+  const url = new URL(API_URL, window.location.origin);
+  url.searchParams.append('_t', Date.now().toString());
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(apiURI);
+      const response = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users);
@@ -160,16 +168,24 @@ export default function UsersManagement({ adminUser }: Props) {
     setSuccess('');
 
     try {
-      const response = await fetch(`${apiURI}/${editingUser.id}`, {
+      const updateUrl = new URL(`${API_URL}/${editingUser.id}`, window.location.origin);
+      updateUrl.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(updateUrl.toString(), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        body: JSON.stringify(formData),
+        cache: 'no-store',
       });
 
       if (response.ok) {
         const data = await response.json();
-        await fetchUsers(); // Refresh background data
-        
+        await fetchUsers();
+
         // Check if new credentials were generated during this edit
         const hasCredentials = data.credentials && Object.values(data.credentials).some(val => !!val);
 
@@ -218,10 +234,18 @@ export default function UsersManagement({ adminUser }: Props) {
 
     setLoading(true);
     try {
-      const response = await fetch(`${apiURI}/${userId}`, {
+      const clearDeviceUrl = new URL(`${API_URL}/${userId}`, window.location.origin);
+      clearDeviceUrl.searchParams.append('_t', Date.now().toString());
+
+      const response = await fetch(clearDeviceUrl.toString(), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clearDevice: true })
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        body: JSON.stringify({ clearDevice: true }),
+        cache: 'no-store',
       });
 
       if (response.ok) {
@@ -305,7 +329,7 @@ export default function UsersManagement({ adminUser }: Props) {
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-      const search = debouncedSearch.toLowerCase(); 
+      const search = debouncedSearch.toLowerCase();
       const matchesSearch = !debouncedSearch || fullName.includes(search);
 
       const matchesRole = roleFilter === 'all' || user.orgRole === roleFilter;
@@ -338,7 +362,7 @@ export default function UsersManagement({ adminUser }: Props) {
       header: 'Role',
       cell: ({ row }) => {
         const orgRole = row.original.orgRole;
-        const jobRoles = row.original.jobRole; 
+        const jobRoles = row.original.jobRole;
         return (
           <div className="flex flex-col">
             <span className="font-medium text-foreground">{orgRole}</span>
@@ -750,7 +774,7 @@ export default function UsersManagement({ adminUser }: Props) {
         )}
 
         {/* --- Unified Global Filter Bar --- */}
-        <GlobalFilterBar 
+        <GlobalFilterBar
           // 1. Toggles
           showSearch={true}
           showRole={true}
