@@ -45,22 +45,25 @@ async function getAuthClaims() {
 // Helper to safely parse dates, especially the en-IN DD/MM/YYYY format from the transformer
 function parseDateSafely(val: any): Date {
     if (!val) return new Date(NaN);
+    if (val instanceof Date) return val;
     
-    // 1. Try standard JS parsing first (handles "27 Mar 2026" from formatDateTimeIST)
-    let d = new Date(val);
-    if (!isNaN(d.getTime())) return d;
-    
-    // 2. Fallback for 'en-IN' DD/MM/YYYY format (handles "27/03/2026" from formatDateIST)
-    if (typeof val === 'string' && val.includes('/')) {
-        const parts = val.split('/');
-        if (parts.length === 3) {
-            // Rearrange DD/MM/YYYY to YYYY-MM-DD for standard ISO parsing
-            const day = parts[0].padStart(2, '0');
-            const month = parts[1].padStart(2, '0');
-            const year = parts[2];
-            return new Date(`${year}-${month}-${day}T00:00:00Z`);
-        }
+    const valStr = String(val).trim();
+    if (!valStr) return new Date(NaN);
+
+    // 1. FORCED DD/MM/YYYY CHECK FIRST. 
+    // This stops JS from misinterpreting "02/04/2026" (April 2) as Feb 4.
+    const slashMatch = valStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (slashMatch) {
+        const day = slashMatch[1].padStart(2, '0');
+        const month = slashMatch[2].padStart(2, '0');
+        const year = slashMatch[3];
+        // Lock to Midnight UTC to avoid local timezone shifts
+        return new Date(`${year}-${month}-${day}T00:00:00`);
     }
+
+    // 2. Fallback for formatDateTimeIST (e.g., "27 Mar 2026, 10:30 AM")
+    const d = new Date(valStr);
+    if (!isNaN(d.getTime())) return d;
     
     return new Date(NaN);
 }
@@ -73,30 +76,41 @@ function applyFilters(rows: any[], filters: FilterRule[]): any[] {
         // A row must satisfy ALL applicable filters (AND logic)
         return filters.every(filter => {
             if (!(filter.column in row)) {
-                return true;
+                return true; // Ignore if column doesn't exist
             }
 
             const rawValue = row[filter.column];
             const cellValueStr = String(rawValue ?? '').trim().toLowerCase();
-            const filterValueStr = (filter.value ?? '').trim().toLowerCase();
+            const filterValueStr = String(filter.value ?? '').trim().toLowerCase();
 
             if (!filterValueStr) return true;
 
-            // --- 3. Handle Date Ranges (Comma Separated) ---
-            if (filterValueStr.includes(',')) {
+            // Determine if this is a Date column based on the key name (matching UI logic)
+            const isDateColumn = filter.column.toLowerCase().includes('date') || filter.column.toLowerCase().includes('at');
+
+            // --- 3. Handle Date Ranges ---
+            // GUARDED: Only split by commas if we are actually dealing with a Date column!
+            if (isDateColumn && filterValueStr.includes(',')) {
                 const [startStr, endStr] = filterValueStr.split(',');
 
-                // USE THE NEW PARSER HERE
                 const cellDate = parseDateSafely(rawValue); 
-                const startDate = new Date(startStr);
-                const endDate = endStr ? new Date(endStr) : new Date(8640000000000000);
+                if (isNaN(cellDate.getTime())) return false;
 
-                if (!isNaN(cellDate.getTime()) && !isNaN(startDate.getTime())) {
+                // Start at 00:00:00
+                const startDate = new Date(`${startStr}T00:00:00`);
+                
+                // End at 23:59:59. If no end date (single day pick), make the end date the same day.
+                const endDate = endStr 
+                    ? new Date(`${endStr}T23:59:59.999`) 
+                    : new Date(`${startStr}T23:59:59.999`);
+
+                if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
                     return cellDate >= startDate && cellDate <= endDate;
                 }
+                return false;
             }
 
-            // --- 4. Standard Operators ---
+            // --- 4. Standard Operators (Strings & Numbers) ---
             switch (filter.operator) {
                 case 'contains':
                     return cellValueStr.includes(filterValueStr);
@@ -105,11 +119,12 @@ function applyFilters(rows: any[], filters: FilterRule[]): any[] {
                     return cellValueStr === filterValueStr;
 
                 case 'gt': {
-                    // USE THE NEW PARSER HERE
-                    const cellDate = parseDateSafely(rawValue);
-                    const filterDate = new Date(filterValueStr);
-                    if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime()) && filterValueStr.includes('-')) {
-                        return cellDate > filterDate;
+                    if (isDateColumn) {
+                        const cellDate = parseDateSafely(rawValue);
+                        const filterDate = new Date(filterValueStr);
+                        if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime())) {
+                            return cellDate > filterDate;
+                        }
                     }
 
                     const numCell = parseFloat(cellValueStr);
@@ -122,11 +137,12 @@ function applyFilters(rows: any[], filters: FilterRule[]): any[] {
                 }
 
                 case 'lt': {
-                    // USE THE NEW PARSER HERE
-                    const cellDate = parseDateSafely(rawValue);
-                    const filterDate = new Date(filterValueStr);
-                    if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime()) && filterValueStr.includes('-')) {
-                        return cellDate < filterDate;
+                    if (isDateColumn) {
+                        const cellDate = parseDateSafely(rawValue);
+                        const filterDate = new Date(filterValueStr);
+                        if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime())) {
+                            return cellDate < filterDate;
+                        }
                     }
 
                     const numCell = parseFloat(cellValueStr);
