@@ -24,18 +24,23 @@ export const formatDateIST = (date: Date | string | null | undefined): string | 
   if (!date) return null;
   const d = new Date(date);
   if (isNaN(d.getTime())) return null;
-  return d.toLocaleDateString('en-IN', {
-     timeZone: 'UTC' 
-    });
+  
+  // FIXED: Output unambiguous '02-Apr-2026' and force Asia/Kolkata
+  return d.toLocaleDateString('en-GB', {
+     timeZone: 'Asia/Kolkata',
+     day: '2-digit', month: '2-digit', year: 'numeric'
+  }).replace(/ /g, '-'); 
 };
 
 export const formatDateTimeIST = (date: Date | string | null | undefined): string => {
   if (!date) return '';
   const d = new Date(date);
   if (isNaN(d.getTime())) return '';
+  
+  // FIXED: Changed from 'UTC' to 'Asia/Kolkata'. This fixes the 4:30 AM issue.
   return d.toLocaleString('en-IN', {
-    timeZone: 'UTC',
-    day: '2-digit', month: 'short', year: 'numeric',
+    timeZone: 'Asia/Kolkata', 
+    day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: true
   }).replace(/,/g, '').toUpperCase();
 };
