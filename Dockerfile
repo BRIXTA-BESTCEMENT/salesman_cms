@@ -18,8 +18,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PRIVATE_STANDALONE=true
 
 RUN --mount=type=secret,id=DATABASE_URL,env=DATABASE_URL \
-    --mount=type=secret,id=WORKOS_API_KEY,env=WORKOS_API_KEY \
-    --mount=type=secret,id=WORKOS_CLIENT_ID,env=WORKOS_CLIENT_ID \
     --mount=type=secret,id=RESEND_MAIL_API,env=RESEND_MAIL_API \
     npm run build
 
