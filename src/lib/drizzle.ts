@@ -21,7 +21,7 @@ const pool =
   new Pool({
     connectionString: DATABASE_URL,
 
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+    ssl: false,
 
     max: 30,
     idleTimeoutMillis: 30_000,
