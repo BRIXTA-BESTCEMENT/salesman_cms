@@ -38,7 +38,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: goswamirohit/slmcmsdashboard:v46
+          tags: goswamirohit/slmcmsdashboard:v47
           secrets: |
             "RESEND_MAIL_API=${{ secrets.RESEND_MAIL_API }}"
             "DATABASE_URL=${{ secrets.DATABASE_URL }}"
