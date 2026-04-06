@@ -47,8 +47,7 @@ export const tablesMetadata: TableMeta[] = [
             'declarationName', 'declarationPlace', 'tradeLicencePicUrl', 'shopPicUrl',
             'dealerPicUrl', 'blankChequePicUrl', 'partnershipDeedPicUrl', 'latitude',
             'longitude', 'dateOfBirth', 'anniversaryDate', 'totalPotential', 'bestPotential',
-            'monthlySaleMT', 'projectedMonthlySalesBestCementMT', 'brandSelling',
-            'declarationDate', 'createdAt', 'updatedAt', 'associatedSalesmanName'
+            'monthlySaleMT', 'projectedMonthlySalesBestCementMT', 'brandSell', 'associatedSalesmanName'
         ],
     },
     {
@@ -56,12 +55,13 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Daily Visit Reports',
         icon: CalendarCheck,
         columns: [
-            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'dealerType', 'dealerName', 'subDealerName', 'pjpStatus', 'unplannedVisit', 
+            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'dealerType', 'dealerName', 'subDealerName', 'pjpStatus', 'unplannedVisit',
             'location', 'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
             'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
             'todayCollectionRupees', 'overdueAmount', 'feedbacks',
             'customerType', 'partyType', 'nameOfParty', 'contactNoOfParty', 'expectedActivationDate',
-            'checkInTime', 'checkOutTime', 'timeSpentinLoc',
+            'checkInTime', 'checkOutTime', 'checkInDate', 'checkOutDate',
+            'timeSpentinLoc',
         ],
     },
     {
@@ -69,22 +69,23 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Kamrup-TSO DVRs',
         icon: ClipboardPen,
         columns: [
-            'sourceReport', 'id', 'reportDate', 'pjpStatus', 'salesmanName', 'salesmanEmail', 
-            'customerType', 'dealerType', 'dealerName', 'subDealerName', 'partyType', 
+            'sourceReport', 'id', 'reportDate', 'pjpStatus', 'salesmanName', 'salesmanEmail',
+            'customerType', 'dealerType', 'dealerName', 'subDealerName', 'partyType',
             'nameOfParty', 'contactNoOfParty', 'expectedActivationDate', 'location',
             'latitude', 'longitude', 'visitType', 'dealerTotalPotential', 'dealerBestPotential',
             'brandSelling', 'contactPerson', 'contactPersonPhoneNo', 'todayOrderMt',
             'todayCollectionRupees', 'overdueAmount', 'feedbacks',
-            'checkInTime', 'checkOutTime', 'timeSpentinLoc',
+            'checkInTime', 'checkOutTime', 'checkInDate', 'checkOutDate',
+            'timeSpentinLoc',
         ],
     },
     {
         id: 'kamrupTsoTvrs',
         title: 'Kamrup-TSO TVRs',
-        icon: ClipboardPenLine, 
+        icon: ClipboardPenLine,
         columns: [
-            'sourceReport', 'id', 'reportDate', 'salesmanName', 'salesmanEmail', 
-            'customerType', 'visitCategory', 'visitType', 'purposeOfVisit', 
+            'sourceReport', 'id', 'reportDate', 'salesmanName', 'salesmanEmail',
+            'customerType', 'visitCategory', 'visitType', 'purposeOfVisit',
             'siteNameConcernedPerson', 'associatedPartyName', 'phoneNo', 'emailId',
             'region', 'area', 'location', 'latitude', 'longitude', 'marketName', 'siteAddress',
             'whatsappNo', 'constAreaSqFt', 'siteVisitStage', 'siteVisitBrandInUse',
@@ -93,9 +94,10 @@ export const tablesMetadata: TableMeta[] = [
             'conversionQuantityValue', 'conversionQuantityUnit', 'isTechService',
             'serviceType', 'serviceDesc', 'influencerName', 'influencerType',
             'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity',
-            'qualityComplaint', 'promotionalActivity', 'channelPartnerVisit', 
-            'salespersonRemarks', 'siteVisitsCount', 'otherVisitsCount', 
-            'checkInTime', 'checkOutTime', 'timeSpentinLoc', 'siteVisitType',
+            'qualityComplaint', 'promotionalActivity', 'channelPartnerVisit',
+            'salespersonRemarks', 'siteVisitsCount', 'otherVisitsCount',
+            'checkInTime', 'checkOutTime', 'checkInDate', 'checkOutDate',
+            'timeSpentinLoc', 'siteVisitType',
         ],
     },
     {
@@ -103,7 +105,7 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Technical Visit Reports',
         icon: PencilRuler,
         columns: [
-            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'customerType', 
+            'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'customerType',
             'siteNameConcernedPerson', 'phoneNo', 'visitType', 'siteVisitType', 'visitCategory',
             'marketName', 'siteAddress', 'region', 'area', 'latitude', 'longitude',
             'siteVisitStage', 'constAreaSqFt', 'siteVisitBrandInUse', 'currentBrandPrice',
@@ -113,7 +115,8 @@ export const tablesMetadata: TableMeta[] = [
             'isTechService', 'serviceType', 'serviceDesc', 'qualityComplaint',
             'influencerName', 'influencerPhone', 'isSchemeEnrolled', 'influencerProductivity', 'influencerType',
             'masonId', 'salespersonRemarks', 'promotionalActivity', 'timeSpentinLoc',
-            'checkInTime', 'checkOutTime', 'pjpId', 'siteId'
+            'checkInTime', 'checkOutTime', 'checkInDate', 'checkOutDate',
+            'pjpId', 'siteId'
         ],
     },
     {
@@ -122,8 +125,8 @@ export const tablesMetadata: TableMeta[] = [
         icon: Activity,
         columns: [
             'userId', 'salesmanName', 'region', 'area',
-            'totalVisits', 'siteVisitsNew', 'siteVisitsOld', 
-            'dealerVisits', 'influencerVisits', 'siteConversion', 
+            'totalVisits', 'siteVisitsNew', 'siteVisitsOld',
+            'dealerVisits', 'influencerVisits', 'siteConversion',
             'volumeConvertedMT(Bags)', 'enrollmentLifting', 'siteServiceSlab', 'technicalMeet'
         ]
     },
@@ -156,7 +159,7 @@ export const tablesMetadata: TableMeta[] = [
         columns: [
             'id', 'pjpBatchId', 'assignedSalesmanName', 'assignedSalesmanEmail', 'dealerVisitingName', 'dealerMobile',
             'zone', 'area', 'route', 'objective', 'visitType', 'requiredVisitCount', 'week',
-            'taskDate', 'status', 'createdAt', 'updatedAt'],
+        ],
     },
     {
         id: 'permanentJourneyPlans',
@@ -166,7 +169,7 @@ export const tablesMetadata: TableMeta[] = [
             'id', 'planDate', 'assignedSalesmanName', 'areaToBeVisited', 'route', 'status', 'plannedNewSiteVisits',
             'plannedFollowUpSiteVisits', 'plannedNewDealerVisits', 'plannedInfluencerVisits', 'influencerName', 'influencerPhone',
             'activityType', 'noOfConvertedBags', 'noOfMasonPcSchemes', 'diversionReason',
-            'dealerName', 'description', 'creatorName', 'createdAt', 'updatedAt'
+            'dealerName'
         ]
     },
     // {
@@ -184,21 +187,20 @@ export const tablesMetadata: TableMeta[] = [
     //         'orderQty', 'orderUnit',
     //         'itemPrice', 'discountPercentage', 'itemPriceAfterDiscount',
     //         'itemType', 'itemGrade',
-    //         'orderTotal', 'estimatedDelivery', 'remarks',
-    //         'createdAt', 'updatedAt',
+    //         'orderTotal', 'estimatedDelivery,
     //     ],
     // },
     // {
     //     id: 'competitionReports',
     //     title: 'Competition Reports',
     //     icon: ChartNoAxesCombined,
-    //     columns: ['id', 'reportDate', 'area', 'region', 'competitorName', 'productName', 'price', 'salesmanName', 'dealerName', 'createdAt'],
+    //     columns: ['id', 'reportDate', 'area', 'region', 'competitorName', 'productName', 'price'],
     // },
     // {
     //     id: 'dealerReportsAndScores',
     //     title: 'Dealer Scores',
     //     icon: Award,
-    //     columns: ['id', 'dealerScore', 'trustWorthinessScore', 'creditWorthinessScore', 'orderHistoryScore', 'visitFrequencyScore', 'lastUpdatedDate', 'dealerName', 'dealerRegion', 'dealerArea', 'createdAt'],
+    //     columns: ['id', 'dealerScore', 'trustWorthinessScore', 'creditWorthinessScore', 'orderHistoryScore', 'visitFrequencyScore', 'lastUpdatedDate', 'dealerName'],
     // },
     // {
     //     id: 'dealerBrandCapacities',
@@ -210,13 +212,19 @@ export const tablesMetadata: TableMeta[] = [
         id: 'salesmanAttendance',
         title: 'Salesman Attendance',
         icon: ClipboardCheck,
-        columns: ['id', 'attendanceDate', 'locationName', 'inTimeTimestamp', 'outTimeTimestamp', 'inTimeLatitude', 'inTimeLongitude', 'salesmanName', 'salesmanEmail', 'createdAt'],
+        columns: [
+            'id', 'salesmanName', 'salesmanEmail', 'attendanceDate', 'locationName',
+            'inTimeDate', 'outTimeDate', 'inTimeTime', 'outTimeTime', 'inTimeLatitude', 'inTimeLongitude'
+        ],
     },
     {
         id: 'salesmanLeaveApplications',
         title: 'Leave Applications',
         icon: BandageIcon,
-        columns: ['id', 'leaveType', 'startDate', 'endDate', 'reason', 'status', 'salesmanName', 'salesmanEmail', 'approverName', 'createdAt'],
+        columns: [
+            'id', 'salesmanName', 'leaveType',
+            'startDate', 'endDate', 'reason', 'status',
+        ],
     },
     {
         id: 'geoTracking',
@@ -224,7 +232,7 @@ export const tablesMetadata: TableMeta[] = [
         icon: MapPin,
         columns: [
             'id', 'salesmanName', 'salesmanEmail',
-            'journeyId', 'recordedAt', 'createdAt', 'latitude', 'longitude', 'totalDistanceTravelled',
+            'latitude', 'longitude', 'totalDistanceTravelled',
             'siteName', 'checkInTime', 'checkOutTime', 'isActive', 'destLat', 'destLng'
         ],
     },
@@ -240,7 +248,7 @@ export const tablesMetadata: TableMeta[] = [
         icon: UsersRound,
         columns: [
             'id', 'creatorName', 'type', 'date', 'market', 'zone', 'dealerName', 'conductedBy',
-            'participantsCount', 'giftType', 'accountJsbJud', 'totalExpenses', 'billSubmitted', 'createdAt', 'updatedAt'
+            'participantsCount', 'giftType', 'accountJsbJud'
         ],
     },
     {
@@ -248,7 +256,7 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Rewards Inventory',
         icon: Gift,
         columns: [
-            'id', 'itemName', 'pointCost', 'totalAvailableQuantity', 'stock', 'isActive', 'createdAt', 'updatedAt'
+            'id', 'itemName', 'pointCost', 'totalAvailableQuantity'
         ],
     },
     {
@@ -256,10 +264,10 @@ export const tablesMetadata: TableMeta[] = [
         title: 'Reward Redemptions',
         icon: HandCoins,
         columns: [
-            'id', 'masonId',  
-            'associatedUserName', 'associatedUserEmail', 'masonName',  
-            'rewardId',  'rewardName',  'quantity',  'status',  'pointsDebited', 
-            'deliveryName',  'deliveryPhone',  'deliveryAddress',  'fulfillmentNotes', 'createdAt', 'updatedAt'
+            'id', 'masonId',
+            'associatedUserName', 'associatedUserEmail', 'masonName',
+            'rewardId', 'rewardName', 'quantity', 'status', 'pointsDebited',
+            'deliveryName', 'deliveryPhone',
         ],
     },
     // {
@@ -268,8 +276,7 @@ export const tablesMetadata: TableMeta[] = [
     //     icon: HandCoins,
     //     columns: [
     //         'id', 'itemName', 'salesmanName', 'salesmanEmail', 'transactionType',
-    //         'quantity', 'sourceUserName', 'destinationUserName', 'technicalVisitReportId',
-    //         'dealerVisitReportId', 'createdAt'
+    //         'quantity', 'sourceUserName', 'destinationUserName', 'technicalVisitReportId
     //     ],
     // },
     {
@@ -290,7 +297,7 @@ export const tablesMetadata: TableMeta[] = [
             'id', 'masonId', 'masonName', 'phoneNumber', 'dealerId', 'dealerName',
             'siteId', 'siteName', 'siteAddress', 'siteKeyPersonName', 'siteKeyPersonPhone',
             'purchaseDate', 'bagCount', 'pointsCredited', 'status',
-            'imageUrl', 'verificationSiteImageUrl', 'verificationProofImageUrl', 'approvedByUserId', 'approverName', 'associatedSalesmanName', 'approvedAt', 'createdAt',
+            'imageUrl', 'verificationSiteImageUrl', 'verificationProofImageUrl', 'approvedByUserId', 'approverName',
         ],
     },
     {
@@ -299,7 +306,7 @@ export const tablesMetadata: TableMeta[] = [
         icon: ScrollText,
         columns: [
             'id', 'masonId', 'masonName', 'sourceType', 'points',
-            'memo', 'sourceDescription', 'createdAt'
+
         ],
     },
     // {
@@ -311,8 +318,7 @@ export const tablesMetadata: TableMeta[] = [
     //         'invoiceNos', 'billNos', 'storeDate', 'storeTime',
     //         'doOrderDate', 'doOrderTime', 'gateInDate', 'gateInTime',
     //         'wbInDate', 'wbInTime', 'wbOutDate', 'wbOutTime',
-    //         'gateOutDate', 'gateOutTime', 'gateOutNoOfInvoice', 'gateOutInvoiceNos', 'gateOutBillNos',
-    //         'createdAt', 'updatedAt'
+    //         'gateOutDate', 'gateOutTime', 'gateOutNoOfInvoice', 'gateOutInvoiceNos
     //     ],
     // },
     // {

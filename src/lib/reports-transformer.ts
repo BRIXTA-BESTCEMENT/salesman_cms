@@ -24,25 +24,61 @@ export const formatDateIST = (date: Date | string | null | undefined): string | 
   if (!date) return null;
   const d = new Date(date);
   if (isNaN(d.getTime())) return null;
-  
+
   // FIXED: Output unambiguous '02-Apr-2026' and force Asia/Kolkata
   return d.toLocaleDateString('en-GB', {
-     timeZone: 'Asia/Kolkata',
-     day: '2-digit', month: '2-digit', year: 'numeric'
-  }).replace(/ /g, '-'); 
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  }).replace(/ /g, '-');
 };
 
 export const formatDateTimeIST = (date: Date | string | null | undefined): string => {
   if (!date) return '';
   const d = new Date(date);
   if (isNaN(d.getTime())) return '';
-  
+
   // FIXED: Changed from 'UTC' to 'Asia/Kolkata'. This fixes the 4:30 AM issue.
   return d.toLocaleString('en-IN', {
-    timeZone: 'Asia/Kolkata', 
+    timeZone: 'UTC',
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: true
   }).replace(/,/g, '').toUpperCase();
+};
+
+export const formatJustDate = (date: Date | string | null | undefined): string | null => {
+  if (!date) return null;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return null;
+
+  // Strict DD-MM-YYYY
+  return d.toLocaleDateString('en-GB', {
+    timeZone: 'UTC',
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  }).replace(/\//g, '-');
+};
+
+export const formatJustTime = (date: Date | string | null | undefined): string | null => {
+  if (!date) return null;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return null;
+
+  // Strict Time only (e.g., 10:30 AM)
+  return d.toLocaleTimeString('en-IN', {
+    timeZone: 'UTC',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  }).toUpperCase();
+};
+
+export const formatJustAttendanceTime = (date: Date | string | null | undefined): string | null => {
+  if (!date) return null;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return null;
+
+  // Strict Time only (e.g., 10:30 AM)
+  return d.toLocaleTimeString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  }).toUpperCase();
 };
 
 const toNum = (v: any): number | null => (v == null ? null : Number(v));
@@ -87,7 +123,7 @@ export async function getFlattenedUsers(companyId: number) {
         jobRoles: new Set<string>(),
       });
     }
-    
+
     const u = usersMap.get(row.id);
     if (row.jobRole) { u.jobRoles.add(row.jobRole); }
     if (row.orgRole && u.orgRole === 'Unassigned') { u.orgRole = row.orgRole; }
@@ -100,16 +136,16 @@ export async function getFlattenedUsers(companyId: number) {
       email: u.email,
       firstName: u.firstName || '',
       lastName: u.lastName || '',
-      orgRole: u.orgRole, 
+      orgRole: u.orgRole,
       jobRoles: Array.from(u.jobRoles).join(', '), // Flattens to string for Excel cell
       phoneNumber: u.phoneNumber ?? null,
       status: u.status,
       region: u.region ?? null,
-      area: u.area ?? null, 
-      reportsToManagerName: formatUserName({ 
-        firstName: u.managerFirstName, 
-        lastName: u.managerLastName, 
-        email: u.managerEmail 
+      area: u.area ?? null,
+      reportsToManagerName: formatUserName({
+        firstName: u.managerFirstName,
+        lastName: u.managerLastName,
+        email: u.managerEmail
       }) || null,
       createdAt: u.createdAt ? new Date(u.createdAt).toISOString() : '',
     };
@@ -233,8 +269,10 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
       feedbacks: r.feedbacks ?? null,
       solutionBySalesperson: r.solutionBySalesperson ?? null,
       anyRemarks: r.anyRemarks ?? null,
-      checkInTime: r.checkInTime ? formatDateTimeIST(r.checkInTime) : null,
-      checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
+      checkInDate: formatJustDate(r.checkInTime),
+      checkInTime: formatJustTime(r.checkInTime),
+      checkOutDate: formatJustDate(r.checkOutTime),
+      checkOutTime: formatJustTime(r.checkOutTime),
       timeSpentinLoc: r.timeSpentinLoc ?? null,
       inTimeImageUrl: r.inTimeImageUrl ?? null,
       outTimeImageUrl: r.outTimeImageUrl ?? null,
@@ -284,8 +322,10 @@ export async function getFlattenedTechnicalVisitReports(companyId: number) {
     outTimeImageUrl: r.outTimeImageUrl ?? null,
 
     reportDate: formatDateIST(r.reportDate) || '',
-    checkInTime: formatDateTimeIST(r.checkInTime),
-    checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
+    checkInDate: formatJustDate(r.checkInTime),
+    checkInTime: formatJustTime(r.checkInTime),
+    checkOutDate: formatJustDate(r.checkOutTime),
+    checkOutTime: formatJustTime(r.checkOutTime),
     createdAt: formatDateTimeIST(r.createdAt),
     updatedAt: formatDateTimeIST(r.updatedAt),
     firstVisitTime: r.firstVisitTime ? formatDateTimeIST(r.firstVisitTime) : null,
@@ -458,7 +498,7 @@ export async function getFlattenedSoPerformanceMetrics(
 
   const endOfDay = new Date(endStr);
   endOfDay.setHours(23, 59, 59, 999);
-  
+
   const filters: (SQL | undefined)[] = [
     eq(users.companyId, companyId),
     and(
@@ -561,8 +601,10 @@ export async function getFlattenedKamrupDvrs(companyId: number) {
       feedbacks: r.feedbacks ?? null,
       solutionBySalesperson: r.solutionBySalesperson ?? null,
       anyRemarks: r.anyRemarks ?? null,
-      checkInTime: r.checkInTime ? formatDateTimeIST(r.checkInTime) : null,
-      checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
+      checkInDate: formatJustDate(r.checkInTime),
+      checkInTime: formatJustTime(r.checkInTime),
+      checkOutDate: formatJustDate(r.checkOutTime),
+      checkOutTime: formatJustTime(r.checkOutTime),
       timeSpentinLoc: r.timeSpentinLoc ?? null,
       inTimeImageUrl: r.inTimeImageUrl ?? null,
       outTimeImageUrl: r.outTimeImageUrl ?? null,
@@ -615,8 +657,10 @@ export async function getFlattenedKamrupTvrs(companyId: number) {
     outTimeImageUrl: r.outTimeImageUrl ?? null,
 
     reportDate: formatDateIST(r.reportDate) || '',
-    checkInTime: formatDateTimeIST(r.checkInTime),
-    checkOutTime: r.checkOutTime ? formatDateTimeIST(r.checkOutTime) : null,
+    checkInDate: formatJustDate(r.checkInTime),
+    checkInTime: formatJustTime(r.checkInTime),
+    checkOutDate: formatJustDate(r.checkOutTime),
+    checkOutTime: formatJustTime(r.checkOutTime),
     createdAt: formatDateTimeIST(r.createdAt),
     updatedAt: formatDateTimeIST(r.updatedAt),
     firstVisitTime: r.firstVisitTime ? formatDateTimeIST(r.firstVisitTime) : null,
@@ -917,8 +961,10 @@ export async function getFlattenedSalesmanAttendance(companyId: number) {
     outTimeImageUrl: r.outTimeImageUrl ?? null,
 
     attendanceDate: formatDateIST(r.attendanceDate) || '',
-    inTimeTimestamp: formatDateTimeIST(r.inTimeTimestamp) || '-',
-    outTimeTimestamp: r.outTimeTimestamp ? formatDateTimeIST(r.outTimeTimestamp) : null,
+    inTimeDate: formatJustDate(r.inTimeTimestamp) || '-',
+    outTimeDate: r.outTimeTimestamp ? formatJustDate(r.outTimeTimestamp) : null,
+    inTimeTime: formatJustAttendanceTime(r.inTimeTimestamp) || '-',
+    outTimeTime: r.outTimeTimestamp ? formatJustAttendanceTime(r.outTimeTimestamp) : null,
     createdAt: formatDateTimeIST(r.createdAt),
     updatedAt: formatDateTimeIST(r.updatedAt),
 
@@ -959,8 +1005,8 @@ export async function getFlattenedSalesmanLeaveApplication(companyId: number) {
     reason: r.reason,
     status: r.status,
     adminRemarks: r.adminRemarks ?? null,
-    startDate: formatDateIST(r.startDate) || '',
-    endDate: formatDateIST(r.endDate) || '',
+    startDate: formatJustDate(r.startDate) || '',
+    endDate: formatJustDate(r.endDate) || '',
     createdAt: formatDateTimeIST(r.createdAt),
     updatedAt: formatDateTimeIST(r.updatedAt),
     salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
