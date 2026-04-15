@@ -4,7 +4,7 @@ import {
     LucideIcon, User, ListTodo, ClipboardCheck, BandageIcon,
     CalendarCheck, PencilRuler, MapPin,
     Construction, UsersRound, Gift, HandCoins, ScrollText, ClipboardPen,
-    Building2, ShoppingBag,
+    Building2, ShoppingBag, BadgeIndianRupeeIcon,
     ListChecks,
     ClipboardPenLine,
     Activity,
@@ -184,24 +184,25 @@ export const tablesMetadata: TableMeta[] = [
             'dealerName'
         ]
     },
-    // {
-    //     id: 'salesOrders',
-    //     title: 'Sales Orders',
-    //     icon: BadgeIndianRupeeIcon,
-    //     columns: [
-    //         'id', 'userId', 'dealerId', 'dvrId', 'pjpId',
-    //         'salesmanName',
-    //         'dealerName', 'dealerType', 'dealerPhone', 'dealerAddress', 'area', 'region',
-    //         'orderDate', 'orderPartyName',
-    //         'partyPhoneNo', 'partyArea', 'partyRegion', 'partyAddress',
-    //         'deliveryDate', 'deliveryArea', 'deliveryRegion', 'deliveryAddress', 'deliveryLocPincode',
-    //         'paymentMode', 'paymentTerms', 'paymentAmount', 'receivedPayment', 'receivedPaymentDate', 'pendingPayment',
-    //         'orderQty', 'orderUnit',
-    //         'itemPrice', 'discountPercentage', 'itemPriceAfterDiscount',
-    //         'itemType', 'itemGrade',
-    //         'orderTotal', 'estimatedDelivery,
-    //     ],
-    // },
+    {
+        id: 'salesOrders',
+        title: 'Sales Orders',
+        icon: BadgeIndianRupeeIcon,
+        requiredJobRole: ['Accounting'],
+        columns: [
+            'id', 'userId', 'dealerId', 'dvrId', 'pjpId',
+            'salesmanName',
+            'dealerName', 'dealerType', 'dealerPhone', 'dealerAddress', 'area', 'region',
+            'orderDate', 'orderPartyName',
+            'partyPhoneNo', 'partyArea', 'partyRegion', 'partyAddress',
+            'deliveryDate', 'deliveryArea', 'deliveryRegion', 'deliveryAddress', 'deliveryLocPincode',
+            'paymentMode', 'paymentTerms', 'paymentAmount', 'receivedPayment', 'receivedPaymentDate', 'pendingPayment',
+            'orderQty', 'orderUnit',
+            'itemPrice', 'discountPercentage', 'itemPriceAfterDiscount',
+            'itemType', 'itemGrade',
+            'orderTotal', 'estimatedDelivery',
+        ]
+    },
     // {
     //     id: 'competitionReports',
     //     title: 'Competition Reports',

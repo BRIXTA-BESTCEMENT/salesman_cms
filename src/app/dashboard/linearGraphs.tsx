@@ -8,10 +8,8 @@ import { toast } from 'sonner';
 import { ChartAreaInteractive } from '@/components/chart-area-reusable';
 
 import {
-  RawGeoTrackingRecord,
-  rawGeoTrackingSchema,
+  RawGeoTrackingRecord, 
   RawSalesOrderReportRecord,
-  rawSalesOrderSchema,
 } from './data-format';
 
 // --- Graph Data Types ---
@@ -34,7 +32,7 @@ export default function LinearGraphs(
   const [selectedSalesman] = useState<string | 'all'>('all');
 
   const isAdmin = permissions.includes('ALL_ACCESS');
-  const canViewSales = isAdmin || jobRoles.some(r => ['Accounts'].includes(r));
+  const canViewSales = isAdmin || jobRoles.some(r => ['Accounting'].includes(r));
   const canViewGeo = isAdmin || jobRoles.some(r => ['Sales-Marketing', 'Technical-Sales', 'Reports-MIS'].includes(r));
 
   const fetchData = useCallback(async () => {

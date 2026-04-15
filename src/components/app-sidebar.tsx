@@ -116,12 +116,12 @@ const menuItems: MenuItem[] = [
         requiredPerm: ['READ', 'WRITE', 'UPDATE'],
         requiredJobRole: ['Technical-Sales', 'Reports-MIS']
       },
-      // {
-      //   title: "Sales Orders - Payments",
-      //   url: "/dashboard/ordersPayments",
-      //   requiredPerm: ['READ', 'WRITE', 'UPDATE'],
-      //   requiredJobRole: ['Accounting']
-      // },
+      {
+        title: "Sales Orders - Payments",
+        url: "/dashboard/ordersPayments",
+        requiredPerm: ['READ', 'WRITE', 'UPDATE'],
+        requiredJobRole: ['Accounting']
+      },
       // {
       //   title: "Logistics IO",
       //   url: "/dashboard/logisticsIO",
