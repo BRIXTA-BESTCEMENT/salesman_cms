@@ -72,6 +72,7 @@ export const tablesMetadata: TableMeta[] = [
         id: 'kamrupTsoDvrs',
         title: 'Kamrup-TSO DVRs',
         icon: ClipboardPen,
+        requiredJobRole: ['Reports-MIS'],
         columns: [
             'sourceReport', 'id', 'reportDate', 'pjpStatus', 'salesmanName', 'salesmanEmail',
             'customerType', 'dealerType', 'dealerName', 'subDealerName', 'partyType',
@@ -87,6 +88,7 @@ export const tablesMetadata: TableMeta[] = [
         id: 'kamrupTsoTvrs',
         title: 'Kamrup-TSO TVRs',
         icon: ClipboardPenLine,
+        requiredJobRole: ['Reports-MIS'],
         columns: [
             'sourceReport', 'id', 'reportDate', 'salesmanName', 'salesmanEmail',
             'customerType', 'visitCategory', 'visitType', 'purposeOfVisit',
@@ -108,6 +110,7 @@ export const tablesMetadata: TableMeta[] = [
         id: 'technicalVisitReports',
         title: 'Technical Visit Reports',
         icon: PencilRuler,
+        requiredJobRole: ['Technical-Sales', 'Reports-MIS'],
         columns: [
             'id', 'reportDate', 'salesmanName', 'salesmanEmail', 'customerType',
             'siteNameConcernedPerson', 'phoneNo', 'visitType', 'siteVisitType', 'visitCategory',
@@ -321,7 +324,6 @@ export const tablesMetadata: TableMeta[] = [
         requiredJobRole: ['Technical-Sales', 'Reports-MIS'],
         columns: [
             'id', 'masonId', 'masonName', 'sourceType', 'points',
-
         ],
     },
     // {
