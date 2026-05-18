@@ -1,13 +1,13 @@
 // drizzle/zodSchema.ts
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { companies, users, roles, userRoles, dealers, dealerReportsAndScores, technicalVisitReports, permanentJourneyPlans, technicalSites, 
-    ratings, dealerBrandMapping, brands, verifiedDealers, dailyVisitReports, 
+import { companies, users, roles, userRoles, dealers, technicalVisitReports, permanentJourneyPlans, technicalSites, 
+    dealerBrandMapping, brands, verifiedDealers, dailyVisitReports, 
     salesmanLeaveApplications, salesmanAttendance, competitionReports, geoTracking, journeys, 
-    giftAllocationLogs, rewards, dailyTasks, salesOrders, masonPcSide, otpVerifications, 
+    giftAllocationLogs, rewards, dailyTasks, salesOrders, masonPcSide,
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
-    siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
-    outstandingReports,masonsOnMeetings,logisticsIO, logisticsUsers, masonOnScheme, notifications, syncState, 
+    siteAssociatedDealers, siteAssociatedMasons, tsoAssignments,
+    outstandingReports, logisticsIO, logisticsUsers, masonOnScheme, notifications, syncState, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, salesPromoters,
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
 } from "../drizzle/index";
@@ -30,8 +30,6 @@ export const insertSalesmanAttendanceSchema = createInsertSchema(salesmanAttenda
 export const insertSalesmanLeaveApplicationSchema = createInsertSchema(salesmanLeaveApplications);
 export const insertCompetitionReportSchema = createInsertSchema(competitionReports);
 export const insertDailyTaskSchema = createInsertSchema(dailyTasks);
-export const insertDealerReportsAndScoresSchema = createInsertSchema(dealerReportsAndScores);
-export const insertRatingSchema = createInsertSchema(ratings);
 export const insertSalesOrderSchema = createInsertSchema(salesOrders);
 export const insertBrandSchema = createInsertSchema(brands);
 export const insertDealerBrandMappingSchema = createInsertSchema(dealerBrandMapping);
@@ -51,10 +49,8 @@ export const insertGiftAllocationLogSchema = createInsertSchema(giftAllocationLo
 
 // Modified masonPcSide schema
 export const insertMasonPcSideSchema = createInsertSchema(masonPcSide);
-export const insertOtpVerificationSchema = createInsertSchema(otpVerifications);
 export const insertSchemesOffersSchema = createInsertSchema(schemesOffers);
 export const insertMasonOnSchemeSchema = createInsertSchema(masonOnScheme);
-export const insertMasonsOnMeetingsSchema = createInsertSchema(masonsOnMeetings);
 
 export const insertRewardCategorySchema = createInsertSchema(rewardCategories);
 export const insertKycSubmissionSchema = createInsertSchema(kycSubmissions);
@@ -71,7 +67,6 @@ export const insertNotificationSchema = createInsertSchema(notifications);
 export const insertDealerAssociatedMasonsSchema = createInsertSchema(dealerAssociatedMasons);
 export const insertSiteAssociatedDealersSchema = createInsertSchema(siteAssociatedDealers);
 export const insertSiteAssociatedMasonsSchema = createInsertSchema(siteAssociatedMasons);
-export const insertSiteAssociatedUsersSchema = createInsertSchema(siteAssociatedUsers);
 export const insertSchemeToRewardsSchema = createInsertSchema(schemeToRewards);
 
 // logistics
@@ -103,8 +98,6 @@ export const selectSalesmanAttendanceSchema = createSelectSchema(salesmanAttenda
 export const selectSalesmanLeaveApplicationSchema = createSelectSchema(salesmanLeaveApplications);
 export const selectCompetitionReportSchema = createSelectSchema(competitionReports);
 export const selectDailyTaskSchema = createSelectSchema(dailyTasks);
-export const selectDealerReportsAndScoresSchema = createSelectSchema(dealerReportsAndScores);
-export const selectRatingSchema = createSelectSchema(ratings);
 export const selectSalesOrderSchema = createSelectSchema(salesOrders);
 export const selectBrandSchema = createSelectSchema(brands);
 export const selectDealerBrandMappingSchema = createSelectSchema(dealerBrandMapping);
@@ -124,10 +117,8 @@ export const selectGiftAllocationLogSchema = createSelectSchema(giftAllocationLo
 
 // Modified masonPcSide schema
 export const selectMasonPcSideSchema = createSelectSchema(masonPcSide);
-export const selectOtpVerificationSchema = createSelectSchema(otpVerifications);
 export const selectSchemesOffersSchema = createSelectSchema(schemesOffers);
 export const selectMasonOnSchemeSchema = createSelectSchema(masonOnScheme);
-export const selectMasonsOnMeetingsSchema = createSelectSchema(masonsOnMeetings);
 
 export const selectRewardCategorySchema = createSelectSchema(rewardCategories);
 export const selectKycSubmissionSchema = createSelectSchema(kycSubmissions);
@@ -144,7 +135,6 @@ export const selectNotificationSchema = createSelectSchema(notifications);
 export const selectDealerAssociatedMasonsSchema = createSelectSchema(dealerAssociatedMasons);
 export const selectSiteAssociatedDealersSchema = createSelectSchema(siteAssociatedDealers);
 export const selectSiteAssociatedMasonsSchema = createSelectSchema(siteAssociatedMasons);
-export const selectSiteAssociatedUsersSchema = createSelectSchema(siteAssociatedUsers);
 export const selectSchemeToRewardsSchema = createSelectSchema(schemeToRewards);
 
 // logistics

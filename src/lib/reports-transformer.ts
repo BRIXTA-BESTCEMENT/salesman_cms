@@ -3,11 +3,11 @@ import { db } from '@/lib/drizzle';
 import {
   users, roles, userRoles, dealers, verifiedDealers, dailyVisitReports, technicalVisitReports, technicalSites,
   salesOrders, permanentJourneyPlans, competitionReports, dailyTasks,
-  salesmanAttendance, salesmanLeaveApplications, journeyOps, dealerReportsAndScores,
-  ratings, dealerBrandMapping, brands, tsoMeetings, rewards, giftAllocationLogs,
+  salesmanAttendance, salesmanLeaveApplications, journeyOps,
+  dealerBrandMapping, brands, tsoMeetings, rewards, giftAllocationLogs,
   masonPcSide, schemesOffers, rewardCategories,
   kycSubmissions, tsoAssignments, bagLifts, rewardRedemptions, pointsLedger, logisticsIO,
-  siteAssociatedUsers, siteAssociatedDealers, siteAssociatedMasons
+  siteAssociatedDealers, siteAssociatedMasons
 } from '../../drizzle/schema';
 import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull, notIlike, SQL, lte, gte } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
@@ -724,10 +724,7 @@ export async function getFlattenedTechnicalSites(companyId: number) {
   const siteIds = sites.map(s => s.id);
 
   // Parallel batched fetches to avoid N+1
-  const [allUsers, allDealers, allMasons] = await Promise.all([
-    db.select({ siteId: siteAssociatedUsers.a, userFirstName: users.firstName, userLastName: users.lastName, userEmail: users.email })
-      .from(siteAssociatedUsers).innerJoin(users, eq(siteAssociatedUsers.b, users.id))
-      .where(inArray(siteAssociatedUsers.a, siteIds)),
+  const [allUsers, allDealers] = await Promise.all([
     db.select({ siteId: siteAssociatedDealers.b, name: dealers.name })
       .from(siteAssociatedDealers).innerJoin(dealers, eq(siteAssociatedDealers.a, dealers.id))
       .where(inArray(siteAssociatedDealers.b, siteIds)),
@@ -744,12 +741,10 @@ export async function getFlattenedTechnicalSites(companyId: number) {
 
   const usersMap = groupMap(allUsers, 'siteId');
   const dealersMap = groupMap(allDealers, 'siteId');
-  const masonsMap = groupMap(allMasons, 'siteId');
 
   return sites.map((s) => {
     const siteUsers = usersMap[s.id] || [];
     const siteDealers = dealersMap[s.id] || [];
-    const siteMasons = masonsMap[s.id] || [];
 
     const firstVisitRaw = (s as any).firstVisitDate || (s as any).firstVistDate;
 
@@ -778,7 +773,6 @@ export async function getFlattenedTechnicalSites(companyId: number) {
 
       associatedSalesmen: siteUsers.map((u: any) => formatUserName({ firstName: u.userFirstName, lastName: u.userLastName, email: u.userEmail })).join(', '),
       associatedDealers: siteDealers.map((d: any) => d.name).join(', '),
-      associatedMasons: siteMasons.map((m: any) => m.name).join(', '),
     };
   });
 }
@@ -1190,59 +1184,6 @@ export async function getFlattenedGeoTracking(companyId: number) {
       updatedAt: op.createdAt ? new Date(op.createdAt).toISOString() : '',
     };
   });
-}
-
-export async function getFlattenedDealerReportsAndScores(companyId: number) {
-  const rawReports = await db
-    .select({
-      ...getTableColumns(dealerReportsAndScores),
-      dealerName: dealers.name,
-      dealerRegion: dealers.region,
-      dealerArea: dealers.area,
-    })
-    .from(dealerReportsAndScores)
-    .leftJoin(dealers, eq(dealerReportsAndScores.dealerId, dealers.id))
-    .leftJoin(users, eq(dealers.userId, users.id))
-    .where(eq(users.companyId, companyId))
-    .orderBy(desc(dealerReportsAndScores.lastUpdatedDate));
-
-  return rawReports.map((r) => ({
-    id: r.id,
-    lastUpdatedDate: r.lastUpdatedDate ? new Date(r.lastUpdatedDate).toISOString() : '',
-    createdAt: formatDateTimeIST(r.createdAt),
-    updatedAt: formatDateTimeIST(r.updatedAt),
-    dealerScore: toNum(r.dealerScore) || 0,
-    trustWorthinessScore: toNum(r.trustWorthinessScore) || 0,
-    creditWorthinessScore: toNum(r.creditWorthinessScore) || 0,
-    orderHistoryScore: toNum(r.orderHistoryScore) || 0,
-    visitFrequencyScore: toNum(r.visitFrequencyScore) || 0,
-    dealerName: r.dealerName || 'Unknown',
-    dealerRegion: r.dealerRegion || '',
-    dealerArea: r.dealerArea || '',
-  }));
-}
-
-export async function getFlattenedRatings(companyId: number) {
-  const rawReports = await db
-    .select({
-      ...getTableColumns(ratings),
-      userFirstName: users.firstName,
-      userLastName: users.lastName,
-      userEmail: users.email,
-    })
-    .from(ratings)
-    .leftJoin(users, eq(ratings.userId, users.id))
-    .where(eq(users.companyId, companyId))
-    .orderBy(desc(ratings.id));
-
-  return rawReports.map((r) => ({
-    id: r.id,
-    area: r.area,
-    region: r.region,
-    rating: r.rating,
-    salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
-    salesmanEmail: r.userEmail || '',
-  }));
 }
 
 export async function getFlattenedDealerBrandCapacities(companyId: number) {
@@ -1717,8 +1658,6 @@ export const transformerMap = {
   salesmanLeaveApplications: getFlattenedSalesmanLeaveApplication,
   geoTracking: getFlattenedGeoTracking,
 
-  dealerReportsAndScores: getFlattenedDealerReportsAndScores,
-  salesmanRating: getFlattenedRatings,
   dealerBrandCapacities: getFlattenedDealerBrandCapacities,
 
   tsoMeetings: getFlattenedTSOMeeetings,

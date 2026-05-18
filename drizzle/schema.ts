@@ -699,41 +699,6 @@ export const notifications = myCustomSchema.table("notifications", {
 	}).onDelete("cascade"),
 ]);
 
-// ----- scores -------
-export const dealerReportsAndScores = myCustomSchema.table("dealer_reports_and_scores", {
-	id: varchar({ length: 255 }).primaryKey().notNull(),
-	dealerId: text("dealer_id").notNull(),
-	dealerScore: numeric("dealer_score", { precision: 10, scale: 2 }).notNull(),
-	trustWorthinessScore: numeric("trust_worthiness_score", { precision: 10, scale: 2 }).notNull(),
-	creditWorthinessScore: numeric("credit_worthiness_score", { precision: 10, scale: 2 }).notNull(),
-	orderHistoryScore: numeric("order_history_score", { precision: 10, scale: 2 }).notNull(),
-	visitFrequencyScore: numeric("visit_frequency_score", { precision: 10, scale: 2 }).notNull(),
-	lastUpdatedDate: timestamp("last_updated_date", { precision: 6, withTimezone: true, mode: 'string' }).notNull(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-}, (table) => [
-	uniqueIndex("dealer_reports_and_scores_dealer_id_key").using("btree", table.dealerId.asc().nullsLast()),
-	foreignKey({
-		columns: [table.dealerId],
-		foreignColumns: [dealers.id],
-		name: "dealer_reports_and_scores_dealer_id_fkey"
-	}).onUpdate("cascade").onDelete("restrict"),
-]);
-
-export const ratings = myCustomSchema.table("ratings", {
-	id: serial().primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
-	area: text().notNull(),
-	region: text().notNull(),
-	rating: integer().notNull(),
-}, (table) => [
-	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [users.id],
-		name: "ratings_user_id_fkey"
-	}).onUpdate("cascade").onDelete("restrict"),
-]);
-
 // ----- Brand Mapping -------
 export const brands = myCustomSchema.table("brands", {
 	id: serial().primaryKey().notNull(),
@@ -829,24 +794,6 @@ export const siteAssociatedMasons = myCustomSchema.table("_SiteAssociatedMasons"
 		columns: [table.b],
 		foreignColumns: [technicalSites.id],
 		name: "_SiteAssociatedMasons_B_fkey"
-	}).onUpdate("cascade").onDelete("cascade"),
-]);
-
-export const siteAssociatedUsers = myCustomSchema.table("_SiteAssociatedUsers", {
-	a: uuid("A").notNull(),
-	b: integer("B").notNull(),
-}, (table) => [
-	uniqueIndex("_SiteAssociatedUsers_AB_unique").using("btree", table.a.asc().nullsLast(), table.b.asc().nullsLast()),
-	index().using("btree", table.b.asc().nullsLast()),
-	foreignKey({
-		columns: [table.a],
-		foreignColumns: [technicalSites.id],
-		name: "_SiteAssociatedUsers_A_fkey"
-	}).onUpdate("cascade").onDelete("cascade"),
-	foreignKey({
-		columns: [table.b],
-		foreignColumns: [users.id],
-		name: "_SiteAssociatedUsers_B_fkey"
 	}).onUpdate("cascade").onDelete("cascade"),
 ]);
 
@@ -1510,20 +1457,6 @@ export const kycSubmissions = myCustomSchema.table("kyc_submissions", {
 	}).onDelete("cascade"),
 ]);
 
-export const otpVerifications = myCustomSchema.table("otp_verifications", {
-	id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
-	otpCode: varchar("otp_code", { length: 10 }).notNull(),
-	expiresAt: timestamp("expires_at", { withTimezone: true, mode: 'string' }).notNull(),
-	masonId: uuid("mason_id").notNull(),
-}, (table) => [
-	index("idx_otp_verifications_mason_id").using("btree", table.masonId.asc().nullsLast()),
-	foreignKey({
-		columns: [table.masonId],
-		foreignColumns: [masonPcSide.id],
-		name: "fk_otp_mason"
-	}).onDelete("cascade"),
-]);
-
 export const schemesOffers = myCustomSchema.table("schemes_offers", {
 	id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
 	name: varchar({ length: 200 }).notNull(),
@@ -1635,24 +1568,6 @@ export const masonSlabAchievements = myCustomSchema.table("mason_slab_achievemen
 	}).onDelete("cascade"),
 ]);
 
-export const masonsOnMeetings = myCustomSchema.table("masons_on_meetings", {
-	masonId: uuid("mason_id").notNull(),
-	meetingId: uuid("meeting_id").notNull(),
-	attendedAt: timestamp("attended_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-}, (table) => [
-	foreignKey({
-		columns: [table.masonId],
-		foreignColumns: [masonPcSide.id],
-		name: "fk_mom_mason"
-	}).onDelete("cascade"),
-	foreignKey({
-		columns: [table.meetingId],
-		foreignColumns: [tsoMeetings.id],
-		name: "fk_mom_meeting"
-	}).onDelete("cascade"),
-	primaryKey({ columns: [table.masonId, table.meetingId], name: "masons_on_meetings_pkey" }),
-]);
-
 export const masonOnScheme = myCustomSchema.table("mason_on_scheme", {
 	masonId: uuid("mason_id").notNull(),
 	schemeId: uuid("scheme_id").notNull(),
@@ -1742,40 +1657,4 @@ export const giftAllocationLogs = myCustomSchema.table("gift_allocation_logs", {
 		foreignColumns: [rewards.id],
 		name: "fk_gift_allocation_logs_reward_id"
 	}),
-]);
-
-// Internal Office part
-export const itAssets = myCustomSchema.table("it_assets", {
-	id: serial("id").primaryKey(),
-	item: varchar("item", { length: 255 }),
-	purchaseDate: date("purchase_date"),
-	makeModel: text("make_model"),
-	serialNo: text("serial_no"),
-	specification: text("specification"),
-	stockStatus: varchar("stock_status", { length: 100 }),
-	assignedTo: text("assigned_to"),
-	department: varchar("department", { length: 255 }),
-	designation: text("designation"),
-	place: varchar("place", { length: 255 }),
-	assignedDate: date("assigned_date"),
-	handoverDate: date("handover_date"),
-	status: varchar("status", { length: 100 }),
-	remarks: text("remarks"),
-	code: varchar("code", { length: 255 }),
-	accessories: text("accessories"),
-	newUser: text("new_user"),
-	reassignedDate: date("reassigned_date"),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-}, (table) => [
-	index("idx_it_assets_item")
-		.using("btree", table.item.asc().nullsLast()),
-	index("idx_it_assets_serial_no")
-		.using("btree", table.serialNo.asc().nullsLast()),
-	index("idx_it_assets_assigned_to")
-		.using("btree", table.assignedTo.asc().nullsLast()),
-	index("idx_it_assets_status")
-		.using("btree", table.status.asc().nullsLast()),
-	index("idx_it_assets_purchase_date")
-		.using("btree", table.purchaseDate.asc().nullsLast()),
 ]);

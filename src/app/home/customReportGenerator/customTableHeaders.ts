@@ -207,12 +207,6 @@ export const tablesMetadata: TableMeta[] = [
     //     columns: ['id', 'reportDate', 'area', 'region', 'competitorName', 'productName', 'price'],
     // },
     // {
-    //     id: 'dealerReportsAndScores',
-    //     title: 'Dealer Scores',
-    //     icon: Award,
-    //     columns: ['id', 'dealerScore', 'trustWorthinessScore', 'creditWorthinessScore', 'orderHistoryScore', 'visitFrequencyScore', 'lastUpdatedDate', 'dealerName'],
-    // },
-    // {
     //     id: 'dealerBrandCapacities',
     //     title: 'Dealer Brand Capacities',
     //     icon: Boxes,
@@ -246,12 +240,6 @@ export const tablesMetadata: TableMeta[] = [
             'siteName', 'checkInTime', 'checkOutTime', 'isActive', 'destLat', 'destLng'
         ],
     },
-    // {
-    //     id: 'salesmanRating',
-    //     title: 'Salesman Rating',
-    //     icon: Star,
-    //     columns: ['id', 'area', 'region', 'rating', 'salesmanName', 'salesmanEmail'],
-    // },
     {
         id: 'tsoMeetings',
         title: 'TSO Meetings',
@@ -350,14 +338,6 @@ export const tablesMetadata: TableMeta[] = [
     //   icon: UserCheck,
     //   columns: [
     //     'masonId', 'masonName', 'schemeId', 'schemeName', 'enrolledAt', 'status'
-    //   ],
-    // },
-    // {
-    //   id: 'masonsOnMeetings',
-    //   title: 'Masons on Meetings',
-    //   icon: Users,
-    //   columns: [
-    //     'masonId', 'masonName', 'meetingId', 'meetingType', 'meetingDate', 'attendedAt'
     //   ],
     // },
 

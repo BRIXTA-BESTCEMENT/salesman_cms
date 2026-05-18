@@ -4,7 +4,7 @@ import { connection, NextRequest, NextResponse } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import {
-    users, technicalSites, siteAssociatedUsers, siteAssociatedDealers, dealers,
+    users, technicalSites, siteAssociatedDealers, dealers,
     siteAssociatedMasons, masonPcSide, bagLifts
 } from '../../../../../drizzle';
 import { eq, desc, inArray, getTableColumns, and, or, ilike, count, SQL } from 'drizzle-orm';
@@ -108,17 +108,7 @@ async function getCachedTechnicalSites(
     const siteIds = sites.map(s => s.id);
 
     // Step 2: Fetch all relations ONLY for the paginated site IDs (Fixes N+1 issue)
-    const [allUsers, allDealers, allMasons, allBagLifts] = await Promise.all([
-        db.select({
-            siteId: siteAssociatedUsers.a,
-            id: users.id,
-            firstName: users.firstName,
-            lastName: users.lastName,
-            phoneNumber: users.phoneNumber
-        })
-            .from(siteAssociatedUsers)
-            .innerJoin(users, eq(siteAssociatedUsers.b, users.id))
-            .where(inArray(siteAssociatedUsers.a, siteIds)),
+    const [allUsers, allDealers, allMasons] = await Promise.all([
 
         db.select({
             siteId: siteAssociatedDealers.b,
@@ -168,7 +158,6 @@ async function getCachedTechnicalSites(
     const usersMap = groupMap(allUsers, 'siteId');
     const dealersMap = groupMap(allDealers, 'siteId');
     const masonsMap = groupMap(allMasons, 'siteId');
-    const bagLiftsMap = groupMap(allBagLifts, 'siteId');
 
     const toNumber = (val: any) => (val ? Number(val) : null);
 
@@ -177,7 +166,6 @@ async function getCachedTechnicalSites(
         const siteUsers = usersMap[site.id] || [];
         const siteDealers = dealersMap[site.id] || [];
         const siteMasons = masonsMap[site.id] || [];
-        const siteBagLifts = bagLiftsMap[site.id] || [];
 
         const firstVisitRaw = (site as any).firstVisitDate || (site as any).firstVistDate;
 
@@ -203,14 +191,6 @@ async function getCachedTechnicalSites(
             })),
             associatedMasons: siteMasons.map((m: any) => ({
                 id: m.id, name: m.name, phoneNumber: m.phoneNumber, kycStatus: m.kycStatus
-            })),
-            bagLifts: siteBagLifts.map((bl: any) => ({
-                id: bl.id,
-                bagCount: toNumber(bl.bagCount),
-                pointsCredited: toNumber(bl.pointsCredited),
-                status: bl.status,
-                purchaseDate: bl.purchaseDate ? new Date(bl.purchaseDate).toISOString() : null,
-                masonName: bl.masonName
             })),
         };
     });

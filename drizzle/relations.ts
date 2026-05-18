@@ -1,25 +1,17 @@
 import { relations } from "drizzle-orm/relations";
-import { dealers, dealerReportsAndScores, users, technicalVisitReports, permanentJourneyPlans, technicalSites, 
-    companies, ratings, dealerBrandMapping, brands, verifiedDealers, dailyVisitReports, 
+import { dealers, users, technicalVisitReports, permanentJourneyPlans, technicalSites, 
+    companies, dealerBrandMapping, brands, verifiedDealers, dailyVisitReports, 
     salesmanLeaveApplications, salesmanAttendance, competitionReports, geoTracking, journeys, 
-    giftAllocationLogs, rewards, dailyTasks, salesOrders, masonPcSide, otpVerifications, 
+    giftAllocationLogs, rewards, dailyTasks, salesOrders, masonPcSide,
     authSessions, rewardRedemptions, pointsLedger, kycSubmissions, rewardCategories, 
     schemesOffers, schemeSlabs, masonSlabAchievements, dealerAssociatedMasons, bagLifts, 
-    siteAssociatedDealers, siteAssociatedMasons, siteAssociatedUsers, tsoAssignments,
-    outstandingReports,masonsOnMeetings, masonOnScheme, notifications, 
+    siteAssociatedDealers, siteAssociatedMasons, tsoAssignments,
+    outstandingReports, masonOnScheme, notifications, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, 
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
 } from "./schema";
 
-export const dealerReportsAndScoresRelations = relations(dealerReportsAndScores, ({one}) => ({
-	dealer: one(dealers, {
-		fields: [dealerReportsAndScores.dealerId],
-		references: [dealers.id]
-	}),
-}));
-
 export const dealersRelations = relations(dealers, ({one, many}) => ({
-	dealerReportsAndScores: many(dealerReportsAndScores),
 	dealerBrandMappings: many(dealerBrandMapping),
 	dailyVisitReports_dealerId: many(dailyVisitReports, {
 		relationName: "dailyVisitReports_dealerId_dealers_id"
@@ -79,7 +71,6 @@ export const usersRelations = relations(users, ({one, many}) => ({
 	users: many(users, {
 		relationName: "users_reportsToId_users_id"
 	}),
-	ratings: many(ratings),
 	dealerBrandMappings: many(dealerBrandMapping),
 	dailyVisitReports: many(dailyVisitReports),
 	permanentJourneyPlans_userId: many(permanentJourneyPlans, {
@@ -111,7 +102,6 @@ export const usersRelations = relations(users, ({one, many}) => ({
 	salesOrders: many(salesOrders),
 	masonPcSides: many(masonPcSide),
 	bagLifts: many(bagLifts),
-	siteAssociatedUsers: many(siteAssociatedUsers),
 	notifications: many(notifications),
 	journeyOps: many(journeyOps),
 	tsoMeetings: many(tsoMeetings),
@@ -159,21 +149,13 @@ export const technicalSitesRelations = relations(technicalSites, ({many}) => ({
 	dailyTasks: many(dailyTasks),
 	bagLifts: many(bagLifts),
 	siteAssociatedDealers: many(siteAssociatedDealers),
-	siteAssociatedMasons: many(siteAssociatedMasons),
-	siteAssociatedUsers: many(siteAssociatedUsers),
+	siteAssociatedMasons: many(siteAssociatedMasons),	
 	tsoMeetings: many(tsoMeetings),
 	masonOnSchemes: many(masonOnScheme),
 }));
 
 export const companiesRelations = relations(companies, ({many}) => ({
 	users: many(users),
-}));
-
-export const ratingsRelations = relations(ratings, ({one}) => ({
-	user: one(users, {
-		fields: [ratings.userId],
-		references: [users.id]
-	}),
 }));
 
 export const dealerBrandMappingRelations = relations(dealerBrandMapping, ({one}) => ({
@@ -344,15 +326,7 @@ export const salesOrdersRelations = relations(salesOrders, ({one}) => ({
 	}),
 }));
 
-export const otpVerificationsRelations = relations(otpVerifications, ({one}) => ({
-	masonPcSide: one(masonPcSide, {
-		fields: [otpVerifications.masonId],
-		references: [masonPcSide.id]
-	}),
-}));
-
 export const masonPcSideRelations = relations(masonPcSide, ({one, many}) => ({
-	otpVerifications: many(otpVerifications),
 	dealer: one(dealers, {
 		fields: [masonPcSide.dealerId],
 		references: [dealers.id]
@@ -369,7 +343,6 @@ export const masonPcSideRelations = relations(masonPcSide, ({one, many}) => ({
 	dealerAssociatedMasons: many(dealerAssociatedMasons),
 	bagLifts: many(bagLifts),
 	siteAssociatedMasons: many(siteAssociatedMasons),
-	masonsOnMeetings: many(masonsOnMeetings),
 	masonOnSchemes: many(masonOnScheme),
 }));
 
@@ -501,17 +474,6 @@ export const siteAssociatedMasonsRelations = relations(siteAssociatedMasons, ({o
 	}),
 }));
 
-export const siteAssociatedUsersRelations = relations(siteAssociatedUsers, ({one}) => ({
-	technicalSite: one(technicalSites, {
-		fields: [siteAssociatedUsers.a],
-		references: [technicalSites.id]
-	}),
-	user: one(users, {
-		fields: [siteAssociatedUsers.b],
-		references: [users.id]
-	}),
-}));
-
 export const notificationsRelations = relations(notifications, ({one}) => ({
 	user: one(users, {
 		fields: [notifications.recipientUserId],
@@ -546,7 +508,6 @@ export const tsoMeetingsRelations = relations(tsoMeetings, ({one, many}) => ({
 		fields: [tsoMeetings.siteId],
 		references: [technicalSites.id]
 	}),
-	masonsOnMeetings: many(masonsOnMeetings),
 }));
 
 export const journeyBreadcrumbsRelations = relations(journeyBreadcrumbs, ({one}) => ({
@@ -626,17 +587,6 @@ export const outstandingReportsRelations = relations(outstandingReports, ({one})
 	emailReport: one(emailReports, {
 		fields: [outstandingReports.emailReportId],
 		references: [emailReports.id]
-	}),
-}));
-
-export const masonsOnMeetingsRelations = relations(masonsOnMeetings, ({one}) => ({
-	masonPcSide: one(masonPcSide, {
-		fields: [masonsOnMeetings.masonId],
-		references: [masonPcSide.id]
-	}),
-	tsoMeeting: one(tsoMeetings, {
-		fields: [masonsOnMeetings.meetingId],
-		references: [tsoMeetings.id]
 	}),
 }));
 

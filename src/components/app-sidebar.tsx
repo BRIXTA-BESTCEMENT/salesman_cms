@@ -115,11 +115,6 @@ const menuItems: MenuItem[] = [
         url: "/dashboard/slmAttendance",
         requiredPerm: ['READ']
       },
-      // {
-      //   title: "Scores & Ratings",
-      //   url: "/dashboard/scoresAndRatings",
-      //   requiredPerm: ['READ']
-      // },
       {
         title: "Mason - PC Side",
         url: "/dashboard/masonpcSide",
