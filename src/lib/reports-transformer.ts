@@ -201,6 +201,44 @@ export async function getFlattenedDealers(companyId: number) {
   }));
 }
 
+export async function getFlattenedVerifiedDealers(companyId: number) {
+  const rawVerifiedDealers = await db
+    .select({
+      ...getTableColumns(verifiedDealers),
+    })
+    .from(verifiedDealers)
+    .orderBy(desc(verifiedDealers.id));
+
+  return rawVerifiedDealers.map((vd) => ({
+    id: vd.id,
+    dealerPartyName: vd.dealerPartyName,
+    alias: vd.alias ?? null,
+    gstNo: vd.gstNo ?? null,
+    panNo: vd.panNo ?? null,
+    zone: vd.zone ?? null,
+    district: vd.district ?? null,
+    area: vd.area ?? null,
+    state: vd.state ?? null,
+    pinCode: vd.pinCode ?? null,
+    contactNo1: vd.contactNo1 ?? null,
+    contactNo2: vd.contactNo2 ?? null,
+    email: vd.email ?? null,
+    contactPerson: vd.contactPerson ?? null,
+    dealerSegment: vd.dealerSegment ?? null,
+    salesPromoterId: vd.salesPromoterId ?? null,
+    salesManNameRaw: vd.salesManNameRaw ?? null,
+    securityBlankChequeNo: vd.securityBlankChequeNo ?? null,
+    dealerUuid: vd.dealerUuid ?? null,
+    isActive: vd.isActive ?? true,
+
+    creditLimit: toNum(vd.creditLimit),
+    creditDaysAllowed: vd.creditDaysAllowed ?? 0,
+
+    createdAt: vd.createdAt ? new Date(vd.createdAt).toISOString() : '',
+    updatedAt: vd.updatedAt ? new Date(vd.updatedAt).toISOString() : '',
+  }));
+}
+
 export async function getFlattenedDailyVisitReports(companyId: number) {
   const subDealers = aliasedTable(dealers, 'subDealers');
 
@@ -1640,6 +1678,7 @@ export const transformerMap = {
   // Core Report Models
   users: getFlattenedUsers,
   dealers: getFlattenedDealers,
+  verifiedDealers: getFlattenedVerifiedDealers,
   dailyVisitReports: getFlattenedDailyVisitReports,
   technicalVisitReports: getFlattenedTechnicalVisitReports,
   tsoPerformanceMetrics: getFlattenedTsoPerformanceMetrics,

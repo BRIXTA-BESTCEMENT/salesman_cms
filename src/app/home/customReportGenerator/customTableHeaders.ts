@@ -5,7 +5,7 @@ import {
     CalendarCheck, PencilRuler, MapPin,
     Construction, UsersRound, Gift, HandCoins, ScrollText, ClipboardPen,
     Building2, ShoppingBag, BadgeIndianRupeeIcon,
-    ListChecks,
+    ListChecks, ShieldCheck,
     ClipboardPenLine,
     Activity,
     Store
@@ -54,6 +54,18 @@ export const tablesMetadata: TableMeta[] = [
             'monthlySaleMT', 'projectedMonthlySalesBestCementMT', 'brandSell', 'associatedSalesmanName'
         ],
     },
+    // {
+    //     id: 'verifiedDealers',
+    //     title: 'Verified Dealers',
+    //     icon: ShieldCheck,
+    //     columns: [
+    //         'id', 'dealerPartyName', 'alias', 'gstNo', 'panNo', 'zone', 'district', 
+    //         'area', 'state', 'pinCode', 'contactNo1', 'contactNo2', 'email', 
+    //         'contactPerson', 'dealerSegment', 'salesPromoterId', 'salesManNameRaw', 
+    //         'creditLimit', 'creditDaysAllowed', 'isActive', 'securityBlankChequeNo', 
+    //         'dealerUuid'
+    //     ],
+    // },
     {
         id: 'dailyVisitReports',
         title: 'Daily Visit Reports',
