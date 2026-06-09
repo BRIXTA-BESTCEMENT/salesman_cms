@@ -7,16 +7,7 @@ const nextConfig: NextConfig = {
   experimental: {
     preloadEntriesOnStart: false,
   },
-  async rewrites() {
-    return [
-      {
-        // Catches any client fetch requests pointing to /api/v1/internal-backend/
-        source: '/api/v1/internal-backend/:path*',
-        // Rewrites them server-to-server over localhost directly to your Express container port (55000)
-        destination: 'http://127.0.0.1:55000/api/:path*',
-      },
-    ];
-  },
+
   // ... other configurations
 };
 
