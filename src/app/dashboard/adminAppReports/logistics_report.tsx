@@ -2,12 +2,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { NEXT_PUBLIC_MYCOCOSERVER_URL } from '@/lib/Reusable-constants';
 import { GlobalFilterBar } from '@/components/global-filter-bar';
 import { GenericJsonTable } from '@/components/generic-json-table';
 import { DateRange } from 'react-day-picker';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
 
 export default function LogisticsReportPage() {
     const [data, setData] = useState<any>(null);
@@ -22,12 +22,40 @@ export default function LogisticsReportPage() {
             try {
                 setIsLoading(true);
                 setError(null);
-                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/logistics-reports/latest`);
+
+                const params = new URLSearchParams();
+                let isLatest = true;
+
+                if (dateRangeVal?.from) {
+                    params.append('fromDate', format(dateRangeVal.from, 'yyyy-MM-dd'));
+                    isLatest = false;
+                }
+                if (dateRangeVal?.to) {
+                    params.append('toDate', format(dateRangeVal.to, 'yyyy-MM-dd'));
+                    isLatest = false;
+                }
+
+                // If dates are selected, fetch the filtered range. Otherwise, just fetch the latest.
+                const endpoint = isLatest
+                    ? `/api/dashboardPagesAPI/admin-app-reports/logistics?action=latest`
+                    : `/api/dashboardPagesAPI/admin-app-reports/logistics?${params.toString()}`;
+
+                const res = await fetch(endpoint);
                 const result = await res.json();
+                
                 if (result.success && result.data) {
-                    setData(result.data);
+                    // Extract the first (most recent) match if the API returned an array based on date filters
+                    const fetchedData = Array.isArray(result.data) ? result.data[0] : result.data;
+                    
+                    if (fetchedData) {
+                        setData(fetchedData);
+                    } else {
+                        setError("No Logistics report found for the selected dates.");
+                        setData(null);
+                    }
                 } else {
                     setError("No Logistics report found.");
+                    setData(null);
                 }
             } catch (err) { 
                 setError("Failed to communicate with the server."); 
@@ -36,7 +64,7 @@ export default function LogisticsReportPage() {
             }
         };
         fetchReport();
-    }, [dateRangeVal]);
+    }, [dateRangeVal]); // Triggers fetch when date range changes
 
     const filterArray = (arr: any) => {
         if (!arr) return [];
@@ -69,7 +97,14 @@ export default function LogisticsReportPage() {
             </CardHeader>
 
             <CardContent className="space-y-6">
-                <GlobalFilterBar showSearch={true} searchVal={searchVal} onSearchChange={setSearchVal} showDateRange={true} />
+                <GlobalFilterBar 
+                    showSearch={true} 
+                    searchVal={searchVal} 
+                    onSearchChange={setSearchVal} 
+                    showDateRange={true} 
+                    dateRangeVal={dateRangeVal} 
+                    onDateRangeChange={setDateRangeVal} 
+                />
 
                 <div className="space-y-4">
                     <GenericJsonTable title="Cement Dispatch Area-wise (FOR)" data={filterArray(data.cementDispatchData)} />

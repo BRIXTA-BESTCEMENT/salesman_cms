@@ -2,13 +2,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { NEXT_PUBLIC_MYCOCOSERVER_URL } from '@/lib/Reusable-constants';
 import { GlobalFilterBar } from '@/components/global-filter-bar';
 import { DateRange } from 'react-day-picker';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns'; 
 
 export const accountsColumns: ColumnDef<any>[] = [
     { accessorKey: "reportDate", header: "Date" },
@@ -37,13 +37,28 @@ export default function AccountsReportPage() {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
-                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/accounts-reports?limit=100`);
+                
+                // 1. Build the query string dynamically
+                const params = new URLSearchParams();
+                
+                // Ensure from/to dates are strings (Format: YYYY-MM-DD)
+                if (dateRangeVal?.from) {
+                    params.append('fromDate', format(dateRangeVal.from, 'yyyy-MM-dd'));
+                }
+                if (dateRangeVal?.to) {
+                    params.append('toDate', format(dateRangeVal.to, 'yyyy-MM-dd'));
+                }
+
+                // 2. Append parameters to the fetch URL
+                const endpoint = `/api/dashboardPagesAPI/admin-app-reports/accounts${params.toString() ? `?${params.toString()}` : ''}`;
+                
+                const res = await fetch(endpoint);
                 const result = await res.json();
 
                 if (result.success && result.data) {
                     const normalized = (Array.isArray(result.data) ? result.data : []).map((row: any, index: number) => ({
                         ...row,
-                        id: row.id ? String(row.id) : `acc-row-${index}` // Strictly map id to keep uniqueIdentifier happy
+                        id: row.id ? String(row.id) : `acc-row-${index}` 
                     }));
                     setDataList(normalized);
                 }
@@ -54,8 +69,9 @@ export default function AccountsReportPage() {
             }
         };
         fetchReport();
-    }, [dateRangeVal]);
+    }, [dateRangeVal]); // Triggers fetch whenever the date range changes
 
+    // 3. Client-side search filtering (Perfect for this dataset size)
     const filterArray = (arr: any[]) => {
         if (!arr || !Array.isArray(arr)) return [];
         if (!searchVal.trim()) return arr;
@@ -67,6 +83,8 @@ export default function AccountsReportPage() {
 
     if (isLoading) return <div className="p-8 text-center text-gray-500 animate-pulse">Loading Accounts Data...</div>;
 
+    const filteredData = filterArray(dataList);
+
     return (
         <Card className="border-border shadow-sm">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
@@ -75,20 +93,24 @@ export default function AccountsReportPage() {
                     <p className="text-sm text-muted-foreground mt-1">Daily overview of collections, spends, and cash requirements.</p>
                 </div>
                 <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-                    Records: {filterArray(dataList).length}
+                    Records: {filteredData.length}
                 </Badge>
             </CardHeader>
 
             <CardContent className="space-y-6">
                 <GlobalFilterBar
-                    showSearch={true} searchVal={searchVal} onSearchChange={setSearchVal}
-                    showDateRange={true} dateRangeVal={dateRangeVal} onDateRangeChange={setDateRangeVal}
+                    showSearch={true} 
+                    searchVal={searchVal} 
+                    onSearchChange={setSearchVal}
+                    showDateRange={true} 
+                    dateRangeVal={dateRangeVal} 
+                    onDateRangeChange={setDateRangeVal}
                 />
 
                 <div className="w-full">
                     <DataTableReusable
                         columns={accountsColumns}
-                        data={filterArray(dataList)}
+                        data={filteredData}
                     />
                 </div>
             </CardContent>

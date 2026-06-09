@@ -10,8 +10,10 @@ import { companies, users, roles, userRoles, dealers, technicalVisitReports, per
     outstandingReports, logisticsIO, logisticsUsers, masonOnScheme, notifications, syncState, 
     schemeToRewards, journeyOps, tsoMeetings, journeyBreadcrumbs, salesPromoters,
     projectionVsActualReports, collectionReports, emailReports, projectionReports, 
+    salesReports, hrReports, logisticsReports, purchaseReports, processReports, financeReports, accountsReports
 } from "../drizzle/index";
 import { create } from "domain";
+import HrReportPage from "@/app/dashboard/adminAppReports/hr_report";
 
 /* ================================= XXXXXXXXXXX ================================ */
 /* ========================= drizzle-zod insert schemas ========================= */
@@ -81,6 +83,14 @@ export const insertVerifiedDealersSchema = createInsertSchema(verifiedDealers);
 export const insertProjectionVsActualReportsSchema = createInsertSchema(projectionVsActualReports);
 export const insertProjectionReportsSchema = createInsertSchema(projectionReports);
 
+export const insertSalesReportsSchema = createInsertSchema(salesReports);
+export const insertHrReportsSchema = createInsertSchema(hrReports);
+export const insertLogisticsReportsSchema = createInsertSchema(logisticsReports);
+export const insertFinanceReportsSchema = createInsertSchema(financeReports);
+export const insertAccountsReportsSchema = createInsertSchema(accountsReports);
+export const insertProcessQualityReportsSchema = createInsertSchema(processReports);
+export const insertPurchaseReportsSchema = createInsertSchema(purchaseReports);
+
 /* ================================= XXXXXXXXXXX ================================ */
 /* ========================= drizzle-zod select schemas ========================= */
 /* ================================= XXXXXXXXXXX ================================ */
@@ -148,3 +158,11 @@ export const selectOutstandingReportsSchema = createSelectSchema(outstandingRepo
 export const selectVerifiedDealersSchema = createSelectSchema(verifiedDealers);
 export const selectProjectionVsActualReportsSchema = createSelectSchema(projectionVsActualReports);
 export const selectProjectionReportsSchema = createSelectSchema(projectionReports);
+
+export const selectSalesReportsSchema = createSelectSchema(salesReports);
+export const selectHrReportsSchema = createSelectSchema(hrReports);
+export const selectLogisticsReportsSchema = createSelectSchema(logisticsReports);
+export const selectFinanceReportsSchema = createSelectSchema(financeReports);
+export const selectAccountsReportsSchema = createSelectSchema(accountsReports);
+export const selectProcessQualityReportsSchema = createSelectSchema(processReports);
+export const selectPurchaseReportsSchema = createSelectSchema(purchaseReports);

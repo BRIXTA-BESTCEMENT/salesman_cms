@@ -2,7 +2,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { NEXT_PUBLIC_MYCOCOSERVER_URL } from '@/lib/Reusable-constants';
 import { GlobalFilterBar } from '@/components/global-filter-bar';
 import { GenericJsonTable } from '@/components/generic-json-table';
 import { DateRange } from 'react-day-picker';
@@ -15,6 +14,7 @@ export default function HrReportPage() {
     const [error, setError] = useState<string | null>(null);
 
     const [searchVal, setSearchVal] = useState<string>("");
+    // We keep dateRangeVal for UI consistency, but the HR route only supports 'latest'
     const [dateRangeVal, setDateRangeVal] = useState<DateRange | undefined>();
 
     useEffect(() => {
@@ -22,16 +22,19 @@ export default function HrReportPage() {
             try {
                 setIsLoading(true);
                 setError(null);
-                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/adminapp/hr-reports/latest`, {
+                
+                // Directly querying the Next.js API with action=latest
+                const res = await fetch(`/api/dashboardPagesAPI/admin-app-reports/hr?action=latest`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 const result = await res.json();
+                
                 if (result.success && result.data) {
                     setData(result.data);
                 } else {
-                    setError("No HR report found for the selected criteria.");
+                    setError("No HR report found.");
                 }
             } catch (err) {
                 setError("Failed to communicate with the server.");
@@ -40,7 +43,7 @@ export default function HrReportPage() {
             }
         };
         fetchReport();
-    }, [dateRangeVal]);
+    }, []); // Removed dateRangeVal dependency since HR backend doesn't filter by date
 
     const filterArray = (arr: any) => {
         if (!arr) return [];
@@ -75,8 +78,12 @@ export default function HrReportPage() {
 
             <CardContent className="space-y-6">
                 <GlobalFilterBar
-                    showSearch={true} searchVal={searchVal} onSearchChange={setSearchVal}
-                    showDateRange={true} dateRangeVal={dateRangeVal} onDateRangeChange={setDateRangeVal}
+                    showSearch={true} 
+                    searchVal={searchVal} 
+                    onSearchChange={setSearchVal}
+                    showDateRange={true} 
+                    dateRangeVal={dateRangeVal} 
+                    onDateRangeChange={setDateRangeVal}
                 />
 
                 <div className="space-y-4">

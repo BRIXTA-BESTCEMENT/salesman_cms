@@ -2,7 +2,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { NEXT_PUBLIC_MYCOCOSERVER_URL } from '@/lib/Reusable-constants';
 import { GlobalFilterBar } from '@/components/global-filter-bar';
 import { DateRange } from 'react-day-picker';
 import { ColumnDef } from '@tanstack/react-table';
@@ -29,18 +28,29 @@ export default function SalesReportPage() {
     const [reportDate, setReportDate] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
     const [searchVal, setSearchVal] = useState<string>("");
+    
+    // Kept for UI state, but backend only supports 'latest' for the merged sales dataset
     const [dateRangeVal, setDateRangeVal] = useState<DateRange | undefined>();
 
     useEffect(() => {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
-                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/adminapp/sales-reports/latest`);
+                
+                const res = await fetch(`/api/dashboardPagesAPI/admin-app-reports/sales?action=latest`);
                 const result = await res.json();
 
                 if (result.success && result.data) {
                     setReportDate(result.data.reportDate || "");
-                    setDataList(Array.isArray(result.data.salesDataPayload) ? result.data.salesDataPayload : []);
+                    
+                    // Add unique IDs for DataTableReusable mapping
+                    const rawData = Array.isArray(result.data.salesDataPayload) ? result.data.salesDataPayload : [];
+                    const normalized = rawData.map((row: any, index: number) => ({
+                        ...row,
+                        id: row.id ? String(row.id) : `sales-row-${index}`
+                    }));
+                    
+                    setDataList(normalized);
                 }
             } catch (err) {
                 console.error("Failed to fetch Sales", err);
@@ -49,7 +59,7 @@ export default function SalesReportPage() {
             }
         };
         fetchReport();
-    }, [dateRangeVal]);
+    }, []); // Removed dateRangeVal dependency to prevent useless refetches
 
     const filterArray = (arr: any[]) => {
         if (!arr || !Array.isArray(arr)) return [];
@@ -62,6 +72,8 @@ export default function SalesReportPage() {
 
     if (isLoading) return <div className="p-8 text-center text-gray-500 animate-pulse">Loading Sales Data...</div>;
 
+    const filteredData = filterArray(dataList);
+
     return (
         <Card className="border-border shadow-sm">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
@@ -72,18 +84,22 @@ export default function SalesReportPage() {
                     </p>
                 </div>
                 <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-                    Records: {filterArray(dataList).length}
+                    Records: {filteredData.length}
                 </Badge>
             </CardHeader>
 
             <CardContent className="space-y-6">
                 <GlobalFilterBar
-                    showSearch={true} searchVal={searchVal} onSearchChange={setSearchVal}
-                    showDateRange={true} dateRangeVal={dateRangeVal} onDateRangeChange={setDateRangeVal}
+                    showSearch={true} 
+                    searchVal={searchVal} 
+                    onSearchChange={setSearchVal}
+                    showDateRange={true} 
+                    dateRangeVal={dateRangeVal} 
+                    onDateRangeChange={setDateRangeVal}
                 />
 
                 <div className="w-full">
-                    <DataTableReusable columns={salesColumns} data={filterArray(dataList)} />
+                    <DataTableReusable columns={salesColumns} data={filteredData} />
                 </div>
             </CardContent>
         </Card>

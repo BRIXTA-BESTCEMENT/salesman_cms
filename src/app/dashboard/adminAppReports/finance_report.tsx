@@ -2,12 +2,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { NEXT_PUBLIC_MYCOCOSERVER_URL } from '@/lib/Reusable-constants';
 import { GlobalFilterBar } from '@/components/global-filter-bar';
 import { GenericJsonTable } from '@/components/generic-json-table';
 import { DateRange } from 'react-day-picker';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
 
 export default function FinanceReportPage() {
     const [data, setData] = useState<any>(null);
@@ -22,16 +22,44 @@ export default function FinanceReportPage() {
             try {
                 setIsLoading(true);
                 setError(null);
-                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/finance-reports/latest`, {
+
+                const params = new URLSearchParams();
+                let isLatest = true;
+
+                if (dateRangeVal?.from) {
+                    params.append('fromDate', format(dateRangeVal.from, 'yyyy-MM-dd'));
+                    isLatest = false;
+                }
+                if (dateRangeVal?.to) {
+                    params.append('toDate', format(dateRangeVal.to, 'yyyy-MM-dd'));
+                    isLatest = false;
+                }
+
+                // If dates are provided, we fetch the filtered list. Otherwise, just fetch the latest single record.
+                const endpoint = isLatest
+                    ? `/api/dashboardPagesAPI/admin-app-reports/finance?action=latest`
+                    : `/api/dashboardPagesAPI/admin-app-reports/finance?${params.toString()}`;
+
+                const res = await fetch(endpoint, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 const result = await res.json();
+                
                 if (result.success && result.data) {
-                    setData(result.data);
+                    // When fetching by dates, the API returns an array. We take the first/most recent match to show on the dashboard.
+                    const fetchedData = Array.isArray(result.data) ? result.data[0] : result.data;
+                    
+                    if (fetchedData) {
+                        setData(fetchedData);
+                    } else {
+                        setError("No finance report found for the selected criteria.");
+                        setData(null);
+                    }
                 } else {
                     setError("No finance report found for the selected criteria.");
+                    setData(null);
                 }
             } catch (err) {
                 setError("Failed to communicate with the server.");
@@ -77,8 +105,12 @@ export default function FinanceReportPage() {
 
             <CardContent className="space-y-6">
                 <GlobalFilterBar
-                    showSearch={true} searchVal={searchVal} onSearchChange={setSearchVal}
-                    showDateRange={true} dateRangeVal={dateRangeVal} onDateRangeChange={setDateRangeVal}
+                    showSearch={true} 
+                    searchVal={searchVal} 
+                    onSearchChange={setSearchVal}
+                    showDateRange={true} 
+                    dateRangeVal={dateRangeVal} 
+                    onDateRangeChange={setDateRangeVal}
                 />
 
                 <div className="space-y-4">
