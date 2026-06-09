@@ -17,11 +17,16 @@ export default function CollectionReportPage() {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
-                // Uses your paginated list endpoint
-                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/collection-reports`);
+                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/collection-reports?limit=500`);
                 const result = await res.json();
-                if (result.success && result.data) setDataList(result.data);
-            } catch (err) { console.error(err); } finally { setIsLoading(false); }
+                if (result.success && result.data) {
+                    setDataList(Array.isArray(result.data) ? result.data : []);
+                }
+            } catch (err) { 
+                console.error(err); 
+            } finally { 
+                setIsLoading(false); 
+            }
         };
         fetchReport();
     }, []);

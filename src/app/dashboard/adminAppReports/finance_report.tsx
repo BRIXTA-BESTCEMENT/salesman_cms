@@ -14,7 +14,6 @@ export default function FinanceReportPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Filter States
     const [searchVal, setSearchVal] = useState<string>("");
     const [dateRangeVal, setDateRangeVal] = useState<DateRange | undefined>();
 
@@ -22,15 +21,13 @@ export default function FinanceReportPage() {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
-                // Note: For date-range filtering in the future, you can append ?fromDate=X&toDate=Y to this URL
-                // Currently fetching the absolute latest report.
+                setError(null);
                 const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/finance-reports/latest`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 const result = await res.json();
-
                 if (result.success && result.data) {
                     setData(result.data);
                 } else {
@@ -42,20 +39,21 @@ export default function FinanceReportPage() {
                 setIsLoading(false);
             }
         };
-
         fetchReport();
-    }, [dateRangeVal]); // Re-fetch if the date range changes
+    }, [dateRangeVal]);
 
-    // Helper function to globally search across JSON arrays
-    const filterArray = (arr: any[]) => {
-        if (!arr || !Array.isArray(arr)) return [];
-        if (!searchVal.trim()) return arr;
+    const filterArray = (arr: any) => {
+        if (!arr) return [];
+        let parsedArr = arr;
+        if (typeof arr === 'string') {
+            try { parsedArr = JSON.parse(arr); } catch { return []; }
+        }
+        if (!Array.isArray(parsedArr)) return [];
+        if (!searchVal.trim()) return parsedArr;
 
         const lowerSearch = searchVal.toLowerCase();
-        return arr.filter(row =>
-            Object.values(row).some(val =>
-                String(val).toLowerCase().includes(lowerSearch)
-            )
+        return parsedArr.filter(row =>
+            row && Object.values(row).some(val => String(val).toLowerCase().includes(lowerSearch))
         );
     };
 
@@ -73,7 +71,7 @@ export default function FinanceReportPage() {
                     </p>
                 </div>
                 <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-                    Report Date: {data.reportDate}
+                    Report Date: {data.reportDate || 'N/A'}
                 </Badge>
             </CardHeader>
 

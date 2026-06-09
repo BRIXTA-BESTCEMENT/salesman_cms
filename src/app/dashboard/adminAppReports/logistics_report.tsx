@@ -21,25 +21,40 @@ export default function LogisticsReportPage() {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
+                setError(null);
                 const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/logistics-reports/latest`);
                 const result = await res.json();
-                if (result.success && result.data) setData(result.data);
-                else setError("No Logistics report found.");
-            } catch (err) { setError("Failed to communicate with the server."); }
-            finally { setIsLoading(false); }
+                if (result.success && result.data) {
+                    setData(result.data);
+                } else {
+                    setError("No Logistics report found.");
+                }
+            } catch (err) { 
+                setError("Failed to communicate with the server."); 
+            } finally { 
+                setIsLoading(false); 
+            }
         };
         fetchReport();
     }, [dateRangeVal]);
 
-    const filterArray = (arr: any[]) => {
-        if (!arr || !Array.isArray(arr)) return [];
-        if (!searchVal.trim()) return arr;
+    const filterArray = (arr: any) => {
+        if (!arr) return [];
+        let parsedArr = arr;
+        if (typeof arr === 'string') {
+            try { parsedArr = JSON.parse(arr); } catch { return []; }
+        }
+        if (!Array.isArray(parsedArr)) return [];
+        if (!searchVal.trim()) return parsedArr;
         const lowerSearch = searchVal.toLowerCase();
-        return arr.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(lowerSearch)));
+        return parsedArr.filter(row => 
+            row && Object.values(row).some(val => String(val).toLowerCase().includes(lowerSearch))
+        );
     };
 
     if (isLoading) return <div className="p-8 text-center text-gray-500 animate-pulse">Loading Logistics Data...</div>;
     if (error) return <div className="p-8 text-center text-red-500 bg-red-50 rounded-lg">{error}</div>;
+    if (!data) return <div className="p-8 text-center text-gray-500">No data available.</div>;
 
     return (
         <Card className="border-border shadow-sm">
@@ -49,7 +64,7 @@ export default function LogisticsReportPage() {
                     <p className="text-sm text-muted-foreground mt-1">Review cement dispatch, raw material stock, and payments.</p>
                 </div>
                 <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-                    Report Date: {data.reportDate}
+                    Report Date: {data.reportDate || 'N/A'}
                 </Badge>
             </CardHeader>
 

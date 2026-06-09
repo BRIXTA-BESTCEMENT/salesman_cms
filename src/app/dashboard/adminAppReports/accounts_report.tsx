@@ -10,7 +10,6 @@ import { DataTableReusable } from '@/components/data-table-reusable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-// 🛠️ 1. Define Strict Columns mapping directly to your DB Schema
 export const accountsColumns: ColumnDef<any>[] = [
     { accessorKey: "reportDate", header: "Date" },
     { accessorKey: "collectionTargetLakhs", header: "Col. Target (L)" },
@@ -31,7 +30,6 @@ export default function AccountsReportPage() {
     const [dataList, setDataList] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Filter States
     const [searchVal, setSearchVal] = useState<string>("");
     const [dateRangeVal, setDateRangeVal] = useState<DateRange | undefined>();
 
@@ -39,12 +37,15 @@ export default function AccountsReportPage() {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
-                // Using the list endpoint to populate the data table with historical rows
                 const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/accounts-reports?limit=100`);
                 const result = await res.json();
 
                 if (result.success && result.data) {
-                    setDataList(result.data);
+                    const normalized = (Array.isArray(result.data) ? result.data : []).map((row: any, index: number) => ({
+                        ...row,
+                        id: row.id ? String(row.id) : `acc-row-${index}` // Strictly map id to keep uniqueIdentifier happy
+                    }));
+                    setDataList(normalized);
                 }
             } catch (err) {
                 console.error("Failed to fetch Accounts", err);
@@ -55,13 +56,12 @@ export default function AccountsReportPage() {
         fetchReport();
     }, [dateRangeVal]);
 
-    // Frontend Global Search Filter
     const filterArray = (arr: any[]) => {
         if (!arr || !Array.isArray(arr)) return [];
         if (!searchVal.trim()) return arr;
         const lowerSearch = searchVal.toLowerCase();
         return arr.filter(row =>
-            Object.values(row).some(val => String(val).toLowerCase().includes(lowerSearch))
+            row && Object.values(row).some(val => String(val).toLowerCase().includes(lowerSearch))
         );
     };
 

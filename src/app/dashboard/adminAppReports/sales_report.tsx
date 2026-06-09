@@ -10,7 +10,6 @@ import { DataTableReusable } from '@/components/data-table-reusable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-// 🛠️ 1. Define Strict Columns (Excluding the 31 'dayOfMonth' fields)
 export const salesColumns: ColumnDef<any>[] = [
     { accessorKey: "reportDate", header: "Date" },
     { accessorKey: "area", header: "Area" },
@@ -27,9 +26,8 @@ export const salesColumns: ColumnDef<any>[] = [
 
 export default function SalesReportPage() {
     const [dataList, setDataList] = useState<any[]>([]);
+    const [reportDate, setReportDate] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
-
-    // Filter States
     const [searchVal, setSearchVal] = useState<string>("");
     const [dateRangeVal, setDateRangeVal] = useState<DateRange | undefined>();
 
@@ -37,14 +35,12 @@ export default function SalesReportPage() {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
-                // Assuming you have a list endpoint for Sales, otherwise you can fallback to the latest route
-                // and extract from the result appropriately.
-                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/adminapp/sales-reports`);
+                const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/adminapp/sales-reports/latest`);
                 const result = await res.json();
 
                 if (result.success && result.data) {
-                    // If the backend wraps the array in 'data', set it here
-                    setDataList(Array.isArray(result.data) ? result.data : []);
+                    setReportDate(result.data.reportDate || "");
+                    setDataList(Array.isArray(result.data.salesDataPayload) ? result.data.salesDataPayload : []);
                 }
             } catch (err) {
                 console.error("Failed to fetch Sales", err);
@@ -55,7 +51,6 @@ export default function SalesReportPage() {
         fetchReport();
     }, [dateRangeVal]);
 
-    // Frontend Global Search Filter
     const filterArray = (arr: any[]) => {
         if (!arr || !Array.isArray(arr)) return [];
         if (!searchVal.trim()) return arr;
@@ -72,7 +67,9 @@ export default function SalesReportPage() {
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
                 <div>
                     <CardTitle className="text-2xl font-bold tracking-tight">Sales Reports</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">Review MTD sales, targets, and balances.</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        {reportDate ? `Report Date: ${reportDate}` : "Review MTD sales, targets, and balances."}
+                    </p>
                 </div>
                 <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
                     Records: {filterArray(dataList).length}
@@ -85,7 +82,6 @@ export default function SalesReportPage() {
                     showDateRange={true} dateRangeVal={dateRangeVal} onDateRangeChange={setDateRangeVal}
                 />
 
-                {/* Removed extra container styling here since the reusable table likely provides its own border */}
                 <div className="w-full">
                     <DataTableReusable columns={salesColumns} data={filterArray(dataList)} />
                 </div>

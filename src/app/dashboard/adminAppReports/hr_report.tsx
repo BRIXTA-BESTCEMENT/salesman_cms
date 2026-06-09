@@ -21,14 +21,18 @@ export default function HrReportPage() {
         const fetchReport = async () => {
             try {
                 setIsLoading(true);
+                setError(null);
                 const res = await fetch(`${NEXT_PUBLIC_MYCOCOSERVER_URL}/api/adminapp/hr-reports/latest`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 const result = await res.json();
-                if (result.success && result.data) setData(result.data);
-                else setError("No HR report found for the selected criteria.");
+                if (result.success && result.data) {
+                    setData(result.data);
+                } else {
+                    setError("No HR report found for the selected criteria.");
+                }
             } catch (err) {
                 setError("Failed to communicate with the server.");
             } finally {
@@ -38,11 +42,19 @@ export default function HrReportPage() {
         fetchReport();
     }, [dateRangeVal]);
 
-    const filterArray = (arr: any[]) => {
-        if (!arr || !Array.isArray(arr)) return [];
-        if (!searchVal.trim()) return arr;
+    const filterArray = (arr: any) => {
+        if (!arr) return [];
+        let parsedArr = arr;
+        if (typeof arr === 'string') {
+            try { parsedArr = JSON.parse(arr); } catch { return []; }
+        }
+        if (!Array.isArray(parsedArr)) return [];
+        if (!searchVal.trim()) return parsedArr;
+        
         const lowerSearch = searchVal.toLowerCase();
-        return arr.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(lowerSearch)));
+        return parsedArr.filter(row => 
+            row && Object.values(row).some(val => String(val).toLowerCase().includes(lowerSearch))
+        );
     };
 
     if (isLoading) return <div className="p-8 text-center text-gray-500 animate-pulse">Loading HR Data...</div>;
@@ -57,7 +69,7 @@ export default function HrReportPage() {
                     <p className="text-sm text-muted-foreground mt-1">Review vacancies, underperformers, and statutory clearances.</p>
                 </div>
                 <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-                    Report Date: {data.reportDate}
+                    Report Date: {data.reportDate || 'N/A'}
                 </Badge>
             </CardHeader>
 
