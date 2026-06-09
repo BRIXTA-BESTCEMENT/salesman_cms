@@ -22,6 +22,21 @@ const allowedOrigins = [
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const method = request.method; // Get request method
+
+  // Handle Preflight OPTIONS requests immediately without checking tokens or redirecting
+  if (method === 'OPTIONS') {
+    const preflightResponse = NextResponse.next();
+    const origin = request.headers.get('Origin');
+    
+    if (origin && allowedOrigins.includes(origin)) {
+      preflightResponse.headers.set('Access-Control-Allow-Origin', origin);
+    }
+    preflightResponse.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    preflightResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return preflightResponse;
+  }
+
   const token = request.cookies.get('auth_token')?.value;
 
   const isProtectedRoutes = pathname.startsWith('/dashboard') || 
@@ -41,9 +56,11 @@ export async function proxy(request: NextRequest) {
   if (!token && isProtectedRoutes) {
     response = NextResponse.redirect(new URL('/', request.url));
     response.cookies.delete('auth_token');
+    return response;
   }
   else if (token && (pathname === '/login' || pathname === '/')){
     response = NextResponse.redirect(new URL('/home', request.url));
+    return response;
   }
 
   // --- CORS LOGIC ---
