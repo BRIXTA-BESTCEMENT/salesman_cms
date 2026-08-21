@@ -22,6 +22,7 @@ import { DateRange } from "react-day-picker";
 
 export interface FilterRule {
   id: string;
+  table: string; // Add this line
   column: string;
   operator: 'contains' | 'equals' | 'gt' | 'lt';
   value: string;
@@ -36,15 +37,16 @@ interface FilterBuilderProps {
 export function DataFilter({ availableColumns, filters, setFilters }: FilterBuilderProps) {
 
   const addFilter = () => {
-    if (availableColumns.length === 0) return;
-    const newRule: FilterRule = {
-      id: Math.random().toString(36).substring(2, 9),
-      column: availableColumns[0].column,
-      operator: 'contains',
-      value: ''
-    };
-    setFilters([...filters, newRule]);
+  if (availableColumns.length === 0) return;
+  const newRule: FilterRule = {
+    id: Math.random().toString(36).substring(2, 9),
+    table: availableColumns[0].table, // Assure table identity is set
+    column: availableColumns[0].column,
+    operator: 'contains',
+    value: ''
   };
+  setFilters([...filters, newRule]);
+};
 
   const removeFilter = (id: string) => {
     setFilters(filters.filter(f => f.id !== id));

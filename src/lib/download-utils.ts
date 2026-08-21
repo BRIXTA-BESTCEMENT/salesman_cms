@@ -1,6 +1,7 @@
 // src/lib/download-utils.ts
 import { NextResponse } from 'next/server';
 import { stringify } from 'csv-stringify';
+import { stringify as stfy } from 'csv-stringify/sync';
 import ExcelJS from 'exceljs';
 import JSZip from "jszip";
 
@@ -146,42 +147,14 @@ function styleHeaderAndFilter(ws: ExcelJS.Worksheet, colCount: number) {
   };
 }
 
-/**
- * Auto-size columns safely, guarding optional eachCell API.
- */
-function autoSizeColumns(ws: ExcelJS.Worksheet) {
-  // ws.columns can be undefined in typings, guard it
-  const cols = ws.columns ?? [];
-  cols.forEach((c, idx) => {
-    let max = (c.header?.toString().length ?? 10) + 2;
-
-    // some ExcelJS versions have col.eachCell optional in typings; guard it
-    const colAny = c as any;
-    if (typeof colAny.eachCell === 'function') {
-      colAny.eachCell({ includeEmpty: true }, (cell: ExcelJS.Cell) => {
-        max = Math.max(max, estimateWidth(cell.value));
-      });
-    } else {
-      // Fallback: iterate rows and read the Nth cell
-      const colNumber = (colAny.number as number) || idx + 1;
-      ws.eachRow({ includeEmpty: true }, (row) => {
-        const cell = row.getCell(colNumber);
-        max = Math.max(max, estimateWidth(cell.value));
-      });
-    }
-
-    c.width = Math.max(c.width ?? 12, Math.min(60, max));
-  });
-}
-
-function estimateWidth(v: unknown): number {
-  if (v == null) return 0;
-  if (v instanceof Date) return 19;
-  if (typeof v === 'number') return v.toString().length + 2;
-  if (typeof v === 'string') return Math.min(60, v.length + 2);
-  const text = (v as any)?.text ?? (v as any)?.toString?.();
-  return text ? Math.min(60, String(text).length + 2) : 0;
-}
+// function estimateWidth(v: unknown): number {
+//   if (v == null) return 0;
+//   if (v instanceof Date) return 19;
+//   if (typeof v === 'number') return v.toString().length + 2;
+//   if (typeof v === 'string') return Math.min(60, v.length + 2);
+//   const text = (v as any)?.text ?? (v as any)?.toString?.();
+//   return text ? Math.min(60, String(text).length + 2) : 0;
+// }
 
 function normalizeCells(arr: any[]): any[] {
   return arr.map(normalizeCell);
@@ -194,19 +167,37 @@ function normalizeCell(v: any): any {
   return v;
 }
 
-function safeSheetName(name: string): string {
-  // Excel sheet name must be <= 31 chars and not contain: : \ / ? * [ ]
-  const invalid = /[:\\/?*\[\]]/g;
-  const sanitized = name.replace(invalid, ' ').trim();
-  return sanitized.length > 31 ? sanitized.slice(0, 31) : sanitized || 'Sheet1';
-}
-
 // CSV helpers
 // Convert rows to CSV string
 function toCSV(columns: string[], rows: any[]): string {
-  const header = columns.join(",");
-  const csvRows = rows.map(row =>
-    columns.map(col => JSON.stringify(row[col] ?? "")).join(",")
+  // Now stringify returns a string synchronously
+  return stfy(
+    rows.map(row => columns.map(col => normalizeCell(row[col] ?? ""))),
+    {
+      header: true,
+      columns,
+    }
   );
-  return [header, ...csvRows].join("\n");
+}
+
+function autoSizeColumns(ws: ExcelJS.Worksheet) {
+    const cols = ws.columns ?? [];
+    cols.forEach((c) => {
+        const headerLength = String(c.header ?? '').length;
+        c.width = Math.max(12, Math.min(35, headerLength + 4));
+    });
+}
+
+export function safeSheetName(name: string, used: Set<string> = new Set()): string {
+    const invalid = /[:\\/?*\[\]]/g;
+    const base = name.replace(invalid, ' ').trim().slice(0, 31) || 'Sheet';
+    
+    let result = base;
+    let i = 1;
+    while (used.has(result)) {
+        const suffix = `_${i++}`;
+        result = `${base.slice(0, 31 - suffix.length)}${suffix}`;
+    }
+    used.add(result);
+    return result;
 }

@@ -77,7 +77,7 @@ export default function CustomReportGeneratorPage() {
 
   // State for Filters & Styles
   const [filters, setFilters] = useState<FilterRule[]>([]);
-  const [tableDateRange, setTableDateRange] = useState<DateRange | undefined>({from: startOfMonth(new Date()),to: new Date(),});
+  const [tableDateRange, setTableDateRange] = useState<DateRange | undefined>({ from: startOfMonth(new Date()), to: new Date(), });
 
   // --- Fetch User Session on Mount ---
   useEffect(() => {
@@ -100,17 +100,26 @@ export default function CustomReportGeneratorPage() {
 
   // --- Filter Tables Based on User Roles ---
   const accessibleTables = useMemo(() => {
-    const isAdmin = userPermissions.includes('ALL_ACCESS');
-
+    const isAdmin = userPermissions.includes('ALL_ACCESS') || userPermissions.includes('Admin');
+    
     return tablesMetadata.filter(table => {
+      // 1. If user is Admin, they get access to everything immediately
       if (isAdmin) return true;
-      if (!table.requiredJobRole || table.requiredJobRole.length === 0) return true;
-      
-      // Check if user has at least one of the required job roles for this table
-      return table.requiredJobRole.some(role => userJobRoles.includes(role));
+
+      // 2. Permission Check for non-admins
+      const hasPermission = !table.requiredPerm || 
+        (Array.isArray(table.requiredPerm) 
+            ? table.requiredPerm.some(p => userPermissions.includes(p)) 
+            : userPermissions.includes(table.requiredPerm as string));
+
+      // 3. Job Role Check for non-admins
+      const hasJobRole = !table.requiredJobRole || table.requiredJobRole.length === 0 ||
+          table.requiredJobRole.some(role => userJobRoles.includes(role));
+
+      return hasPermission && hasJobRole;
     });
   }, [userJobRoles, userPermissions]);
-  
+
   // Derived state for current table's columns based on reportColumns
   useEffect(() => {
     if (selectedTableId) {
@@ -222,8 +231,8 @@ export default function CustomReportGeneratorPage() {
       fetchPreview(columnsForCurrent, filters, controller.signal);
     }, 400); // Increased debounce slightly to 400ms to avoid spamming while typing
     return () => {
-      clearTimeout(handler), 
-      controller.abort();
+      clearTimeout(handler),
+        controller.abort();
     };
   }, [selectedTableId, reportColumns, filters, fetchPreview]);
 
@@ -490,21 +499,21 @@ export default function CustomReportGeneratorPage() {
                     return (
                       <div
                         key={column}
-                        onClick={() => !downloading && handleColumnToggle(column)}
+                        // REMOVED onClick from here to stop duplicate toggle
                         className={`
-                          flex items-center space-x-3 p-2 rounded-md border transition-all cursor-pointer
-                          ${isChecked ? 'border-primary/40 bg-primary/5' : 'border-border bg-card hover:bg-muted/50'}
-                        `}
+        flex items-center space-x-3 p-2 rounded-md border transition-all
+        ${isChecked ? 'border-primary/40 bg-primary/5' : 'border-border bg-card hover:bg-muted/50'}
+      `}
                       >
                         <Checkbox
                           id={column}
                           checked={isChecked}
-                          onCheckedChange={() => handleColumnToggle(column)}
+                          onCheckedChange={() => !downloading && handleColumnToggle(column)}
                           disabled={downloading}
                         />
                         <Label
                           htmlFor={column}
-                          className="cursor-pointer text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          className="cursor-pointer text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-1"
                         >
                           {column.replace(/([A-Z])/g, ' $1').trim()}
                         </Label>

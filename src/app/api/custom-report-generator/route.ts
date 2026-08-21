@@ -7,17 +7,20 @@ import { transformerMap } from '@/lib/reports-transformer';
 import { exportTablesToCSVZip, generateAndStreamXlsxMulti } from '@/lib/download-utils';
 import { verifySession } from '@/lib/auth';
 
-interface TableColumn {
-    table: string;
-    column: string;
-}
-
-interface FilterRule {
+export interface FilterRule {
     id: string;
+    table: string;
     column: string;
     operator: 'contains' | 'equals' | 'gt' | 'lt';
     value: string;
 }
+
+export type ReportQueryOptions = {
+    filters?: FilterRule[];
+    startDate?: string | Date;
+    endDate?: string | Date;
+    limit?: number;
+};
 
 type ReportTableId = keyof typeof transformerMap;
 
@@ -40,125 +43,6 @@ async function getAuthClaims() {
         return new NextResponse('User not found', { status: 404 });
     }
     return { session, currentUser };
-}
-
-// Helper to safely parse dates, especially the en-IN DD/MM/YYYY format from the transformer
-function parseDateSafely(val: any): Date {
-    if (!val) return new Date(NaN);
-    if (val instanceof Date) return val;
-    
-    const valStr = String(val).trim();
-    if (!valStr) return new Date(NaN);
-
-    // 1. FORCED DD/MM/YYYY CHECK FIRST. 
-    // This stops JS from misinterpreting "02/04/2026" (April 2) as Feb 4.
-    const slashMatch = valStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-    if (slashMatch) {
-        const day = slashMatch[1].padStart(2, '0');
-        const month = slashMatch[2].padStart(2, '0');
-        const year = slashMatch[3];
-        // Lock to Midnight UTC to avoid local timezone shifts
-        return new Date(`${year}-${month}-${day}T00:00:00`);
-    }
-
-    // 2. Fallback for formatDateTimeIST (e.g., "27 Mar 2026, 10:30 AM")
-    const d = new Date(valStr);
-    if (!isNaN(d.getTime())) return d;
-    
-    return new Date(NaN);
-}
-
-// --- Filtering Logic ---
-function applyFilters(rows: any[], filters: FilterRule[]): any[] {
-    if (!filters || filters.length === 0) return rows;
-
-    return rows.filter(row => {
-        // A row must satisfy ALL applicable filters (AND logic)
-        return filters.every(filter => {
-            if (!(filter.column in row)) {
-                return true; // Ignore if column doesn't exist
-            }
-
-            const rawValue = row[filter.column];
-            const cellValueStr = String(rawValue ?? '').trim().toLowerCase();
-            const filterValueStr = String(filter.value ?? '').trim().toLowerCase();
-
-            if (!filterValueStr) return true;
-
-            // Determine if this is a Date column based on the key name (matching UI logic)
-            const isDateColumn = filter.column.toLowerCase().includes('date') || filter.column.toLowerCase().includes('at');
-
-            // --- 3. Handle Date Ranges ---
-            // GUARDED: Only split by commas if we are actually dealing with a Date column!
-            if (isDateColumn && filterValueStr.includes(',')) {
-                const [startStr, endStr] = filterValueStr.split(',');
-
-                const cellDate = parseDateSafely(rawValue); 
-                if (isNaN(cellDate.getTime())) return false;
-
-                // Start at 00:00:00
-                const startDate = new Date(`${startStr}T00:00:00`);
-                
-                // End at 23:59:59. If no end date (single day pick), make the end date the same day.
-                const endDate = endStr 
-                    ? new Date(`${endStr}T23:59:59.999`) 
-                    : new Date(`${startStr}T23:59:59.999`);
-
-                if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
-                    return cellDate >= startDate && cellDate <= endDate;
-                }
-                return false;
-            }
-
-            // --- 4. Standard Operators (Strings & Numbers) ---
-            switch (filter.operator) {
-                case 'contains':
-                    return cellValueStr.includes(filterValueStr);
-
-                case 'equals':
-                    return cellValueStr === filterValueStr;
-
-                case 'gt': {
-                    if (isDateColumn) {
-                        const cellDate = parseDateSafely(rawValue);
-                        const filterDate = new Date(filterValueStr);
-                        if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime())) {
-                            return cellDate > filterDate;
-                        }
-                    }
-
-                    const numCell = parseFloat(cellValueStr);
-                    const numFilter = parseFloat(filterValueStr);
-                    if (!isNaN(numCell) && !isNaN(numFilter)) {
-                        return numCell > numFilter;
-                    }
-
-                    return cellValueStr > filterValueStr;
-                }
-
-                case 'lt': {
-                    if (isDateColumn) {
-                        const cellDate = parseDateSafely(rawValue);
-                        const filterDate = new Date(filterValueStr);
-                        if (!isNaN(cellDate.getTime()) && !isNaN(filterDate.getTime())) {
-                            return cellDate < filterDate;
-                        }
-                    }
-
-                    const numCell = parseFloat(cellValueStr);
-                    const numFilter = parseFloat(filterValueStr);
-                    if (!isNaN(numCell) && !isNaN(numFilter)) {
-                        return numCell < numFilter;
-                    }
-
-                    return cellValueStr < filterValueStr;
-                }
-
-                default:
-                    return true;
-            }
-        });
-    });
 }
 
 /**
@@ -187,26 +71,24 @@ function buildSheetsPayload(
 
 // POST HANDLER 
 export async function POST(req: NextRequest) {
-    // 1. Auth Check
     const authResult = await getAuthClaims();
     if (authResult instanceof NextResponse) return authResult;
     const { currentUser } = authResult;
 
     try {
-        // 2. Parse Payload
-        // ADDED: filters destructuring
-        const { columns, format, limit, filters } = await req.json() as {
-            columns: TableColumn[];
+        const { columns, format, limit, filters, startDate, endDate } = await req.json() as {
+            columns: { table: string; column: string }[];
             format: 'xlsx' | 'csv' | 'json';
             limit?: number;
             filters?: FilterRule[];
+            startDate?: string | Date;
+            endDate?: string | Date;
         };
 
         if (!columns || columns.length === 0) {
             return NextResponse.json({ error: 'No columns selected' }, { status: 400 });
         }
 
-        // 3. Group columns by table ID 
         const grouped = columns.reduce((acc, col) => {
             acc[col.table] = acc[col.table] || [];
             if (!acc[col.table].includes(col.column)) {
@@ -217,47 +99,40 @@ export async function POST(req: NextRequest) {
 
         const tableIds = Object.keys(grouped);
 
-        // --- 4. Handle PREVIEW Request (format: 'json') ---
+        // PREVIEW
         if (format === 'json' && tableIds.length > 0) {
             const previewTableId = tableIds[0];
-
             if (!(previewTableId in transformerMap)) {
-                return NextResponse.json({ error: `Fetcher not found for table: ${previewTableId}` }, { status: 400 });
+                return NextResponse.json({ error: 'Fetcher not found' }, { status: 400 });
             }
-            const fetcher = transformerMap[previewTableId as ReportTableId];
+            const fetcher = transformerMap[previewTableId as keyof typeof transformerMap];
+            
+            const rows = await (fetcher as any)(currentUser.companyId, {
+                filters: (filters || []).filter(f => f.table === previewTableId),
+                startDate,
+                endDate,
+                limit: limit || 500
+            });
 
-            // Fetch full data using the transformer
-            let rows = await (fetcher as any)(currentUser.companyId);
-
-            // ADDED: Apply filters to preview data server-side (optional but good for consistency)
-            // Note: In your current UI, you filter preview client-side, but this ensures API correctness.
-            rows = applyFilters(rows, filters || []);
-
-            // Select only requested columns and limit the rows for preview
             const previewCols = grouped[previewTableId];
-            const previewData = (rows as any[])
-                .slice(0, limit || 10)
-                .map(r => {
-                    const obj: Record<string, any> = { id: (r as any).id };
-                    for (const c of previewCols) {
-                        obj[c] = (r as any)[c] ?? null;
-                    }
-                    return obj;
-                });
-
+            const previewData = rows.map((r: any) => {
+                const obj: Record<string, any> = { id: r.id };
+                for (const c of previewCols) obj[c] = r[c] ?? null;
+                return obj;
+            });
             return NextResponse.json({ data: previewData });
         }
 
-        // --- 5. Handle DOWNLOAD Request (format: 'xlsx' or 'csv') ---
-
+        // DOWNLOAD
         const dataPerTable: Record<string, any[]> = {};
         for (const table of tableIds) {
             if (table in transformerMap) {
-                const fn = transformerMap[table as ReportTableId];
-                // A. Fetch Raw Data
-                const rawRows = await (fn as any)(currentUser.companyId);
-                // B. Apply Filters
-                dataPerTable[table] = applyFilters(rawRows, filters || []);
+                const fn = transformerMap[table as keyof typeof transformerMap];
+                dataPerTable[table] = await (fn as any)(currentUser.companyId, {
+                    filters: (filters || []).filter(f => f.table === table),
+                    startDate,
+                    endDate
+                });
             }
         }
 

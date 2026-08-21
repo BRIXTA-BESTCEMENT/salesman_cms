@@ -9,8 +9,9 @@ import {
   kycSubmissions, tsoAssignments, bagLifts, rewardRedemptions, pointsLedger, logisticsIO,
   siteAssociatedDealers, siteAssociatedMasons
 } from '../../drizzle/schema';
-import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull, notIlike, SQL, lte, gte } from 'drizzle-orm';
+import { eq, desc, and, or, inArray, getTableColumns, aliasedTable, sql, isNull, notIlike, SQL, lte, gte, ilike, gt, lt } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
+import type { ReportQueryOptions, FilterRule } from '@/app/api/custom-report-generator/route';
 
 // --- HELPERS ---
 
@@ -82,6 +83,96 @@ export const formatJustAttendanceTime = (date: Date | string | null | undefined)
 };
 
 const toNum = (v: any): number | null => (v == null ? null : Number(v));
+
+// Date column map to prevent substring guessing errors
+const DATE_COLUMNS: Record<string, Set<string>> = {
+  dailyVisitReports: new Set(['reportDate', 'expectedActivationDate', 'checkInTime', 'checkOutTime', 'createdAt']),
+  technicalVisitReports: new Set(['reportDate', 'checkInTime', 'checkOutTime', 'createdAt']),
+  dailyTasks: new Set(['taskDate', 'createdAt']),
+  permanentJourneyPlans: new Set(['planDate', 'createdAt']),
+  salesmanAttendance: new Set(['attendanceDate', 'inTimeTimestamp', 'outTimeTimestamp', 'createdAt']),
+  salesmanLeaveApplications: new Set(['startDate', 'endDate', 'createdAt'])
+};
+
+// Helper to construct WHERE clauses dynamically
+function buildFilters(tableName: string, options: ReportQueryOptions = {}, drizzleTable: any): SQL[] {
+    const conditions: SQL[] = [];
+    const dateCols = DATE_COLUMNS[tableName];
+    
+    // Check if the user has manually applied a filter to ANY date column for this table
+    const hasManualDateFilter = options.filters?.some(f => dateCols && dateCols.has(f.column));
+
+    // 1. Global Date Range Handling (ONLY apply if no manual date filter exists)
+    if (options.startDate && options.endDate && !hasManualDateFilter) {
+        const start = new Date(options.startDate);
+        const endExclusive = new Date(options.endDate);
+        endExclusive.setDate(endExclusive.getDate() + 1); 
+
+        if (dateCols && dateCols.has('reportDate') && drizzleTable.reportDate) {
+            conditions.push(gte(drizzleTable.reportDate, start.toISOString()));
+            conditions.push(lt(drizzleTable.reportDate, endExclusive.toISOString()));
+        } else if (dateCols && dateCols.has('taskDate') && drizzleTable.taskDate) {
+            conditions.push(gte(drizzleTable.taskDate, start.toISOString()));
+            conditions.push(lt(drizzleTable.taskDate, endExclusive.toISOString()));
+        } else if (dateCols && dateCols.has('attendanceDate') && drizzleTable.attendanceDate) {
+            conditions.push(gte(drizzleTable.attendanceDate, start.toISOString()));
+            conditions.push(lt(drizzleTable.attendanceDate, endExclusive.toISOString()));
+        } else if (dateCols && dateCols.has('startDate') && drizzleTable.startDate) {
+            conditions.push(gte(drizzleTable.startDate, start.toISOString()));
+            conditions.push(lte(drizzleTable.endDate, endExclusive.toISOString()));
+        } else if (drizzleTable.createdAt) {
+            conditions.push(gte(drizzleTable.createdAt, start.toISOString()));
+            conditions.push(lt(drizzleTable.createdAt, endExclusive.toISOString()));
+        }
+    }
+
+    // 2. User-Selected Filters
+    if (options.filters && options.filters.length > 0) {
+        for (const rule of options.filters) {
+            const col = drizzleTable[rule.column];
+            if (!col) continue;
+
+            const val = rule.value;
+            
+            // Prevent empty string queries
+            if (val === undefined || val === null || val.trim() === '') {
+                continue;
+            }
+
+            // INTERCEPT DATE RANGES
+            const isDateColumn = dateCols && dateCols.has(rule.column);
+
+            if (isDateColumn && val.includes(',')) {
+                const [startStr, endStr] = val.split(',');
+                
+                if (startStr) {
+                    // Pass the YYYY-MM-DD string directly to Postgres for safer Date column comparison
+                    conditions.push(gte(col, startStr));
+                }
+                if (endStr) {
+                    // Create a date object, add 1 day for the exclusive upper bound, and format back to YYYY-MM-DD
+                    const end = new Date(endStr);
+                    end.setDate(end.getDate() + 1);
+                    const exclusiveEndStr = end.toISOString().split('T')[0];
+                    conditions.push(lt(col, exclusiveEndStr));
+                }
+                continue; 
+            }
+
+            // 3. Standard text/number operators
+            if (rule.operator === 'contains') {
+                conditions.push(ilike(sql`CAST(${col} AS TEXT)`, `%${val}%`));
+            } else if (rule.operator === 'equals') {
+                conditions.push(eq(sql`CAST(${col} AS TEXT)`, val));
+            } else if (rule.operator === 'gt') {
+                conditions.push(gt(col, val));
+            } else if (rule.operator === 'lt') {
+                conditions.push(lt(col, val));
+            }
+        }
+    }
+    return conditions;
+}
 
 // 1. Define the raw row shape explicitly, adding our joined role columns
 type RawUserRow = InferSelectModel<typeof users> & {
@@ -239,10 +330,11 @@ export async function getFlattenedVerifiedDealers(companyId: number) {
   }));
 }
 
-export async function getFlattenedDailyVisitReports(companyId: number) {
+export async function getFlattenedDailyVisitReports(companyId: number, options: ReportQueryOptions = {}) {
   const subDealers = aliasedTable(dealers, 'subDealers');
+  const dynamicFilters = buildFilters('dailyVisitReports', options, dailyVisitReports);
 
-  const raw = await db
+  let query = db
     .select({
       ...getTableColumns(dailyVisitReports),
       pjpTaskStatus: dailyTasks.status,
@@ -270,8 +362,12 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
     .leftJoin(users, eq(dailyVisitReports.userId, users.id))
     .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
     .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
-    .where(eq(users.companyId, companyId))
+    .where(and(eq(users.companyId, companyId), ...dynamicFilters))
     .orderBy(desc(dailyVisitReports.reportDate));
+
+  if (options.limit) query = query.limit(options.limit) as any;
+
+  const raw = await query;
 
   return raw.map((r) => {
     const isUnplanned = !r.pjpTaskStatus || r.pjpVisitType?.toLowerCase() === 'unplanned';
@@ -326,8 +422,10 @@ export async function getFlattenedDailyVisitReports(companyId: number) {
   });
 }
 
-export async function getFlattenedTechnicalVisitReports(companyId: number) {
-  const rawReports = await db
+export async function getFlattenedTechnicalVisitReports(companyId: number, options: ReportQueryOptions = {}) {
+  const dynamicFilters = buildFilters('technicalVisitReports', options, technicalVisitReports);
+
+  let query = db
     .select({
       ...getTableColumns(technicalVisitReports),
       userFirstName: users.firstName,
@@ -336,10 +434,14 @@ export async function getFlattenedTechnicalVisitReports(companyId: number) {
     })
     .from(technicalVisitReports)
     .leftJoin(users, eq(technicalVisitReports.userId, users.id))
-    .where(eq(users.companyId, companyId))
+    .where(and(eq(users.companyId, companyId), ...dynamicFilters))
     .orderBy(desc(technicalVisitReports.reportDate));
 
-  return rawReports.map((r) => ({
+  if (options.limit) query = query.limit(options.limit) as any;
+
+  const raw = await query;
+
+  return raw.map((r) => ({
     id: r.id,
     visitType: r.visitType,
     siteNameConcernedPerson: r.siteNameConcernedPerson,
@@ -417,33 +519,27 @@ export async function getFlattenedTechnicalVisitReports(companyId: number) {
 
 export async function getFlattenedTsoPerformanceMetrics(
   companyId: number,
-  startDate?: Date,
-  endDate?: Date
+  options: ReportQueryOptions = {}
 ) {
-
-  // Normalize to DATE STRINGS
+  // Normalize to DATE STRINGS based on options
   let startStr: string;
   let endStr: string;
 
-  if (!startDate || !endDate) {
+  if (!options.startDate || !options.endDate) {
     const now = new Date();
-
-    startStr = new Date(now.getFullYear(), now.getMonth(), 1)
-      .toLocaleDateString('en-CA'); // YYYY-MM-DD
-
+    startStr = new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-CA');
     endStr = now.toLocaleDateString('en-CA');
   } else {
-    startStr = startDate.toLocaleDateString('en-CA');
-    endStr = endDate.toLocaleDateString('en-CA');
+    startStr = new Date(options.startDate).toLocaleDateString('en-CA');
+    endStr = new Date(options.endDate).toLocaleDateString('en-CA');
   }
 
-  // --- BUILD THE MEETINGS SUBQUERY ---
-  const meetingFilters: (SQL | undefined)[] = [];
-
-  meetingFilters.push(and(
-    sql`${tsoMeetings.date} >= ${startStr}`,
-    sql`${tsoMeetings.date} <= ${endStr}`
-  ));
+  const meetingFilters: (SQL | undefined)[] = [
+    and(
+      sql`${tsoMeetings.date} >= ${startStr}`,
+      sql`${tsoMeetings.date} <= ${endStr}`
+    )
+  ];
 
   const meetingsSq = db
     .select({
@@ -454,19 +550,23 @@ export async function getFlattenedTsoPerformanceMetrics(
     .where(and(...meetingFilters))
     .groupBy(tsoMeetings.createdByUserId)
     .as('meetings_sq');
-  // -----------------------------------
 
   const endOfDay = new Date(endStr);
   endOfDay.setHours(23, 59, 59, 999);
+
+  // Inject the rest of the dynamic filters (for user-selected column filters)
+  const dynamicFilters = buildFilters('technicalVisitReports', options, technicalVisitReports);
+
   const filters: (SQL | undefined)[] = [
     eq(users.companyId, companyId),
     and(
       sql`${technicalVisitReports.reportDate} >= ${startStr}`,
       sql`${technicalVisitReports.reportDate} <= ${endOfDay.toISOString()}`
-    )
+    ),
+    ...dynamicFilters
   ];
 
-  const rawData = await db
+  let query = db
     .select({
       userId: users.id,
       salesmanName: sql<string>`COALESCE(NULLIF(TRIM(CONCAT(${users.firstName}, ' ', ${users.lastName})), ''), ${users.email})`,
@@ -490,14 +590,14 @@ export async function getFlattenedTsoPerformanceMetrics(
     .groupBy(users.id, users.firstName, users.lastName, users.email, users.region, users.area)
     .orderBy(desc(sql`COUNT(${technicalVisitReports.id})`));
 
+  if (options.limit) query = query.limit(options.limit) as any;
+  const rawData = await query;
+
   return rawData.map((r) => {
     const siteNew = r.siteVisitsNew || 0;
     const siteOld = r.siteVisitsOld || 0;
-    const dateRange = `${startStr} to ${endStr}`;
-
     return {
       userId: r.userId ?? null,
-      //dateRange,
       salesmanName: r.salesmanName || 'Unknown',
       region: r.region || '',
       area: r.area || '',
@@ -518,38 +618,35 @@ export async function getFlattenedTsoPerformanceMetrics(
 
 export async function getFlattenedSoPerformanceMetrics(
   companyId: number,
-  startDate?: Date,
-  endDate?: Date
+  options: ReportQueryOptions = {}
 ) {
-
-  // Normalize to DATE STRINGS
   let startStr: string;
   let endStr: string;
 
-  if (!startDate || !endDate) {
+  if (!options.startDate || !options.endDate) {
     const now = new Date();
-
-    startStr = new Date(now.getFullYear(), now.getMonth(), 1)
-      .toLocaleDateString('en-CA'); // YYYY-MM-DD
-
+    startStr = new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-CA');
     endStr = now.toLocaleDateString('en-CA');
   } else {
-    startStr = startDate.toLocaleDateString('en-CA');
-    endStr = endDate.toLocaleDateString('en-CA');
+    startStr = new Date(options.startDate).toLocaleDateString('en-CA');
+    endStr = new Date(options.endDate).toLocaleDateString('en-CA');
   }
 
   const endOfDay = new Date(endStr);
   endOfDay.setHours(23, 59, 59, 999);
+
+  const dynamicFilters = buildFilters('dailyVisitReports', options, dailyVisitReports);
 
   const filters: (SQL | undefined)[] = [
     eq(users.companyId, companyId),
     and(
       sql`${dailyVisitReports.reportDate} >= ${startStr}`,
       sql`${dailyVisitReports.reportDate} <= ${endOfDay.toISOString()}`
-    )
+    ),
+    ...dynamicFilters
   ];
 
-  const rawData = await db
+  let query = db
     .select({
       userId: users.id,
       salesmanName: sql<string>`COALESCE(NULLIF(TRIM(CONCAT(${users.firstName}, ' ', ${users.lastName})), ''), ${users.email})`,
@@ -565,6 +662,9 @@ export async function getFlattenedSoPerformanceMetrics(
     .groupBy(users.id, users.firstName, users.lastName, users.email, users.region, users.area)
     .orderBy(desc(sql`COUNT(${dailyVisitReports.id})`));
 
+  if (options.limit) query = query.limit(options.limit) as any;
+  const rawData = await query;
+
   return rawData.map((r) => {
     return {
       userId: r.userId ?? null,
@@ -578,11 +678,12 @@ export async function getFlattenedSoPerformanceMetrics(
   });
 }
 
-export async function getFlattenedKamrupDvrs(companyId: number) {
+export async function getFlattenedKamrupDvrs(companyId: number, options: ReportQueryOptions = {}) {
   const subDealers = aliasedTable(dealers, 'subDealers');
   const kamrupAreaFilter = inArray(users.area, ['Kamrup-TSO', 'Kamrup TSO']);
+  const dynamicFilters = buildFilters('dailyVisitReports', options, dailyVisitReports);
 
-  const rawDvrs = await db
+  let query = db
     .select({
       ...getTableColumns(dailyVisitReports),
       pjpTaskStatus: dailyTasks.status,
@@ -607,10 +708,12 @@ export async function getFlattenedKamrupDvrs(companyId: number) {
     )
     .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
     .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
-    .where(and(eq(users.companyId, companyId), kamrupAreaFilter))
+    .where(and(eq(users.companyId, companyId), kamrupAreaFilter, ...dynamicFilters))
     .orderBy(desc(dailyVisitReports.reportDate));
 
-  return rawDvrs.map((r) => {
+  if (options.limit) query = query.limit(options.limit) as any;
+  const raw = await query;
+  return raw.map((r) => {
     const finalPjpStatus = (!r.pjpTaskStatus || r.pjpVisitType?.toLowerCase() === 'unplanned')
       ? 'Unplanned'
       : r.pjpTaskStatus;
@@ -662,10 +765,11 @@ export async function getFlattenedKamrupDvrs(companyId: number) {
   });
 }
 
-export async function getFlattenedKamrupTvrs(companyId: number) {
+export async function getFlattenedKamrupTvrs(companyId: number, options: ReportQueryOptions = {}) {
   const kamrupAreaFilter = inArray(users.area, ['Kamrup-TSO', 'Kamrup TSO']);
+  const dynamicFilters = buildFilters('technicalVisitReports', options, technicalVisitReports);
 
-  const rawTvrs = await db
+  let query = db
     .select({
       ...getTableColumns(technicalVisitReports),
       userFirstName: users.firstName,
@@ -674,10 +778,14 @@ export async function getFlattenedKamrupTvrs(companyId: number) {
     })
     .from(technicalVisitReports)
     .innerJoin(users, eq(technicalVisitReports.userId, users.id))
-    .where(and(eq(users.companyId, companyId), kamrupAreaFilter))
+    .where(and(eq(users.companyId, companyId), kamrupAreaFilter, ...dynamicFilters))
     .orderBy(desc(technicalVisitReports.reportDate));
 
-  return rawTvrs.map((r) => ({
+  if (options.limit) query = query.limit(options.limit) as any;
+
+  const raw = await query;
+
+  return raw.map((r) => ({
     sourceReport: 'TVR', // <-- Proxy in-memory column
     id: r.id,
     visitType: r.visitType,
@@ -815,10 +923,11 @@ export async function getFlattenedTechnicalSites(companyId: number) {
   });
 }
 
-export async function getFlattenedPermanentJourneyPlans(companyId: number) {
+export async function getFlattenedPermanentJourneyPlans(companyId: number, options: ReportQueryOptions = {}) {
   const createdByUsers = aliasedTable(users, 'createdBy');
+  const dynamicFilters = buildFilters('permanentJourneyPlans', options, permanentJourneyPlans);
 
-  const rawReports = await db
+  let query = db
     .select({
       ...getTableColumns(permanentJourneyPlans),
       salesmanFirstName: users.firstName,
@@ -835,11 +944,14 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number) {
     .leftJoin(createdByUsers, eq(permanentJourneyPlans.createdById, createdByUsers.id))
     .leftJoin(dealers, eq(permanentJourneyPlans.dealerId, dealers.id))
     .leftJoin(technicalSites, eq(permanentJourneyPlans.siteId, technicalSites.id))
-    .where(eq(users.companyId, companyId))
+    .where(and(eq(users.companyId, companyId), ...dynamicFilters))
     .orderBy(desc(permanentJourneyPlans.planDate));
 
-  if (rawReports.length === 0) return [];
-  const pjpIds = rawReports.map(r => r.id);
+  if (options.limit) query = query.limit(options.limit) as any;
+  const raw = await query;
+
+  if (raw.length === 0) return [];
+  const pjpIds = raw.map(r => r.id);
 
   const tasks = await db.select({ id: dailyTasks.id, pjpId: dailyTasks.id })
     .from(dailyTasks).where(inArray(dailyTasks.id, pjpIds));
@@ -852,7 +964,7 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number) {
     return acc;
   }, {} as Record<string, string[]>);
 
-  return rawReports.map((r) => {
+  return raw.map((r) => {
     const visitTargetName = r.dealerName ?? r.siteName ?? null;
 
     return {
@@ -923,8 +1035,10 @@ export async function getFlattenedCompetitionReports(companyId: number) {
   }));
 }
 
-export async function getFlattenedDailyTasks(companyId: number) {
-  const rawReports = await db
+export async function getFlattenedDailyTasks(companyId: number, options: ReportQueryOptions = {}) {
+  const dynamicFilters = buildFilters('dailyTasks', options, dailyTasks);
+
+  let query = db
     .select({
       ...getTableColumns(dailyTasks),
       salesmanFirstName: users.firstName,
@@ -935,15 +1049,13 @@ export async function getFlattenedDailyTasks(companyId: number) {
     .from(dailyTasks)
     .leftJoin(users, eq(dailyTasks.userId, users.id))
     .leftJoin(dealers, eq(dailyTasks.dealerId, dealers.id))
-    .where(
-      and(
-        eq(users.companyId, companyId),
-        notIlike(dailyTasks.visitType, 'unplanned')
-      )
-    )
+    .where(and(eq(users.companyId, companyId), notIlike(dailyTasks.visitType, 'unplanned'), ...dynamicFilters))
     .orderBy(desc(dailyTasks.taskDate));
 
-  return rawReports.map((r) => ({
+  if (options.limit) query = query.limit(options.limit) as any;
+  const raw = await query;
+
+  return raw.map((r) => ({
     id: r.id,
     pjpBatchId: r.pjpBatchId ?? null,
     visitType: r.visitType ?? null,
@@ -979,8 +1091,10 @@ export async function getFlattenedDailyTasks(companyId: number) {
   }));
 }
 
-export async function getFlattenedSalesmanAttendance(companyId: number) {
-  const rawReports = await db
+export async function getFlattenedSalesmanAttendance(companyId: number, options: ReportQueryOptions = {}) {
+  const dynamicFilters = buildFilters('salesmanAttendance', options, salesmanAttendance);
+
+  let query = db
     .select({
       ...getTableColumns(salesmanAttendance),
       userFirstName: users.firstName,
@@ -989,10 +1103,13 @@ export async function getFlattenedSalesmanAttendance(companyId: number) {
     })
     .from(salesmanAttendance)
     .leftJoin(users, eq(salesmanAttendance.userId, users.id))
-    .where(eq(users.companyId, companyId))
+    .where(and(eq(users.companyId, companyId), ...dynamicFilters))
     .orderBy(desc(salesmanAttendance.attendanceDate));
 
-  return rawReports.map((r) => ({
+  if (options.limit) query = query.limit(options.limit) as any;
+  const raw = await query;
+
+  return raw.map((r) => ({
     id: r.id,
     locationName: r.locationName,
     inTimeImageCaptured: r.inTimeImageCaptured,
@@ -1042,26 +1159,11 @@ export const formatToShortTextDate = (date: Date | string | null | undefined): s
 const approvers = aliasedTable(users, 'approvers');
 export async function getFlattenedSalesmanLeaveApplication(
   companyId: number,
-  startDate?: Date,
-  endDate?: Date
+  options: ReportQueryOptions = {}
 ) {
-  const filters: SQL[] = [eq(users.companyId, companyId)];
+  const dynamicFilters = buildFilters('salesmanLeaveApplications', options, salesmanLeaveApplications);
 
-  // Apply the same overlapping logic as the main dashboard route
-  if (startDate && endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
-
-    filters.push(
-      and(
-        lte(salesmanLeaveApplications.startDate, end.toISOString()),
-        gte(salesmanLeaveApplications.endDate, start.toISOString())
-      )!
-    );
-  }
-
-  const rawReports = await db
+  let query = db
     .select({
       ...getTableColumns(salesmanLeaveApplications),
       userFirstName: users.firstName,
@@ -1074,8 +1176,11 @@ export async function getFlattenedSalesmanLeaveApplication(
     .from(salesmanLeaveApplications)
     .leftJoin(users, eq(salesmanLeaveApplications.userId, users.id))
     .leftJoin(approvers, eq(users.reportsToId, approvers.id))
-    .where(and(...(filters.filter(Boolean) as SQL[])))
+    .where(and(eq(users.companyId, companyId), ...dynamicFilters))
     .orderBy(desc(salesmanLeaveApplications.startDate));
+
+  if (options.limit) query = query.limit(options.limit) as any;
+  const rawReports = await query;
 
   return rawReports.map((r) => ({
     id: r.id,
