@@ -95,14 +95,18 @@ const DATE_COLUMNS: Record<string, Set<string>> = {
 };
 
 // Helper to construct WHERE clauses dynamically
-function buildFilters(tableName: string, options: ReportQueryOptions = {}, drizzleTable: any): SQL[] {
+function buildFilters(
+    tableName: string, 
+    options: ReportQueryOptions = {}, 
+    drizzleTable: any,
+    virtualCols: Record<string, any> = {} // <-- NEW PARAMETER
+): SQL[] {
     const conditions: SQL[] = [];
     const dateCols = DATE_COLUMNS[tableName];
     
-    // Check if the user has manually applied a filter to ANY date column for this table
     const hasManualDateFilter = options.filters?.some(f => dateCols && dateCols.has(f.column));
 
-    // 1. Global Date Range Handling (ONLY apply if no manual date filter exists)
+    // 1. Global Date Range Handling 
     if (options.startDate && options.endDate && !hasManualDateFilter) {
         const start = new Date(options.startDate);
         const endExclusive = new Date(options.endDate);
@@ -129,32 +133,25 @@ function buildFilters(tableName: string, options: ReportQueryOptions = {}, drizz
     // 2. User-Selected Filters
     if (options.filters && options.filters.length > 0) {
         for (const rule of options.filters) {
-            const col = drizzleTable[rule.column];
-            if (!col) continue;
+            // Check base table FIRST, then fallback to virtual joined columns
+            const col = drizzleTable[rule.column] || virtualCols[rule.column];
+            
+            if (!col) continue; // If neither has it, skip
 
             const val = rule.value;
             
-            // Prevent empty string queries
             if (val === undefined || val === null || val.trim() === '') {
                 continue;
             }
 
-            // INTERCEPT DATE RANGES
             const isDateColumn = dateCols && dateCols.has(rule.column);
-
             if (isDateColumn && val.includes(',')) {
                 const [startStr, endStr] = val.split(',');
-                
-                if (startStr) {
-                    // Pass the YYYY-MM-DD string directly to Postgres for safer Date column comparison
-                    conditions.push(gte(col, startStr));
-                }
+                if (startStr) conditions.push(gte(col, startStr));
                 if (endStr) {
-                    // Create a date object, add 1 day for the exclusive upper bound, and format back to YYYY-MM-DD
                     const end = new Date(endStr);
                     end.setDate(end.getDate() + 1);
-                    const exclusiveEndStr = end.toISOString().split('T')[0];
-                    conditions.push(lt(col, exclusiveEndStr));
+                    conditions.push(lt(col, end.toISOString().split('T')[0]));
                 }
                 continue; 
             }
@@ -332,7 +329,13 @@ export async function getFlattenedVerifiedDealers(companyId: number) {
 
 export async function getFlattenedDailyVisitReports(companyId: number, options: ReportQueryOptions = {}) {
   const subDealers = aliasedTable(dealers, 'subDealers');
-  const dynamicFilters = buildFilters('dailyVisitReports', options, dailyVisitReports);
+  const dynamicFilters = buildFilters('dailyVisitReports', options, dailyVisitReports, {
+      salesmanName: sql`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+      salesmanEmail: users.email,
+      dealerName: dealers.name,
+      subDealerName: subDealers.name,
+      pjpStatus: dailyTasks.status
+  });
 
   let query = db
     .select({
@@ -423,7 +426,10 @@ export async function getFlattenedDailyVisitReports(companyId: number, options: 
 }
 
 export async function getFlattenedTechnicalVisitReports(companyId: number, options: ReportQueryOptions = {}) {
-  const dynamicFilters = buildFilters('technicalVisitReports', options, technicalVisitReports);
+  const dynamicFilters = buildFilters('technicalVisitReports', options, technicalVisitReports, {
+      salesmanName: sql`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+      salesmanEmail: users.email
+  });
 
   let query = db
     .select({
@@ -923,9 +929,46 @@ export async function getFlattenedTechnicalSites(companyId: number) {
   });
 }
 
+export async function getFlattenedCompetitionReports(companyId: number) {
+  const rawReports = await db
+    .select({
+      ...getTableColumns(competitionReports),
+      userFirstName: users.firstName,
+      userLastName: users.lastName,
+      userEmail: users.email,
+    })
+    .from(competitionReports)
+    .leftJoin(users, eq(competitionReports.userId, users.id))
+    .where(eq(users.companyId, companyId))
+    .orderBy(desc(competitionReports.reportDate));
+
+  return rawReports.map((r) => ({
+    id: r.id,
+    brandName: r.brandName,
+    billing: r.billing,
+    nod: r.nod,
+    retail: r.retail,
+    schemesYesNo: r.schemesYesNo,
+    remarks: r.remarks ?? null,
+    reportDate: formatDateIST(r.reportDate) || '',
+    avgSchemeCost: toNum(r.avgSchemeCost) || 0,
+    createdAt: formatDateTimeIST(r.createdAt),
+    updatedAt: formatDateTimeIST(r.updatedAt),
+    salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
+    salesmanEmail: r.userEmail || '',
+  }));
+}
+
 export async function getFlattenedPermanentJourneyPlans(companyId: number, options: ReportQueryOptions = {}) {
   const createdByUsers = aliasedTable(users, 'createdBy');
-  const dynamicFilters = buildFilters('permanentJourneyPlans', options, permanentJourneyPlans);
+  const dynamicFilters = buildFilters('permanentJourneyPlans', options, permanentJourneyPlans, {
+    assignedSalesmanName: sql`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+    assignedSalesmanEmail: users.email,
+    creatorName: sql`CONCAT(${createdByUsers.firstName}, ' ', ${createdByUsers.lastName})`,
+    creatorEmail: createdByUsers.email,
+    dealerName: dealers.name,
+    siteName: technicalSites.siteName
+  });
 
   let query = db
     .select({
@@ -1005,38 +1048,12 @@ export async function getFlattenedPermanentJourneyPlans(companyId: number, optio
   });
 }
 
-export async function getFlattenedCompetitionReports(companyId: number) {
-  const rawReports = await db
-    .select({
-      ...getTableColumns(competitionReports),
-      userFirstName: users.firstName,
-      userLastName: users.lastName,
-      userEmail: users.email,
-    })
-    .from(competitionReports)
-    .leftJoin(users, eq(competitionReports.userId, users.id))
-    .where(eq(users.companyId, companyId))
-    .orderBy(desc(competitionReports.reportDate));
-
-  return rawReports.map((r) => ({
-    id: r.id,
-    brandName: r.brandName,
-    billing: r.billing,
-    nod: r.nod,
-    retail: r.retail,
-    schemesYesNo: r.schemesYesNo,
-    remarks: r.remarks ?? null,
-    reportDate: formatDateIST(r.reportDate) || '',
-    avgSchemeCost: toNum(r.avgSchemeCost) || 0,
-    createdAt: formatDateTimeIST(r.createdAt),
-    updatedAt: formatDateTimeIST(r.updatedAt),
-    salesmanName: formatUserName({ firstName: r.userFirstName, lastName: r.userLastName, email: r.userEmail }),
-    salesmanEmail: r.userEmail || '',
-  }));
-}
-
 export async function getFlattenedDailyTasks(companyId: number, options: ReportQueryOptions = {}) {
-  const dynamicFilters = buildFilters('dailyTasks', options, dailyTasks);
+  const dynamicFilters = buildFilters('dailyTasks', options, dailyTasks, {
+    assignedSalesmanName: sql`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+    assignedSalesmanEmail: users.email,
+    dealerVisitingName: sql`COALESCE(${dealers.name}, ${dailyTasks.dealerNameSnapshot})`
+  });
 
   let query = db
     .select({
@@ -1092,7 +1109,10 @@ export async function getFlattenedDailyTasks(companyId: number, options: ReportQ
 }
 
 export async function getFlattenedSalesmanAttendance(companyId: number, options: ReportQueryOptions = {}) {
-  const dynamicFilters = buildFilters('salesmanAttendance', options, salesmanAttendance);
+  const dynamicFilters = buildFilters('salesmanAttendance', options, salesmanAttendance, {
+        salesmanName: sql`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+        salesmanEmail: users.email
+    });
 
   let query = db
     .select({
@@ -1161,7 +1181,12 @@ export async function getFlattenedSalesmanLeaveApplication(
   companyId: number,
   options: ReportQueryOptions = {}
 ) {
-  const dynamicFilters = buildFilters('salesmanLeaveApplications', options, salesmanLeaveApplications);
+  const dynamicFilters = buildFilters('salesmanLeaveApplications', options, salesmanLeaveApplications, {
+        salesmanName: sql`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+        salesmanEmail: users.email,
+        approverName: sql`CONCAT(${approvers.firstName}, ' ', ${approvers.lastName})`,
+        approverEmail: approvers.email
+    });
 
   let query = db
     .select({

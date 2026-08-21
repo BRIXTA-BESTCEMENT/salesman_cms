@@ -77,7 +77,7 @@ export default function CustomReportGeneratorPage() {
 
   // State for Filters & Styles
   const [filters, setFilters] = useState<FilterRule[]>([]);
-  const [tableDateRange, setTableDateRange] = useState<DateRange | undefined>({ from: startOfMonth(new Date()), to: new Date(), });
+  const [tableDateRange, setTableDateRange] = useState<DateRange | undefined>(undefined);
 
   // --- Fetch User Session on Mount ---
   useEffect(() => {
