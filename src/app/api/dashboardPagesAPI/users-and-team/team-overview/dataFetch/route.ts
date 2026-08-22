@@ -1,9 +1,9 @@
 // src/app/api/dashboardPagesAPI/users-and-team/team-overview/dataFetch/route.ts
 import 'server-only';
-import { NextResponse, NextRequest, connection } from 'next/server';
+import { NextRequest, NextResponse, connection } from 'next/server';
 import { db } from '@/lib/drizzle';
 import { users, roles, userRoles } from '../../../../../../../drizzle';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { verifySession } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
@@ -14,86 +14,99 @@ export async function GET(request: NextRequest) {
     if (!session || !session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (!session.permissions.includes("READ")) {
+
+    if (!session.permissions.includes('READ')) {
       return NextResponse.json({ error: 'Forbidden: READ access required' }, { status: 403 });
     }
 
-    const roleParam = request.nextUrl.searchParams.get('role');
-    const roleFilter = roleParam && roleParam !== 'all' ? roleParam : undefined;
+    const { searchParams } = new URL(request.url);
+    const roleFilter = searchParams.get('role');
 
-    // 1. Fetch all users and their joined roles for this company in one query
-    const allCompanyUsersRaw = await db
+    // 1. Database-Level Filtering
+    const filters = [eq(users.companyId, session.companyId)];
+
+    if (roleFilter && roleFilter !== 'all') {
+      filters.push(eq(roles.orgRole, roleFilter));
+    }
+
+    // 2. Fetch and Aggregate inside Postgres
+    const rawMembers = await db
       .select({
-        user: users,
-        orgRole: roles.orgRole,
-        jobRole: roles.jobRole,
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        reportsToId: users.reportsToId,
+        area: users.area,
+        region: users.region,
+        isTechnicalRole: users.isTechnicalRole,
+        orgRole: sql<string>`COALESCE(MAX(${roles.orgRole}), 'Unassigned')`,
+        jobRole: sql<string[]>`COALESCE(array_agg(${roles.jobRole}) FILTER (WHERE ${roles.jobRole} IS NOT NULL), '{}')`
       })
       .from(users)
       .leftJoin(userRoles, eq(users.id, userRoles.userId))
       .leftJoin(roles, eq(userRoles.roleId, roles.id))
-      .where(eq(users.companyId, session.companyId));
+      .where(and(...filters))
+      // FIX: Explicitly list all selected raw columns in the groupBy
+      .groupBy(
+        users.id,
+        users.firstName,
+        users.lastName,
+        users.reportsToId,
+        users.area,
+        users.region,
+        users.isTechnicalRole
+      );
 
-    // 2. Aggregate the multiple role rows per user into a single object
-    const usersMap = new Map();
-    for (const row of allCompanyUsersRaw) {
-      if (!usersMap.has(row.user.id)) {
-        usersMap.set(row.user.id, {
-          ...row.user,
-          orgRole: row.orgRole || 'Unassigned',
-          jobRoles: new Set<string>(),
-        });
-      }
-      const u = usersMap.get(row.user.id);
-      if (row.jobRole) u.jobRoles.add(row.jobRole);
-      // Ensure we grab a valid orgRole if the first joined row had a null one
-      if (row.orgRole && u.orgRole === 'Unassigned') u.orgRole = row.orgRole;
-    }
+    // 3. Fast In-Memory Manager Lookup
+    const userMap = new Map<number, { name: string; orgRole: string }>();
+    rawMembers.forEach((m) => {
+      userMap.set(m.id, {
+        name: `${m.firstName ?? ''} ${m.lastName ?? ''}`.trim() || 'Unknown',
+        orgRole: m.orgRole || 'N/A',
+      });
+    });
 
-    // Convert Set to Array for JSON serialization
-    const allUsers = Array.from(usersMap.values()).map(u => ({
-      ...u,
-      jobRole: Array.from(u.jobRoles),
-    }));
+    // 4. Map the Final Hierarchy
+    const formattedTeam = rawMembers.map((member) => {
+      const memberName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim() || 'Unknown';
+      const manager = member.reportsToId ? userMap.get(member.reportsToId) : null;
 
-    // 3. Filter by selected role (if applicable)
-    const filteredUsers = roleFilter 
-      ? allUsers.filter(u => u.orgRole === roleFilter) 
-      : allUsers;
+      const directReports = rawMembers
+        .filter((sub) => sub.reportsToId === member.id)
+        .map((sub) => ({
+          name: `${sub.firstName ?? ''} ${sub.lastName ?? ''}`.trim() || 'Unknown',
+          orgRole: sub.orgRole || 'N/A',
+        }));
 
-    // 4. Build the hierarchy and format the response
-    const formattedTeamData = filteredUsers.map(member => {
-      // Find manager
-      const manager = member.reportsToId ? allUsers.find(u => u.id === member.reportsToId) : null;
-      const managerName = manager ? `${manager.firstName || ''} ${manager.lastName || ''}`.trim() : 'none';
-
-      // Find direct reports
-      const directReports = allUsers.filter(u => u.reportsToId === member.id);
-      const manages = directReports.map(r => `${r.firstName || ''} ${r.lastName || ''}`.trim()).filter(Boolean).join(', ') || 'None';
-
-      // Fallback to the users table flag if jobRole array doesn't explicitly have it
-      const isTechnicalRole = member.jobRole.includes('Technical-Sales') || member.isTechnicalRole;
+      const managesIds = rawMembers
+        .filter((sub) => sub.reportsToId === member.id)
+        .map((sub) => sub.id);
 
       return {
         id: member.id,
-        name: `${member.firstName || ''} ${member.lastName || ''}`.trim(),
+        name: memberName,
         orgRole: member.orgRole,
-        jobRole: member.jobRole,
-        managedBy: managerName,
-        manages,
-        managesReports: directReports.map(r => ({ name: `${r.firstName || ''} ${r.lastName || ''}`.trim(), orgRole: r.orgRole })),
+        jobRole: member.jobRole || [],
+        managedBy: manager ? manager.name : null,
+        manages: directReports.length > 0 ? `${directReports.length} direct reports` : 'None',
         managedById: member.reportsToId,
-        managesIds: directReports.map(r => r.id),
-        isTechnicalRole, 
+        managesIds: managesIds,
+        managesReports: directReports,
+        area: member.area,
+        region: member.region,
+        isTechnicalRole: Boolean(member.isTechnicalRole),
       };
     });
 
-    // Sort alphabetically by name
-    formattedTeamData.sort((a, b) => a.name.localeCompare(b.name));
+    // 5. Sort alphabetically by name
+    formattedTeam.sort((a, b) => a.name.localeCompare(b.name));
 
-    return NextResponse.json(formattedTeamData, { status: 200 });
-
+    return NextResponse.json(formattedTeam, { status: 200 });
   } catch (error: any) {
-    console.error("Team Overview Fetch Error:", error);
-    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
+    console.error('Failed to fetch team overview data:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }

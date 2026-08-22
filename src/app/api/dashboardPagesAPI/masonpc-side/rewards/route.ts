@@ -3,7 +3,7 @@ import 'server-only';
 import { NextResponse, NextRequest, connection } from 'next/server';
 import { db } from '@/lib/drizzle';
 import { rewards, rewardCategories, schemeToRewards } from '../../../../../../drizzle';
-import { eq, asc } from 'drizzle-orm';
+import { sql, eq, asc } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectRewardsSchema, insertRewardsSchema } from '../../../../../../drizzle/zodSchemas';
 import { verifySession } from '@/lib/auth';
@@ -19,46 +19,29 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
-    // 1. Fetch raw records with LEFT JOINs
-    const rawRecords = await db
+    const formattedRewards = await db
       .select({
-        reward: rewards,
-        categoryName: rewardCategories.name,
-        schemeId: schemeToRewards.b, // 'b' holds the scheme UUID based on your schema
+        id: rewards.id,
+        itemName: rewards.itemName,
+        pointCost: rewards.pointCost,
+        totalAvailableQuantity: rewards.totalAvailableQuantity,
+        stock: rewards.stock,
+        isActive: rewards.isActive,
+        createdAt: rewards.createdAt,
+        updatedAt: rewards.updatedAt,
+        categoryId: rewards.categoryId,
+        categoryName: sql<string>`COALESCE(MAX(${rewardCategories.name}), 'Uncategorized')`,
+        // Aggregates the joined scheme UUIDs into an array automatically:
+        schemeIds: sql<string[]>`COALESCE(array_agg(${schemeToRewards.b}) FILTER (WHERE ${schemeToRewards.b} IS NOT NULL), '{}')`
       })
       .from(rewards)
       .leftJoin(rewardCategories, eq(rewards.categoryId, rewardCategories.id))
-      .leftJoin(schemeToRewards, eq(rewards.id, schemeToRewards.a)) // 'a' holds the reward integer ID
+      .leftJoin(schemeToRewards, eq(rewards.id, schemeToRewards.a))
+      .groupBy(rewards.id) // Group by the base table ID
       .orderBy(asc(rewards.itemName))
-      .limit(1000); // Increased limit slightly to account for duplicate rows before grouping
+      .limit(1000);
 
-    // 2. Group the results
-    const rewardsMap = new Map();
-
-    rawRecords.forEach((row) => {
-      const rewardId = row.reward.id;
-
-      if (!rewardsMap.has(rewardId)) {
-        rewardsMap.set(rewardId, {
-          ...row.reward,
-          name: row.reward.itemName,
-          categoryName: row.categoryName ?? 'Uncategorized',
-          schemeIds: [], // Initialize the array the frontend is looking for
-          createdAt: new Date(row.reward.createdAt).toISOString(),
-          updatedAt: new Date(row.reward.updatedAt).toISOString(),
-        });
-      }
-
-      // If there's a linked scheme, push its ID into the array
-      if (row.schemeId) {
-        rewardsMap.get(rewardId).schemeIds.push(row.schemeId);
-      }
-    });
-
-    // 3. Convert Map back to array and validate
-    const formattedRewards = Array.from(rewardsMap.values());
     const validated = z.array(selectRewardsSchema.loose()).parse(formattedRewards);
-
     return NextResponse.json(validated, { status: 200 });
 
   } catch (error: any) {

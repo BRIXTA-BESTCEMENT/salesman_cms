@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DataTableReusable } from '@/components/data-table-reusable';
 import { selectCompetitionReportSchema } from '../../../../drizzle/zodSchemas';
+import { useDebounce } from '@/hooks/use-debounce-search';
 
 // --- EXTEND THE DRIZZLE SCHEMA ---
 // Add the relational fields and type coercions that your API returns
@@ -41,6 +42,7 @@ export default function CompetitionReportsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<CompetitionReport | null>(null);
 
@@ -101,7 +103,7 @@ export default function CompetitionReportsPage() {
         (report.remarks || '').toLowerCase().includes(q);
       return matchesSearch;
     });
-  }, [reports, searchQuery]);
+  }, [reports, debouncedSearchQuery]);
 
   const handleViewReport = (report: CompetitionReport) => {
     setSelectedReport(report);

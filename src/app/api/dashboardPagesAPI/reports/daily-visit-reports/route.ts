@@ -4,7 +4,7 @@ import { connection, NextResponse, NextRequest } from 'next/server';
 import { cacheTag, cacheLife } from 'next/cache';
 import { db } from '@/lib/drizzle';
 import { users, dailyVisitReports, dealers, dailyTasks } from '../../../../../../drizzle';
-import { eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, isNull, notIlike, gte, lte } from 'drizzle-orm';
+import { sql, eq, desc, and, or, ilike, aliasedTable, getTableColumns, count, SQL, isNull, notIlike, gte, lte } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import { selectDailyVisitReportSchema } from '../../../../../../drizzle/zodSchemas';
@@ -121,15 +121,15 @@ async function getCachedDailyVisitReports(
   const results: DVRRow[] = await db
     .select({
       ...getTableColumns(dailyVisitReports),
-      userFirstName: users.firstName,
-      userLastName: users.lastName,
-      userEmail: users.email,
-      userArea: users.area,
-      userRegion: users.region,
-      dealerNameStr: dealers.name,
-      subDealerNameStr: subDealers.name,
-      pjpTaskStatus: dailyTasks.status,
-      pjpVisitType: dailyTasks.visitType,
+      userFirstName: sql<string>`MAX(${users.firstName})`,
+    userLastName: sql<string>`MAX(${users.lastName})`,
+    userEmail: sql<string>`MAX(${users.email})`,
+    userArea: sql<string>`MAX(${users.area})`,
+    userRegion: sql<string>`MAX(${users.region})`,
+    dealerNameStr: sql<string>`MAX(${dealers.name})`,
+    subDealerNameStr: sql<string>`MAX(${subDealers.name})`,
+    pjpTaskStatus: sql<string>`MAX(${dailyTasks.status})`,
+    pjpVisitType: sql<string>`MAX(${dailyTasks.visitType})`,
     })
     .from(dailyVisitReports)
     .leftJoin(
@@ -144,6 +144,7 @@ async function getCachedDailyVisitReports(
     .leftJoin(dealers, eq(dailyVisitReports.dealerId, dealers.id))
     .leftJoin(subDealers, eq(dailyVisitReports.subDealerId, subDealers.id))
     .where(whereClause)
+    .groupBy(dailyVisitReports.id)
     .orderBy(desc(dailyVisitReports.reportDate))
     .limit(pageSize)
     .offset(page * pageSize);
@@ -167,16 +168,8 @@ async function getCachedDailyVisitReports(
 
   const totalCount = Number(totalCountResult[0].count);
 
-  // 1. Deduplicate results based on the unique Daily Visit Report ID
-  const uniqueReportsMap = new Map<string, DVRRow>();
-  for (const row of results) {
-    if (!uniqueReportsMap.has(row.id)) {
-      uniqueReportsMap.set(row.id, row);
-    }
-  }
-
-  // 2. Format only the unique rows
-  const formatted = Array.from(uniqueReportsMap.values()).map((row) => {
+  // Format only the unique rows
+  const formatted = Array.from(results.values()).map((row) => {
     const toNum = (v: any) => (v == null ? null : Number(v));
     const salesmanName = `${row.userFirstName || ''} ${row.userLastName || ''}`.trim() || row.userEmail || 'Unknown';
 

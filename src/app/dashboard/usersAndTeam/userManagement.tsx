@@ -148,7 +148,9 @@ export default function UsersManagement({ adminUser }: Props) {
       });
       if (response.ok) {
         const data = await response.json();
-        setUsers(data.users);
+        // SAFELY parse: Checks if API returned an array directly or an object wrapper
+        const usersArray = Array.isArray(data) ? data : (data.users || []);
+        setUsers(usersArray);
       } else {
         setError('Failed to fetch users');
       }
@@ -338,7 +340,7 @@ export default function UsersManagement({ adminUser }: Props) {
 
       return matchesSearch && matchesRole && matchesZone && matchesArea;
     });
-  }, [users, searchQuery, roleFilter, zoneFilters, areaFilters]);
+  }, [users, debouncedSearch, roleFilter, zoneFilters, areaFilters]);
 
   // Defined columns
   const columns: ColumnDef<User>[] = useMemo(() => [
